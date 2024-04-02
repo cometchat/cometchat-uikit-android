@@ -2,30 +2,35 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="whiteBoardMessage"
             type="com.cometchat.pro.models.CustomMessage" />
     </data>
+
     <LinearLayout
-        android:orientation="vertical"
-        android:gravity="end"
-        android:layout_marginEnd="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="end"
+        android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/rl_message"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/rl_message">
+            android:layout_height="wrap_content">
+
             <RelativeLayout
-                android:background="@drawable/cc_message_bubble_right"
-                android:backgroundTint="@color/colorPrimary"
-                android:layout_alignParentEnd="true"
                 android:id="@+id/cv_message_container"
                 android:layout_width="250dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/cc_message_bubble_right"
+                android:backgroundTint="@color/colorPrimary">
+
                 <RelativeLayout
                     android:id="@+id/top_message_layout"
                     android:layout_width="match_parent"
@@ -35,8 +40,8 @@
                         android:id="@+id/icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
                         android:layout_centerVertical="true"
+                        android:padding="8dp"
                         android:src="@drawable/ic_video_call"
                         android:tint="@color/textColorWhite" />
 
@@ -52,68 +57,76 @@
                         android:textSize="16sp"
                         tools:text="Someone has shared whiteboard. Click below join button to check whiteboard" />
                 </RelativeLayout>
+
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/join_call"
                     android:layout_width="match_parent"
-                    android:text="@string/join"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/top_message_layout"
-                    android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginBottom="6dp"
+                    android:text="@string/join"
+                    android:textAllCaps="false"
                     android:textColor="@color/colorPrimary"
                     app:backgroundTint="@color/textColorWhite"
-                    app:cornerRadius="8dp"
-                    android:id="@+id/join_call"
-                    android:layout_height="wrap_content"
-                    android:textAllCaps="false"/>
+                    app:cornerRadius="8dp" />
             </RelativeLayout>
+
             <TextView
                 android:id="@+id/txt_time"
-                android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="11:00 PM"
-                android:layout_marginEnd="8dp"
-                android:layout_toStartOf="@+id/cv_message_container"
                 android:layout_alignBottom="@+id/cv_message_container"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
+                android:layout_toStartOf="@+id/cv_message_container"
+                android:gravity="center_vertical"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <HorizontalScrollView
-                android:layout_alignEnd="@id/cv_message_container"
-                android:layout_below="@+id/cv_message_container"
+                android:visibility="gone"
+                tools:text="11:00 PM"
+                tools:visibility="visible" />
+
+            <LinearLayout
                 android:id="@+id/reaction_group"
-                android:scrollbars="none"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_gravity="end"
-                    android:visibility="gone"
-                    app:singleLine="true"
-                    android:orientation="horizontal"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/cv_message_container"
+                android:layout_alignEnd="@id/cv_message_container"
+                android:gravity="end"
+                android:scrollbars="none">
+
+                <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/reactions_layout"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </HorizontalScrollView>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:flexWrap="wrap"
+                    app:singleLine="true" />
+            </LinearLayout>
+
             <LinearLayout
-                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/reaction_group"
                 android:layout_alignEnd="@id/cv_message_container"
-                android:layout_width="wrap_content"
                 android:gravity="end"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
+
                 <TextView
+                    android:id="@+id/thread_reply_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:foreground="?selectableItemBackground"
-                    android:id="@+id/thread_reply_count"
                     android:textColor="@color/colorPrimary"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="16dp"
-                    tools:text="2 replies"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    tools:text="2 replies" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

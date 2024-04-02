@@ -85,29 +85,30 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/join"
+                    android:textAllCaps="false"
                     android:textColor="@color/primaryTextColor"
                     app:backgroundTint="@color/textColorWhite"
-                    app:cornerRadius="8dp"
-                    android:textAllCaps="false"/>
+                    app:cornerRadius="8dp" />
             </RelativeLayout>
 
-            <HorizontalScrollView
+            <LinearLayout
                 android:id="@+id/reaction_group"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/cv_message_container"
                 android:layout_alignStart="@id/cv_message_container"
-                android:scrollbars="none">
+                android:gravity="start">
 
-                <com.google.android.material.chip.ChipGroup
+                <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/reactions_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:orientation="horizontal"
                     android:visibility="gone"
+                    app:flexWrap="wrap"
                     app:singleLine="true" />
-            </HorizontalScrollView>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"

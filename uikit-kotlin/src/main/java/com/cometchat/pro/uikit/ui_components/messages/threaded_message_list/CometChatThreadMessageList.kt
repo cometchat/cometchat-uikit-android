@@ -774,10 +774,29 @@ class CometChatThreadMessageList : Fragment(), View.OnClickListener, OnMessageLo
             }
 
             override fun onAudioActionClicked() {
-                if (Utils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    startActivityForResult(MediaUtils.openAudio(activity!!), UIKitConstants.RequestCode.AUDIO)
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (Utils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        MediaUtils.openAudio(
+                            activity!!
+                        )
+                    } else {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                            UIKitConstants.RequestCode.AUDIO
+                        )
+                    }
                 } else {
-                    requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), UIKitConstants.RequestCode.AUDIO)
+                    if (Utils.hasPermissions(context, Manifest.permission.READ_MEDIA_AUDIO)) {
+                        MediaUtils.openAudio(
+                            activity!!
+                        )
+
+                    } else {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.READ_MEDIA_AUDIO),
+                            UIKitConstants.RequestCode.AUDIO
+                        )
+                    }
                 }
             }
 
@@ -791,17 +810,26 @@ class CometChatThreadMessageList : Fragment(), View.OnClickListener, OnMessageLo
 
             override fun onGalleryActionClicked() {
                 if (Utils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    startActivityForResult(MediaUtils.openGallery(activity!!), UIKitConstants.RequestCode.GALLERY)
+                    MediaUtils.openGallery(activity!!)
                 } else {
                     requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), UIKitConstants.RequestCode.GALLERY)
                 }
             }
 
             override fun onFileActionClicked() {
-                if (Utils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    startActivityForResult(MediaUtils.getFileIntent(UIKitConstants.IntentStrings.EXTRA_MIME_DOC), UIKitConstants.RequestCode.FILE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU || Utils.hasPermissions(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                ) {
+                    startActivityForResult(
+                        MediaUtils.getFileIntent(UIKitConstants.IntentStrings.EXTRA_MIME_DOC),
+                        UIKitConstants.RequestCode.FILE
+                    )
                 } else {
-                    requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), UIKitConstants.RequestCode.FILE)
+                    requestPermissions(
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        UIKitConstants.RequestCode.FILE
+                    )
                 }
             }
 
@@ -948,8 +976,8 @@ class CometChatThreadMessageList : Fragment(), View.OnClickListener, OnMessageLo
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         Log.d(Companion.TAG, "onRequestPermissionsResult: ")
         when (requestCode) {
-            UIKitConstants.RequestCode.CAMERA -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) startActivityForResult(MediaUtils.openCamera(activity!!), UIKitConstants.RequestCode.CAMERA) else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_camera_permission))
-            UIKitConstants.RequestCode.GALLERY -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) startActivityForResult(MediaUtils.openGallery(activity!!), UIKitConstants.RequestCode.GALLERY) else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_storage_permission))
+            UIKitConstants.RequestCode.CAMERA -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) MediaUtils.openCamera(activity!!)else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_camera_permission))
+            UIKitConstants.RequestCode.GALLERY -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) MediaUtils.openGallery(activity!!) else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_storage_permission))
             UIKitConstants.RequestCode.FILE -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) startActivityForResult(MediaUtils.getFileIntent(UIKitConstants.IntentStrings.EXTRA_MIME_DOC), UIKitConstants.RequestCode.FILE) else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_storage_permission))
             UIKitConstants.RequestCode.LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             } else showSnackBar(view!!.findViewById<View>(R.id.message_box), resources.getString(R.string.grant_location_permission))

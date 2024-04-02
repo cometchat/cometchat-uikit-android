@@ -1,82 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <variable
             name="stickerMessage"
             type="com.cometchat.pro.models.CustomMessage" />
     </data>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
 
-
-    <RelativeLayout
-        android:id="@+id/rl_message"
-        android:layout_width="wrap_content"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/sticker_view"
-            android:layout_alignParentEnd="true"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:src="@drawable/ic_defaulf_image"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true" />
-        <TextView
-            android:id="@+id/txt_time"
+
+        <RelativeLayout
+            android:id="@+id/rl_message"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="11:00 PM"
-            android:layout_marginBottom="8dp"
-            android:textSize="12sp"
-            android:layout_gravity="center"
-            tools:drawableEnd="@drawable/ic_double_tick"
-            android:layout_alignBottom="@+id/sticker_view"
-            android:layout_toStartOf="@+id/sticker_view"
-            android:textColor="@color/secondaryTextColor"
-            android:textStyle="bold"
-            tools:visibility="visible"
-            android:visibility="gone" />
-        <HorizontalScrollView
-            android:layout_alignEnd="@id/sticker_view"
-            android:layout_below="@+id/sticker_view"
-            android:id="@+id/reaction_group"
-            android:scrollbars="none"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.google.android.material.chip.ChipGroup
-                android:layout_gravity="end"
-                android:visibility="gone"
-                app:singleLine="true"
-                android:orientation="horizontal"
-                android:id="@+id/reactions_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </HorizontalScrollView>
-        <LinearLayout
-            android:gravity="end"
-            android:orientation="vertical"
-            android:layout_marginBottom="16dp"
-            android:layout_width="wrap_content"
-            android:layout_alignEnd="@+id/sticker_view"
-            android:layout_below="@+id/reaction_group"
-            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/sticker_view"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_alignParentEnd="true"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_defaulf_image" />
+
             <TextView
-                android:clickable="true"
-                android:foreground="?selectableItemBackground"
-                android:id="@+id/thread_reply_count"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"
-                tools:text="2 replies"
+                android:id="@+id/txt_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </RelativeLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/sticker_view"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:layout_toStartOf="@+id/sticker_view"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:drawableEnd="@drawable/ic_double_tick"
+                tools:text="11:00 PM"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/reaction_group"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sticker_view"
+                android:layout_alignEnd="@id/sticker_view"
+                android:gravity="end">
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/reactions_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:flexWrap="wrap"
+                    app:singleLine="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/reaction_group"
+                android:layout_alignEnd="@+id/sticker_view"
+                android:layout_marginBottom="16dp"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/thread_reply_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:textColor="@color/colorPrimary"
+                    tools:text="2 replies" />
+            </LinearLayout>
+        </RelativeLayout>
 
 
-</LinearLayout>
+    </LinearLayout>
 </layout>
