@@ -1,13 +1,11 @@
 package com.cometchat.pro.uikit.ui_resources.utils
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.hardware.Camera
 import android.hardware.Camera.CameraInfo
 import android.media.AudioManager
@@ -23,10 +21,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import androidx.loader.content.CursorLoader
-import com.cometchat.pro.constants.CometChatConstants
 import com.cometchat.pro.uikit.BuildConfig
-import com.cometchat.pro.uikit.R
+import com.cometchat.pro.uikit.ui_resources.constants.UIKitConstants
 import com.cometchat.pro.uikit.ui_resources.utils.Utils.Companion.generateFileName
 import com.cometchat.pro.uikit.ui_resources.utils.Utils.Companion.getDocumentCacheDir
 import com.cometchat.pro.uikit.ui_resources.utils.Utils.Companion.getFileName
@@ -36,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.min
 
- class MediaUtils {
+class MediaUtils {
     companion object {
         private var activity: Activity? = null
 
@@ -57,7 +53,8 @@ import kotlin.math.min
             val listCam = packageManager.queryIntentActivities(captureIntent, 0)
             for (res in listCam) {
                 val intent = Intent(captureIntent)
-                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
+                intent.component =
+                    ComponentName(res.activityInfo.packageName, res.activityInfo.name)
                 intent.setPackage(res.activityInfo.packageName)
                 if (outputFileUri != null) {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri)
@@ -71,7 +68,8 @@ import kotlin.math.min
             val listGallery = packageManager.queryIntentActivities(galleryIntent, 0)
             for (res in listGallery) {
                 val intent = Intent(galleryIntent)
-                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
+                intent.component =
+                    ComponentName(res.activityInfo.packageName, res.activityInfo.name)
                 intent.setPackage(res.activityInfo.packageName)
                 allIntents.add(intent)
             }
@@ -114,14 +112,18 @@ import kotlin.math.min
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             val imageFileName = "$timeStamp.jpg"
             val storageDir = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES)
+                Environment.DIRECTORY_PICTURES
+            )
             pictureImagePath = storageDir.absolutePath + "/" + imageFileName
             val file: File = File(pictureImagePath)
             var outputFileUri: Uri?
             var app: ApplicationInfo? = null
             var provider: String? = null
             try {
-                app = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+                app = context.packageManager.getApplicationInfo(
+                    context.packageName,
+                    PackageManager.GET_META_DATA
+                )
                 val bundle = app.metaData
                 provider = bundle.getString(BuildConfig.LIBRARY_PACKAGE_NAME)
                 Log.d("openCamera", "openCamera:  $provider")
@@ -135,7 +137,8 @@ import kotlin.math.min
                 contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timeStamp)
                 contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                 contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM")
-                outputFileUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                outputFileUri =
+                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                 uri = outputFileUri
             } else if (Build.VERSION.SDK_INT <= 23) {
                 outputFileUri = Uri.fromFile(file)
@@ -147,70 +150,23 @@ import kotlin.math.min
             return intent
         }
 
-        fun openGallery(a: Activity): Intent? {
-            activity = a
-            val allIntents: MutableList<Intent?> = ArrayList()
-            val packageManager: PackageManager = activity!!.getPackageManager()
-            val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
-            galleryIntent.type = "image/* video/*"
-            val listGallery = packageManager.queryIntentActivities(galleryIntent, 0)
-            for (res in listGallery) {
-                val intent = Intent(galleryIntent)
-                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
-                intent.setPackage(res.activityInfo.packageName)
-                allIntents.add(intent)
-            }
-            var mainIntent = allIntents[allIntents.size - 1]
-            for (intent in allIntents) {
-                if (intent!!.component!!.className == "com.android.documentsui.DocumentsActivity") {
-                    mainIntent = intent
-                    break
-                }
-            }
-            allIntents.remove(mainIntent)
-
-            // Create a chooser from the main intent
-            val chooserIntent = Intent.createChooser(mainIntent, "Select source")
-
-            // Add all other intents
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toTypedArray())
-            return chooserIntent
+        fun openGallery(a: Activity) {
+            val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            a.startActivityForResult(pickPhoto, UIKitConstants.RequestCode.GALLERY)
         }
 
-        fun openAudio(a: Activity): Intent? {
-            activity = a
-            val allIntents: MutableList<Intent?> = ArrayList()
-            val packageManager: PackageManager = activity!!.getPackageManager()
-            val audioIntent = Intent(Intent.ACTION_GET_CONTENT)
-            audioIntent.type = "audio/*"
-            val listGallery = packageManager.queryIntentActivities(audioIntent, 0)
-            for (res in listGallery) {
-                val intent = Intent(audioIntent)
-                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
-                intent.setPackage(res.activityInfo.packageName)
-                allIntents.add(intent)
-            }
-            var mainIntent = allIntents[allIntents.size - 1]
-            for (intent in allIntents) {
-                if (intent!!.component!!.className == "com.android.documentsui.DocumentsActivity") {
-                    mainIntent = intent
-                    break
-                }
-            }
-            allIntents.remove(mainIntent)
-
-            // Create a chooser from the main intent
-            val chooserIntent = Intent.createChooser(mainIntent, "Select source")
-
-            // Add all other intents
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toTypedArray())
-            return chooserIntent
+        fun openAudio(a: Activity){
+            var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
+            chooseFile.type = "audio/*"
+            chooseFile = Intent.createChooser(chooseFile, "Choose a Audio")
+            a.startActivityForResult(chooseFile,UIKitConstants.RequestCode.AUDIO)
         }
 
         private fun getCaptureImageOutputUri(): Uri? {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             val imageFileName = "$timeStamp.jpg"
-            val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val storageDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
             val file = File(storageDir.absolutePath + "/" + imageFileName)
             return Uri.fromFile(file)
         }
@@ -226,7 +182,8 @@ import kotlin.math.min
                 if (getPickImageResultUri(data) != null) {
                     picUri = getPickImageResultUri(data)!!
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, picUri)
+                        bitmap =
+                            MediaStore.Images.Media.getBitmap(activity?.contentResolver, picUri)
                         return createFileFromBitmap(bitmap)
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -270,7 +227,7 @@ import kotlin.math.min
             val realPath: String
             if (fileUri?.let { isGoogleDrive(it) } == true) {
                 return saveDriveFile(context!!, fileUri)
-            } else if (Build.VERSION.SDK_INT < 30){
+            } else if (Build.VERSION.SDK_INT < 30) {
                 realPath = fileUri?.let { getRealPathFromURI(context!!, it) }!!
             } else {
                 //(Build.VERSION.SDK_INT == 30)
@@ -281,10 +238,12 @@ import kotlin.math.min
         }
 
         @RequiresApi(Build.VERSION_CODES.R)
-        private fun getRealPathFromN(context: Context?, uri: Uri) : String? {
+        private fun getRealPathFromN(context: Context?, uri: Uri): String? {
             val returnUri = uri
-            val returnCursor = context?.contentResolver?.query(returnUri,
-                null, null, null, null)
+            val returnCursor = context?.contentResolver?.query(
+                returnUri,
+                null, null, null, null
+            )
             /*
              * Get the column indexes of the data in the Cursor,
              *     * move to the first row in the Cursor, get the data,
@@ -319,7 +278,7 @@ import kotlin.math.min
                     outputStream.write(buffers, 0, read)
                 }
                 Log.e("File Size", "Size " + file.length())
-                inputStream?.close()
+                inputStream.close()
                 outputStream.close()
                 Log.e("File Path", "Path " + file.path)
                 Log.e("File Size", "Size " + file.length())
@@ -330,7 +289,7 @@ import kotlin.math.min
         }
 
         fun saveDriveFile(context: Context?, uri: Uri?): File {
-            var file : File? = null
+            var file: File? = null
             try {
                 if (uri != null) {
                     file = File(context?.cacheDir, getFileName(context, uri))
@@ -396,11 +355,14 @@ import kotlin.math.min
                         }
                     }
                     val contentUriPrefixesToTry = arrayOf(
-                            "content://downloads/public_downloads",
-                            "content://downloads/my_downloads"
+                        "content://downloads/public_downloads",
+                        "content://downloads/my_downloads"
                     )
                     for (contentUriPrefix in contentUriPrefixesToTry) {
-                        val contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), java.lang.Long.valueOf(id!!))
+                        val contentUri = ContentUris.withAppendedId(
+                            Uri.parse(contentUriPrefix),
+                            java.lang.Long.valueOf(id!!)
+                        )
                         try {
                             val path: String = getDataColumn(context, contentUri, null, null)!!
                             if (path != null) {
@@ -434,14 +396,19 @@ import kotlin.math.min
                     }
                     val selection = "_id=?"
                     val selectionArgs = arrayOf(
-                            split[1]
+                        split[1]
                     )
                     return getDataColumn(context, contentUri, selection, selectionArgs)
                 }
             } else if ("content".equals(uri.scheme, ignoreCase = true)) {
 
                 // Return the remote address
-                return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(context, uri, null, null)
+                return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(
+                    context,
+                    uri,
+                    null,
+                    null
+                )
             } else if ("file".equals(uri.scheme, ignoreCase = true)) {
                 return uri.path
             }
@@ -481,15 +448,22 @@ import kotlin.math.min
          * @param selectionArgs (Optional) Selection arguments used in the query.
          * @return The value of the _data column, which is typically a file path.
          */
-        fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
+        fun getDataColumn(
+            context: Context,
+            uri: Uri?,
+            selection: String?,
+            selectionArgs: Array<String>?
+        ): String? {
             var cursor: Cursor? = null
             val column = "_data"
             val projection = arrayOf(
-                    column
+                column
             )
             try {
-                cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs,
-                        null)
+                cursor = context.contentResolver.query(
+                    uri!!, projection, selection, selectionArgs,
+                    null
+                )
                 if (cursor != null && cursor.moveToFirst()) {
                     val index = cursor.getColumnIndexOrThrow(column)
                     return cursor.getString(index)
@@ -627,15 +601,20 @@ import kotlin.math.min
 //            return file
 //        }
 
-        private fun filterExtension(uri: Uri, extensionType : String) : String? {
+        private fun filterExtension(uri: Uri, extensionType: String): String? {
             Log.e("TAG", "filterExtension: uri " + uri.toString())
             val fileString = uri.toString() //this is your String representing the File
             val lastDot = fileString.lastIndexOf('.')
-            Log.e("TAG", "filterExtension: lastdot "+lastDot.toString())
+            Log.e("TAG", "filterExtension: lastdot " + lastDot.toString())
             if (lastDot > 0) {
                 val extension = fileString.substring(lastDot)
                 Log.e("TAG", "filterExtension: " + extension)
-                if (extension.contains(".pdf") || extension.contains(".docx") || extension.contains(".msword") || extension.contains(".vnd.ms.excel") || extension.contains(".mspowerpoint") || extension.contains(".zip")) {
+                if (extension.contains(".pdf") || extension.contains(".docx") || extension.contains(
+                        ".msword"
+                    ) || extension.contains(".vnd.ms.excel") || extension.contains(".mspowerpoint") || extension.contains(
+                        ".zip"
+                    )
+                ) {
                     return uri.lastPathSegment
                 } else if (extensionType == "vnd.openxmlformats-officedocument.wordprocessingml.document") {
                     return uri.lastPathSegment + ".docx"

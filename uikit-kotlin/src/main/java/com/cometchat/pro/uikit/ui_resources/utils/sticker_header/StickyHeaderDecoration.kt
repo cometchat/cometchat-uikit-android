@@ -2,16 +2,25 @@ package com.cometchat.pro.uikit.ui_resources.utils.sticker_header
 
 import android.graphics.Canvas
 import android.graphics.Rect
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.collections.HashMap
 
-class StickyHeaderDecoration @JvmOverloads constructor(private val mAdapter: StickyHeaderAdapter<*>, var2: Boolean = false) : RecyclerView.ItemDecoration() {
+class StickyHeaderDecoration @JvmOverloads constructor(
+    private val mAdapter: StickyHeaderAdapter<*>,
+    var2: Boolean = false
+) : RecyclerView.ItemDecoration() {
     private val mHeaderCache: MutableMap<Long?, RecyclerView.ViewHolder?>
     private val mRenderInline: Boolean
-    override fun getItemOffsets(var1: Rect, var2: View, var3: RecyclerView, var4: RecyclerView.State) {
+    override fun getItemOffsets(
+        var1: Rect,
+        var2: View,
+        var3: RecyclerView,
+        var4: RecyclerView.State
+    ) {
         val var5 = var3.getChildAdapterPosition(var2)
         var var6 = 0
         if (var5 != -1 && hasHeader(var5) && showHeaderAboveItem(var5)) {
@@ -62,10 +71,22 @@ class StickyHeaderDecoration @JvmOverloads constructor(private val mAdapter: Sti
             val var5 = mAdapter.onCreateHeaderViewHolder(var1)
             val var6 = var5!!.itemView
             mAdapter.onBindHeaderViewHolder(var5, var2, var3)
-            val var7 = View.MeasureSpec.makeMeasureSpec(var1.measuredWidth, View.MeasureSpec.getMode(1073741824))
-            val var8 = View.MeasureSpec.makeMeasureSpec(var1.measuredHeight, View.MeasureSpec.getMode(0))
-            val var9 = ViewGroup.getChildMeasureSpec(var7, var1.paddingLeft + var1.paddingRight, var6.layoutParams.width)
-            val var10 = ViewGroup.getChildMeasureSpec(var8, var1.paddingTop + var1.paddingBottom, var6.layoutParams.height)
+            val var7 = View.MeasureSpec.makeMeasureSpec(
+                var1.measuredWidth,
+                View.MeasureSpec.getMode(1073741824)
+            )
+            val var8 =
+                View.MeasureSpec.makeMeasureSpec(var1.measuredHeight, View.MeasureSpec.getMode(0))
+            val var9 = ViewGroup.getChildMeasureSpec(
+                var7,
+                var1.paddingLeft + var1.paddingRight,
+                var6.layoutParams.width
+            )
+            val var10 = ViewGroup.getChildMeasureSpec(
+                var8,
+                var1.paddingTop + var1.paddingBottom,
+                var6.layoutParams.height
+            )
             var6.measure(var9, var10)
             var6.layout(0, 0, var6.measuredWidth, var6.measuredHeight)
             mHeaderCache[var3] = var5
@@ -97,7 +118,13 @@ class StickyHeaderDecoration @JvmOverloads constructor(private val mAdapter: Sti
         }
     }
 
-    private fun getHeaderTop(var1: RecyclerView, var2: View, var3: View, var4: Int, var5: Int): Int {
+    private fun getHeaderTop(
+        var1: RecyclerView,
+        var2: View,
+        var3: View,
+        var4: Int,
+        var5: Int
+    ): Int {
         val var6 = getHeaderHeightForLayout(var3)
         var var7 = var2.y.toInt() - var6
         if (var5 == 0) {
@@ -109,7 +136,8 @@ class StickyHeaderDecoration @JvmOverloads constructor(private val mAdapter: Sti
                     val var13 = mAdapter.getHeaderId(var12)
                     if (var13 != var9) {
                         val var15 = var1.getChildAt(var11)
-                        val var16 = var15.y.toInt() - (var6 + getHeader(var1, var12)!!.itemView.height)
+                        val var16 =
+                            var15.y.toInt() - (var6 + getHeader(var1, var12)!!.itemView.height)
                         if (var16 < 0) {
                             return var16
                         }

@@ -109,22 +109,24 @@
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_alignEnd="@id/cv_link_message_container"
             android:layout_below="@+id/cv_link_message_container"
             android:id="@+id/reaction_group"
-            android:layout_width="match_parent"
-            android:scrollbars="none"
+            android:layout_width="250dp"
+            android:gravity="end"
+            android:layout_marginStart="70dp"
             android:layout_height="wrap_content">
-            <com.google.android.material.chip.ChipGroup
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_gravity="end"
                 android:visibility="gone"
                 app:singleLine="true"
+                app:flexWrap="wrap"
                 android:orientation="horizontal"
                 android:id="@+id/reactions_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-        </HorizontalScrollView>
+        </LinearLayout>
         <LinearLayout
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"

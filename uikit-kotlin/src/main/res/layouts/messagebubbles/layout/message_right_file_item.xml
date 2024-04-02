@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <variable
             name="mediaMessage"
-            type="com.cometchat.pro.models.MediaMessage"/>
+            type="com.cometchat.pro.models.MediaMessage" />
     </data>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:gravity="end"
-        android:animateLayoutChanges="true">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/rl_message"
@@ -20,125 +23,135 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:layout_alignParentEnd="true"
                 android:id="@+id/cv_message_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:padding="8dp"
-                android:background="@drawable/cc_message_bubble_right">
+                android:background="@drawable/cc_message_bubble_right"
+                android:padding="8dp">
+
                 <TextView
                     android:id="@+id/tvFileName"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
                     android:layout_width="wrap_content"
-                    tools:text="File Name"
-                    android:textColor="@color/textColorWhite"
-                    android:singleLine="true"
-                    android:maxLength="15"
-                    android:ellipsize="end"
-                    android:focusable="true"
-                    android:paddingTop="3dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:maxWidth="250dp"
+                    android:ellipsize="end"
+                    android:focusable="true"
                     android:focusableInTouchMode="true"
-                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
-                    android:layout_height="wrap_content" />
+                    android:maxWidth="250dp"
+                    android:maxLength="15"
+                    android:paddingTop="3dp"
+                    android:singleLine="true"
+                    android:textColor="@color/textColorWhite"
+                    tools:text="File Name" />
+
                 <TextView
                     android:id="@+id/tvFileSize"
-                    android:textSize="12sp"
                     android:layout_width="wrap_content"
-                    tools:text="File Size"
-                    android:textColor="@color/textColorWhite"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvFileName"
                     android:layout_marginStart="10dp"
                     android:focusable="true"
-                    android:layout_below="@+id/tvFileName"
                     android:focusableInTouchMode="true"
-                    android:layout_height="wrap_content" />
+                    android:textColor="@color/textColorWhite"
+                    android:textSize="12sp"
+                    tools:text="File Size" />
+
                 <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/tvFileName"
                     android:background="@drawable/cc_rounded_date_button"
                     android:backgroundTint="@color/colorPrimaryDark"
-                    android:padding="5dp"
                     android:gravity="center_horizontal"
-                    android:layout_toEndOf="@+id/tvFileName"
                     android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:padding="5dp">
+
                     <ImageView
                         android:id="@+id/ivIcon"
-                        android:tint="@color/textColorWhite"
-                        android:src="@drawable/ic_insert_drive_file_black_24dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_insert_drive_file_black_24dp"
+                        android:tint="@color/textColorWhite" />
+
                     <TextView
                         android:id="@+id/tvFileExtension"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="PDF"
-                        android:textStyle="bold"
-                        android:textSize="8sp"
                         android:textColor="@color/textColorWhite"
-                        android:visibility="visible" />
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:visibility="visible"
+                        tools:text="PDF" />
                 </LinearLayout>
 
             </RelativeLayout>
 
-            <HorizontalScrollView
-                android:layout_alignEnd="@id/cv_message_container"
-                android:layout_below="@+id/cv_message_container"
+            <LinearLayout
                 android:id="@+id/reaction_group"
-                android:scrollbars="none"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_gravity="end"
-                    android:visibility="gone"
-                    app:singleLine="true"
-                    android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/cv_message_container"
+                android:layout_alignEnd="@id/cv_message_container"
+                android:layout_marginStart="70dp"
+                android:gravity="end">
+
+                <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/reactions_layout"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </HorizontalScrollView>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:flexWrap="wrap"
+                    app:singleLine="true" />
+            </LinearLayout>
 
             <LinearLayout
-                android:layout_marginBottom="16dp"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/reaction_group"
                 android:layout_alignEnd="@+id/cv_message_container"
-                android:layout_height="wrap_content">
+                android:layout_marginBottom="16dp">
+
                 <LinearLayout
-                    android:layout_gravity="center_vertical"
-                    android:visibility="gone"
-                    android:orientation="horizontal"
                     android:id="@+id/reply_avatar_layout"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
+
                 <TextView
-                    android:clickable="true"
-                    android:foreground="?selectableItemBackground"
                     android:id="@+id/thread_reply_count"
-                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
-                    tools:text="2 replies"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:textColor="@color/colorPrimary"
+                    tools:text="2 replies" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/txt_time"
-                android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="11:00 PM"
-                android:layout_toStartOf="@+id/cv_message_container"
                 android:layout_alignBottom="@+id/cv_message_container"
                 android:layout_marginBottom="8dp"
-                android:textSize="12sp"
+                android:layout_toStartOf="@+id/cv_message_container"
+                android:gravity="center_vertical"
                 android:textColor="@color/secondaryTextColor"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                tools:visibility="visible"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:text="11:00 PM"
+                tools:visibility="visible" />
 
 
         </RelativeLayout>
