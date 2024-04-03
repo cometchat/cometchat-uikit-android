@@ -1,89 +1,28 @@
-<div style="width:100%">
-    <div style="width:50%; display:inline-block">
-        <p align="center">
-        <img align="center" alt="" src="https://avatars2.githubusercontent.com/u/45484907?s=200&v=4">
-        </p>
-    </div>
-</div>
+# CometChat Sample App for Android Kotlin (v4 - Coming Soon)
 
-<br></br><br></br>
+Welcome to the official repository for the upcoming Version 4 of the CometChat Sample App for Android Kotlin!
 
-# Android Kotlin Chat App
-<br/>
+## Android Kotlin Sample App for v4 UI Kit Coming Soon!
+We are thrilled to inform you that the new V4 sample app for Android Kotlin is in the pipeline and will be unveiled soon. This version will exhibit the newest features and demonstrate the best practices for incorporating CometChat into your Android Kotlin apps.
 
-![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)
-![Platform](https://img.shields.io/badge/Language-Kotlin-yellowgreen.svg)
-![GitHub repo size](https://img.shields.io/github/repo-size/cometchat-pro/android-kotlin-chat-app)
-![GitHub contributors](https://img.shields.io/github/contributors/cometchat-pro/android-kotlin-chat-app)
-![GitHub stars](https://img.shields.io/github/stars/cometchat-pro/android-kotlin-chat-app?style=social)
-![Twitter Follow](https://img.shields.io/twitter/follow/cometchat?style=social)
+## V3 and Legacy Sample Apps
+While you wait for the release of V4, feel free to check out our V3 and previous versions:
 
-</br></br>
+- [V3 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v3)
+- Previous Versions (Legacy)
+  - [V2 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v2-legacy)
+  - [V1 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v1-legacy)
 
-<div>
-<img align="left" src="https://files.readme.io/952af91-UI_Kit__1.png">
-</div>
+You can switch between branches in this GitHub repository to access different versions of the sample app, each showcasing a snapshot of the capabilities and features of CometChat at various stages.
 
-<br></br><br></br></br>
+## Stay Tuned
+Please keep an eye on this repository for further updates and the official announcement regarding the release of the V4 sample app. We are eager to provide you with a cutting-edge in-app messaging experience.
 
-<br></br>
-CometChat Kitchen Sink Sample App (built using **CometChat UIKit**) is a fully functional messaging app capable of **one-on-one** (private) and **group** messaging as well as Calling. This sample app enables users to send **text** and **multimedia messages like images, videos, documents**. Also, users can make **Audio** and **Video** calls to other users or groups.
+Follow us on our [CometChat Blog](https://www.cometchat.com/blog) for the latest updates and developments.
 
-</br>
----
-
-## Prerequisites :star:
-
-Before you begin, ensure you have met the following requirements:<br/>
-✅ &nbsp; You have `Android Studio` installed in your machine <br/>
-✅ &nbsp; You have a Android Device or Emulator with Android Version 6.0 or above. <br/>
-✅ &nbsp; You have read [CometChat Key Concepts](https://prodocs.cometchat.com/docs/concepts).<br/>
+## Help and Support
+For issues running the project or integrating with our UI Kits, consult our [documentation](https://www.cometchat.com/docs/android-uikit/overview) or create a [support ticket](https://help.cometchat.com/hc/en-us) or seek real-time support via the [CometChat Dashboard](http://app.cometchat.com/).
 
 ---
 
-## Installing Android Kotlin Chat App :inbox_tray:
-Simply clone the project from [android-kotlin-chat-app](https://github.com/cometchat-pro-samples/android-kotlin-chat-app/archive/master.zip) repository. After cloning the repository:
-
-## Running the sample app :rocket:
-To Run to sample app you have to do the following changes by Adding **APP_ID**, **AUTH_KEY** and **REGION**  
-You can obtain your *APP ID*, *AUTH KEY* and *REGION* from [CometChat-Pro Dashboard](https://app.cometchat.com/). Create new app and head over to the Quick Start or API & Auth Keys section and note the *APP ID*, *Auth Key*, and *Region*.
-- Open the project in Android Studio
-- Go to AppConfig file in app module
-- Modify *APP_ID* and *AUTH_KEY*  and *REGION* with your own **APP ID**, **Auth Key** and **Region**.
-- Select demo users or enter the **UID** at the time of login once the app is launched.
-
-<img align="center" width="100%" height="auto"
-src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/qs.png">
-<br/><br/>
-<img align="center" width="100%" height="auto"
-src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/credentialss.png">
-
----
-## Add UIKit Library to your project :book:
-Learn more about how to integrate [UI Kit-Kotlin](https://github.com/cometchat-pro/android-kotlin-chat-ui-kit) inside your app.
-
----
-
-# Troubleshooting
-- To read the full documentation on UI Kit-Kotlin integration visit our [Documentation](https://prodocs.cometchat.com/v2.1/docs).
-- Facing any issues while integrating or installing the UI Kit-Kotlin please <a href="https://app.cometchat.io/"> connect with us via real time support present in CometChat Dashboard.</a>
-
-# Contributors
-Thanks to the following people who have contributed to this project:<br/>
-[@poojashivane :woman_technologist:](https://github.com/PoojaShivane) <br/>
-[@darshanbhanushali :computer:](https://github.com/darshanbhanushali)<br/>
-[@yadavmangesh :spiral_notepad:](https://github.com/yadavmangesh)<br/>
-[@anantgarg :man_judge:](https://github.com/anantgarg)<br/>
-[@Tristankluivert :man_technologist:](https://github.com/Tristankluivert)<br/>
-[@Vivekprajapati :man_technologist:](https://github.com/vivekCometChat)<br/>
-
-## Contact :mailbox:
-Contact us via real time support present in [CometChat Dashboard](https://app.cometchat.io/).
-
-## License
-
-This project uses the following license: [License](https://github.com/cometchat-pro/.github/blob/master/LICENSE).
-
-
-
-
+*Note: This README.md will be updated with more comprehensive instructions and details as the sample app gets closer to its release.*
