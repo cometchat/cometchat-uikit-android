@@ -1,3 +1,8 @@
+<p align="center">
+  <img alt="CometChat" src="https://assets.cometchat.io/website/images/logos/banner.png">
+</p>
+
+
 # CometChat Sample App for Android Kotlin (v4 - Coming Soon)
 
 Welcome to the official repository for the upcoming Version 4 of the CometChat Sample App for Android Kotlin!
