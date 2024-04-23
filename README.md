@@ -22,7 +22,7 @@ This is a reference application showcasing the integration of [**CometChat's And
 2. In Android Studio, open the project cometchat-sample-app-android-kotlin
 
 3. Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppConstants.kt](https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/v4/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt) file:
-   https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/1a404a36789639fa6198dc69452718f246cd082c/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt#L3-L11
+   https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/462e3a9c5540d412b3cd093b17e50c8787c5e1c6/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt#L3-L11
 
 4. Run the app on a device or emulator.
 
