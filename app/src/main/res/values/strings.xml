@@ -1,0 +1,84 @@
+<resources>
+    <string name="app_name">Android UI Kit</string>
+    <string name="copyright">\u00A9 2022 CometChat Inc.</string>
+
+
+    <string name="module_chats">CometChatConversationsWithMessages is an independent component used to set up a screen that shows the recent conversations and allows you to send a message to the user or group from the list.</string>
+    <string name="component_chats">CometChatConversations is an independent component used to set up a screen that shows the recent conversations alone</string>
+    <string name="component_chats_list">CometChatConversationList component renders a scrollable list of all recent conversations in your app.</string>
+    <string name="conversation_list_item">CometChatConversationListItem is a reusable component which is used to display the conversation list item in the conversation list.</string>
+
+
+    <string name="module_groups">CometChatGroupsWithMessages is an independent component used to set up a screen that shows the list of groups available in your app and gives you the ability to search for a specific group and to start a conversation.</string>
+    <string name="component_groups">CometChatGroups is an independent component used to set up a screen that displays the list of groups available in your app and gives you the ability to search for a specific group.</string>
+    <string name="component_groups_list">CometChatGroupList component renders a scrollable list of groups in your app.</string>
+    <string name="component_create_groups">The component is used to create a new group. Groups can of three types-public, private or password protected. To learn more about this component tap here.</string>
+    <string name="data_item_group">CometChatDataItem is used to display the group list item in the group list. It houses the Avatar, Status indicator, Title and Subtitle.</string>
+    <string name="join_protected_group">This component is used to join a password protected group. to learn more about this component tap here.</string>
+    <string name="group_member">This Component is used to view members in a group. To learn more about this component tap here.</string>
+    <string name="add_member">This Component is used to add users to a group. To learn more about this component tap here.</string>
+    <string name="transfer_ownership">This Component is used to transfer ownership of a group from one user to another. To learn more about this component tap here.</string>
+    <string name="banned_members_desc">This component is used to Display banned members of a group. To learn more about this component tap here.</string>
+    <string name="group_details">This component can be used to view information about a group to learn more this component tap here.</string>
+
+
+    <string name="module_users">CometChatUsersWithMessages is an independent component used to set up a screen that shows the list of users available in your app and gives you the ability to search for a specific user and to start conversation.</string>
+    <string name="component_users">CometChatUsers is an independent component used to set up a screen that displays a scrollable list of users available in your app and gives you the ability to search for a specific user.</string>
+    <string name="component_user_details">This component can be used to view information about a user to learn more about this component tap here.</string>
+    <string name="data_item_user">CometChatDataItem is used to display the user list item in a user list. It houses the Avatar, Status indicator and Title</string>
+
+    <string name="module_messages">Messages module helps you to send and receive in a conversation between a user or group. To learn more about its components click here.</string>
+    <string name="message_header">CometChatMessageHeader is an independent component that  displays the User or Group information using SDK\'s User or Group object.</string>
+    <string name="message_list">CometChatMessageList displays a list of messages and handles real-time operations.</string>
+    <string name="message_composer">CometChatComposer is an independent and a critical component that allows users to compose and send various types of messages such as text, image, video and custom messages.</string>
+
+    <string name="call_history_with_details_component">CometChatCallsHistory is an independent component used to set up a screen that shows the recent call logs and allows you to open details screen.</string>
+    <string name="call_history_component">CometChatCallsHistory is an independent component used to set up a screen that shows the recent call logs .</string>
+    <string name="call_details_component">CometChatCallsDetails is an independent component that will allows you make a call along with the users or group details.</string>
+    <string name="call_button">CometChatCallButtons is an independent component that will allows you make a call.</string>
+
+
+    <string name="avatar_description">CometChatAvatar component displays an image or user/group avatar with fallback to the first two letters of the user name/group name.</string>
+    <string name="statusIndicator_description">StatusIndicator component indicates whether a user is online or offline.</string>
+    <string name="badgeCount_description">CometChatBadgeCount is a custom component which is used to display the unread message count. It can be used in places like ConversationListItem, etc.</string>
+    <string name="message_receipt">CometChatMessageReceipt component renders the receipts such as sending, sent, delivered, read and error state indicator of a message.</string>
+
+
+    <string name="data_item">CometChatListItem is a reusable component which is used across multiple components in different variations such as Users, Groups, Conversation, etc as a List item.</string>
+
+
+    <string name="localize_english_overview">CometChatLocalize allows you to detect the language of your users based on their browser or device settings and set the language accordingly.</string>
+    <string name="localize_hindi_overview">CometChatLocalize आपको अपने ब्राउज़र या डिवाइस सेटिंग्स के आधार पर अपने उपयोगकर्ताओं की भाषा का पता लगाने और उसके अनुसार भाषा सेट करने की अनुमति देता है।</string>
+    <string name="language_english">Language</string>
+    <string name="language_hindi">भाषा</string>
+    <string name="hindi">हिन्दी</string>
+    <string name="view_hindi">देखें</string>
+    <string name="view_english">View</string>
+    <string name="sound_manager">CometChatSoundManager allows you to play different types of audio which is required for incoming and outgoing events in UI Kit. for example, events like incoming and outgoing messages.</string>
+    <string name="theme">CometChatTheme is a style applied to every component and every view in the activity or component in the UI Kit.</string>
+
+    <string name="fill_this_field">Fill this field</string>
+
+    <string name="super_module_messages">Messages module helps you to send and receive in a conversation between a user or group. To learn more about its components click here.</string>
+    <string name="super_module_groups">Groups module helps you list all the groups you are part of in your app. To learn more about its components click here.</string>
+    <string name="super_module_calls">Calls module helps you to list the recent call history between your users and groups. To learn more about this component click here.</string>
+    <string name="super_module_chats">Conversations module helps you to list the recent conversations between your users and groups. To learn more about its components click here.</string>
+    <string name="super_module_users">Users module helps you list all the users available in your app. To learn more about its components click here.</string>
+    <string name="module_shared">Share module contains several reusable components that are divided into Primary, Secondary and SDK derived components. To learn more about these components click here.</string>
+    <string name="listItem">CometChatListItem displays data on a title and that tile may contain leading, trailing, title and subtitle widgets. To learn more about this component tap here.</string>
+    <string name="file_bubble">CometChatFileBubble displays a media message containing a file to learn more about this component tap here.</string>
+    <string name="audio_bubble">CometChatAudioBubble displays a media message containing a audio to learn more about this component tap here.</string>
+    <string name="image_bubble">CometChatImageBubble displays a media message containing a image to learn more about this component tap here.</string>
+    <string name="video_bubble">CometChatVideoBubble displays a media message containing a video to learn more about this component tap here.</string>
+    <string name="text_bubble">CometChatTextBubble displays text message to learn more about this component tap here.</string>
+    <string name="media_recorder">The CometChatMediaRecorder is a custom Android component that provides a user interface for recording audio and playing back the recorded audio. It is designed to be easily integrated into chat applications or other projects where audio messaging is required.</string>
+    <string name="component_contacts">CometChatContacts is a versatile UI component specifically designed to streamlines the process of showcasing all app users and available chat groups in a user-friendly interface, making it easier for users to connect and communicate effectively.</string>
+    <string name="message_information_des">The CometChatMessageInformation component is a custom UI view designed to display message-related information, such as delivery and read receipts. It serves as an integral part of the CometChat UI UIKit.</string>
+    <string name="form_bubble">The CometChatFormBubble component is used to render a form within a chat list.\nTo learn more about this component tap here</string>
+    <string name="card_bubble">The CometChatCardBubble component is used to display a card within a chat list. To learn more about this component tap here.</string>
+    <string name="scheduler_bubble">The CometChatSchedulerBubble component is used to display a event scheduler within a chat list. To learn more about this component tap here.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

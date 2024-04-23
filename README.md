@@ -2,32 +2,36 @@
   <img alt="CometChat" src="https://assets.cometchat.io/website/images/logos/banner.png">
 </p>
 
+# Android Sample App by CometChat
 
-# CometChat Sample App for Android Kotlin (v4 - Coming Soon)
+This is a reference application showcasing the integration of [**CometChat's Android UI Kit**](https://www.cometchat.com/docs/v4/android-uikit/overview) within an Android framework. It provides developers with examples of implementing real-time messaging and voice and video calling features in their own Android-based applications.
 
-Welcome to the official repository for the upcoming Version 4 of the CometChat Sample App for Android Kotlin!
+## Prerequisites
 
-## Android Kotlin Sample App for v4 UI Kit Coming Soon!
-We are thrilled to inform you that the new V4 sample app for Android Kotlin is in the pipeline and will be unveiled soon. This version will exhibit the newest features and demonstrate the best practices for incorporating CometChat into your Android Kotlin apps.
+- Android Studio
+- Android Device or emulator with Android version 6.0 or above.
+- Kotlin 1.7.0 or above.
+- Sign up for a [CometChat](https://app.cometchat.com/) account to get your app credentials: _`App ID`_, _`Region`_, and _`Auth Key`_
 
-## V3 and Legacy Sample Apps
-While you wait for the release of V4, feel free to check out our V3 and previous versions:
 
-- [V3 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v3)
-- Previous Versions (Legacy)
-  - [V2 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v2-legacy)
-  - [V1 Sample App](https://github.com/cometchat/cometchat-sample-app-android-kotlin/tree/v1-legacy)
+## Installation
+1. Clone the repository:
+    ```
+    git clone https://github.com/cometchat/cometchat-sample-app-android-kotlin.git
+    ```
+2. In Android Studio, open the project cometchat-sample-app-android-kotlin
 
-You can switch between branches in this GitHub repository to access different versions of the sample app, each showcasing a snapshot of the capabilities and features of CometChat at various stages.
+3. Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppConstants.kt](https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/v4/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt) file:
+   https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/1a404a36789639fa6198dc69452718f246cd082c/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt#L3-L11
 
-## Stay Tuned
-Please keep an eye on this repository for further updates and the official announcement regarding the release of the V4 sample app. We are eager to provide you with a cutting-edge in-app messaging experience.
+4. Run the app on a device or emulator.
 
-Follow us on our [CometChat Blog](https://www.cometchat.com/blog) for the latest updates and developments.
+<div style="
+    display: flex;
+    align-items: center;
+    justify-content: center;">
+   <img src="./Screenshots/main_screen.png" alt="login" width="300">
+</div>
 
 ## Help and Support
-For issues running the project or integrating with our UI Kits, consult our [documentation](https://www.cometchat.com/docs/android-uikit/overview) or create a [support ticket](https://help.cometchat.com/hc/en-us) or seek real-time support via the [CometChat Dashboard](http://app.cometchat.com/).
-
----
-
-*Note: This README.md will be updated with more comprehensive instructions and details as the sample app gets closer to its release.*
+For issues running the project or integrating with our UI Kits, consult our [documentation](https://www.cometchat.com/docs/android-uikit/integration) or create a [support ticket](https://help.cometchat.com/hc/en-us) or seek real-time support via the [CometChat Dashboard](http://app.cometchat.com/).

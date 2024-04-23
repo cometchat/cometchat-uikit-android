@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primaryTextColor">#FF000000</color>
+    <color name="app_background">#efeef3</color>
+    <color name="app_background_dark">#000000</color>
+    <!--Used in color palette-->
+    <color name="colorPrimaryDark">#006ccb</color>
+    <color name="red">#F44336</color>
+    <color name="green">#009688</color>
+    <color name="blue">#03A9F4</color>
+    <color name="purple">#9C27B0</color>
+    <color name="violet">#673AB7</color>
+    <color name="yellow">#FFC107</color>
+    <color name="grey1">#eeeeef</color>
+
+    <color name="accent1">#ea4633</color>
+    <color name="accent2">#e9527e</color>
+    <color name="accent3">#9f50b0</color>
+    <color name="accent4">#3f51b5</color>
+    <color name="accent5">#2296f3</color>
+    <color name="accent6">#53bdd4</color>
+    <color name="accent7">#489789</color>
+    <color name="background1">#5daf50</color>
+    <color name="background2">#8bc34a</color>
+    <color name="background3">#cddc39</color>
+    <color name="background4">#ffeb3b</color>
+    <color name="background5">#f9c028</color>
+    <color name="background6">#f2972c</color>
+    <color name="background7">#795548</color>
+</resources>

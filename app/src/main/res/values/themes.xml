@@ -1,0 +1,64 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CometChatSampleAppKotlin" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/app_background</item>
+        <item name="colorPrimaryVariant">@color/app_background</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/cometchat_primary</item>
+        <item name="colorSecondaryVariant">@color/cometchat_primary</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Heading">
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontFamily">roboto</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Name">
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontFamily">roboto</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Text1">
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="android:fontFamily">roboto</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Text2">
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontFamily">roboto</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="AppHeading">
+        <item name="android:textStyle">italic</item>
+        <item name="android:fontFamily">@font/amarante</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="AppName">
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontFamily">@font/amethysta</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="AppText1">
+        <item name="android:fontWeight" tools:targetApi="o">400</item>
+        <item name="android:fontFamily">@font/amethysta</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="AppText2">
+        <item name="android:fontWeight" tools:targetApi="o">500</item>
+        <item name="android:fontFamily">@font/amethysta</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+</resources>
