@@ -6,6 +6,13 @@
 
 This is a reference application showcasing the integration of [**CometChat's Android UI Kit**](https://www.cometchat.com/docs/v4/android-uikit/overview) within an Android framework. It provides developers with examples of implementing real-time messaging and voice and video calling features in their own Android-based applications.
 
+<div style="
+    display: flex;
+    align-items: center;
+    justify-content: center;">
+   <img src="./Screenshots/overview_cometchat_screens.png" alt="login" >
+</div>
+
 ## Prerequisites
 
 - Android Studio
@@ -26,12 +33,6 @@ This is a reference application showcasing the integration of [**CometChat's And
 
 4. Run the app on a device or emulator.
 
-<div style="
-    display: flex;
-    align-items: center;
-    justify-content: center;">
-   <img src="./Screenshots/overview_cometchat_screens.png" alt="login" >
-</div>
 
 ## Help and Support
 For issues running the project or integrating with our UI Kits, consult our [documentation](https://www.cometchat.com/docs/android-uikit/integration) or create a [support ticket](https://help.cometchat.com/hc/en-us) or seek real-time support via the [CometChat Dashboard](http://app.cometchat.com/).
