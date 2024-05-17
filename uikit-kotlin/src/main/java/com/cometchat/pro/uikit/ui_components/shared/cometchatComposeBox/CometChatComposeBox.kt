@@ -731,7 +731,7 @@ class CometChatComposeBox : RelativeLayout, View.OnClickListener {
         }
     }
 
-    private fun stopPlayingAudio() {
+    fun stopPlayingAudio() {
         if (mediaPlayer != null) {
             mediaPlayer!!.stop()
         }
@@ -743,7 +743,7 @@ class CometChatComposeBox : RelativeLayout, View.OnClickListener {
             mediaRecorder = MediaRecorder()
             mediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            mediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            mediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             audioFileNameWithPath = Utils.getOutputMediaFile(getContext())
             mediaRecorder!!.setOutputFile(audioFileNameWithPath)
             try {

@@ -1,8 +1,6 @@
 package com.cometchat.pro.uikit.ui_resources.constants
 
 import com.cometchat.pro.constants.CometChatConstants
-import java.util.*
-import kotlin.collections.ArrayList
 
 class UIKitConstants {
     object Sounds {
@@ -27,6 +25,8 @@ class UIKitConstants {
         const val GUID = "guid"
         const val LINK = "link"
         const val tabBar = "tabBar"
+        const val ALLOW_CAPTION: String = "allow_caption"
+        const val MEDIA_SIZE: String = "media_size"
         @JvmField
         val EXTRA_MIME_DOC = arrayOf("text/plane", "text/html", "application/pdf", "application/msword", "application/vnd.ms.excel", "application/mspowerpoint", "application/zip")
         const val MEMBER_COUNT = "member_count"

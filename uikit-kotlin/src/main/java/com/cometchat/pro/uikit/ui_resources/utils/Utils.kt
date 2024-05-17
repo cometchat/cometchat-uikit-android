@@ -604,7 +604,7 @@ public class Utils {
                         + "audio/")
             }
             createDirectory(dir)
-            return dir + SimpleDateFormat("yyyyMMddHHmmss").format(Date()) + ".mp3"
+            return dir + SimpleDateFormat("yyyyMMddHHmmss").format(Date()) + ".m4a"
         }
 
         fun createDirectory(var0: String?) {

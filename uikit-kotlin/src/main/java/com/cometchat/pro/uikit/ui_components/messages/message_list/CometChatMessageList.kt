@@ -194,7 +194,7 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
     private var status: String? = ""
     private var messagesRequest //Used to fetch messages.
             : MessagesRequest? = null
-    private var composeBox: CometChatComposeBox? = null
+    private lateinit var composeBox: CometChatComposeBox
     private val mediaRecorder: MediaRecorder? = null
     private val mediaPlayer: MediaPlayer? = null
     private val audioFileNameWithPath: String? = null
@@ -330,7 +330,7 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
                 replyMessageJson = JSONObject(json!!)
             }
 
-            if (type != null && type == CometChatConstants.RECEIVER_TYPE_GROUP) {
+            if (type == CometChatConstants.RECEIVER_TYPE_GROUP) {
                 Id = arguments?.getString(UIKitConstants.IntentStrings.GUID).toString()
                 memberCount = requireArguments().getInt(UIKitConstants.IntentStrings.MEMBER_COUNT)
                 groupDesc = arguments?.getString(UIKitConstants.IntentStrings.GROUP_DESC)
@@ -352,6 +352,7 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewComponent(view)
+        fetchMessage()
         if (isReplyPrivately && replyMessageJson != null) {
             if (replyMessageJson.has("category")) {
                 baseMessage = CometChatHelper.processMessage(replyMessageJson)
@@ -780,9 +781,9 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
             override fun onAudioActionClicked() {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                     if (Utils.hasPermissions(context, WRITE_EXTERNAL_STORAGE)) {
-                            MediaUtils.openAudio(
-                                activity!!
-                            )
+                        MediaUtils.openAudio(
+                            activity!!
+                        )
                     } else {
                         requestPermissions(
                             arrayOf(WRITE_EXTERNAL_STORAGE),
@@ -791,9 +792,9 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
                     }
                 } else {
                     if (Utils.hasPermissions(context, permission.READ_MEDIA_AUDIO)) {
-                            MediaUtils.openAudio(
-                                activity!!
-                            )
+                        MediaUtils.openAudio(
+                            activity!!
+                        )
                     } else {
                         requestPermissions(
                             arrayOf(permission.READ_MEDIA_AUDIO),
@@ -1013,6 +1014,7 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
                     (context as Activity)
                     MediaUtils.openGallery(requireActivity())
                 }
+
                 else -> {
                     Toast.makeText(context, "Permission denied!", Toast.LENGTH_SHORT).show()
                     requestGalleryPermission()
@@ -1026,7 +1028,7 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
             when {
                 granted -> {
                     Toast.makeText(context, "Permission granted!", Toast.LENGTH_SHORT).show()
-                        MediaUtils.openAudio(requireActivity())
+                    MediaUtils.openAudio(requireActivity())
                 }
 
                 else -> {
@@ -1437,33 +1439,31 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
      */
     private fun fetchMessage() {
         if (messagesRequest == null) {
-            if (type != null) {
-                if (type == CometChatConstants.RECEIVER_TYPE_USER) {
-                    messagesRequest = if (!FeatureRestriction.isHideDeletedMessagesEnabled()) {
-                        MessagesRequestBuilder().setLimit(LIMIT).setUID(Id).hideReplies(true)
-                            .setTypes(UIKitConstants.MessageRequest.messageTypesForUser)
-                            .setCategories(UIKitConstants.MessageRequest.messageCategoriesForUser)
-                            .build()
-                    } else {
-                        MessagesRequestBuilder().setLimit(LIMIT).setUID(Id).hideReplies(true)
-                            .hideDeletedMessages(true)
-                            .setTypes(UIKitConstants.MessageRequest.messageTypesForUser)
-                            .setCategories(UIKitConstants.MessageRequest.messageCategoriesForUser)
-                            .build()
-                    }
+            if (type == CometChatConstants.RECEIVER_TYPE_USER) {
+                messagesRequest = if (!FeatureRestriction.isHideDeletedMessagesEnabled()) {
+                    MessagesRequestBuilder().setLimit(LIMIT).setUID(Id).hideReplies(true)
+                        .setTypes(UIKitConstants.MessageRequest.messageTypesForUser)
+                        .setCategories(UIKitConstants.MessageRequest.messageCategoriesForUser)
+                        .build()
                 } else {
-                    messagesRequest = if (!FeatureRestriction.isHideDeletedMessagesEnabled()) {
-                        MessagesRequestBuilder().setLimit(LIMIT).setGUID(Id).hideReplies(true)
-                            .setTypes(UIKitConstants.MessageRequest.messageTypesForGroup)
-                            .setCategories(UIKitConstants.MessageRequest.messageCategoriesForGroup)
-                            .build()
-                    } else {
-                        MessagesRequestBuilder().setLimit(LIMIT).setGUID(Id).hideReplies(true)
-                            .hideDeletedMessages(true).hideMessagesFromBlockedUsers(true)
-                            .setTypes(UIKitConstants.MessageRequest.messageTypesForGroup)
-                            .setCategories(UIKitConstants.MessageRequest.messageCategoriesForGroup)
-                            .build()
-                    }
+                    MessagesRequestBuilder().setLimit(LIMIT).setUID(Id).hideReplies(true)
+                        .hideDeletedMessages(true)
+                        .setTypes(UIKitConstants.MessageRequest.messageTypesForUser)
+                        .setCategories(UIKitConstants.MessageRequest.messageCategoriesForUser)
+                        .build()
+                }
+            } else {
+                messagesRequest = if (!FeatureRestriction.isHideDeletedMessagesEnabled()) {
+                    MessagesRequestBuilder().setLimit(LIMIT).setGUID(Id).hideReplies(true)
+                        .setTypes(UIKitConstants.MessageRequest.messageTypesForGroup)
+                        .setCategories(UIKitConstants.MessageRequest.messageCategoriesForGroup)
+                        .build()
+                } else {
+                    MessagesRequestBuilder().setLimit(LIMIT).setGUID(Id).hideReplies(true)
+                        .hideDeletedMessages(true).hideMessagesFromBlockedUsers(true)
+                        .setTypes(UIKitConstants.MessageRequest.messageTypesForGroup)
+                        .setCategories(UIKitConstants.MessageRequest.messageCategoriesForGroup)
+                        .build()
                 }
             }
         }
@@ -1680,11 +1680,12 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
             messageAdapter?.addMessage(mediaMessage)
             scrollToBottom()
         }
+        composeBox.stopPlayingAudio()
         sendMediaMessage(mediaMessage, object : CallbackListener<MediaMessage>() {
             override fun onSuccess(mediaMessage: MediaMessage) {
-//                progressDialog.dismiss()
                 Log.d(TAG, "sendMediaMessage onSuccess: $mediaMessage")
                 messageAdapter?.updateSentMessage(mediaMessage)
+
             }
 
             override fun onError(e: CometChatException) {
@@ -2352,7 +2353,6 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
     override fun onPause() {
         Log.d(TAG, "onPause: ")
         super.onPause()
-        if (messageAdapter != null) messageAdapter?.stopPlayingAudio()
         removeMessageListener()
         removeUserListener()
         removeGroupListener()
@@ -2369,38 +2369,36 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
         super.onResume()
         checkOnGoingCall()
         stickyHeaderDecoration?.let { this.rvChatListView?.removeItemDecoration(it) }
-        if (!(intentRequestCode == UIKitConstants.RequestCode.AUDIO || intentRequestCode == UIKitConstants.RequestCode.GALLERY || intentRequestCode == UIKitConstants.RequestCode.FILE || intentRequestCode == UIKitConstants.RequestCode.CAMERA)) {
-            messageAdapter = null
-            messagesRequest = null
-            fetchMessage()
-        }
+//        if (!(intentRequestCode == UIKitConstants.RequestCode.AUDIO || intentRequestCode == UIKitConstants.RequestCode.GALLERY || intentRequestCode == UIKitConstants.RequestCode.FILE || intentRequestCode == UIKitConstants.RequestCode.CAMERA)) {
+//            messageAdapter = null
+//            messagesRequest = null
+//            fetchMessage()
+//        }
         addMessageListener()
 
         if (cometChatMessageActions != null && cometChatMessageActions?.fragmentManager != null) cometChatMessageActions?.dismiss()
 
-        if (type != null) {
-            if (type == CometChatConstants.RECEIVER_TYPE_USER) {
-                FeatureRestriction.isUserPresenceEnabled(object :
-                    FeatureRestriction.OnSuccessListener {
-                    override fun onSuccess(p0: Boolean) {
-                        if (p0) {
-                            addUserListener()
-                            tvStatus?.text = status
-                        }
+        if (type == CometChatConstants.RECEIVER_TYPE_USER) {
+            FeatureRestriction.isUserPresenceEnabled(object :
+                FeatureRestriction.OnSuccessListener {
+                override fun onSuccess(p0: Boolean) {
+                    if (p0) {
+                        addUserListener()
+                        tvStatus?.text = status
                     }
-                })
-                Thread(Runnable { user }).start()
-            } else {
-                if (!FeatureRestriction.isGroupActionMessagesEnabled()) addGroupListener()
-                Thread(Runnable { group }).start()
-                Thread(Runnable { member }).start()
-            }
+                }
+            })
+            Thread { user }.start()
+        } else {
+            if (!FeatureRestriction.isGroupActionMessagesEnabled()) addGroupListener()
+            Thread { group }.start()
+            Thread { member }.start()
         }
     }
 
     fun onCloseAction() {
         if (messageAdapter != null) messageAdapter?.clearLongClickSelectedItem()
-        composeBox?.visibility = View.VISIBLE
+        composeBox.visibility = View.VISIBLE
 //        rlMessageAction?.visibility = View.GONE
         userAvatar?.visibility = View.VISIBLE
         ivCloseMessageAction?.visibility = View.GONE

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.cometchat.pro.uikit.ui_components.messages.media_view.CometChatMediaViewActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/grey"
+        android:elevation="8dp"
+        app:navigationIcon="@drawable/ic_back"
+        app:subtitleTextColor="@color/textColorWhite"
+        app:titleTextColor="@color/textColorWhite" />
+
+    <ImageView
+        android:id="@+id/image_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:layout_centerInParent="true">
+
+        <VideoView
+            android:id="@+id/video_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/audio_message"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/cc_message_bubble_left"
+        android:padding="8dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Audio File"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/primaryTextColor" />
+
+        <ImageView
+            android:id="@+id/playBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_circle_grey_32dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            android:tint="@color/textColorWhite" />
+
+        <TextView
+            android:id="@+id/media_size_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/primaryTextColor"
+            tools:text="125 KB" />
+    </RelativeLayout>
+</RelativeLayout>
