@@ -16,10 +16,10 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
-import com.cometchat.kotlinsampleapp.AppUtils.changeTextColorToBlack
-import com.cometchat.kotlinsampleapp.AppUtils.changeTextColorToWhite
-import com.cometchat.kotlinsampleapp.AppUtils.fetchDefaultObjects
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeTextColorToBlack
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeTextColorToWhite
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.fetchDefaultObjects
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
 import com.cometchat.kotlinsampleapp.R
 import com.cometchat.kotlinsampleapp.databinding.ActivityLoginBinding
 import com.google.android.material.textfield.TextInputEditText

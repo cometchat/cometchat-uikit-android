@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.cometchat.chatuikit.messages.CometChatMessages
-import com.cometchat.kotlinsampleapp.AppUtils.defaultUser
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.defaultUser
 import com.cometchat.kotlinsampleapp.R
 
 class MessagesFragment : Fragment() {

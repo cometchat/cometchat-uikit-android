@@ -11,8 +11,8 @@ android {
         applicationId = "com.cometchat.kotlinsampleapp"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "4.3.6"
+        versionCode = 3
+        versionName = "4.3.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

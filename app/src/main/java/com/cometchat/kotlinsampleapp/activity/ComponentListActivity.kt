@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.cometchat.chatuikit.shared.resources.utils.Utils
-import com.cometchat.kotlinsampleapp.AppUtils.changeIconTintToBlack
-import com.cometchat.kotlinsampleapp.AppUtils.changeIconTintToWhite
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeIconTintToBlack
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeIconTintToWhite
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
 import com.cometchat.kotlinsampleapp.R
 import com.cometchat.kotlinsampleapp.constants.StringConstants
 import com.cometchat.kotlinsampleapp.databinding.ActivityComponentListBinding

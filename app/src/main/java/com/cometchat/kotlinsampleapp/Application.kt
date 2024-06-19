@@ -7,7 +7,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chatuikit.calls.CometChatCallActivity
 import com.cometchat.chatuikit.shared.resources.theme.CometChatTheme
 import com.cometchat.chatuikit.shared.resources.theme.Palette
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
 
 class Application : Application() {
 
@@ -31,7 +31,7 @@ class Application : Application() {
     private fun addCallListener() {
         val LISTENER_ID = System.currentTimeMillis().toString() + ""
         CometChat.addCallListener(LISTENER_ID, object : CometChat.CallListener() {
-            override fun onIncomingCallReceived(call: Call?) {
+            override fun onIncomingCallReceived(call: Call) {
                 CometChatCallActivity.launchIncomingCallScreen(applicationContext, call, null)
             }
 

@@ -9,7 +9,7 @@ import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chatuikit.messageinformation.CometChatMessageInformation
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
-import com.cometchat.kotlinsampleapp.AppUtils.defaultUser
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.defaultUser
 import com.cometchat.kotlinsampleapp.R
 
 class MessageInformationFragment : Fragment() {

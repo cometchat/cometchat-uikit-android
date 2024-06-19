@@ -38,11 +38,11 @@
                     android:id="@+id/tvComet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
                     android:layout_below="@id/ivLogo"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:text="CometChat"
+                    android:textColor="@android:color/black"
                     android:textSize="32dp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -55,257 +55,293 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_gravity="center"
                     android:id="@+id/tvSL"
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tvComet"
                     android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
                     android:text="Login with one of our sample users" />
 
-                <LinearLayout
-                    android:id="@+id/grid"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/grid_layout_container"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="vertical">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/superhero1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/cometchat_primary_text_color"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="12dp"
-                            app:rippleColor="@color/cometchat_light_grey">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/user1"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:paddingStart="8dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="8dp"
-                                android:paddingBottom="4dp">
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/cometchat_primary_text_color"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="12dp"
+                                app:rippleColor="@color/cometchat_light_grey">
 
                                 <RelativeLayout
-                                    android:id="@+id/superhero1_avatar"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ProgressBar
-                                        android:id="@+id/superhero1Progressbar"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:layout_centerInParent="true"
-                                        android:visibility="gone" />
-
-                                    <ImageView
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/ironman" />
-                                </RelativeLayout>
-
-                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginLeft="4dp"
-                                    android:layout_toRightOf="@+id/superhero1_avatar"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="superhero1"
-                                    android:textAllCaps="true"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp" />
-                            </RelativeLayout>
-                        </com.google.android.material.card.MaterialCardView>
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="4dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/superhero2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/cometchat_primary_text_color"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="12dp"
-                            app:rippleColor="@color/cometchat_light_grey">
+                                    <RelativeLayout
+                                        android:id="@+id/user1_avatar"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
+                                        <ProgressBar
+                                            android:id="@+id/user1Progressbar"
+                                            android:layout_width="48dp"
+                                            android:layout_height="48dp"
+                                            android:layout_centerInParent="true"
+                                            android:visibility="gone" />
+
+                                        <ImageView
+                                            android:id="@+id/user1_avatar_image"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/ironman" />
+                                    </RelativeLayout>
+
+                                    <TextView
+                                        android:id="@+id/user1_name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_toEndOf="@+id/user1_avatar"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="user1"
+                                        android:textAllCaps="true"
+                                        android:textColor="@color/white"
+                                        android:textSize="14dp" />
+                                </RelativeLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/user2"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:paddingStart="8dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="8dp"
-                                android:paddingBottom="4dp">
+                                android:layout_gravity="center"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/cometchat_primary_text_color"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="12dp"
+                                app:rippleColor="@color/cometchat_light_grey">
 
                                 <RelativeLayout
-                                    android:id="@+id/superhero2_avatar"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ProgressBar
-                                        android:id="@+id/superhero2Progressbar"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:layout_centerInParent="true"
-                                        android:visibility="gone" />
-
-                                    <ImageView
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/captainamerica" />
-                                </RelativeLayout>
-
-                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginLeft="4dp"
-                                    android:layout_toRightOf="@+id/superhero2_avatar"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="superhero2"
-                                    android:textAllCaps="true"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp" />
-                            </RelativeLayout>
-                        </com.google.android.material.card.MaterialCardView>
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="4dp">
 
+                                    <RelativeLayout
+                                        android:id="@+id/user2_avatar"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
+
+                                        <ProgressBar
+                                            android:id="@+id/user2Progressbar"
+                                            android:layout_width="48dp"
+                                            android:layout_height="48dp"
+                                            android:layout_centerInParent="true"
+                                            android:visibility="gone" />
+
+                                        <ImageView
+                                            android:id="@+id/user2_avatar_image"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/captainamerica" />
+                                    </RelativeLayout>
+
+                                    <TextView
+                                        android:id="@+id/user2_name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_toRightOf="@+id/user2_avatar"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="user2"
+                                        android:textAllCaps="true"
+                                        android:textColor="@color/white"
+                                        android:textSize="14dp" />
+                                </RelativeLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/user3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/cometchat_primary_text_color"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="12dp"
+                                app:rippleColor="@color/cometchat_light_grey">
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="4dp">
+
+                                    <RelativeLayout
+                                        android:id="@+id/user3_avatar"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
+
+                                        <ProgressBar
+                                            android:id="@+id/user3Progressbar"
+                                            android:layout_width="48dp"
+                                            android:layout_height="48dp"
+                                            android:layout_centerInParent="true"
+                                            android:visibility="gone" />
+
+                                        <ImageView
+                                            android:id="@+id/user3_avatar_image"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/spiderman" />
+                                    </RelativeLayout>
+
+                                    <TextView
+                                        android:id="@+id/user3_name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_toEndOf="@+id/user3_avatar"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="user3"
+                                        android:textAllCaps="true"
+                                        android:textColor="@color/white"
+                                        android:textSize="14dp" />
+                                </RelativeLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/user4"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/cometchat_primary_text_color"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="12dp"
+                                app:rippleColor="@color/cometchat_light_grey">
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="4dp">
+
+                                    <RelativeLayout
+                                        android:id="@+id/woleverine_avatar"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
+
+                                        <ProgressBar
+                                            android:id="@+id/user4Progressbar"
+                                            android:layout_width="48dp"
+                                            android:layout_height="48dp"
+                                            android:layout_centerInParent="true"
+                                            android:visibility="gone" />
+
+                                        <ImageView
+                                            android:id="@+id/user4_avatar_image"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/wolverine" />
+                                    </RelativeLayout>
+
+                                    <TextView
+                                        android:id="@+id/user4_name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_toEndOf="@+id/woleverine_avatar"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="user4"
+                                        android:textAllCaps="true"
+                                        android:textColor="@color/white"
+                                        android:textSize="14dp" />
+                                </RelativeLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/state_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/superhero3"
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/cometchat_primary_text_color"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="12dp"
-                            app:rippleColor="@color/cometchat_light_grey">
+                            android:layout_gravity="center_horizontal" />
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="8dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="8dp"
-                                android:paddingBottom="4dp">
-
-                                <RelativeLayout
-                                    android:id="@+id/superhero3_avatar"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ProgressBar
-                                        android:id="@+id/superhero3Progressbar"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:layout_centerInParent="true"
-                                        android:visibility="gone" />
-
-                                    <ImageView
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/spiderman" />
-                                </RelativeLayout>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginLeft="4dp"
-                                    android:layout_toRightOf="@+id/superhero3_avatar"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="superhero3"
-                                    android:textAllCaps="true"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp" />
-                            </RelativeLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/superhero4"
-                            android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/state_message"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/cometchat_primary_text_color"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="12dp"
-                            app:rippleColor="@color/cometchat_light_grey">
-
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingStart="8dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="8dp"
-                                android:paddingBottom="4dp">
-
-                                <RelativeLayout
-                                    android:id="@+id/woleverine_avatar"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ProgressBar
-                                        android:id="@+id/superhero4Progressbar"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:layout_centerInParent="true"
-                                        android:visibility="gone" />
-
-                                    <ImageView
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/wolverine" />
-                                </RelativeLayout>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginLeft="4dp"
-                                    android:layout_toRightOf="@+id/woleverine_avatar"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="superhero4"
-                                    android:textAllCaps="true"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp" />
-                            </RelativeLayout>
-                        </com.google.android.material.card.MaterialCardView>
+                            android:text="@string/cometchat_something_went_wrong"
+                            android:textAlignment="center" />
                     </LinearLayout>
-                </LinearLayout>
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/tvSignIn"
@@ -313,8 +349,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_below="@id/grid"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="32dp"
                     android:text="or else login continue with" />
 
@@ -322,10 +356,9 @@
                     android:id="@+id/login"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/tvSignIn"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
                     android:layout_marginBottom="32dp"
                     android:background="@drawable/curved_blue_button"
                     android:padding="8dp"

@@ -79,6 +79,8 @@
     <string name="scheduler_bubble">The CometChatSchedulerBubble component is used to display a event scheduler within a chat list. To learn more about this component tap here.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="no_sample_users_available">No Sample Users Available.</string>
 
 
 </resources>

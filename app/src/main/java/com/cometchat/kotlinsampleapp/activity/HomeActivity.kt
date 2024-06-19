@@ -14,11 +14,11 @@ import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
 import com.cometchat.chatuikit.shared.resources.theme.CometChatTheme
 import com.cometchat.chatuikit.shared.resources.theme.Palette
 import com.cometchat.chatuikit.shared.resources.utils.Utils
-import com.cometchat.kotlinsampleapp.AppUtils.changeIconTintToBlack
-import com.cometchat.kotlinsampleapp.AppUtils.changeIconTintToWhite
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
-import com.cometchat.kotlinsampleapp.AppUtils.switchDarkMode
-import com.cometchat.kotlinsampleapp.AppUtils.switchLightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeIconTintToBlack
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeIconTintToWhite
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.switchDarkMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.switchLightMode
 import com.cometchat.kotlinsampleapp.R
 import com.cometchat.kotlinsampleapp.constants.StringConstants
 import com.cometchat.kotlinsampleapp.databinding.ActivityHomeBinding

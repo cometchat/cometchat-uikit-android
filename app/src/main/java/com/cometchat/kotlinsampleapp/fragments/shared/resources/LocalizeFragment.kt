@@ -14,9 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.cometchat.chatuikit.shared.resources.Localise.CometChatLocalize
 import com.cometchat.chatuikit.shared.resources.Localise.Language
-import com.cometchat.kotlinsampleapp.AppUtils.changeTextColorToBlack
-import com.cometchat.kotlinsampleapp.AppUtils.changeTextColorToWhite
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeTextColorToBlack
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.changeTextColorToWhite
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
 import com.cometchat.kotlinsampleapp.R
 import com.cometchat.kotlinsampleapp.activity.ComponentLaunchActivity
 

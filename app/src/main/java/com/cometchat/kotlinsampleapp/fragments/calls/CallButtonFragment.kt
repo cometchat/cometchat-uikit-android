@@ -9,7 +9,7 @@ import com.cometchat.chatuikit.calls.callbutton.CometChatCallButtons
 import com.cometchat.chatuikit.shared.resources.theme.CometChatTheme
 import com.cometchat.chatuikit.shared.resources.utils.Utils
 import com.cometchat.chatuikit.shared.views.button.ButtonStyle
-import com.cometchat.kotlinsampleapp.AppUtils.defaultUser
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.defaultUser
 import com.cometchat.kotlinsampleapp.R
 
 class CallButtonFragment : Fragment() {

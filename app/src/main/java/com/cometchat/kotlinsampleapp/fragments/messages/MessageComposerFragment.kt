@@ -10,8 +10,8 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.cometchat.chatuikit.messagecomposer.CometChatMessageComposer
-import com.cometchat.kotlinsampleapp.AppUtils.defaultUser
-import com.cometchat.kotlinsampleapp.AppUtils.isNightMode
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.defaultUser
+import com.cometchat.kotlinsampleapp.AppUtils.Companion.isNightMode
 import com.cometchat.kotlinsampleapp.R
 
 class MessageComposerFragment : Fragment() {
