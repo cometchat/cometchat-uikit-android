@@ -11,7 +11,8 @@
     <color name="message_bubble_grey">#e0e0e0</color>
     <color name="message_text_grey">#757575</color>
     <color name="menu_background_grey">#40bdbdbd</color>
-
+    <color name="app_background">#efeef3</color>
+    <color name="app_background_dark">#000000</color>
     <!--Used in color palette-->
     <color name="red">#F44336</color>
     <color name="green">#009688</color>
@@ -19,4 +20,5 @@
     <color name="purple">#9C27B0</color>
     <color name="violet">#673AB7</color>
     <color name="yellow">#FFC107</color>
+    <color name="black">#000000</color>
 </resources>

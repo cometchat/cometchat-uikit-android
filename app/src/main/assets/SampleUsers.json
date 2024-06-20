@@ -1,0 +1,29 @@
+{
+  "users": [
+    {
+      "uid": "superhero1",
+      "name": "Iron Man",
+      "avatar": "https://assets.cometchat.io/sampleapp/users/ironman.png"
+    },
+    {
+      "uid": "superhero2",
+      "name": "Captain America",
+      "avatar": "https://assets.cometchat.io/sampleapp/users/captainamerica.png"
+    },
+    {
+      "uid": "superhero3",
+      "name": "Spiderman",
+      "avatar": "https://assets.cometchat.io/sampleapp/users/spiderman.png"
+    },
+    {
+      "uid": "superhero4",
+      "name": "Wolverine",
+      "avatar": "https://assets.cometchat.io/sampleapp/users/wolverine.png"
+    },
+    {
+      "uid": "superhero5",
+      "name": "Cyclops",
+      "avatar": "https://assets.cometchat.io/sampleapp/users/cyclops.png"
+    }
+  ]
+}
