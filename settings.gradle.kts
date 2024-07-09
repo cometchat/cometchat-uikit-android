@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CometChatSampleAppKotlin"
+rootProject.name = "KotlinSampleApp"
 include(":app")
  

@@ -30,13 +30,9 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var user1: MaterialCardView
-
     private lateinit var user2: MaterialCardView
-
     private lateinit var user3: MaterialCardView
-
     private lateinit var user4: MaterialCardView
-
     private lateinit var ivLogo: AppCompatImageView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvCometChat: AppCompatTextView
@@ -56,6 +52,34 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val uiKitSettings =
+            UIKitSettingsBuilder().setRegion(AppConstants.REGION).setAppId(AppConstants.APP_ID)
+                .setAuthKey(AppConstants.AUTH_KEY).subscribePresenceForAllUsers().build()
+        CometChatUIKit.init(this, uiKitSettings, object : CometChat.CallbackListener<String?>() {
+            override fun onSuccess(s: String?) {
+                CometChat.setDemoMetaInfo(appMetadata)
+                if (CometChatUIKit.getLoggedInUser() != null) {
+                    fetchDefaultObjects()
+                    startActivity(
+                        Intent(
+                            this@MainActivity,
+                            HomeActivity::class.java
+                        )
+                    )
+                    finish()
+                } else {
+                    viewInit()
+                }
+            }
+
+            override fun onError(e: CometChatException) {
+                Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+    }
+
+    private fun viewInit() {
         setContentView(R.layout.activity_main)
         parentView = findViewById(R.id.parent_view)
         progressBar = findViewById(R.id.progress_bar)
@@ -86,30 +110,6 @@ class MainActivity : AppCompatActivity() {
         stateMessage.text = getString(R.string.please_wait)
         progressBar.visibility = View.VISIBLE
         Utils.setStatusBarColor(this, resources.getColor(android.R.color.white))
-        val uiKitSettings =
-            UIKitSettingsBuilder().setRegion(AppConstants.REGION).setAppId(AppConstants.APP_ID)
-                .setAuthKey(AppConstants.AUTH_KEY).subscribePresenceForAllUsers().build()
-        CometChatUIKit.init(this, uiKitSettings, object : CometChat.CallbackListener<String?>() {
-            override fun onSuccess(s: String?) {
-                CometChat.setDemoMetaInfo(appMetadata)
-                if (CometChatUIKit.getLoggedInUser() != null) {
-                    fetchDefaultObjects()
-                    startActivity(
-                        Intent(
-                            this@MainActivity,
-                            HomeActivity::class.java
-                        )
-                    )
-                    finish()
-                }
-            }
-
-            override fun onError(e: CometChatException) {
-                Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-
-
         AppUtils.fetchSampleUsers(object : CometChat.CallbackListener<List<User>>() {
             override fun onSuccess(users: List<User>) {
                 if (users.isNotEmpty()) {
