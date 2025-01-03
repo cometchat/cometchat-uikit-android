@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatStickerBubble">
+        <attr name="cometchatStickerBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatStickerBubbleStrokeWidth" format="integer" />
+        <attr name="cometchatStickerBubbleStrokeColor" format="color" />
+        <attr name="cometchatStickerBubbleBackgroundColor" format="color" />
+        <attr name="cometchatStickerBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatStickerBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatStickerBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatStickerBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatStickerBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatStickerBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatStickerBubbleDateStyle" format="reference" />
+        <attr name="cometchatStickerBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatStickerBubbleAvatarStyle" format="reference" />
+        <attr name="cometchatStickerBubbleStyle" format="reference" />
+    </declare-styleable>
+</resources>

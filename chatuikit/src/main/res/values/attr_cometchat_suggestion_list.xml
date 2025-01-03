@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatSuggestionList">
+        <attr name="cometchatSuggestionListStyle" format="color" />
+        <attr name="cometchatSuggestionListBackgroundColor" format="color" />
+        <attr name="cometchatSuggestionListStrokeColor" format="color" />
+        <attr name="cometchatSuggestionListStrokeWidth" format="dimension" />
+        <attr name="cometchatSuggestionListCornerRadius" format="dimension" />
+        <attr name="cometchatSuggestionListItemAvatarStyle" format="reference" />
+        <attr name="cometchatSuggestionListItemTextAppearance" format="reference" />
+        <attr name="cometchatSuggestionListItemTextColor" format="color" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatBadge">
+        <attr name="cometchatBadgeStyle" format="reference" />
+        <attr name="cometchatBadgeTextColor" format="color" />
+        <attr name="cometchatBadgeTextAppearance" format="reference" />
+        <attr name="cometchatBadgeCornerRadius" format="dimension" />
+        <attr name="cometchatBadgeBackgroundColor" format="color" />
+        <attr name="cometchatBadgeStrokeWidth" format="dimension" />
+        <attr name="cometchatBadgeStrokeColor" format="color" />
+    </declare-styleable>
+</resources>

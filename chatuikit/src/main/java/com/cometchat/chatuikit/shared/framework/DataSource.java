@@ -1,0 +1,251 @@
+package com.cometchat.chatuikit.shared.framework;
+
+import android.content.Context;
+import android.text.SpannableString;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.cometchat.chat.models.BaseMessage;
+import com.cometchat.chat.models.Conversation;
+import com.cometchat.chat.models.Group;
+import com.cometchat.chat.models.MediaMessage;
+import com.cometchat.chat.models.TextMessage;
+import com.cometchat.chat.models.User;
+import com.cometchat.chatuikit.ai.AIOptionsStyle;
+import com.cometchat.chatuikit.shared.constants.UIKitConstants;
+import com.cometchat.chatuikit.shared.formatters.CometChatTextFormatter;
+import com.cometchat.chatuikit.shared.models.AdditionParameter;
+import com.cometchat.chatuikit.shared.models.CometChatMessageComposerAction;
+import com.cometchat.chatuikit.shared.models.CometChatMessageOption;
+import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
+import com.cometchat.chatuikit.shared.models.interactivemessage.CardMessage;
+import com.cometchat.chatuikit.shared.models.interactivemessage.FormMessage;
+import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage;
+import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
+
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * The DataSource interface provides methods to retrieve various data related to
+ * CometChat messages and UI components.
+ */
+public interface DataSource {
+
+    /**
+     * Returns a list of message options for a text message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the text message.
+     */
+    List<CometChatMessageOption> getTextMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of message options for an image message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the image message.
+     */
+    List<CometChatMessageOption> getImageMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of message options for a video message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the video message.
+     */
+    List<CometChatMessageOption> getVideoMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of message options for an audio message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the audio message.
+     */
+    List<CometChatMessageOption> getAudioMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of message options for a file message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the file message.
+     */
+    List<CometChatMessageOption> getFileMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    View getBottomView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindBottomView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getTextBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindTextBubbleContentView(Context context, View createdView, TextMessage message, @StyleRes int textBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getFormBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindFormBubbleContentView(Context context, View createdView, FormMessage message, @StyleRes int formBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getSchedulerBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindSchedulerBubbleContentView(Context context, View createdView, SchedulerMessage message, @StyleRes int schedulerBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getCardBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindCardBubbleContentView(Context context, View createdView, CardMessage message, @StyleRes int cardBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getImageBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindImageBubbleContentView(Context context, View createdView, String imageUrl, MediaMessage message, @StyleRes int imageBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getVideoBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindVideoBubbleContentView(Context context, View createdView, String thumbnailUrl, MediaMessage message, @StyleRes int videoBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getFileBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindFileBubbleContentView(Context context, View createdView, MediaMessage message, @StyleRes int fileBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    View getAudioBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
+
+    void bindAudioBubbleContentView(Context context, View createdView, MediaMessage message, @StyleRes int audioBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getAudioTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getVideoTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getImageTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getGroupActionsTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getFileTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getTextTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getFormTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getSchedulerTemplate(AdditionParameter additionParameter);
+
+    CometChatMessageTemplate getCardTemplate(AdditionParameter additionParameter);
+
+    List<CometChatMessageTemplate> getMessageTemplates(AdditionParameter additionParameter);
+
+    /**
+     * Returns the message template for the specified category and type.
+     *
+     * @param category The category of the message.
+     * @param type     The type of the message.
+     * @return The CometChatMessageTemplate object representing the specified
+     * message template.
+     */
+    CometChatMessageTemplate getMessageTemplate(String category, String type);
+
+    /**
+     * Returns a list of message options for a message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the available
+     * options for the message.
+     */
+    List<CometChatMessageOption> getMessageOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of attachment options for the message composer.
+     *
+     * @param context The context of the application.
+     * @param user    The user object associated with the composer.
+     * @param group   The group object associated with the composer.
+     * @param idMap   The map of attachment IDs.
+     * @return A list of CometChatMessageComposerAction objects representing the
+     * available attachment options.
+     */
+    List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap);
+
+    /**
+     * Returns a list of AI options for the message composer.
+     *
+     * @param context The context of the application.
+     * @param user    The user object associated with the composer.
+     * @param group   The group object associated with the composer.
+     * @param idMap   The map of attachment IDs.
+     * @return A list of CometChatMessageComposerAction objects representing the
+     * available AI options.
+     */
+    List<CometChatMessageComposerAction> getAIOptions(Context context, User user, Group group, HashMap<String, String> idMap, AIOptionsStyle aiOptionsStyle, AdditionParameter additionParameter);
+
+    /**
+     * Returns the auxiliary option view for the message composer.
+     *
+     * @param context The context of the application.
+     * @param user    The user object associated with the composer.
+     * @param group   The group object associated with the composer.
+     * @param id      The ID of the auxiliary option.
+     * @return The auxiliary option view.
+     */
+    View getAuxiliaryOption(Context context, User user, Group group, HashMap<String, String> id, AdditionParameter additionParameter);
+
+    /**
+     * Returns a list of common options for the message.
+     *
+     * @param context     The context of the application.
+     * @param baseMessage The base message object.
+     * @param group       The group object associated with the message.
+     * @return A list of CometChatMessageOption objects representing the common
+     * options for the message.
+     */
+    List<CometChatMessageOption> getCommonOptions(Context context, BaseMessage baseMessage, Group group);
+
+    /**
+     * Returns a list of default message types.
+     *
+     * @return A list of default message types.
+     */
+    List<String> getDefaultMessageTypes();
+
+    /**
+     * Returns a list of default message categories.
+     *
+     * @return A list of default message categories.
+     */
+    List<String> getDefaultMessageCategories();
+
+    SpannableString getLastConversationMessage(Context context, Conversation conversation, AdditionParameter additionParameter);
+
+    /**
+     * Returns the auxiliary header menu view for the user or group.
+     *
+     * @param context The context of the application.
+     * @param user    The user object associated with the header menu.
+     * @param group   The group object associated with the header menu.
+     * @return The auxiliary header menu view.
+     */
+    View getAuxiliaryHeaderMenu(Context context, User user, Group group, AdditionParameter additionParameter);
+
+    List<CometChatTextFormatter> getTextFormatters(Context context);
+
+    /**
+     * Returns the ID of the data source.
+     *
+     * @return The ID of the data source.
+     */
+    @Nullable
+    String getId();
+}

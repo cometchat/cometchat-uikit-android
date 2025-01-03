@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatConfirmDialog">
+        <attr name="cometchatConfirmDialogStyle" format="reference" />
+        <attr name="cometchatConfirmDialogStrokeColor" format="color" />
+        <attr name="cometchatConfirmDialogStrokeWidth" format="dimension" />
+        <attr name="cometchatConfirmDialogCornerRadius" format="dimension" />
+        <attr name="cometchatConfirmDialogElevation" format="dimension" />
+
+        <attr name="cometchatConfirmDialogBackgroundColor" format="color" />
+        <attr name="cometchatConfirmDialogIcon" format="reference" />
+        <attr name="cometchatConfirmDialogIconTint" format="color" />
+        <attr name="cometchatConfirmDialogIconBackgroundColor" format="color" />
+
+        <attr name="cometchatConfirmDialogTitleTextAppearance" format="reference" />
+        <attr name="cometchatConfirmDialogTitleTextColor" format="color" />
+        <attr name="cometchatConfirmDialogSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatConfirmDialogSubtitleTextColor" format="color" />
+
+        <attr name="cometchatConfirmDialogPositiveButtonTextAppearance" format="reference" />
+        <attr name="cometchatConfirmDialogPositiveButtonTextColor" format="color" />
+        <attr name="cometchatConfirmDialogPositiveButtonBackgroundColor" format="color" />
+        <attr name="cometchatConfirmDialogPositiveButtonStrokeWidth" format="dimension" />
+        <attr name="cometchatConfirmDialogPositiveButtonStrokeColor" format="color" />
+        <attr name="cometchatConfirmDialogPositiveButtonRadius" format="dimension" />
+
+        <attr name="cometchatConfirmDialogNegativeButtonTextAppearance" format="reference" />
+        <attr name="cometchatConfirmDialogNegativeButtonTextColor" format="color" />
+        <attr name="cometchatConfirmDialogNegativeButtonBackgroundColor" format="color" />
+        <attr name="cometchatConfirmDialogNegativeButtonStrokeWidth" format="dimension" />
+        <attr name="cometchatConfirmDialogNegativeButtonStrokeColor" format="color" />
+        <attr name="cometchatConfirmDialogNegativeButtonRadius" format="dimension" />
+    </declare-styleable>
+</resources>

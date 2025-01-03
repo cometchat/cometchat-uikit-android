@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatMentionStyle">
+        <attr name="cometchatMentionTextAppearance" format="reference" />
+        <attr name="cometchatMentionTextColor" format="color" />
+        <attr name="cometchatMentionBackgroundColor" format="color" />
+        <attr name="cometchatSelfMentionTextAppearance" format="reference" />
+        <attr name="cometchatSelfMentionTextColor" format="color" />
+        <attr name="cometchatSelfMentionBackgroundColor" format="color" />
+        <attr name="cometchatMentionsStyle" format="reference" />
+    </declare-styleable>
+
+</resources>

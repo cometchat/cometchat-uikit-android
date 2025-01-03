@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatThreadHeader">
+        <attr name="cometchatThreadHeaderIncomingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatThreadHeaderOutgoingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatThreadHeaderStrokeWidth" format="dimension" />
+        <attr name="cometchatThreadHeaderStrokeColor" format="color" />
+        <attr name="cometchatThreadHeaderCornerRadius" format="dimension" />
+        <attr name="cometchatThreadHeaderBackgroundColor" format="color" />
+        <attr name="cometchatThreadHeaderBackgroundDrawable" format="reference" />
+        <attr name="cometchatThreadHeaderReplyCountBackgroundColor" format="color" />
+        <attr name="cometchatThreadHeaderReplyCountTextColor" format="color" />
+        <attr name="cometchatThreadHeaderReplyCountTextAppearance" format="reference" />
+        <attr name="cometchatThreadHeaderStyle" format="reference" />
+    </declare-styleable>
+</resources>

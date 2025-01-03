@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/cometchat_padding_4"
+    android:paddingTop="@dimen/cometchat_padding_3"
+    android:paddingEnd="@dimen/cometchat_padding_4"
+    android:paddingBottom="@dimen/cometchat_padding_3">
+
+    <View
+        android:layout_width="@dimen/cometchat_40dp"
+        android:layout_height="@dimen/cometchat_40dp"
+        android:background="@drawable/shimmer_gradient_circle" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/cometchat_margin_3"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/cometchat_18dp"
+            android:layout_marginEnd="@dimen/cometchat_80dp"
+            android:background="@drawable/shimmer_gradient_rect" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cometchat_2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/cometchat_10dp"
+                android:layout_weight="1"
+                android:background="@drawable/shimmer_gradient_rect"
+                android:text="@string/cometchat_read" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="2" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/cometchat_10dp"
+                android:layout_weight="2"
+                android:background="@drawable/shimmer_gradient_rect"
+                android:text="@string/cometchat_read" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

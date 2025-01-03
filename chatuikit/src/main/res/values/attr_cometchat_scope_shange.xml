@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatScopeChange">
+
+        <!-- Title and Subtitle Appearance -->
+        <attr name="cometchatScopeChangeTitleTextAppearance" format="reference" />
+        <attr name="cometchatScopeChangeSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatScopeChangeTitleColor" format="color" />
+        <attr name="cometchatScopeChangeSubtitleColor" format="color" />
+
+        <!-- Icon Styles -->
+        <attr name="cometchatScopeChangeIcon" format="reference" />
+        <attr name="cometchatScopeChangeIconTint" format="color" />
+
+        <!-- Background and Corner Radius -->
+        <attr name="cometchatScopeChangeBackgroundColor" format="color" />
+        <attr name="cometchatScopeChangeCornerRadius" format="dimension" />
+        <attr name="cometchatScopeChangeStrokeWidth" format="dimension" />
+        <attr name="cometchatScopeChangeStrokeColor" format="color" />
+
+
+        <!-- List Item Styling -->
+        <attr name="cometchatScopeChangeItemTextColor" format="color" />
+        <attr name="cometchatScopeChangeDisableItemTextColor" format="color" />
+        <attr name="cometchatScopeChangeItemTextAppearance" format="reference" />
+        <attr name="cometchatScopeChangeItemRadioButtonTint" format="color" />
+        <attr name="cometchatScopeChangeItemDisableRadioButtonTint" format="color" />
+
+        <!-- Divider Style -->
+        <attr name="cometchatScopeChangeDragHandleColor" format="color" />
+
+        <!-- Button Styles -->
+        <attr name="cometchatScopeChangePositiveButtonTextColor" format="color" />
+        <attr name="cometchatScopeChangeNegativeButtonTextColor" format="color" />
+        <attr name="cometchatScopeChangeButtonTextAppearance" format="reference" />
+        <attr name="cometchatScopeChangePositiveButtonBackgroundColor" format="color" />
+        <attr name="cometchatScopeChangeNegativeButtonBackgroundColor" format="color" />
+
+        <attr name="cometchatScopeChangeStyle" format="reference" />
+
+    </declare-styleable>
+</resources>

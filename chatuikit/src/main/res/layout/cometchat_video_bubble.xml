@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/cometchat_padding_1"
+    android:paddingTop="@dimen/cometchat_padding_1"
+    android:paddingEnd="@dimen/cometchat_padding_1">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/video_view_container_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/video"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/cometchat_48dp"
+            android:layout_height="@dimen/cometchat_48dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="?attr/cometchatIconTintSecondary"
+            android:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/play_button_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/play_btn_bg"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/cometchat_play_background_icon" />
+
+            <ImageView
+                android:id="@+id/play_btn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/cometchat_play_icon" />
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

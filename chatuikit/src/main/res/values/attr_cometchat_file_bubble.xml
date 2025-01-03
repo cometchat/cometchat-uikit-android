@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatFileBubble">
+        <attr name="cometchatFileBubbleBackgroundColor" format="color" />
+        <attr name="cometchatFileBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatFileBubbleStrokeWidth" format="integer" />
+        <attr name="cometchatFileBubbleStrokeColor" format="color" />
+        <attr name="cometchatFileBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatFileBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatFileBubbleTitleColor" format="color" />
+        <attr name="cometchatFileBubbleSubTitleTextAppearance" format="reference" />
+        <attr name="cometchatFileBubbleSubTitleColor" format="color" />
+        <attr name="cometchatFileBubbleFileDownloadIconTint" format="color" />
+        <attr name="cometchatFileBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatFileBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatFileBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatFileBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatFileBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatFileBubbleStyle" format="reference" />
+        <attr name="cometchatFileBubbleDateStyle" format="reference" />
+        <attr name="cometchatFileBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatFileBubbleAvatarStyle" format="reference" />
+    </declare-styleable>
+
+</resources>

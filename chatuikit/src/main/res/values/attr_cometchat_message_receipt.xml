@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageReceipt">
+        <attr name="cometchatMessageReceiptStyle" format="reference" />
+        <attr name="cometchatMessageReceiptWaitIcon" format="reference" />
+        <attr name="cometchatMessageReceiptSentIcon" format="reference" />
+        <attr name="cometchatMessageReceiptDeliveredIcon" format="reference" />
+        <attr name="cometchatMessageReceiptReadIcon" format="reference" />
+        <attr name="cometchatMessageReceiptErrorIcon" format="reference" />
+        <attr name="cometchatMessageReceiptWaitIconTint" format="color" />
+        <attr name="cometchatMessageReceiptSentIconTint" format="color" />
+        <attr name="cometchatMessageReceiptDeliveredIconTint" format="color" />
+        <attr name="cometchatMessageReceiptReadIconTint" format="color" />
+        <attr name="cometchatMessageReceiptErrorIconTint" format="color" />
+    </declare-styleable>
+</resources>

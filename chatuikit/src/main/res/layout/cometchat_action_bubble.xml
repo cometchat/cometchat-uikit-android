@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/cometchat_padding_3"
+    android:paddingTop="@dimen/cometchat_padding_1"
+    android:paddingEnd="@dimen/cometchat_padding_3"
+    android:paddingBottom="@dimen/cometchat_padding_1">
+
+    <TextView
+        android:id="@+id/cometchat_action_bubble_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center" />
+
+</LinearLayout>

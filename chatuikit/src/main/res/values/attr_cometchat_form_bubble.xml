@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatFormBubble">
+        <attr name="cometchatFormBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatFormBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatFormBubbleBackgroundColor" format="color" />
+        <attr name="cometchatFormBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatFormBubbleStrokeColor" format="color" />
+        <attr name="cometchatFormBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleTitleColor" format="color" />
+        <attr name="cometchatFormBubbleSubTitleTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleSubTitleColor" format="color" />
+        <attr name="cometchatFormBubbleIconTint" format="color" />
+        <attr name="cometchatFormBubbleInputTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleInputTextColor" format="color" />
+        <attr name="cometchatFormBubblePlaceholderTextAppearance" format="reference" />
+        <attr name="cometchatFormBubblePlaceholderTextColor" format="color" />
+        <attr name="cometchatFormBubbleInputStrokeWidth" format="dimension" />
+        <attr name="cometchatFormBubbleInputStrokeColor" format="color" />
+        <attr name="cometchatFormBubbleInputCornerRadius" format="dimension" />
+        <attr name="cometchatFormBubbleButtonTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleButtonTextColor" format="color" />
+        <attr name="cometchatFormBubbleButtonBackgroundColor" format="color" />
+        <attr name="cometchatFormBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatFormBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatFormBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatFormBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatFormBubbleStyle" format="reference" />
+        <attr name="cometchatFormBubbleDateStyle" format="reference" />
+        <attr name="cometchatFormBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatFormBubbleAvatarStyle" format="reference" />
+    </declare-styleable>
+
+</resources>

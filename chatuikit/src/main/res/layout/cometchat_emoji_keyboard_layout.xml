@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emoji_parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/emoji_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:overScrollMode="never"
+        android:paddingStart="@dimen/cometchat_padding_3"
+        android:paddingTop="@dimen/cometchat_padding_2"
+        android:paddingEnd="@dimen/cometchat_padding_3" />
+
+    <TextView
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/category_tab"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cometchat_48dp"
+        android:background="#00000000"
+        android:visibility="visible"
+        app:tabGravity="fill"
+        app:tabIndicator="@null"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorGravity="bottom"
+        app:tabMaxWidth="51dp"
+        app:tabMode="scrollable"
+        app:tabRippleColor="@android:color/transparent" />
+
+</LinearLayout>

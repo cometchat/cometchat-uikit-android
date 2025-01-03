@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageList">
+
+        <attr name="cometchatMessageListIncomingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatMessageListOutgoingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatMessageListActionBubbleStyle" format="reference" />
+        <attr name="cometchatMessageListCallActionBubbleStyle" format="reference" />
+        <attr name="cometchatMessageListDateSeparatorStyle" format="reference" />
+        <attr name="cometchatMessageListStyle" format="reference" />
+
+        <attr name="cometchatMessageListErrorStateTitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageListErrorStateSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageListErrorStateTitleTextColor" format="color" />
+        <attr name="cometchatMessageListErrorStateSubtitleTextColor" format="color" />
+        <attr name="cometchatMessageListDeleteDialogStyle" format="reference" />
+
+        <attr name="cometchatMessageListStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageListStrokeColor" format="color" />
+        <attr name="cometchatMessageListCornerRadius" format="dimension" />
+        <attr name="cometchatMessageListBackgroundColor" format="color" />
+        <attr name="cometchatMessageListBackgroundDrawable" format="reference" />
+
+        <attr name="cometchatMessageListMessageInformationStyle" format="reference" />
+        <attr name="cometchatMessageListMessageOptionSheetStyle" format="reference" />
+        <attr name="cometchatMessageListReactionListStyle" format="reference" />
+
+    </declare-styleable>
+</resources>

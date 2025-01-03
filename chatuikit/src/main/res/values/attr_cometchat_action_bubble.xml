@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatActionBubble">
+        <attr name="cometchatActionBubbleTextColor" format="color" />
+        <attr name="cometchatActionBubbleTextAppearance" format="reference" />
+        <attr name="cometchatActionBubbleBackgroundColor" format="color" />
+        <attr name="cometchatActionBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatActionBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatActionBubbleStrokeColor" format="color" />
+        <attr name="cometchatActionBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatActionBubbleStyle" format="reference" />
+    </declare-styleable>
+
+</resources>

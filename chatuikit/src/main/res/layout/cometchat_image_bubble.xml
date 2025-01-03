@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/cometchat_padding_1"
+    android:paddingTop="@dimen/cometchat_padding_1"
+    android:paddingEnd="@dimen/cometchat_padding_1">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/image_view_container_card"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop" />
+
+            <ProgressBar
+                android:id="@+id/loader_icon"
+                android:layout_width="@dimen/cometchat_48dp"
+                android:layout_height="@dimen/cometchat_48dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="?attr/cometchatIconTintSecondary"
+                android:visibility="visible" />
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <TextView
+        android:id="@+id/caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textIsSelectable="true"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatShimmerFrameLayout">
+        <attr name="cometchatShimmerClipToChildren" format="boolean" />
+        <attr name="cometchatShimmerColored" format="boolean" />
+        <attr name="cometchatShimmerBaseColor" format="color" />
+        <attr name="cometchatShimmerHighlightColor" format="color" />
+        <attr name="cometchatShimmerBaseAlpha" format="float" />
+        <attr name="cometchatShimmerHighlightAlpha" format="float" />
+        <attr name="cometchatShimmerAutoStart" format="boolean" />
+        <attr name="cometchatShimmerDuration" format="integer" />
+        <attr name="cometchatShimmerRepeatCount" format="integer" />
+        <attr name="cometchatShimmerRepeatDelay" format="integer" />
+        <attr name="cometchatShimmerRepeatMode" format="enum">
+            <enum name="restart" value="1" />
+            <enum name="reverse" value="2" />
+        </attr>
+        <attr name="cometchatShimmerStartDelay" format="integer" />
+        <attr name="cometchatShimmerDirection" format="enum">
+            <enum name="leftToRight" value="0" />
+            <enum name="topToBottom" value="1" />
+            <enum name="rightToLeft" value="2" />
+            <enum name="bottomToTop" value="3" />
+        </attr>
+        <attr name="cometchatShimmerDropOff" format="float" />
+        <attr name="cometchatShimmerFixedWidth" format="dimension" />
+        <attr name="cometchatShimmerFixedHeight" format="dimension" />
+        <attr name="cometchatShimmerIntensity" format="float" />
+        <attr name="cometchatShimmerWidthRatio" format="float" />
+        <attr name="cometchatShimmerHeightRatio" format="float" />
+        <attr name="cometchatShimmerShape" format="enum">
+            <enum name="linear" value="0" />
+            <enum name="radial" value="1" />
+        </attr>
+        <attr name="cometchatShimmerTilt" format="float" />
+    </declare-styleable>
+</resources>

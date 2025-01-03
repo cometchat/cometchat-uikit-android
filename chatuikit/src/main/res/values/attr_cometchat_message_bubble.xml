@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatMessageBubble">
+        <attr name="cometchatMessageBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatMessageBubbleBackgroundColor" format="color" />
+        <attr name="cometchatMessageBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageBubbleStrokeColor" format="color" />
+        <attr name="cometchatMessageBubbleCornerRadius" format="dimension" />
+
+        <attr name="cometchatMessageBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatMessageBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatMessageBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatMessageBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatMessageBubbleSenderNameTextColor" format="color" />
+
+        <attr name="cometchatMessageBubbleStyle" format="reference" />
+        <attr name="cometchatIncomingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatOutgoingMessageBubbleStyle" format="reference" />
+        <attr name="cometchatMessageBubbleDateStyle" format="reference" />
+        <attr name="cometchatMessageBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatMessageBubbleAvatarStyle" format="reference" />
+        <attr name="cometchatReactionStyle" />
+        <attr name="cometchatDeleteBubbleStyle" />
+        <attr name="cometchatMessageBubbleMentionsStyle" format="reference" />
+        <attr name="cometchatTextBubbleStyle" />
+        <attr name="cometchatImageBubbleStyle" />
+        <attr name="cometchatVideoBubbleStyle" />
+        <attr name="cometchatFileBubbleStyle" />
+        <attr name="cometchatAudioBubbleStyle" />
+        <attr name="cometchatStickerBubbleStyle" />
+        <attr name="cometchatFormBubbleStyle" />
+        <attr name="cometchatPollBubbleStyle" />
+        <attr name="cometchatSchedulerBubbleStyle" />
+        <attr name="cometchatCollaborativeBubbleStyle" />
+        <attr name="cometchatMeetCallBubbleStyle" />
+    </declare-styleable>
+
+</resources>

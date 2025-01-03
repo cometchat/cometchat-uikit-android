@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatDate">
+        <attr name="cometchatDateStyle" format="reference" />
+        <attr name="cometchatDateTextAppearance" format="reference" />
+        <attr name="cometchatDateTextColor" format="color" />
+        <attr name="cometchatDateStrokeWidth" format="dimension" />
+        <attr name="cometchatDateStrokeColor" format="color" />
+        <attr name="cometchatDateCornerRadius" format="dimension" />
+        <attr name="cometchatDateBackgroundColor" format="color" />
+    </declare-styleable>
+</resources>

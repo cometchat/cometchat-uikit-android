@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/view_reaction_chip"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/cometchat_padding_2"
+    android:paddingTop="@dimen/cometchat_padding"
+    android:paddingEnd="@dimen/cometchat_padding_2"
+    android:paddingBottom="@dimen/cometchat_padding">
+
+    <TextView
+        android:id="@+id/tv_reaction_emoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="1" />
+
+    <Space
+        android:id="@+id/space_between"
+        android:layout_width="@dimen/cometchat_padding_1"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_reaction_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="1" />
+
+</LinearLayout>

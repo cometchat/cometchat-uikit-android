@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageHeader">
+        <attr name="cometchatMessageHeaderStyle" format="reference" />
+        <attr name="cometchatMessageHeaderTitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageHeaderTitleTextColor" format="color" />
+        <attr name="cometchatMessageHeaderSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageHeaderSubtitleTextColor" format="color" />
+        <attr name="cometchatMessageHeaderBackIcon" format="reference" />
+        <attr name="cometchatMessageHeaderBackIconTint" format="color" />
+        <attr name="cometchatMessageHeaderBackgroundColor" format="color" />
+        <attr name="cometchatMessageHeaderStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageHeaderStrokeColor" format="color" />
+        <attr name="cometchatMessageHeaderCornerRadius" format="dimension" />
+        <attr name="cometchatMessageHeaderAvatarStyle" format="reference" />
+        <attr name="cometchatMessageHeaderStatusIndicatorStyle" format="reference" />
+        <attr name="cometchatMessageHeaderTypingIndicatorStyle" format="reference" />
+        <attr name="cometchatMessageHeaderCallButtonsStyle" format="reference" />
+    </declare-styleable>
+</resources>

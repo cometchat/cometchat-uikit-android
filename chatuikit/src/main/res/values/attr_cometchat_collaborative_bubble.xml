@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatCollaborativeBubble">
+        <attr name="cometchatCollaborativeBubbleBackgroundColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatCollaborativeBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatCollaborativeBubbleStrokeColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatCollaborativeBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatCollaborativeBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatCollaborativeBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatCollaborativeBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleDateStyle" format="reference" />
+        <attr name="cometchatCollaborativeBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatCollaborativeBubbleAvatarStyle" format="reference" />
+        <attr name="cometchatCollaborativeBubbleStyle" format="reference" />
+
+        <attr name="cometchatCollaborativeBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatCollaborativeBubbleTitleTextColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatCollaborativeBubbleSubtitleTextColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleIconTint" format="color" />
+        <attr name="cometchatCollaborativeBubbleIconDrawable" format="reference" />
+        <attr name="cometchatCollaborativeBubbleButtonTextAppearance" format="reference" />
+        <attr name="cometchatCollaborativeBubbleButtonTextColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleSeparatorColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleImageStrokeWidth" format="dimension" />
+        <attr name="cometchatCollaborativeBubbleImageStrokeColor" format="color" />
+        <attr name="cometchatCollaborativeBubbleImageCornerRadius" format="dimension" />
+    </declare-styleable>
+</resources>

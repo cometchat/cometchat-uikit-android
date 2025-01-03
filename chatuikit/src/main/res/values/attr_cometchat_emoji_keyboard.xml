@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatEmojiKeyBoardView">
+        <attr name="cometchatEmojiKeyboardStyle" format="reference" />
+        <attr name="cometchatEmojiKeyboardCornerRadius" format="dimension" />
+        <attr name="cometchatEmojiKeyboardStrokeWidth" format="dimension" />
+        <attr name="cometchatEmojiKeyboardStrokeColor" format="color" />
+        <attr name="cometchatEmojiKeyboardCategoryIconTint" format="color" />
+        <attr name="cometchatEmojiKeyboardSelectedCategoryIconTint" format="color" />
+        <attr name="cometchatEmojiKeyboardSelectedCategoryBackgroundColor" format="dimension" />
+        <attr name="cometchatEmojiKeyboardCategoryTextAppearance" format="reference" />
+        <attr name="cometchatEmojiKeyboardCategoryTextColor" format="color" />
+        <attr name="cometchatEmojiKeyboardSeparatorColor" format="color" />
+        <attr name="cometchatEmojiKeyboardBackgroundColor" format="color" />
+    </declare-styleable>
+</resources>

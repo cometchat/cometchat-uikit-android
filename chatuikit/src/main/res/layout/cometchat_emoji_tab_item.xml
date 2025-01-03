@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/tabBackground"
+        android:layout_width="@dimen/cometchat_27dp"
+        android:layout_height="@dimen/cometchat_27dp"
+        android:layout_gravity="center"
+        android:background="@drawable/cometchat_emoji_selected_state" />
+
+    <ImageView
+        android:id="@+id/tabIcon"
+        android:layout_width="@dimen/cometchat_16dp"
+        android:layout_height="@dimen/cometchat_16dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:tint="@android:color/black" />
+</FrameLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatImageBubble">
+        <attr name="cometchatImageBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatImageBubbleStrokeWidth" format="integer" />
+        <attr name="cometchatImageBubbleStrokeColor" format="color" />
+        <attr name="cometchatImageBubbleBackgroundColor" format="color" />
+        <attr name="cometchatImageBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatImageBubbleCaptionTextColor" format="color" />
+        <attr name="cometchatImageBubbleCaptionTextAppearance" format="reference" />
+        <attr name="cometchatImageBubbleImageStrokeWidth" format="dimension" />
+        <attr name="cometchatImageBubbleImageStrokeColor" format="color" />
+        <attr name="cometchatImageBubbleImageCornerRadius" format="dimension" />
+        <attr name="cometchatImageBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatImageBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatImageBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatImageBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatImageBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatImageBubbleProgressIndeterminateTint" format="color" />
+        <attr name="cometchatImageBubbleStyle" format="reference" />
+        <attr name="cometchatImageBubbleDateStyle" format="reference" />
+        <attr name="cometchatImageBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatImageBubbleAvatarStyle" format="reference" />
+    </declare-styleable>
+</resources>

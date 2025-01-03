@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatTypingIndicator">
+        <attr name="cometchatTypingIndicatorStyle" format="reference" />
+        <attr name="cometchatTypingIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatTypingIndicatorTextColor" format="color" />
+    </declare-styleable>
+</resources>

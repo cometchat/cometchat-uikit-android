@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatReactionList">
+        <attr name="cometchatReactionListStyle" format="reference" />
+        <attr name="cometchatReactionListBackgroundColor" format="color" />
+        <attr name="cometchatReactionListStrokeColor" format="color" />
+        <attr name="cometchatReactionListStrokeWidth" format="dimension" />
+        <attr name="cometchatReactionListCornerRadius" format="dimension" />
+        <attr name="cometchatReactionListTitleTextColor" format="color" />
+        <attr name="cometchatReactionListTitleTextAppearance" format="reference" />
+        <attr name="cometchatReactionListSubTitleTextColor" format="color" />
+        <attr name="cometchatReactionListSubTitleTextAppearance" format="reference" />
+        <attr name="cometchatReactionListTabTextColor" format="color" />
+        <attr name="cometchatReactionListTabTextActiveColor" format="color" />
+        <attr name="cometchatReactionListTabTextAppearance" format="reference" />
+        <attr name="cometchatReactionListTabActiveIndicatorColor" format="color" />
+        <attr name="cometchatReactionListTailViewTextAppearance" format="reference" />
+        <attr name="cometchatReactionListAvatarStyle" format="reference" />
+        <attr name="cometchatReactionListErrorTextColor" format="color" />
+        <attr name="cometchatReactionListErrorTextApAppearance" format="color" />
+        <attr name="cometchatReactionListSeparatorColor" format="color" />
+    </declare-styleable>
+</resources>

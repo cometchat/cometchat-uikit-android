@@ -1,0 +1,17 @@
+<resources>
+
+    <style name="KotlinSampleApp.v5" parent="CometChatTheme.DayNight" />
+
+    <style name="ConfirmationDialogStyle" parent="CometChatConfirmDialogStyle" />
+
+    <style name="DetailsAvatarStyle" parent="CometChatAvatarStyle">
+        <item name="cometchatAvatarPlaceHolderTextAppearance">
+            @style/AvatarPlaceHolderTextAppearance
+        </item>
+    </style>
+
+    <style name="AvatarPlaceHolderTextAppearance" parent="CometChatTextAppearanceHeading2.Bold">
+        <item name="android:textSize">@dimen/cometchat_48sp</item>
+    </style>
+
+</resources>

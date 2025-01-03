@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatDeleteBubble">
+        <attr name="cometchatDeleteBubbleTextColor" format="color" />
+        <attr name="cometchatDeleteBubbleTextAppearance" format="reference" />
+        <attr name="cometchatDeleteBubbleIconTint" format="reference" />
+        <attr name="cometchatDeleteBubbleBackgroundColor" format="color" />
+        <attr name="cometchatDeleteBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatDeleteBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatDeleteBubbleStrokeColor" format="color" />
+        <attr name="cometchatDeleteBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatDeleteBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatDeleteBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatDeleteBubbleStyle" format="reference" />
+        <attr name="cometchatDeleteBubbleDateStyle" format="reference" />
+        <attr name="cometchatDeleteBubbleAvatarStyle" format="reference" />
+    </declare-styleable>
+</resources>

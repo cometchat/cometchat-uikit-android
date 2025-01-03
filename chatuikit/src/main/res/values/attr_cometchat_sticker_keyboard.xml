@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatStickerKeyboard">
+        <attr name="cometchatStickerKeyboardBackgroundColor" format="reference" />
+        <attr name="cometchatStickerKeyboardBackgroundDrawable" format="reference" />
+        <attr name="cometchatStickerKeyboardSeparatorColor" format="color" />
+        <attr name="cometchatStickerKeyboardEmptyStateTitleTextAppearance" format="reference" />
+        <attr name="cometchatStickerKeyboardEmptyStateSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatStickerKeyboardEmptyStateTitleTextColor" format="color" />
+        <attr name="cometchatStickerKeyboardEmptyStateSubtitleTextColor" format="color" />
+        <attr name="cometchatStickerKeyboardErrorStateTextAppearance" format="reference" />
+        <attr name="cometchatStickerKeyboardErrorStateTextColor" format="color" />
+        <attr name="cometchatStickerKeyboardStyle" format="reference" />
+    </declare-styleable>
+</resources>

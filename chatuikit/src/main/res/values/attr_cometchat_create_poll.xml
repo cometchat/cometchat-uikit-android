@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatCreatePoll">
+
+        <attr name="cometchatCreatePollTitleTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollTitleTextColor" format="color" />
+        <attr name="cometchatCreatePollBackgroundColor" format="color" />
+        <attr name="cometchatCreatePollBackgroundDrawable" format="reference" />
+        <attr name="cometchatCreatePollCornerRadius" format="dimension" />
+        <attr name="cometchatCreatePollStrokeWidth" format="dimension" />
+        <attr name="cometchatCreatePollStrokeColor" format="color" />
+
+        <attr name="cometchatCreatePollOptionTitleTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollOptionTitleTextColor" format="color" />
+
+        <attr name="cometchatCreatePollOptionTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollOptionTextColor" format="color" />
+        <attr name="cometchatCreatePollOptionHintColor" format="color" />
+        <attr name="cometchatCreatePollOptionCornerRadius" format="dimension" />
+        <attr name="cometchatCreatePollOptionStrokeWidth" format="dimension" />
+        <attr name="cometchatCreatePollOptionStrokeColor" format="color" />
+
+        <attr name="cometchatCreatePollQuestionTitleTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollQuestionTitleTextColor" format="color" />
+
+        <attr name="cometchatCreatePollQuestionTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollQuestionTextColor" format="color" />
+        <attr name="cometchatCreatePollQuestionHintColor" format="color" />
+        <attr name="cometchatCreatePollQuestionCornerRadius" format="dimension" />
+        <attr name="cometchatCreatePollQuestionStrokeWidth" format="dimension" />
+        <attr name="cometchatCreatePollQuestionStrokeColor" format="color" />
+
+        <attr name="cometchatCreatePollDragIconTint" format="color" />
+        <attr name="cometchatCreatePollDragIcon" format="reference" />
+
+        <attr name="cometchatCreatePollSeparatorColor" format="color" />
+
+        <attr name="cometchatCreatePollSubmitButtonBackgroundColor" format="color" />
+        <attr name="cometchatCreatePollDisabledSubmitButtonBackgroundColor" format="color" />
+        <attr name="cometchatCreatePollSubmitButtonCornerRadius" format="dimension" />
+        <attr name="cometchatCreatePollSubmitButtonStrokeWidth" format="dimension" />
+        <attr name="cometchatCreatePollSubmitButtonStrokeColor" format="color" />
+        <attr name="cometchatCreatePollSubmitButtonTextColor" format="color" />
+        <attr name="cometchatCreatePollSubmitButtonTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollProgressIndeterminateTint" format="color" />
+
+        <attr name="cometchatCreatePollErrorTextColor" format="color" />
+        <attr name="cometchatCreatePollErrorTextAppearance" format="reference" />
+        <attr name="cometchatCreatePollBackIcon" format="reference" />
+        <attr name="cometchatCreatePollBackIconTint" format="color" />
+
+        <attr name="cometchatCreatePollStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

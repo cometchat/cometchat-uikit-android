@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/outgoing_call_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="@dimen/cometchat_margin_5"
+        android:paddingEnd="@dimen/cometchat_margin_5">
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cometchat_80dp"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/subtitle_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_text"
+            android:layout_margin="@dimen/cometchat_margin_2"
+            android:text="@string/cometchat_calling"
+            android:textAlignment="center" />
+
+        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/cometchat_120dp"
+            android:layout_height="@dimen/cometchat_120dp"
+            android:layout_below="@id/subtitle_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/cometchat_margin_10"
+            app:cardCornerRadius="@dimen/cometchat_100dp" />
+
+        <com.cometchat.chatuikit.shared.views.button.CometChatButton
+            android:id="@+id/end_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/cometchat_80dp" />
+
+    </RelativeLayout>
+
+    <com.cometchat.chatuikit.calls.ongoingcall.CometChatOngoingCall
+        android:id="@+id/ongoing_call"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone" />
+
+</LinearLayout>

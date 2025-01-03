@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatAIOptionSheet">
+        <attr name="cometchatAIOptionSheetStyle" format="reference" />
+        <attr name="cometchatAIOptionSheetBackgroundColor" format="color" />
+        <attr name="cometchatAIOptionSheetStrokeWidth" format="dimension" />
+        <attr name="cometchatAIOptionSheetStrokeColor" format="color" />
+        <attr name="cometchatAIOptionSheetCornerRadius" format="dimension" />
+        <attr name="cometchatAIOptionSheetIconTint" format="color" />
+        <attr name="cometchatAIOptionSheetTitleTextAppearance" format="reference" />
+        <attr name="cometchatAIOptionSheetTitleColor" format="reference" />
+    </declare-styleable>
+</resources>

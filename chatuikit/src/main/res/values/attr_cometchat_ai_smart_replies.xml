@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatAISmartReplies">
+
+        <attr name="cometchatAISmartRepliesTitleTextColor" format="color" />
+        <attr name="cometchatAISmartRepliesTitleTextAppearance" format="reference" />
+        <attr name="cometchatAISmartRepliesCloseIconTint" format="color" />
+        <attr name="cometchatAISmartRepliesCloseIconDrawable" format="reference" />
+
+        <attr name="cometchatAISmartRepliesBackgroundColor" format="color" />
+        <attr name="cometchatAISmartRepliesBackgroundDrawable" format="reference" />
+        <attr name="cometchatAISmartRepliesCornerRadius" format="dimension" />
+        <attr name="cometchatAISmartRepliesStrokeWidth" format="dimension" />
+        <attr name="cometchatAISmartRepliesStrokeColor" format="color" />
+
+        <attr name="cometchatAISmartRepliesItemBackgroundColor" format="color" />
+        <attr name="cometchatAISmartRepliesItemBackgroundDrawable" format="reference" />
+        <attr name="cometchatAISmartRepliesItemCornerRadius" format="color" />
+        <attr name="cometchatAISmartRepliesItemStrokeWidth" format="dimension" />
+        <attr name="cometchatAISmartRepliesItemStrokeColor" format="color" />
+
+        <attr name="cometchatAISmartRepliesItemTextColor" format="color" />
+        <attr name="cometchatAISmartRepliesItemTextAppearance" format="reference" />
+
+        <attr name="cometchatAISmartRepliesErrorStateTextColor" format="color" />
+        <attr name="cometchatAISmartRepliesErrorStateTextAppearance" format="reference" />
+
+        <attr name="cometchatAISmartRepliesStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

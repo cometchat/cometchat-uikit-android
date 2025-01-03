@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatSchedulerBubble">
+        <attr name="cometchatSchedulerBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatSchedulerBubbleTitleTextColor" format="color" />
+        <attr name="cometchatSchedulerBubbleButtonTextAppearance" format="reference" />
+        <attr name="cometchatSchedulerBubbleButtonTextColor" format="color" />
+        <attr name="cometchatSchedulerBubbleButtonBackgroundColor" format="color" />
+        <attr name="cometchatSchedulerBubbleButtonBackgroundDrawable" format="reference" />
+        <attr name="cometchatSchedulerBubbleBackgroundColor" format="color" />
+        <attr name="cometchatSchedulerBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatSchedulerBubbleStrokeWidth" format="integer" />
+        <attr name="cometchatSchedulerBubbleStrokeColor" format="color" />
+        <attr name="cometchatSchedulerBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatSchedulerBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatSchedulerBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatSchedulerBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatSchedulerBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatSchedulerBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatSchedulerBubbleStyle" format="reference" />
+        <attr name="cometchatSchedulerBubbleDateStyle" format="reference" />
+        <attr name="cometchatSchedulerBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatSchedulerBubbleAvatarStyle" format="reference" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageOptionSheet">
+        <attr name="cometchatMessageOptionSheetStyle" format="reference" />
+        <attr name="cometchatMessageOptionSheetBackgroundColor" format="color" />
+        <attr name="cometchatMessageOptionSheetStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageOptionSheetStrokeColor" format="color" />
+        <attr name="cometchatMessageOptionSheetCornerRadius" format="dimension" />
+        <attr name="cometchatMessageOptionSheetIconTint" format="color" />
+        <attr name="cometchatMessageOptionSheetTitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageOptionSheetTitleColor" format="reference" />
+        <attr name="cometchatMessageOptionSheetEmojiPickerIcon" format="reference" />
+    </declare-styleable>
+</resources>

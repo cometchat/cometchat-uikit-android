@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatCallActionBubble">
+
+        <attr name="cometchatCallActionBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatCallActionBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatCallActionBubbleStrokeColor" format="color" />
+        <attr name="cometchatCallActionBubbleBackgroundColor" format="color" />
+        <attr name="cometchatCallActionBubbleBackgroundDrawable" format="reference" />
+
+        <attr name="cometchatCallActionBubbleTextColor" format="color" />
+        <attr name="cometchatCallActionBubbleTextAppearance" format="reference" />
+        <attr name="cometchatCallActionBubbleIconTint" format="color" />
+
+        <attr name="cometchatCallActionBubbleMissedCallTextColor" format="color" />
+        <attr name="cometchatCallActionBubbleMissedCallTextAppearance" format="reference" />
+        <attr name="cometchatCallActionBubbleMissedCallBackgroundColor" format="color" />
+        <attr name="cometchatCallActionBubbleMissedCallIconTint" format="color" />
+        <attr name="cometchatCallActionBubbleMissedCallBackgroundDrawable" format="reference" />
+
+        <attr name="cometchatCallActionBubbleStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

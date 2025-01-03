@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatPollBubble">
+        <attr name="cometchatPollBubbleBackgroundColor" format="color" />
+        <attr name="cometchatPollBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatPollBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatPollBubbleStrokeColor" format="color" />
+        <attr name="cometchatPollBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatPollBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatPollBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatPollBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatPollBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatPollBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatPollBubbleDateStyle" format="reference" />
+        <attr name="cometchatPollBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatPollBubbleAvatarStyle" format="reference" />
+        <attr name="cometchatPollBubbleStyle" format="reference" />
+
+        <attr name="cometchatPollBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatPollBubbleTitleTextColor" format="color" />
+        <attr name="cometchatPollBubbleOptionTextAppearance" format="reference" />
+        <attr name="cometchatPollBubbleOptionTextColor" format="color" />
+
+        <attr name="cometchatPollBubbleSelectedRadioButtonStrokeColor" format="color" />
+        <attr name="cometchatPollBubbleSelectedRadioButtonStrokeWidth" format="dimension" />
+        <attr name="cometchatPollBubbleSelectedRadioButtonCornerRadius" format="dimension" />
+        <attr name="cometchatPollBubbleSelectedIconTint" format="color" />
+
+        <attr name="cometchatPollBubbleUnselectedRadioButtonStrokeColor" format="color" />
+        <attr name="cometchatPollBubbleUnselectedRadioButtonStrokeWidth" format="dimension" />
+        <attr name="cometchatPollBubbleUnselectedRadioButtonCornerRadius" format="dimension" />
+        <attr name="cometchatPollBubbleUnselectedIconTint" format="color" />
+
+        <attr name="cometchatPollBubbleProgressIndeterminateTint" format="color" />
+
+        <attr name="cometchatPollBubbleOptionAvatarStyle" format="reference" />
+        <attr name="cometchatPollBubbleVoteCountTextColor" format="color" />
+        <attr name="cometchatPollBubbleVoteCountTextAppearance" format="reference" />
+        <attr name="cometchatPollBubbleSelectedStateDrawable" format="reference" />
+        <attr name="cometchatPollBubbleUnselectedStateDrawable" format="reference" />
+        <attr name="cometchatPollBubbleProgressColor" format="reference" />
+        <attr name="cometchatPollBubbleProgressBackgroundColor" format="color" />
+
+    </declare-styleable>
+
+</resources>

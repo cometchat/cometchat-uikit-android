@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageInput">
+        <attr name="cometchatMessageInputStyle" format="reference" />
+        <attr name="cometchatMessageInputBackgroundColor" format="color" />
+        <attr name="cometchatMessageInputStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageInputSeparatorColor" format="color" />
+        <attr name="cometchatMessageInputStrokeColor" format="color" />
+        <attr name="cometchatMessageInputCornerRadius" format="dimension" />
+        <attr name="cometchatMessageInputTextAppearance" format="reference" />
+        <attr name="cometchatMessageInputTextColor" format="color" />
+        <attr name="cometchatMessageInputPlaceHolderTextColor" format="color" />
+    </declare-styleable>
+</resources>

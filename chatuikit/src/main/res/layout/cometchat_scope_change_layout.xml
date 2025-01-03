@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/cometchat_padding_5"
+    android:paddingEnd="@dimen/cometchat_padding_5"
+    android:paddingBottom="@dimen/cometchat_padding_5">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cometchat_scope_change_drag_handle"
+        android:layout_width="@dimen/cometchat_32dp"
+        android:layout_height="@dimen/cometchat_4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/cometchat_margin_3"
+        app:cardBackgroundColor="?attr/cometchatNeutralColor500"
+        app:cardCornerRadius="@dimen/cometchat_radius_max" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="@dimen/cometchat_80dp"
+        android:layout_height="@dimen/cometchat_80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/cometchat_margin_6"
+        android:padding="@dimen/cometchat_padding_4"
+        app:cardBackgroundColor="?attr/cometchatBackgroundColor2"
+        app:cardCornerRadius="@dimen/cometchat_radius_max"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/cometchat_0dp">
+
+        <ImageView
+            android:id="@+id/iv_scope_change"
+            android:layout_width="@dimen/cometchat_48dp"
+            android:layout_height="@dimen/cometchat_48dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/cometchat_ic_change_scope"
+            app:tint="?attr/cometchatPrimaryColor" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/cometchat_scope_change_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/cometchat_margin_3"
+        android:text="@string/cometchat_scope_change"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/cometchat_scope_change_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/cometchat_margin_2"
+        android:text="@string/cometchat_change_scope_subtitle"
+        android:textAlignment="center" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/cometchat_margin_3"
+        app:cardBackgroundColor="@color/cometchat_color_transparent"
+        app:cardCornerRadius="@dimen/cometchat_radius_2"
+        app:cardElevation="@dimen/cometchat_0dp"
+        app:strokeColor="?attr/cometchatStrokeColorLight"
+        app:strokeWidth="@dimen/cometchat_1dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/cometchat_margin_3"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cometchat_scope_change_cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="@dimen/cometchat_padding_3"
+            android:paddingBottom="@dimen/cometchat_padding_3"
+            app:backgroundTint="?attr/cometchatBackgroundColor1"
+            app:cardCornerRadius="@dimen/cometchat_radius_2"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/cometchatStrokeColorLight"
+            app:strokeWidth="@dimen/cometchat_1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/cometchat_margin_5"
+                android:layout_marginTop="@dimen/cometchat_margin_2"
+                android:layout_marginEnd="@dimen/cometchat_margin_5"
+                android:layout_marginBottom="@dimen/cometchat_margin_2"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/cometchat_scope_change_cancel_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cometchat_cancel"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/cometchatTextAppearanceButtonMedium"
+                    android:textColor="?attr/cometchatSecondaryButtonTextColor" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <Space
+            android:layout_width="@dimen/cometchat_8dp"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cometchat_scope_change_save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="@dimen/cometchat_padding_3"
+            android:paddingBottom="@dimen/cometchat_padding_3"
+            app:cardBackgroundColor="?attr/cometchatPrimaryColor"
+            app:cardCornerRadius="@dimen/cometchat_radius_2"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/cometchatStrokeColorLight"
+            app:strokeWidth="@dimen/cometchat_1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/cometchat_margin_5"
+                android:layout_marginTop="@dimen/cometchat_margin_2"
+                android:layout_marginEnd="@dimen/cometchat_margin_5"
+                android:layout_marginBottom="@dimen/cometchat_margin_2"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/cometchat_scope_change_save_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cometchat_save"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/cometchatTextAppearanceButtonMedium"
+                    android:textColor="?attr/cometchatColorWhite" />
+
+                <ProgressBar
+                    android:id="@+id/cometchat_scope_change_save_progress"
+                    android:layout_width="@dimen/cometchat_24dp"
+                    android:layout_height="@dimen/cometchat_24dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="?attr/cometchatIconTintSecondary"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</LinearLayout>

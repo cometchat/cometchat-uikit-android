@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatLinkPreviewBubble">
+
+        <attr name="cometchatLinkPreviewBubbleBackgroundColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatLinkPreviewBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatLinkPreviewBubbleStrokeColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleBackgroundDrawable" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatLinkPreviewBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleStyle" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleDateStyle" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleMessageReceiptStyle" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleAvatarStyle" format="reference" />
+
+        <attr name="cometchatLinkPreviewBubbleTitleTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleDescriptionTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleDescriptionTextAppearance" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleLinkTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleLinkTextAppearance" format="reference" />
+
+        <attr name="cometchatLinkPreviewBubbleTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubbleTextTextAppearance" format="reference" />
+        <attr name="cometchatLinkPreviewBubbleHighlightTextColor" format="color" />
+        <attr name="cometchatLinkPreviewBubblePreviewCornerRadius" format="dimension" />
+
+    </declare-styleable>
+</resources>

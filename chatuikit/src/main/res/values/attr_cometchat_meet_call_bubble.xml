@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatMeetCallBubble">
+
+        <attr name="cometchatMeetCallBubbleIncomingVoiceCallIcon" format="reference" />
+        <attr name="cometchatMeetCallBubbleIncomingVideoCallIcon" format="reference" />
+        <attr name="cometchatMeetCallBubbleOutgoingVoiceCallIcon" format="reference" />
+        <attr name="cometchatMeetCallBubbleOutgoingVideoCallIcon" format="reference" />
+        <attr name="cometchatMeetCallBubbleCallIconTint" format="color" />
+        <attr name="cometchatMeetCallBubbleIconBackgroundColor" format="color" />
+
+        <attr name="cometchatMeetCallBubbleTitleTextColor" format="color" />
+        <attr name="cometchatMeetCallBubbleTitleTextAppearance" format="reference" />
+        <attr name="cometchatMeetCallBubbleSubtitleTextColor" format="color" />
+        <attr name="cometchatMeetCallBubbleSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatMeetCallBubbleSeparatorColor" format="color" />
+        <attr name="cometchatMeetCallBubbleJoinButtonTextColor" format="color" />
+        <attr name="cometchatMeetCallBubbleJoinButtonTextAppearance" format="reference" />
+
+        <attr name="cometchatMeetCallBubbleBackgroundColor" format="color" />
+        <attr name="cometchatMeetCallBubbleStrokeColor" format="color" />
+        <attr name="cometchatMeetCallBubbleStrokeWidth" format="dimension" />
+        <attr name="cometchatMeetCallBubbleCornerRadius" format="dimension" />
+        <attr name="cometchatMeetCallBubbleBackgroundDrawable" format="reference" />
+
+        <attr name="cometchatMeetCallBubbleThreadIndicatorTextAppearance" format="reference" />
+        <attr name="cometchatMeetCallBubbleThreadIndicatorTextColor" format="color" />
+        <attr name="cometchatMeetCallBubbleThreadIndicatorIconTint" format="color" />
+        <attr name="cometchatMeetCallBubbleSenderNameTextAppearance" format="reference" />
+        <attr name="cometchatMeetCallBubbleSenderNameTextColor" format="color" />
+        <attr name="cometchatMeetCallBubbleAvatarStyle" format="reference" />
+
+        <attr name="cometchatMeetCallBubbleStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

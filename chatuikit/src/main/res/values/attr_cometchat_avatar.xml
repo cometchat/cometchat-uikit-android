@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatAvatar">
+        <attr name="cometchatAvatarStyle" format="reference" />
+        <attr name="cometchatAvatarBackgroundColor" format="color" />
+        <attr name="cometchatAvatarStrokeColor" format="color" />
+        <attr name="cometchatAvatarStrokeWidth" format="dimension" />
+        <attr name="cometchatAvatarStrokeRadius" format="dimension" />
+        <attr name="cometchatAvatarPlaceHolderTextAppearance" format="reference" />
+        <attr name="cometchatAvatarPlaceHolderTextColor" format="color" />
+    </declare-styleable>
+</resources>

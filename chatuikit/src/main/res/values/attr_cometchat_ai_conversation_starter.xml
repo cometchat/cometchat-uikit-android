@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatAIConversationStarter">
+
+        <attr name="cometchatAIConversationStarterBackgroundColor" format="color" />
+        <attr name="cometchatAIConversationStarterBackgroundDrawable" format="reference" />
+        <attr name="cometchatAIConversationStarterCornerRadius" format="dimension" />
+        <attr name="cometchatAIConversationStarterStrokeWidth" format="dimension" />
+        <attr name="cometchatAIConversationStarterStrokeColor" format="color" />
+
+        <attr name="cometchatAIConversationStarterItemBackgroundColor" format="color" />
+        <attr name="cometchatAIConversationStarterItemBackgroundDrawable" format="reference" />
+        <attr name="cometchatAIConversationStarterItemCornerRadius" format="color" />
+        <attr name="cometchatAIConversationStarterItemStrokeWidth" format="dimension" />
+        <attr name="cometchatAIConversationStarterItemStrokeColor" format="color" />
+
+        <attr name="cometchatAIConversationStarterItemTextColor" format="color" />
+        <attr name="cometchatAIConversationStarterItemTextAppearance" format="reference" />
+
+
+        <attr name="cometchatAIConversationStarterErrorStateTextColor" format="color" />
+        <attr name="cometchatAIConversationStarterErrorStateTextAppearance" format="reference" />
+
+        <attr name="cometchatAIConversationStarterStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

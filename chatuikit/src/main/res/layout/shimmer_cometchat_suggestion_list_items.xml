@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/cometchat_padding_4"
+    android:paddingTop="@dimen/cometchat_padding_2"
+    android:paddingEnd="@dimen/cometchat_padding_4"
+    android:paddingBottom="@dimen/cometchat_padding_2">
+
+    <View
+        android:id="@+id/shimmer_suggestion_item_avatar"
+        android:layout_width="@dimen/cometchat_40dp"
+        android:layout_height="@dimen/cometchat_40dp"
+        android:background="@drawable/shimmer_gradient_circle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/shimmer_suggestion_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/cometchat_20dp"
+        android:layout_marginStart="@dimen/cometchat_padding_3"
+        android:background="@drawable/shimmer_gradient_rect" />
+
+</LinearLayout>

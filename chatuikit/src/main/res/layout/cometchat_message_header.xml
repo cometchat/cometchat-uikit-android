@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/cometchat_padding_4"
+    android:paddingTop="@dimen/cometchat_padding_2"
+    android:paddingEnd="@dimen/cometchat_padding_4"
+    android:paddingBottom="@dimen/cometchat_padding_2">
+
+    <LinearLayout
+        android:id="@+id/message_header_back_icon_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_message_header_back"
+            android:layout_width="@dimen/cometchat_24dp"
+            android:layout_height="@dimen/cometchat_24dp"
+            android:layout_gravity="center_vertical"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/message_header_avatar_layout"
+        android:layout_width="@dimen/cometchat_40dp"
+        android:layout_height="@dimen/cometchat_40dp"
+        android:layout_marginStart="@dimen/cometchat_margin_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/message_header_back_icon_layout"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+            android:id="@+id/message_header_avatar_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.cometchat.chatuikit.shared.views.cometchatstatusindicator.CometChatStatusIndicator
+            android:id="@+id/message_header_status_indicator_view"
+            android:layout_width="@dimen/cometchat_12dp"
+            android:layout_height="@dimen/cometchat_12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/message_header_center_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/cometchat_margin_2"
+        android:layout_marginEnd="@dimen/cometchat_padding_3"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/message_header_tail_view"
+        app:layout_constraintStart_toEndOf="@+id/message_header_avatar_layout"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_message_header_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1" />
+
+        <LinearLayout
+            android:id="@+id/message_header_subtitle_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/message_header_avatar_layout"
+            app:layout_constraintTop_toBottomOf="@+id/message_header_name_layout">
+
+            <TextView
+                android:id="@+id/tv_message_header_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:marqueeRepeatLimit="1"
+                android:minHeight="@dimen/cometchat_19dp"
+                android:scrollHorizontally="true"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/tv_message_header_typing_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:minHeight="@dimen/cometchat_17dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/message_header_tail_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

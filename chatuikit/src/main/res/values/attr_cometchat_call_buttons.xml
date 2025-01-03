@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatCallButtons">
+
+        <attr name="cometchatCallButtonsVoiceCallIcon" format="reference" />
+        <attr name="cometchatCallButtonsVideoCallIcon" format="reference" />
+
+        <attr name="cometchatCallButtonsVideoCallIconTint" format="color" />
+        <attr name="cometchatCallButtonsVoiceCallIconTint" format="color" />
+
+        <attr name="cometchatCallButtonsVoiceCallTextColor" format="color" />
+        <attr name="cometchatCallButtonsVideoCallTextColor" format="color" />
+
+        <attr name="cometchatCallButtonsVoiceCallTextAppearance" format="reference" />
+        <attr name="cometchatCallButtonsVideoCallTextAppearance" format="reference" />
+
+        <attr name="cometchatCallButtonsVoiceCallBackgroundColor" format="color" />
+        <attr name="cometchatCallButtonsVideoCallBackgroundColor" format="color" />
+
+        <attr name="cometchatCallButtonsStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

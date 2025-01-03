@@ -1,0 +1,72 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:orientation="vertical"
+    android:padding="@dimen/cometchat_padding_1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/cometchat_padding_2"
+        android:paddingBottom="@dimen/cometchat_padding_3">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/call_icon_card"
+            android:layout_width="@dimen/cometchat_40dp"
+            android:layout_height="@dimen/cometchat_40dp"
+            app:cardCornerRadius="@dimen/cometchat_radius_max"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/call_icon"
+                android:layout_width="@dimen/cometchat_20dp"
+                android:layout_height="@dimen/cometchat_20dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cometchat_margin_2"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/subtitle_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cometchat_margin" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <LinearLayout
+        android:id="@+id/join_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="@dimen/cometchat_40dp">
+
+        <TextView
+            android:id="@+id/tv_join_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cometchat_join" />
+
+    </LinearLayout>
+
+</LinearLayout>

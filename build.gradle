@@ -1,0 +1,37 @@
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    id 'com.google.gms.google-services' version '4.4.2' apply false
+    id 'com.google.firebase.crashlytics' version "3.0.2" apply false
+    id 'com.diffplug.spotless' version '6.12.1'
+    alias(libs.plugins.kotlin.android) apply false
+}
+
+tasks.register('generateFileList') {
+    doLast {
+        // List all Java files in the 'src' directory
+        def javaFiles = fileTree('chatuikit/src/main/java/com/cometchat/chatuikit').include('**/*.java').files
+        def xmlFiles = fileTree('chatuikit/src/main/res').include('**/*.xml').files
+
+        // Print out the files for debugging purposes
+        println "Java files found: " + javaFiles.size()
+        javaFiles.each { println it }
+
+        println "XML files found: " + xmlFiles.size()
+        xmlFiles.each { println it }
+
+        // Combine Java and XML files into one list
+        def allFiles = javaFiles + xmlFiles
+        //def allFiles = javaFiles
+        //def allFiles = xmlFiles
+
+        // Write the list of file paths to a text file
+        def fileListPath = file('scripts/fileList.txt')
+        fileListPath.text = allFiles.collect { it.absolutePath }.join("\n")
+    }
+}
+
+tasks.register('formatCode', Exec) {
+    //dependsOn generateFileList
+    //commandLine 'osascript', 'scripts/formatCode.applescript'
+}

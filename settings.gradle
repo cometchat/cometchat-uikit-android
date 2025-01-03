@@ -1,0 +1,31 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url "https://dl.cloudsmith.io/public/cometchat/cometchat/maven/"
+        }
+    }
+}
+
+rootProject.name='Android UI Kit'
+include ':chatuikit',':sample-app-java',':sample-app-kotlin',':sample-app-java+push-notification',':sample-app-kotlin+push-notification'
+

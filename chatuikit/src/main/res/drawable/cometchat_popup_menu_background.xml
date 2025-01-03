@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/cometchatNeutralColor200" />
+            <corners android:radius="@dimen/cometchat_radius_1" />
+        </shape>
+    </item>
+</layer-list>

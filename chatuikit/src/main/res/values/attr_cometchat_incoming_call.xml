@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatIncomingCall">
+
+        <attr name="cometchatIncomingCallTitleTextColor" format="color" />
+        <attr name="cometchatIncomingCallSubtitleTextColor" format="color" />
+        <attr name="cometchatIncomingCallTitleTextAppearance" format="reference" />
+        <attr name="cometchatIncomingCallSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatIncomingCallIconTint" format="color" />
+        <attr name="cometchatIncomingCallVoiceCallIcon" format="reference" />
+        <attr name="cometchatIncomingCallVideoCallIcon" format="reference" />
+
+        <attr name="cometchatIncomingCallAvatarStyle" format="reference" />
+
+        <attr name="cometchatIncomingCallRejectCallIcon" format="reference" />
+        <attr name="cometchatIncomingCallRejectCallIconTint" format="color" />
+        <attr name="cometchatIncomingCallRejectCallButtonBackgroundColor" format="color" />
+
+        <attr name="cometchatIncomingCallAcceptCallIcon" format="reference" />
+        <attr name="cometchatIncomingCallAcceptCallIconTint" format="color" />
+        <attr name="cometchatIncomingCallAcceptCallButtonBackgroundColor" format="color" />
+
+        <attr name="cometchatIncomingCallBackgroundColor" format="color" />
+        <attr name="cometchatIncomingCallCornerRadius" format="dimension" />
+        <attr name="cometchatIncomingCallStrokeWidth" format="dimension" />
+        <attr name="cometchatIncomingCallStrokeColor" format="color" />
+
+        <attr name="cometchatIncomingCallStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

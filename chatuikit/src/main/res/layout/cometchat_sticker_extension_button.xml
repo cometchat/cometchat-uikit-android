@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/iv_sticker"
+        android:layout_width="@dimen/cometchat_24dp"
+        android:layout_height="@dimen/cometchat_24dp"
+        android:layout_marginEnd="@dimen/cometchat_margin_4"
+        android:background="@android:color/transparent"
+        android:importantForAccessibility="no"
+        android:src="@drawable/cometchat_ic_sticker" />
+
+    <ImageView
+        android:id="@+id/iv_filled_sticker"
+        android:layout_width="@dimen/cometchat_24dp"
+        android:layout_height="@dimen/cometchat_24dp"
+        android:layout_marginEnd="@dimen/cometchat_margin_4"
+        android:background="@android:color/transparent"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
+</LinearLayout>

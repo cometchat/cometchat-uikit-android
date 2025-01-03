@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CometChatOutgoingCall">
+
+        <attr name="cometchatOutgoingCallTitleTextColor" format="color" />
+        <attr name="cometchatOutgoingCallSubtitleTextColor" format="color" />
+        <attr name="cometchatOutgoingCallTitleTextAppearance" format="reference" />
+        <attr name="cometchatOutgoingCallSubtitleTextAppearance" format="reference" />
+        <attr name="cometchatOutgoingCallEndCallIcon" format="reference" />
+        <attr name="cometchatOutgoingCallEndCallIconTint" format="color" />
+        <attr name="cometchatOutgoingCallAvatarStyle" format="reference" />
+        <attr name="cometchatOutgoingCallEndCallButtonBackgroundColor" format="color" />
+
+        <attr name="cometchatOutgoingCallBackgroundColor" format="color" />
+        <attr name="cometchatOutgoingCallCornerRadius" format="dimension" />
+        <attr name="cometchatOutgoingCallStrokeWidth" format="dimension" />
+        <attr name="cometchatOutgoingCallStrokeColor" format="color" />
+
+        <attr name="cometchatOutgoingCallStyle" format="reference" />
+
+    </declare-styleable>
+
+</resources>

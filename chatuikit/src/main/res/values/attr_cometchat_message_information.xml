@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatMessageInformation">
+        <attr name="cometchatMessageInformationStyle" format="reference" />
+        <attr name="cometchatMessageInformationTitleTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationTitleTextColor" format="color" />
+        <attr name="cometchatMessageInformationBackgroundColor" format="color" />
+        <attr name="cometchatMessageInformationBackgroundHighlightColor" format="color" />
+        <attr name="cometchatMessageInformationCornerRadius" format="dimension" />
+        <attr name="cometchatMessageInformationStrokeWidth" format="dimension" />
+        <attr name="cometchatMessageInformationStrokeColor" format="color" />
+        <attr name="cometchatMessageInformationItemNameTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationItemNameTextColor" format="color" />
+        <attr name="cometchatMessageInformationItemReadTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationItemReadTextColor" format="color" />
+        <attr name="cometchatMessageInformationItemReadDateTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationItemReadDateTextColor" format="color" />
+        <attr name="cometchatMessageInformationItemDeliveredTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationItemDeliveredTextColor" format="color" />
+        <attr name="cometchatMessageInformationItemDeliveredDateTextAppearance" format="reference" />
+        <attr name="cometchatMessageInformationItemDeliveredDateTextColor" format="color" />
+        <attr name="cometchatMessageInformationItemAvatarStyle" format="reference" />
+        <attr name="cometchatMessageInformationMessageReceiptStyle" format="reference" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CometChatAttachmentOptionSheet">
+        <attr name="cometchatAttachmentOptionSheetStyle" format="reference" />
+        <attr name="cometchatAttachmentOptionSheetBackgroundColor" format="color" />
+        <attr name="cometchatAttachmentOptionSheetStrokeWidth" format="dimension" />
+        <attr name="cometchatAttachmentOptionSheetStrokeColor" format="color" />
+        <attr name="cometchatAttachmentOptionSheetCornerRadius" format="dimension" />
+        <attr name="cometchatAttachmentOptionSheetIconTint" format="color" />
+        <attr name="cometchatAttachmentOptionSheetTitleTextAppearance" format="reference" />
+        <attr name="cometchatAttachmentOptionSheetTitleColor" format="reference" />
+    </declare-styleable>
+</resources>
