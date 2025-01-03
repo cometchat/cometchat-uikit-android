@@ -3,7 +3,7 @@
   <img alt="CometChat" src="https://assets.cometchat.io/website/images/logos/banner.png">
 </p>
 
-# Android Sample App by CometChat
+# Android Sample App with Push Notifications for Kotlin by CometChat
 
 This is a reference application showcasing the integration of [CometChat's Android UI Kit](https://www.cometchat.com/docs/ui-kit/android/5.0/overview) in a native Android application using Kotlin. It demonstrates how to implement real-time messaging and voice/video calling features with ease.
 
@@ -36,7 +36,7 @@ This is a reference application showcasing the integration of [CometChat's Andro
 4. Sync Gradle to ensure all dependencies are downloaded.
 
 5. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/kotlin/fcm/AppCredentials.kt) file:
-   file:https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-kotlin/src/main/java/com/cometchat/sampleapp/kotlin/fcm/AppCredentials.kt#L3-L11
+   file:https://github.com/cometchat/cometchat-uikit-android/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-kotlin/src/main/java/com/cometchat/sampleapp/kotlin/fcm/AppCredentials.kt#L3-L11
 
 6. Set up Firebase Cloud Messaging (FCM):
     - Go to the [Firebase Console](https://console.firebase.google.com/) and create a project.

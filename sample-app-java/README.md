@@ -3,7 +3,7 @@
   <img alt="CometChat" src="https://assets.cometchat.io/website/images/logos/banner.png">
 </p>
 
-# Android Sample App by CometChat
+# Android Sample App for Java by CometChat
 
 This is a reference application showcasing the integration of [CometChat's Android UI Kit](https://www.cometchat.com/docs/ui-kit/android/5.0/overview) in a native Android application. It demonstrates how to implement real-time messaging and voice/video calling features with ease.
 
@@ -36,7 +36,7 @@ This is a reference application showcasing the integration of [CometChat's Andro
 4.  Sync Gradle to ensure all dependencies are downloaded.
 
 5. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/java/AppCredentials.java) file:
-   file:https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-java/src/main/java/com/cometchat/sampleapp/java/AppCredentials.java#L3-L7
+   file:https://github.com/cometchat/cometchat-uikit-android/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-java/src/main/java/com/cometchat/sampleapp/java/AppCredentials.java#L3-L7
 
 6. Run the project using an emulator or a physical device to build and run the sample app.
 
