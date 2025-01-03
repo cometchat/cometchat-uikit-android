@@ -32,7 +32,7 @@ public class AppConstants {
      * Constants used for FCM.
      */
     public static class FCMConstants {
-        public static final String PROVIDER_ID  "provider-id"; // As set in CometChat dashboard for pushnotification
+        public static final String PROVIDER_ID  "provider-id"; // As set in CometChat dashboard for push notifications
         public static final String KEY_UID = "UID";
         public static final String KEY_DATA = "FCM_DATA";
         public static final String REPLY_FROM_NOTIFICATION = "key_text_reply";
