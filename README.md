@@ -13,6 +13,10 @@ This is a reference application showcasing the integration of [CometChat's Andro
    <img src="./Screenshots/overview_cometchat_screens.png" >
 </div>
 
+
+## 🚀 Try the New v5 UI Kit!
+Discover the all-new [v5 UI Kit](https://github.com/cometchat/cometchat-uikit-and/tree/v5), featuring a completely revamped design for enhanced usability and visual appeal. With restructured components, advanced styling options, and a streamlined integration process, v5 offers a seamless, customizable experience tailored to your needs. Try it now and elevate your development workflow!
+
 ## Prerequisites
 
 - Android Studio
@@ -28,9 +32,9 @@ This is a reference application showcasing the integration of [CometChat's Andro
     ```
 2. In Android Studio, open the project cometchat-sample-app-android-kotlin
 
-3. Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppConstants.kt](https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/v4/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt) file:
-   https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/0430695f90f962d81f06091438a6c102ec41e10f/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt#L3-L11
-4.  If your app is created before August 12th, 2024 then change the sample data URL to `https://assets.cometchat.io/sampleapp/v1/sampledata.json` in the [app/src/main/java/com/cometchat/kotlinsampleapp/constants/StringConstants.kt](https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/v4/app/src/main/java/com/cometchat/kotlinsampleapp/constants/StringConstants.kt) file: https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/0430695f90f962d81f06091438a6c102ec41e10f/app/src/main/java/com/cometchat/kotlinsampleapp/constants/StringConstants.kt#L11-L13
+3. Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppConstants.kt](app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt) file:https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/0430695f90f962d81f06091438a6c102ec41e10f/app/src/main/java/com/cometchat/kotlinsampleapp/AppConstants.kt#L3-L11
+   
+4.  If your app is created before August 12th, 2024 then change the sample data URL to `https://assets.cometchat.io/sampleapp/v1/sampledata.json` in the [StringConstants.kt](app/src/main/java/com/cometchat/kotlinsampleapp/constants/StringConstants.kt) file:https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/0430695f90f962d81f06091438a6c102ec41e10f/app/src/main/java/com/cometchat/kotlinsampleapp/constants/StringConstants.kt#L11-L13
 
 5. Run the app on a device or emulator.
 
