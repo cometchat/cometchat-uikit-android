@@ -22,7 +22,7 @@ class AppConstants {
     }
 
     object FCMConstants {
-        const val PROVIDER_ID: String = "Android-CometChat-Team-Messenger"
+        const val PROVIDER_ID: String = "provider-id" // As set in CometChat dashboard for pushnotification
         const val KEY_UID: String = "UID"
         const val KEY_DATA: String = "FCM_DATA"
         const val REPLY_FROM_NOTIFICATION: String = "key_text_reply"
