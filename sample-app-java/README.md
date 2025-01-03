@@ -35,15 +35,8 @@ This is a reference application showcasing the integration of [CometChat's Andro
 
 4.  Sync Gradle to ensure all dependencies are downloaded.
 
-5. `[Optional]` Configure CometChat credentials:
-   - Open the `AppCredentials.java` file located at `sample-app-java/src/main/java/com/cometchat/sampleapp/java/AppCredentials.java` and enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_:
-     ```java
-     public class AppCredentials {
-         public static final String APP_ID = "YOUR_APP_ID";
-         public static final String REGION = "YOUR_REGION";
-         public static final String AUTH_KEY = "YOUR_AUTH_KEY";
-     }
-     ```
+5. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/java/AppCredentials.java) file:
+   file:https://github.com/cometchat/cometchat-sample-app-android-kotlin/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-java/src/main/java/com/cometchat/sampleapp/java/AppCredentials.java#L3-L7
 
 6. Run the project using an emulator or a physical device to build and run the sample app.
 
