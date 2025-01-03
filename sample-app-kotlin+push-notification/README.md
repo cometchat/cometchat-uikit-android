@@ -47,7 +47,7 @@ This is a reference application showcasing the integration of [CometChat's Andro
    - Go to the [Notification Documentation](https://www.cometchat.com/docs/notifications/push-integration) and follow integration steps.
    - Note the provider id entered while configuring the Push Notifications in CometChat Dashboard.
 
-8. Update the provider id from the step 7 in [AppConstants.kt](src/main/java/com/cometchat/sampleapp/kotlin/fcm/utils/AppConstants.kt) file:https://github.com/cometchat/cometchat-uikit-android/blob/1431019c92564e4669d3e3ef7a0c0fa57234fe99/sample-app-kotlin+push-notification/src/main/java/com/cometchat/sampleapp/kotlin/fcm/utils/AppConstants.kt#L24-L26
+8. Update the provider id from the step 7 in [AppConstants.kt](src/main/java/com/cometchat/sampleapp/kotlin/fcm/utils/AppConstants.kt) file:https://github.com/cometchat/cometchat-uikit-android/blob/aa63fc07e27822175f9cba03c789a0d08b367d01/sample-app-kotlin+push-notification/src/main/java/com/cometchat/sampleapp/kotlin/fcm/utils/AppConstants.kt#L24-L26
 
 8. Run the project Use an emulator or a physical device to build and run the sample app.
 
