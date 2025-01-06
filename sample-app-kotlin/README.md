@@ -38,7 +38,7 @@ This is a reference application showcasing the integration of [CometChat's Andro
 5. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/kotlin/AppCredentials.kt) file:
    file:https://github.com/cometchat/cometchat-uikit-android/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-kotlin/src/main/java/com/cometchat/sampleapp/kotlin/AppCredentials.kt#L3-L11
 
-6. Run the project using an emulator or a physical device to build and run the sample app.
+6. In the Android Studio toolbar, select the `sample-app-kotlin` module from the module dropdown and run the project using an emulator or a physical device 
 
 ## Help and Support
 

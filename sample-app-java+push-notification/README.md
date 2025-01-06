@@ -31,25 +31,24 @@ This is a reference application showcasing the integration of [CometChat's Andro
    git checkout v5
    ```
 
-3. Open the project in Android Studio by navigating to the cloned directory and open the `sample-app-java+push-notification` folder.
+3. Sync Gradle to ensure all dependencies are downloaded.
 
-4. Sync Gradle to ensure all dependencies are downloaded.
-
-5. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/java/fcm/AppCredentials.java) file:
+4. `[Optional]` Enter your CometChat _`App ID`_, _`Region`_, and _`Auth Key`_ in the [AppCredentials.java](src/main/java/com/cometchat/sampleapp/java/fcm/AppCredentials.java) file:
    file:https://github.com/cometchat/cometchat-uikit-android/blob/b7b7c0d76eb70960728e6622ed7f70ab4e45b4af/sample-app-java%2Bpush-notification/src/main/java/com/cometchat/sampleapp/java/fcm/AppCredentials.java#L3-L11
    
-6. Set up Firebase Cloud Messaging (FCM) by following the below steps
+5. Set up Firebase Cloud Messaging (FCM) by following the below steps
     - Go to the [Firebase Console](https://console.firebase.google.com/) and create a project.
     - Add your Android app to the Firebase project and download the `google-services.json` file.
     - Place the `google-services.json` file in the `sample-app-java+push-notification/` directory of your project.
 
-7. Set up CometChat Push Notification:
+6. Set up CometChat Push Notification:
    - Go to the [Notification Documentation](https://www.cometchat.com/docs/notifications/push-integration) and follow integration steps.
    - Note the provider id entered while configuring the Push Notifications in CometChat Dashboard.
 
-8. Update the provider id from the step 7 in [AppConstants.java](src/main/java/com/cometchat/sampleapp/java/fcm/utils/AppConstants.java) file:https://github.com/cometchat/cometchat-uikit-android/blob/aa63fc07e27822175f9cba03c789a0d08b367d01/sample-app-java+push-notification/src/main/java/com/cometchat/sampleapp/java/fcm/utils/AppConstants.java#L34-L36
+7. Update the provider id from the step 7 in [AppConstants.java](src/main/java/com/cometchat/sampleapp/java/fcm/utils/AppConstants.java) file:https://github.com/cometchat/cometchat-uikit-android/blob/aa63fc07e27822175f9cba03c789a0d08b367d01/sample-app-java+push-notification/src/main/java/com/cometchat/sampleapp/java/fcm/utils/AppConstants.java#L34-L36
 
-9. Run the project using an emulator or a physical device to build and run the sample app.
+8. In the Android Studio toolbar, select the `sample-app-java+push-notification` module from the module dropdown and run the project using an emulator or a physical device 
+
 
 
 ## Help and Support
