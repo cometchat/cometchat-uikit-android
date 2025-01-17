@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
@@ -19,7 +20,7 @@ import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.conversations.CometChatConversations
 import com.cometchat.chatuikit.logger.CometChatLogger
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
-import com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
 import com.cometchat.sampleapp.kotlin.fcm.BuildConfig
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.data.interfaces.OnItemClickListener

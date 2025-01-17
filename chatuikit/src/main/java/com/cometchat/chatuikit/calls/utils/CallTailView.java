@@ -11,7 +11,7 @@ import androidx.annotation.DrawableRes;
 
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.shared.interfaces.OnClick;
-import com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate;
+import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 import com.google.android.material.card.MaterialCardView;
 
 public class CallTailView extends MaterialCardView {
@@ -22,16 +22,6 @@ public class CallTailView extends MaterialCardView {
 
     public CallTailView(Context context) {
         super(context);
-        init(context);
-    }
-
-    public CallTailView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public CallTailView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
         init(context);
     }
 
@@ -48,6 +38,16 @@ public class CallTailView extends MaterialCardView {
         });
         setBackgroundColor(getResources().getColor(android.R.color.transparent, null));
         addView(view);
+    }
+
+    public CallTailView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public CallTailView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
     }
 
     public CometChatDate getChatDate() {

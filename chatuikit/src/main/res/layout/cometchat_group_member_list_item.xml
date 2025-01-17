@@ -37,12 +37,12 @@
             android:layout_height="@dimen/cometchat_40dp"
             android:layout_centerVertical="true">
 
-            <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+            <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
                 android:id="@+id/member_avatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.cometchat.chatuikit.shared.views.cometchatstatusindicator.CometChatStatusIndicator
+            <com.cometchat.chatuikit.shared.views.statusindicator.CometChatStatusIndicator
                 android:id="@+id/member_status_indicator"
                 android:layout_width="@dimen/cometchat_15dp"
                 android:layout_height="@dimen/cometchat_15dp"

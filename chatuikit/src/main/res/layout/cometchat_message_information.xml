@@ -101,7 +101,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.CometChatMessageReceipt
+                            <com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt
                                 android:id="@+id/message_receipt_read"
                                 android:layout_width="@dimen/cometchat_16dp"
                                 android:layout_height="@dimen/cometchat_16dp" />
@@ -141,7 +141,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.CometChatMessageReceipt
+                            <com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt
                                 android:id="@+id/message_receipt_delivered"
                                 android:layout_width="@dimen/cometchat_16dp"
                                 android:layout_height="@dimen/cometchat_16dp" />

@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <com.cometchat.chatuikit.shared.views.cometchatmediarecorder.AudioCircleRippleView
+                    <com.cometchat.chatuikit.shared.views.mediarecorder.AudioCircleRippleView
                         android:id="@+id/audio_ripple_effect"
                         android:layout_width="@dimen/cometchat_120dp"
                         android:layout_height="@dimen/cometchat_120dp"
@@ -92,7 +92,7 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <com.cometchat.chatuikit.shared.views.cometchataudiobubble.CometChatAudioBubble
+                <com.cometchat.chatuikit.shared.views.audiobubble.CometChatAudioBubble
                     android:id="@+id/audio_bubble"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

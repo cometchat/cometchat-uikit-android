@@ -7,8 +7,8 @@ import android.view.View;
 
 import com.cometchat.chatuikit.databinding.CometchatTailBinding;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.views.cometchatbadge.CometChatBadge;
-import com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate;
+import com.cometchat.chatuikit.shared.views.badge.CometChatBadge;
+import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 import com.google.android.material.card.MaterialCardView;
 
 /**

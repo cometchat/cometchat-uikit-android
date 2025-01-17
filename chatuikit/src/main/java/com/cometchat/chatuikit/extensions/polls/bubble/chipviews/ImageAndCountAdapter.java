@@ -12,7 +12,7 @@ import androidx.annotation.StyleRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar;
+import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +42,18 @@ public class ImageAndCountAdapter extends RecyclerView.Adapter<ImageAndCountAdap
     }
 
     @Override
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        ImageTextPoJo imageTextPoJo = images.get(position);
+        holder.bindView(imageTextPoJo, position);
+    }
+
+    @Override
     public int getItemViewType(int position) {
         if (position == 0) {
             return 0;
         } else {
             return 1;
         }
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ImageTextPoJo imageTextPoJo = images.get(position);
-        holder.bindView(imageTextPoJo, position);
     }
 
     @Override
@@ -66,6 +66,11 @@ public class ImageAndCountAdapter extends RecyclerView.Adapter<ImageAndCountAdap
             this.images = images;
             notifyDataSetChanged();
         }
+    }
+
+    public void setAvatarStyle(@StyleRes int style) {
+        this.avatarStyle = style;
+        notifyDataSetChanged();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -82,10 +87,5 @@ public class ImageAndCountAdapter extends RecyclerView.Adapter<ImageAndCountAdap
             avatar.setAvatar(imageTextPoJo.getText(), imageTextPoJo.getImageUrl());
             avatar.setStyle(avatarStyle);
         }
-    }
-
-    public void setAvatarStyle(@StyleRes int style) {
-        this.avatarStyle = style;
-        notifyDataSetChanged();
     }
 }

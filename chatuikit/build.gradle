@@ -10,7 +10,7 @@ android {
     defaultConfig {
         minSdk 24
         versionCode 26
-        versionName "5.0.0-beta1"
+        versionName "5.0.0-beta2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
 
@@ -97,20 +97,11 @@ android {
 
 publishing {
     repositories {
-
-//        maven {
-//            url = "$projectDir/distribution"
-//        }
-
         maven {
-            name = "cloudsmith"
-            url = "https://api-g.cloudsmith.io/maven/cometchat/call-team"
-            credentials {
-                username = "jitvar-patil"
-                password = "d412ed679432a059fa33c31e324e223c7b1ed200"
-            }
+            url = "$projectDir/distribution"
         }
     }
+
     publications {
         maven(MavenPublication) {
             groupId 'com.cometchat'

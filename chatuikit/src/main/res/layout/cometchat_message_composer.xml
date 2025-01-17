@@ -105,7 +105,7 @@
 
             </LinearLayout>
 
-            <com.cometchat.chatuikit.shared.views.cometchatmessageinput.CometChatMessageInput
+            <com.cometchat.chatuikit.shared.views.messageinput.CometChatMessageInput
                 android:id="@+id/message_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

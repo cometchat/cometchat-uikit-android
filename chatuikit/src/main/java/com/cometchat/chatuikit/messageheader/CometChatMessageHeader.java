@@ -27,7 +27,7 @@ import com.cometchat.chatuikit.shared.interfaces.Function3;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
 import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.views.cometchatstatusindicator.StatusIndicator;
+import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashMap;

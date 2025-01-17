@@ -12,8 +12,8 @@ android {
         minSdk 27
         //noinspection OldTargetApi
         targetSdk 34
-        versionCode 12
-        versionName "5.0.0-alpha12"
+        versionCode 1
+        versionName "5.0.0-beta2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,8 +38,8 @@ dependencies {
     implementation libs.constraintlayout
 
     // CometChat Dependencies
-    //implementation project(':chatuikit')
-    implementation 'com.cometchat:chat-uikit-android:5.0.0-beta1'
+    implementation project(':chatuikit')
+//    implementation libs.chat.uikit.android
     implementation libs.chat.sdk.android
     implementation libs.calls.sdk.android
 
@@ -47,9 +47,6 @@ dependencies {
     implementation platform(libs.firebase.bom)
     implementation libs.google.firebase.auth
     implementation libs.firebase.messaging
-
-    // Bugsee SDK
-    implementation libs.bugsee.android
 
     // Other Dependencies
     implementation libs.lottie

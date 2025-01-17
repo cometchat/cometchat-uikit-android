@@ -38,7 +38,7 @@
                 android:orientation="vertical"
                 android:padding="@dimen/cometchat_10dp">
 
-                <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+                <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
                     android:id="@+id/avatar"
                     android:layout_width="@dimen/cometchat_48dp"
                     android:layout_height="@dimen/cometchat_48dp" />

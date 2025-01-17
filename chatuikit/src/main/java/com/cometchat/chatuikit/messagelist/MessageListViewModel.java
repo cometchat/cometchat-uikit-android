@@ -46,16 +46,12 @@ import com.cometchat.chatuikit.shared.models.interactivemessage.FormMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MessageListViewModel extends ViewModel {
     private static final String TAG = MessageListViewModel.class.getSimpleName();
-    private MessagesRequest.MessagesRequestBuilder messagesRequestBuilder = null;
-    private MessagesRequest messagesRequest;
     private final String LISTENERS_TAG;
     private final MutableLiveData<List<BaseMessage>> mutableMessageList;
     private final MutableLiveData<Integer> mutableMessagesRangeChanged;
@@ -69,22 +65,11 @@ public class MessageListViewModel extends ViewModel {
     private final MutableLiveData<UIKitConstants.States> states;
     private final MutableLiveData<UIKitConstants.DeleteState> messageDeleteState;
     private final int limit = 30;
-
-    public boolean firstFetch = true;
-    private boolean hasMore = true;
     private final MutableLiveData<Boolean> mutableHasMore;
-    private boolean disableReceipt;
     private final MutableLiveData<Boolean> mutableIsInProgress;
-    private Group group;
-    private User user;
-    private String id;
-    private String type;
-    private boolean hideDeleteMessage;
     private final MutableLiveData<Void> notifyUpdate;
     private final Void unused = null;
-    private List<String> messagesTypes;
-    private List<String> messagesCategories;
-    private int parentMessageId = -1;
+    public boolean firstFetch = true;
     public Void aVoid;
     public HashMap<String, String> idMap;
     public MutableLiveData<HashMap<String, String>> mutableHashMap;
@@ -98,6 +83,18 @@ public class MessageListViewModel extends ViewModel {
     public MutableLiveData<BaseMessage> processMessageData;
     public Handler handler = new Handler(Looper.getMainLooper());
     public HashMap<String, CometChatMessageTemplate> messageTemplateHashMap;
+    private MessagesRequest.MessagesRequestBuilder messagesRequestBuilder = null;
+    private MessagesRequest messagesRequest;
+    private boolean hasMore = true;
+    private boolean disableReceipt;
+    private Group group;
+    private User user;
+    private String id;
+    private String type;
+    private boolean hideDeleteMessage;
+    private List<String> messagesTypes;
+    private List<String> messagesCategories;
+    private int parentMessageId = -1;
     private String conversationId;
     private boolean disableReactions;
 
@@ -221,6 +218,31 @@ public class MessageListViewModel extends ViewModel {
         initializeGroupRequestBuilder();
     }
 
+    public void setIdMap() {
+        if (parentMessageId > 0)
+            idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
+        if (user != null) {
+            idMap.put(UIKitConstants.MapId.RECEIVER_ID, user.getUid());
+            idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.USER);
+        } else if (group != null) {
+            idMap.put(UIKitConstants.MapId.RECEIVER_ID, group.getGuid());
+            idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.GROUP);
+        }
+        mutableHashMap.setValue(idMap);
+    }
+
+    public void initializeGroupRequestBuilder() {
+        if (messagesRequestBuilder == null) {
+            messagesRequestBuilder = new MessagesRequest.MessagesRequestBuilder()
+                .setTypes(this.messagesTypes)
+                .setLimit(limit)
+                .setCategories(this.messagesCategories)
+                .hideReplies(true);
+            if (parentMessageId > -1) messagesRequestBuilder.setParentMessageId(parentMessageId);
+        }
+        messagesRequest = messagesRequestBuilder.setGUID(id).build();
+    }
+
     public void setUser(User user, List<String> messagesTypes, List<String> messagesCategories, int parentMessageId) {
         if (user != null) {
             this.user = user;
@@ -236,18 +258,14 @@ public class MessageListViewModel extends ViewModel {
 
     public void initializeUserRequestBuilder() {
         if (messagesRequestBuilder == null) {
-            messagesRequestBuilder = new MessagesRequest.MessagesRequestBuilder().setTypes(this.messagesTypes).setLimit(limit).setCategories(this.messagesCategories).hideReplies(true);
+            messagesRequestBuilder = new MessagesRequest.MessagesRequestBuilder()
+                .setTypes(this.messagesTypes)
+                .setLimit(limit)
+                .setCategories(this.messagesCategories)
+                .hideReplies(true);
             if (parentMessageId > -1) messagesRequestBuilder.setParentMessageId(parentMessageId);
         }
         messagesRequest = messagesRequestBuilder.setUID(id).build();
-    }
-
-    public void initializeGroupRequestBuilder() {
-        if (messagesRequestBuilder == null) {
-            messagesRequestBuilder = new MessagesRequest.MessagesRequestBuilder().setTypes(this.messagesTypes).setLimit(limit).setCategories(this.messagesCategories).hideReplies(true);
-            if (parentMessageId > -1) messagesRequestBuilder.setParentMessageId(parentMessageId);
-        }
-        messagesRequest = messagesRequestBuilder.setGUID(id).build();
     }
 
     public void setMessagesTypesAndCategories(List<String> messagesTypes, List<String> messagesCategories) {
@@ -260,19 +278,6 @@ public class MessageListViewModel extends ViewModel {
 
     public void setDisableReactions(boolean reactions) {
         this.disableReactions = reactions;
-    }
-
-    public void setIdMap() {
-        if (parentMessageId > 0)
-            idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
-        if (user != null) {
-            idMap.put(UIKitConstants.MapId.RECEIVER_ID, user.getUid());
-            idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.USER);
-        } else if (group != null) {
-            idMap.put(UIKitConstants.MapId.RECEIVER_ID, group.getGuid());
-            idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.GROUP);
-        }
-        mutableHashMap.setValue(idMap);
     }
 
     public void addListener() {
@@ -304,7 +309,12 @@ public class MessageListViewModel extends ViewModel {
             }
 
             @Override
-            public void onGroupMemberScopeChanged(Action action, User updatedBy, User updatedUser, String scopeChangedTo, String scopeChangedFrom, Group group) {
+            public void onGroupMemberScopeChanged(Action action,
+                                                  User updatedBy,
+                                                  User updatedUser,
+                                                  String scopeChangedTo,
+                                                  String scopeChangedFrom,
+                                                  Group group) {
                 onMessageReceived(action);
             }
 
@@ -315,6 +325,25 @@ public class MessageListViewModel extends ViewModel {
         });
 
         CometChatMessageEvents.addListener(LISTENERS_TAG, new CometChatMessageEvents() {
+            @Override
+            public void ccMessageSent(BaseMessage message, int status) {
+                if (status == MessageStatus.IN_PROGRESS) {
+                    if (isThreadedMessageForTheCurrentChat(message)) addMessage(message);
+                } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR)
+                    updateOptimisticMessage(message);
+            }
+
+            @Override
+            public void ccMessageEdited(BaseMessage baseMessage, @MessageStatus int status) {
+                if (status == MessageStatus.SUCCESS) updateMessage(baseMessage);
+            }
+
+            @Override
+            public void ccMessageDeleted(BaseMessage baseMessage) {
+                if (hideDeleteMessage) removeMessage(baseMessage);
+                else updateMessage(baseMessage);
+            }
+
             @Override
             public void onTextMessageReceived(TextMessage message) {
                 onMessageReceived(message);
@@ -352,25 +381,6 @@ public class MessageListViewModel extends ViewModel {
             }
 
             @Override
-            public void ccMessageSent(BaseMessage message, int status) {
-                if (status == MessageStatus.IN_PROGRESS) {
-                    if (isThreadedMessageForTheCurrentChat(message)) addMessage(message);
-                } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR)
-                    updateOptimisticMessage(message);
-            }
-
-            @Override
-            public void ccMessageEdited(BaseMessage baseMessage, @MessageStatus int status) {
-                if (status == MessageStatus.SUCCESS) updateMessage(baseMessage);
-            }
-
-            @Override
-            public void ccMessageDeleted(BaseMessage baseMessage) {
-                if (hideDeleteMessage) removeMessage(baseMessage);
-                else updateMessage(baseMessage);
-            }
-
-            @Override
             public void onFormMessageReceived(FormMessage formMessage) {
                 onMessageReceived(formMessage);
             }
@@ -386,13 +396,13 @@ public class MessageListViewModel extends ViewModel {
             }
 
             @Override
-            public void onCustomInteractiveMessageReceived(CustomInteractiveMessage customInteractiveMessage) {
-                onMessageReceived(customInteractiveMessage);
+            public void onInteractionGoalCompleted(InteractionReceipt interactionReceipt) {
+                setInteractions(interactionReceipt);
             }
 
             @Override
-            public void onInteractionGoalCompleted(InteractionReceipt interactionReceipt) {
-                setInteractions(interactionReceipt);
+            public void onCustomInteractiveMessageReceived(CustomInteractiveMessage customInteractiveMessage) {
+                onMessageReceived(customInteractiveMessage);
             }
 
             @Override
@@ -418,6 +428,13 @@ public class MessageListViewModel extends ViewModel {
 
         CometChatGroupEvents.addGroupListener(LISTENERS_TAG, new CometChatGroupEvents() {
             @Override
+            public void ccGroupMemberAdded(List<Action> actionMessages, List<User> usersAdded, Group userAddedIn, User addedBy) {
+                for (Action action : actionMessages) {
+                    onMessageReceived(action);
+                }
+            }
+
+            @Override
             public void ccGroupMemberKicked(Action actionMessage, User kickedUser, User kickedBy, Group kickedFrom) {
                 onMessageReceived(actionMessage);
             }
@@ -428,24 +445,21 @@ public class MessageListViewModel extends ViewModel {
             }
 
             @Override
-            public void ccOwnershipChanged(Group group, GroupMember newOwner) {
-            }
-
-            @Override
-            public void ccGroupMemberScopeChanged(Action actionMessage, User updatedUser, String scopeChangedTo, String scopeChangedFrom, Group group) {
-                onMessageReceived(actionMessage);
-            }
-
-            @Override
             public void ccGroupMemberUnBanned(Action actionMessage, User unbannedUser, User unBannedBy, Group unBannedFrom) {
                 onMessageReceived(actionMessage);
             }
 
             @Override
-            public void ccGroupMemberAdded(List<Action> actionMessages, List<User> usersAdded, Group userAddedIn, User addedBy) {
-                for (Action action : actionMessages) {
-                    onMessageReceived(action);
-                }
+            public void ccGroupMemberScopeChanged(Action actionMessage,
+                                                  User updatedUser,
+                                                  String scopeChangedTo,
+                                                  String scopeChangedFrom,
+                                                  Group group) {
+                onMessageReceived(actionMessage);
+            }
+
+            @Override
+            public void ccOwnershipChanged(Group group, GroupMember newOwner) {
             }
         });
 
@@ -545,7 +559,9 @@ public class MessageListViewModel extends ViewModel {
             for (int i = messageArrayList.size() - 1; i >= 0; i--) {
                 BaseMessage baseMessage = messageArrayList.get(i);
                 if (baseMessage.getId() == reactionEvent.getReaction().getMessageId()) {
-                    BaseMessage modifiedBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage, reactionEvent.getReaction(), CometChatConstants.REACTION_ADDED);
+                    BaseMessage modifiedBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage,
+                                                                                                    reactionEvent.getReaction(),
+                                                                                                    CometChatConstants.REACTION_ADDED);
                     updateMessage(modifiedBaseMessage);
                     break;
                 }
@@ -558,7 +574,9 @@ public class MessageListViewModel extends ViewModel {
             for (int i = messageArrayList.size() - 1; i >= 0; i--) {
                 BaseMessage baseMessage = messageArrayList.get(i);
                 if (baseMessage.getId() == reactionEvent.getReaction().getMessageId()) {
-                    BaseMessage modifiedBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage, reactionEvent.getReaction(), CometChatConstants.REACTION_REMOVED);
+                    BaseMessage modifiedBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage,
+                                                                                                    reactionEvent.getReaction(),
+                                                                                                    CometChatConstants.REACTION_REMOVED);
                     updateMessage(modifiedBaseMessage);
                     break;
                 }
@@ -601,7 +619,10 @@ public class MessageListViewModel extends ViewModel {
 
     public void updateListByActionMessages() {
         if (!messageArrayList.isEmpty()) {
-            MessagesRequest.MessagesRequestBuilder actionRequestBuilder = new MessagesRequest.MessagesRequestBuilder().setMessageId(messageArrayList.get(messageArrayList.size() - 1).getId()).setTypes(actionMessageTypes).setCategories(actionCategories);
+            MessagesRequest.MessagesRequestBuilder actionRequestBuilder = new MessagesRequest.MessagesRequestBuilder()
+                .setMessageId(messageArrayList.get(messageArrayList.size() - 1).getId())
+                .setTypes(actionMessageTypes)
+                .setCategories(actionCategories);
             if (user != null)
                 actionMessagesRequest = actionRequestBuilder.setUID(user.getUid()).build();
             else if (group != null)
@@ -631,7 +652,9 @@ public class MessageListViewModel extends ViewModel {
 
     public void fetchNextMessages() {
         if (!messageArrayList.isEmpty()) {
-            MessagesRequest fetchNextMessagesRequest = messagesRequestBuilder.setMessageId(messageArrayList.get(messageArrayList.size() - 1).getId()).build();
+            MessagesRequest fetchNextMessagesRequest = messagesRequestBuilder
+                .setMessageId(messageArrayList.get(messageArrayList.size() - 1).getId())
+                .build();
             fetchNextMessagesRequest.fetchNext(new CometChat.CallbackListener<List<BaseMessage>>() {
                 @Override
                 public void onSuccess(List<BaseMessage> baseMessages) {
@@ -650,10 +673,6 @@ public class MessageListViewModel extends ViewModel {
                 }
             });
         }
-    }
-
-    public boolean isCallingAdded() {
-        return messagesCategories.contains(CometChatConstants.CATEGORY_CALL) && (messagesTypes.contains(CometChatConstants.CALL_TYPE_VIDEO) || messagesTypes.contains(CometChatConstants.CALL_TYPE_AUDIO));
     }
 
     public void setMessage(BaseMessage message) {
@@ -707,18 +726,6 @@ public class MessageListViewModel extends ViewModel {
                 messageArrayList.remove(i);
                 messageArrayList.add(i, baseMessage);
                 updateMessage.setValue(i);
-            }
-        }
-    }
-
-    public void updateMessage(BaseMessage message) {
-        if (message != null) {
-            if (messageArrayList.contains(message)) {
-                int index = messageArrayList.indexOf(message);
-                BaseMessage oldMessage = messageArrayList.get(index);
-                messageArrayList.remove(oldMessage);
-                messageArrayList.add(index, message);
-                updateMessage.setValue(index);
             }
         }
     }
@@ -850,7 +857,11 @@ public class MessageListViewModel extends ViewModel {
                             }
                             handler.post(() -> {
                                 if (firstFetch) {
-                                    CometChatUIKitHelper.onActiveChatChanged(getIdMap(), messageList.isEmpty() ? null : messageList.get(messageList.size() - 1), user, group, unreadCount);
+                                    CometChatUIKitHelper.onActiveChatChanged(getIdMap(),
+                                                                             messageList.isEmpty() ? null : messageList.get(messageList.size() - 1),
+                                                                             user,
+                                                                             group,
+                                                                             unreadCount);
                                     addConnectionListener();
                                     firstFetch = false;
                                 }
@@ -909,10 +920,6 @@ public class MessageListViewModel extends ViewModel {
         }
     }
 
-    public void disableReceipt(boolean disableReceipt) {
-        this.disableReceipt = disableReceipt;
-    }
-
     public void markMessageAsRead(BaseMessage lastMessage) {
         CometChat.markAsRead(lastMessage, new CometChat.CallbackListener<Void>() {
             @Override
@@ -928,8 +935,27 @@ public class MessageListViewModel extends ViewModel {
         });
     }
 
+    public void updateMessage(BaseMessage message) {
+        if (message != null) {
+            if (messageArrayList.contains(message)) {
+                int index = messageArrayList.indexOf(message);
+                BaseMessage oldMessage = messageArrayList.get(index);
+                messageArrayList.remove(oldMessage);
+                messageArrayList.add(index, message);
+                updateMessage.setValue(index);
+            }
+        }
+    }
+
+    public void disableReceipt(boolean disableReceipt) {
+        this.disableReceipt = disableReceipt;
+    }
+
     public void markAsDeliverInternally(BaseMessage message) {
-        if (message != null && !message.getSender().getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) && !disableReceipt)
+        if (message != null && message.getSender() != null && CometChatUIKit.getLoggedInUser() != null && !message
+            .getSender()
+            .getUid()
+            .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) && !disableReceipt)
             CometChat.markAsDelivered(message);
     }
 
@@ -958,7 +984,10 @@ public class MessageListViewModel extends ViewModel {
                 if (message.getReceiverType().equals(CometChatConstants.RECEIVER_TYPE_USER)) {
                     if (id != null && id.equalsIgnoreCase(message.getSender().getUid())) {
                         setMessage(message);
-                    } else if (id != null && id.equalsIgnoreCase(message.getReceiverUid()) && message.getSender().getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid())) {
+                    } else if (id != null && id.equalsIgnoreCase(message.getReceiverUid()) && message
+                        .getSender()
+                        .getUid()
+                        .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid())) {
                         setMessage(message);
                     }
                 } else {
@@ -1007,6 +1036,11 @@ public class MessageListViewModel extends ViewModel {
         }
     }
 
+    public boolean isCallingAdded() {
+        return messagesCategories.contains(CometChatConstants.CATEGORY_CALL) && (messagesTypes.contains(CometChatConstants.CALL_TYPE_VIDEO) || messagesTypes.contains(
+            CometChatConstants.CALL_TYPE_AUDIO));
+    }
+
     public List<BaseMessage> getMessageList() {
         return messageArrayList;
     }
@@ -1048,7 +1082,9 @@ public class MessageListViewModel extends ViewModel {
 
             @Override
             public void onError(CometChatException e) {
-                BaseMessage newBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage, reaction, CometChatConstants.REACTION_REMOVED);
+                BaseMessage newBaseMessage = CometChatHelper.updateMessageWithReactionInfo(baseMessage,
+                                                                                           reaction,
+                                                                                           CometChatConstants.REACTION_REMOVED);
                 CometChatUIKitHelper.onMessageEdited(newBaseMessage, MessageStatus.SUCCESS);
             }
         });

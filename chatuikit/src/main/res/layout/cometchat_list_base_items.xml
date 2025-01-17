@@ -32,7 +32,7 @@
         android:layout_width="@dimen/cometchat_44dp"
         android:layout_height="@dimen/cometchat_44dp">
 
-        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+        <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
             android:id="@+id/avatar"
             android:layout_width="@dimen/cometchat_40dp"
             android:layout_height="@dimen/cometchat_40dp"
@@ -41,7 +41,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.cometchat.chatuikit.shared.views.cometchatstatusindicator.CometChatStatusIndicator
+        <com.cometchat.chatuikit.shared.views.statusindicator.CometChatStatusIndicator
             android:id="@+id/status_indicator"
             android:layout_width="@dimen/cometchat_15dp"
             android:layout_height="@dimen/cometchat_15dp"

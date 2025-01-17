@@ -25,7 +25,7 @@
             android:textAppearance="?attr/cometchatTextAppearanceHeading4Medium"
             android:textColor="?attr/cometchatTextColorPrimary" />
 
-        <com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate
+        <com.cometchat.chatuikit.shared.views.date.CometChatDate
             android:id="@+id/date_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

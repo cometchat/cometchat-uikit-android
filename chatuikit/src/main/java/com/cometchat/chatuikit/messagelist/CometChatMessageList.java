@@ -77,8 +77,8 @@ import com.cometchat.chatuikit.shared.resources.utils.MediaUtils;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.custom_dialog.CometChatConfirmDialog;
 import com.cometchat.chatuikit.shared.resources.utils.sticker_header.StickyHeaderDecoration;
-import com.cometchat.chatuikit.shared.views.cometchatbadge.CometChatBadge;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.badge.CometChatBadge;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.optionsheet.OptionSheetMenuItem;
 import com.cometchat.chatuikit.shared.views.optionsheet.messageoptionsheet.CometChatMessageOptionSheet;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerAdapter;
@@ -807,6 +807,14 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
+     * Processes the text formatters by updating the addition parameter with the
+     * current list of text formatters.
+     */
+    private void processFormatters() {
+        additionParameter.setTextFormatters(textFormatters);
+    }
+
+    /**
      * Processes and adds the {@link CometChatMentionsFormatter} to the list of text
      * formatters if it's available in the data source. This method iterates through
      * the formatters provided by the data source and sets the
@@ -848,14 +856,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
             textFormatters.remove(cometchatMentionsFormatter);
             processFormatters();
         }
-    }
-
-    /**
-     * Processes the text formatters by updating the addition parameter with the
-     * current list of text formatters.
-     */
-    private void processFormatters() {
-        additionParameter.setTextFormatters(textFormatters);
     }
 
     /**

@@ -36,8 +36,8 @@ import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.viewholders.MessagesViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.deletebubble.CometChatDeleteBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 
 import java.util.List;
 

@@ -18,8 +18,8 @@ import androidx.annotation.StyleRes;
 import com.cometchat.chatuikit.databinding.CometchatSubtitleViewBinding;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.spans.MentionMovementMethod;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.CometChatMessageReceipt;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt;
+import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
 import com.google.android.material.card.MaterialCardView;
 
 /**
@@ -160,15 +160,6 @@ public class SubtitleView extends MaterialCardView {
         binding.ivMessageType.setVisibility(show ? VISIBLE : GONE);
     }
 
-    /**
-     * Sets the message type icon.
-     *
-     * @param icon The message type icon.
-     */
-    public void setMessageTypeIcon(Drawable icon) {
-        binding.ivMessageType.setImageDrawable(icon);
-    }
-
     public void setSenderNameText(String name) {
         binding.tvSenderName.setText(name);
     }
@@ -273,6 +264,15 @@ public class SubtitleView extends MaterialCardView {
     @NonNull
     public ImageView getMessageTypeIcon() {
         return binding.ivMessageType;
+    }
+
+    /**
+     * Sets the message type icon.
+     *
+     * @param icon The message type icon.
+     */
+    public void setMessageTypeIcon(Drawable icon) {
+        binding.ivMessageType.setImageDrawable(icon);
     }
 
     /**

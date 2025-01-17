@@ -23,13 +23,13 @@
             android:paddingEnd="@dimen/cometchat_padding_1"
             android:paddingBottom="@dimen/cometchat_padding">
 
-            <com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate
+            <com.cometchat.chatuikit.shared.views.date.CometChatDate
                 android:id="@+id/date_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.CometChatMessageReceipt
+            <com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt
                 android:id="@+id/receipt"
                 android:layout_width="16dp"
                 android:layout_height="16dp"

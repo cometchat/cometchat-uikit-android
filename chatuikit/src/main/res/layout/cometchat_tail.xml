@@ -6,12 +6,12 @@
     android:gravity="end"
     android:orientation="vertical">
 
-    <com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate
+    <com.cometchat.chatuikit.shared.views.date.CometChatDate
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <com.cometchat.chatuikit.shared.views.cometchatbadge.CometChatBadge
+    <com.cometchat.chatuikit.shared.views.badge.CometChatBadge
         android:id="@+id/badge"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/cometchat_20dp"

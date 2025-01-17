@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.cometchat.chatuikit.shared.views.cometchatimagebubble.CometChatImageBubble
+    <com.cometchat.chatuikit.shared.views.imagebubble.CometChatImageBubble
         android:id="@+id/image_bubble"
         android:layout_width="@dimen/cometchat_240dp"
         android:layout_height="@dimen/cometchat_232dp" />

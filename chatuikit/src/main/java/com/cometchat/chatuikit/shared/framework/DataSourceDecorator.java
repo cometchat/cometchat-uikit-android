@@ -22,7 +22,7 @@ import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.models.interactivemessage.CardMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.FormMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 
 import java.util.HashMap;
 import java.util.List;
@@ -127,7 +127,14 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindBottomView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
+    public void bindBottomView(Context context,
+                               View createdView,
+                               BaseMessage message,
+                               UIKitConstants.MessageBubbleAlignment alignment,
+                               RecyclerView.ViewHolder holder,
+                               List<BaseMessage> messageList,
+                               int position,
+                               AdditionParameter additionParameter) {
         dataSource.bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
     }
 
@@ -154,8 +161,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindTextBubbleContentView(Context context, View createdView, TextMessage message, int textBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindTextBubbleContentView(context, createdView, message, textBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindTextBubbleContentView(Context context,
+                                          View createdView,
+                                          TextMessage message,
+                                          int textBubbleStyle,
+                                          UIKitConstants.MessageBubbleAlignment alignment,
+                                          RecyclerView.ViewHolder holder,
+                                          List<BaseMessage> messageList,
+                                          int position,
+                                          AdditionParameter additionParameter) {
+        dataSource.bindTextBubbleContentView(context,
+                                             createdView,
+                                             message,
+                                             textBubbleStyle,
+                                             alignment,
+                                             holder,
+                                             messageList,
+                                             position,
+                                             additionParameter);
     }
 
     /**
@@ -181,8 +204,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindFormBubbleContentView(Context context, View createdView, FormMessage message, int formBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindFormBubbleContentView(context, createdView, message, formBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindFormBubbleContentView(Context context,
+                                          View createdView,
+                                          FormMessage message,
+                                          int formBubbleStyle,
+                                          UIKitConstants.MessageBubbleAlignment alignment,
+                                          RecyclerView.ViewHolder holder,
+                                          List<BaseMessage> messageList,
+                                          int position,
+                                          AdditionParameter additionParameter) {
+        dataSource.bindFormBubbleContentView(context,
+                                             createdView,
+                                             message,
+                                             formBubbleStyle,
+                                             alignment,
+                                             holder,
+                                             messageList,
+                                             position,
+                                             additionParameter);
     }
 
     /**
@@ -192,7 +231,9 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public View getSchedulerBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
+    public View getSchedulerBubbleContentView(Context context,
+                                              CometChatMessageBubble messageBubble,
+                                              UIKitConstants.MessageBubbleAlignment alignment) {
         return dataSource.getSchedulerBubbleContentView(context, messageBubble, alignment);
     }
 
@@ -208,8 +249,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindSchedulerBubbleContentView(Context context, View createdView, SchedulerMessage message, int schedulerBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindSchedulerBubbleContentView(context, createdView, message, schedulerBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindSchedulerBubbleContentView(Context context,
+                                               View createdView,
+                                               SchedulerMessage message,
+                                               int schedulerBubbleStyle,
+                                               UIKitConstants.MessageBubbleAlignment alignment,
+                                               RecyclerView.ViewHolder holder,
+                                               List<BaseMessage> messageList,
+                                               int position,
+                                               AdditionParameter additionParameter) {
+        dataSource.bindSchedulerBubbleContentView(context,
+                                                  createdView,
+                                                  message,
+                                                  schedulerBubbleStyle,
+                                                  alignment,
+                                                  holder,
+                                                  messageList,
+                                                  position,
+                                                  additionParameter);
     }
 
     /**
@@ -235,8 +292,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindCardBubbleContentView(Context context, View createdView, CardMessage message, int cardBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindCardBubbleContentView(context, createdView, message, cardBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindCardBubbleContentView(Context context,
+                                          View createdView,
+                                          CardMessage message,
+                                          int cardBubbleStyle,
+                                          UIKitConstants.MessageBubbleAlignment alignment,
+                                          RecyclerView.ViewHolder holder,
+                                          List<BaseMessage> messageList,
+                                          int position,
+                                          AdditionParameter additionParameter) {
+        dataSource.bindCardBubbleContentView(context,
+                                             createdView,
+                                             message,
+                                             cardBubbleStyle,
+                                             alignment,
+                                             holder,
+                                             messageList,
+                                             position,
+                                             additionParameter);
     }
 
     /**
@@ -263,8 +336,26 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindImageBubbleContentView(Context context, View createdView, String imageUrl, MediaMessage message, int imageBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindImageBubbleContentView(context, createdView, imageUrl, message, imageBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindImageBubbleContentView(Context context,
+                                           View createdView,
+                                           String imageUrl,
+                                           MediaMessage message,
+                                           int imageBubbleStyle,
+                                           UIKitConstants.MessageBubbleAlignment alignment,
+                                           RecyclerView.ViewHolder holder,
+                                           List<BaseMessage> messageList,
+                                           int position,
+                                           AdditionParameter additionParameter) {
+        dataSource.bindImageBubbleContentView(context,
+                                              createdView,
+                                              imageUrl,
+                                              message,
+                                              imageBubbleStyle,
+                                              alignment,
+                                              holder,
+                                              messageList,
+                                              position,
+                                              additionParameter);
     }
 
     /**
@@ -291,8 +382,26 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindVideoBubbleContentView(Context context, View createdView, String thumbnailUrl, MediaMessage message, int videoBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindVideoBubbleContentView(context, createdView, thumbnailUrl, message, videoBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindVideoBubbleContentView(Context context,
+                                           View createdView,
+                                           String thumbnailUrl,
+                                           MediaMessage message,
+                                           int videoBubbleStyle,
+                                           UIKitConstants.MessageBubbleAlignment alignment,
+                                           RecyclerView.ViewHolder holder,
+                                           List<BaseMessage> messageList,
+                                           int position,
+                                           AdditionParameter additionParameter) {
+        dataSource.bindVideoBubbleContentView(context,
+                                              createdView,
+                                              thumbnailUrl,
+                                              message,
+                                              videoBubbleStyle,
+                                              alignment,
+                                              holder,
+                                              messageList,
+                                              position,
+                                              additionParameter);
     }
 
     /**
@@ -318,8 +427,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindFileBubbleContentView(Context context, View createdView, MediaMessage message, int fileBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindFileBubbleContentView(context, createdView, message, fileBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindFileBubbleContentView(Context context,
+                                          View createdView,
+                                          MediaMessage message,
+                                          int fileBubbleStyle,
+                                          UIKitConstants.MessageBubbleAlignment alignment,
+                                          RecyclerView.ViewHolder holder,
+                                          List<BaseMessage> messageList,
+                                          int position,
+                                          AdditionParameter additionParameter) {
+        dataSource.bindFileBubbleContentView(context,
+                                             createdView,
+                                             message,
+                                             fileBubbleStyle,
+                                             alignment,
+                                             holder,
+                                             messageList,
+                                             position,
+                                             additionParameter);
     }
 
     /**
@@ -345,8 +470,24 @@ public abstract class DataSourceDecorator implements DataSource {
      * @param additionParameter
      */
     @Override
-    public void bindAudioBubbleContentView(Context context, View createdView, MediaMessage message, int audioBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter) {
-        dataSource.bindAudioBubbleContentView(context, createdView, message, audioBubbleStyle, alignment, holder, messageList, position, additionParameter);
+    public void bindAudioBubbleContentView(Context context,
+                                           View createdView,
+                                           MediaMessage message,
+                                           int audioBubbleStyle,
+                                           UIKitConstants.MessageBubbleAlignment alignment,
+                                           RecyclerView.ViewHolder holder,
+                                           List<BaseMessage> messageList,
+                                           int position,
+                                           AdditionParameter additionParameter) {
+        dataSource.bindAudioBubbleContentView(context,
+                                              createdView,
+                                              message,
+                                              audioBubbleStyle,
+                                              alignment,
+                                              holder,
+                                              messageList,
+                                              position,
+                                              additionParameter);
     }
 
     /**
@@ -493,7 +634,12 @@ public abstract class DataSourceDecorator implements DataSource {
      * available AI options.
      */
     @Override
-    public List<CometChatMessageComposerAction> getAIOptions(Context context, User user, Group group, HashMap<String, String> idMap, AIOptionsStyle aiOptionsStyle, AdditionParameter additionParameter) {
+    public List<CometChatMessageComposerAction> getAIOptions(Context context,
+                                                             User user,
+                                                             Group group,
+                                                             HashMap<String, String> idMap,
+                                                             AIOptionsStyle aiOptionsStyle,
+                                                             AdditionParameter additionParameter) {
         return dataSource.getAIOptions(context, user, group, idMap, aiOptionsStyle, additionParameter);
     }
 

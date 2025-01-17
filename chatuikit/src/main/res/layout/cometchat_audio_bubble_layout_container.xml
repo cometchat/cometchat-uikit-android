@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.cometchat.chatuikit.shared.views.cometchataudiobubble.CometChatAudioBubble
+    <com.cometchat.chatuikit.shared.views.audiobubble.CometChatAudioBubble
         android:id="@+id/audio_bubble"
         android:layout_width="240dp"
         android:layout_height="wrap_content"

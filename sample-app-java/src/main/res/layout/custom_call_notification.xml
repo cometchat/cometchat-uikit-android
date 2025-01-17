@@ -59,7 +59,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+            <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
                 android:id="@+id/caller_avatar"
                 android:layout_width="@dimen/cometchat_48dp"
                 android:layout_height="@dimen/cometchat_48dp"

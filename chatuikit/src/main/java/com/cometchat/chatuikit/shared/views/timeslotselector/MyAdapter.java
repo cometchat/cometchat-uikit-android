@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.DateTimeRange;
+import com.cometchat.chatuikit.shared.views.schedulerbubble.DateTimeRange;
 import com.cometchat.chatuikit.shared.views.timeslotitem.CometChatTimeSlotItem;
 import com.cometchat.chatuikit.shared.views.timeslotitem.TimeSlotItemStyle;
 
@@ -22,17 +22,15 @@ import java.util.Locale;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private static final String TAG = MyAdapter.class.getSimpleName();
-
-
-    private List<DateTimeRange> items;
     private final Context context;
+    private final int radius = 25;
+    private List<DateTimeRange> items;
     private UIKitConstants.TimeFormat timeFormat;
     private SimpleDateFormat simpleDateFormat;
     private CometChatTimeSlotSelector.OnSelectionListener onSelectionListener;
     private TimeSlotItemStyle style;
     private TimeSlotItemStyle selectedStyle;
     private HashMap<String, Integer> selectedItems;
-    private final int radius = 25;
 
     public MyAdapter(Context context, List<DateTimeRange> items) {
         this.context = context;
@@ -42,6 +40,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         setSlotStyle(new TimeSlotItemStyle().setCornerRadius(radius).setTimeColor(Color.BLACK).setBackgroundColor(Color.WHITE));
         setSelectedSlotStyle(new TimeSlotItemStyle().setCornerRadius(radius).setTimeColor(Color.WHITE).setBackgroundColor(Color.BLUE));
         simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+    }
+
+    public void setSlotStyle(TimeSlotItemStyle style) {
+        if (style != null) {
+            this.style = style;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setSelectedSlotStyle(TimeSlotItemStyle selectedStyle) {
+        if (selectedStyle != null) {
+            this.selectedStyle = selectedStyle;
+            notifyDataSetChanged();
+        }
     }
 
     @NonNull
@@ -88,11 +100,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.timeSchedulerItem.setRadius(radius);
     }
 
-    public void setItems(List<DateTimeRange> items) {
-        if (items != null) {
-            this.items = items;
-            notifyDataSetChanged();
-        }
+    @Override
+    public int getItemCount() {
+        return items.size();
     }
 
     public void setTimeFormat(UIKitConstants.TimeFormat timeFormat) {
@@ -104,6 +114,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     public List<DateTimeRange> getItems() {
         return items;
+    }
+
+    public void setItems(List<DateTimeRange> items) {
+        if (items != null) {
+            this.items = items;
+            notifyDataSetChanged();
+        }
     }
 
     public void add(DateTimeRange dateTimeRange) {
@@ -154,40 +171,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    public void setSelectedItems(HashMap<String, Integer> selectedItems) {
-        this.selectedItems = selectedItems;
-        notifyDataSetChanged();
-    }
-
     public HashMap<String, Integer> getSelectedItems() {
         return selectedItems;
     }
 
-    public void setSelectedSlotStyle(TimeSlotItemStyle selectedStyle) {
-        if (selectedStyle != null) {
-            this.selectedStyle = selectedStyle;
-            notifyDataSetChanged();
-        }
+    public void setSelectedItems(HashMap<String, Integer> selectedItems) {
+        this.selectedItems = selectedItems;
+        notifyDataSetChanged();
     }
 
     public TimeSlotItemStyle getSelectedStyle() {
         return selectedStyle;
     }
 
-    public void setSlotStyle(TimeSlotItemStyle style) {
-        if (style != null) {
-            this.style = style;
-            notifyDataSetChanged();
-        }
-    }
-
     public TimeSlotItemStyle getStyle() {
         return style;
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

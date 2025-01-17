@@ -11,8 +11,8 @@ android {
         minSdk 27
         //noinspection OldTargetApi
         targetSdk 34
-        versionCode 12
-        versionName "5.0.0-alpha12"
+        versionCode 1
+        versionName "5.0.0-beta2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -20,7 +20,7 @@ android {
         variant.outputs.configureEach { output ->
             def buildType = variant.buildType.name
             def versionName = variant.versionName
-            def newName = "CometChatTeamMessenger-${buildType}-${versionName}.apk"
+            def newName = "CometChatSampleApp-${buildType}-${versionName}.apk"
             outputFileName = newName
         }
     }
@@ -46,8 +46,8 @@ dependencies {
     implementation libs.constraintlayout
 
     // CometChat Dependencies
-    //implementation project(':chatuikit')
-    implementation 'com.cometchat:chat-uikit-android:5.0.0-beta1'
+    implementation project(':chatuikit')
+//    implementation libs.chat.uikit.android
     implementation libs.chat.sdk.android
     implementation libs.calls.sdk.android
 

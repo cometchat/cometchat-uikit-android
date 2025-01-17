@@ -25,7 +25,7 @@ import com.cometchat.chatuikit.databinding.CometchatCallLogsItemsBinding;
 import com.cometchat.chatuikit.shared.interfaces.CallLogsClickListener;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate;
+import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 
 import java.util.ArrayList;
 import java.util.HashMap;

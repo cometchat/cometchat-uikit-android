@@ -30,7 +30,7 @@ import com.cometchat.chatuikit.shared.utils.ConversationTailView;
 import com.cometchat.chatuikit.shared.utils.ConversationsUtils;
 import com.cometchat.chatuikit.shared.utils.SubtitleView;
 import com.cometchat.chatuikit.shared.viewholders.ConversationsViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatstatusindicator.StatusIndicator;
+import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;

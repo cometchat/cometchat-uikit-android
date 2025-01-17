@@ -24,7 +24,7 @@ import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.models.interactivemessage.CardMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.FormMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 
 import java.util.HashMap;
 import java.util.List;
@@ -92,39 +92,112 @@ public interface DataSource {
 
     View getBottomView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindBottomView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindBottomView(Context context,
+                        View createdView,
+                        BaseMessage message,
+                        UIKitConstants.MessageBubbleAlignment alignment,
+                        RecyclerView.ViewHolder holder,
+                        List<BaseMessage> messageList,
+                        int position,
+                        AdditionParameter additionParameter);
 
     View getTextBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindTextBubbleContentView(Context context, View createdView, TextMessage message, @StyleRes int textBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindTextBubbleContentView(Context context,
+                                   View createdView,
+                                   TextMessage message,
+                                   @StyleRes int textBubbleStyle,
+                                   UIKitConstants.MessageBubbleAlignment alignment,
+                                   RecyclerView.ViewHolder holder,
+                                   List<BaseMessage> messageList,
+                                   int position,
+                                   AdditionParameter additionParameter);
 
     View getFormBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindFormBubbleContentView(Context context, View createdView, FormMessage message, @StyleRes int formBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindFormBubbleContentView(Context context,
+                                   View createdView,
+                                   FormMessage message,
+                                   @StyleRes int formBubbleStyle,
+                                   UIKitConstants.MessageBubbleAlignment alignment,
+                                   RecyclerView.ViewHolder holder,
+                                   List<BaseMessage> messageList,
+                                   int position,
+                                   AdditionParameter additionParameter);
 
     View getSchedulerBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindSchedulerBubbleContentView(Context context, View createdView, SchedulerMessage message, @StyleRes int schedulerBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindSchedulerBubbleContentView(Context context,
+                                        View createdView,
+                                        SchedulerMessage message,
+                                        @StyleRes int schedulerBubbleStyle,
+                                        UIKitConstants.MessageBubbleAlignment alignment,
+                                        RecyclerView.ViewHolder holder,
+                                        List<BaseMessage> messageList,
+                                        int position,
+                                        AdditionParameter additionParameter);
 
     View getCardBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindCardBubbleContentView(Context context, View createdView, CardMessage message, @StyleRes int cardBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindCardBubbleContentView(Context context,
+                                   View createdView,
+                                   CardMessage message,
+                                   @StyleRes int cardBubbleStyle,
+                                   UIKitConstants.MessageBubbleAlignment alignment,
+                                   RecyclerView.ViewHolder holder,
+                                   List<BaseMessage> messageList,
+                                   int position,
+                                   AdditionParameter additionParameter);
 
     View getImageBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindImageBubbleContentView(Context context, View createdView, String imageUrl, MediaMessage message, @StyleRes int imageBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindImageBubbleContentView(Context context,
+                                    View createdView,
+                                    String imageUrl,
+                                    MediaMessage message,
+                                    @StyleRes int imageBubbleStyle,
+                                    UIKitConstants.MessageBubbleAlignment alignment,
+                                    RecyclerView.ViewHolder holder,
+                                    List<BaseMessage> messageList,
+                                    int position,
+                                    AdditionParameter additionParameter);
 
     View getVideoBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindVideoBubbleContentView(Context context, View createdView, String thumbnailUrl, MediaMessage message, @StyleRes int videoBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindVideoBubbleContentView(Context context,
+                                    View createdView,
+                                    String thumbnailUrl,
+                                    MediaMessage message,
+                                    @StyleRes int videoBubbleStyle,
+                                    UIKitConstants.MessageBubbleAlignment alignment,
+                                    RecyclerView.ViewHolder holder,
+                                    List<BaseMessage> messageList,
+                                    int position,
+                                    AdditionParameter additionParameter);
 
     View getFileBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindFileBubbleContentView(Context context, View createdView, MediaMessage message, @StyleRes int fileBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindFileBubbleContentView(Context context,
+                                   View createdView,
+                                   MediaMessage message,
+                                   @StyleRes int fileBubbleStyle,
+                                   UIKitConstants.MessageBubbleAlignment alignment,
+                                   RecyclerView.ViewHolder holder,
+                                   List<BaseMessage> messageList,
+                                   int position,
+                                   AdditionParameter additionParameter);
 
     View getAudioBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
-    void bindAudioBubbleContentView(Context context, View createdView, MediaMessage message, @StyleRes int audioBubbleStyle, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position, AdditionParameter additionParameter);
+    void bindAudioBubbleContentView(Context context,
+                                    View createdView,
+                                    MediaMessage message,
+                                    @StyleRes int audioBubbleStyle,
+                                    UIKitConstants.MessageBubbleAlignment alignment,
+                                    RecyclerView.ViewHolder holder,
+                                    List<BaseMessage> messageList,
+                                    int position,
+                                    AdditionParameter additionParameter);
 
     CometChatMessageTemplate getAudioTemplate(AdditionParameter additionParameter);
 
@@ -189,7 +262,12 @@ public interface DataSource {
      * @return A list of CometChatMessageComposerAction objects representing the
      * available AI options.
      */
-    List<CometChatMessageComposerAction> getAIOptions(Context context, User user, Group group, HashMap<String, String> idMap, AIOptionsStyle aiOptionsStyle, AdditionParameter additionParameter);
+    List<CometChatMessageComposerAction> getAIOptions(Context context,
+                                                      User user,
+                                                      Group group,
+                                                      HashMap<String, String> idMap,
+                                                      AIOptionsStyle aiOptionsStyle,
+                                                      AdditionParameter additionParameter);
 
     /**
      * Returns the auxiliary option view for the message composer.

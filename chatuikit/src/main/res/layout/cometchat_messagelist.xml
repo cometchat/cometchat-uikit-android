@@ -115,9 +115,9 @@
                 android:layout_marginEnd="@dimen/cometchat_margin_2"
                 android:layout_marginBottom="@dimen/cometchat_margin_2"
                 app:cardCornerRadius="@dimen/cometchat_radius_max"
-                app:strokeWidth="@dimen/cometchat_1dp"
+                app:cardElevation="@dimen/cometchat_8dp"
                 app:strokeColor="?attr/cometchatStrokeColorLight"
-                app:cardElevation="@dimen/cometchat_8dp">
+                app:strokeWidth="@dimen/cometchat_1dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -129,7 +129,7 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <com.cometchat.chatuikit.shared.views.cometchatbadge.CometChatBadge
+                    <com.cometchat.chatuikit.shared.views.badge.CometChatBadge
                         android:id="@+id/badge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

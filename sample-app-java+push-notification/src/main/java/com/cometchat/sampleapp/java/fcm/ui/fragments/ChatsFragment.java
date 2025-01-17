@@ -24,7 +24,7 @@ import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.conversations.CometChatConversations;
 import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
-import com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar;
+import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar;
 import com.cometchat.sampleapp.java.fcm.BuildConfig;
 import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.data.interfaces.OnItemClickListener;

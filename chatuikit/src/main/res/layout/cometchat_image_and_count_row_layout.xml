@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+        <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
             android:id="@+id/cometchatAvatar"
             android:layout_width="@dimen/cometchat_20dp"
             android:layout_height="@dimen/cometchat_20dp" />

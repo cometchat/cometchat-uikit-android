@@ -23,7 +23,7 @@ import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.viewholders.GroupMembersViewHolderListeners;
-import com.cometchat.chatuikit.shared.views.cometchatstatusindicator.StatusIndicator;
+import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +31,14 @@ import java.util.List;
 
 public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = GroupMembersAdapter.class.getSimpleName();
-    private List<GroupMember> groupMemberList;
     private final Context context;
+    private final @ColorInt int ownerScopeChipBackgroundColor;
+    private final @ColorInt int ownerScopeChipTextColor;
+    private final @ColorInt int scopeChipTextColor;
+    private final @ColorInt int scopeChipBackgroundColor;
+    private final @Dimension int scopeChipStrokeColor;
+    private final @Dimension int scopeChipStrokeWidth;
+    private List<GroupMember> groupMemberList;
     private HashMap<GroupMember, Boolean> selectedGroupMembers;
     private GroupMembersViewHolderListeners subTitleViewHolder, tailViewHolder, listItemView;
     private Group group;
@@ -42,12 +48,6 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private @ColorInt int onlineStatusColor;
     private @StyleRes int avatarStyle;
     private @StyleRes int statusIndicatorStyle;
-    private final @ColorInt int ownerScopeChipBackgroundColor;
-    private final @ColorInt int ownerScopeChipTextColor;
-    private final @ColorInt int scopeChipTextColor;
-    private final @ColorInt int scopeChipBackgroundColor;
-    private final @Dimension int scopeChipStrokeColor;
-    private final @Dimension int scopeChipStrokeWidth;
     private Drawable selectionIcon;
     private boolean isSelectionEnabled;
     private @Dimension int checkBoxStrokeWidth;
@@ -70,15 +70,19 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         scopeChipStrokeWidth = context.getResources().getDimensionPixelSize(R.dimen.cometchat_1dp);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return 1;
+    public void selectGroupMember(HashMap<GroupMember, Boolean> hashMap) {
+        if (hashMap != null) {
+            this.selectedGroupMembers = hashMap;
+            notifyDataSetChanged();
+        }
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CometchatGroupMemberListItemBinding binding = CometchatGroupMemberListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        CometchatGroupMemberListItemBinding binding = CometchatGroupMemberListItemBinding.inflate(LayoutInflater.from(parent.getContext()),
+                                                                                                  parent,
+                                                                                                  false);
         return new MyViewHolder(binding.getRoot());
     }
 
@@ -90,15 +94,13 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public int getItemCount() {
-        return groupMemberList.size();
+    public int getItemViewType(int position) {
+        return 1;
     }
 
-    public void setGroupMemberList(List<GroupMember> list) {
-        if (list != null) {
-            this.groupMemberList = list;
-            notifyDataSetChanged();
-        }
+    @Override
+    public int getItemCount() {
+        return groupMemberList.size();
     }
 
     public void setSelectionEnabled(boolean selectionEnabled) {
@@ -146,50 +148,19 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         notifyDataSetChanged();
     }
 
-    public void setOnlineStatusColor(int onlineStatusColor) {
-        if (onlineStatusColor != 0) {
-            this.onlineStatusColor = onlineStatusColor;
-            notifyDataSetChanged();
-        }
-    }
-
-    public void setAvatarStyle(@StyleRes int avatarStyle) {
-        this.avatarStyle = avatarStyle;
-        notifyDataSetChanged();
-    }
-
-    public void setStatusIndicatorStyle(@StyleRes int statusIndicatorStyle) {
-        this.statusIndicatorStyle = statusIndicatorStyle;
-        notifyDataSetChanged();
-    }
-
-    public void selectGroupMember(HashMap<GroupMember, Boolean> hashMap) {
-        if (hashMap != null) {
-            this.selectedGroupMembers = hashMap;
-            notifyDataSetChanged();
-        }
-    }
-
-    public void setGroup(Group group) {
-        if (group != null) {
-            this.group = group;
-            notifyDataSetChanged();
-        }
-    }
-
     public GroupMember getGroupMember(int pos) {
         return groupMemberList.get(pos);
     }
 
-    public void setSelectionIcon(Drawable selectionIcon) {
-        if (selectionIcon != null) {
-            this.selectionIcon = selectionIcon;
-            notifyDataSetChanged();
-        }
-    }
-
     public List<GroupMember> getGroupMemberList() {
         return groupMemberList;
+    }
+
+    public void setGroupMemberList(List<GroupMember> list) {
+        if (list != null) {
+            this.groupMemberList = list;
+            notifyDataSetChanged();
+        }
     }
 
     public Context getContext() {
@@ -204,6 +175,13 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return group;
     }
 
+    public void setGroup(Group group) {
+        if (group != null) {
+            this.group = group;
+            notifyDataSetChanged();
+        }
+    }
+
     public boolean isDisableGroupMembersPresence() {
         return disableGroupMembersPresence;
     }
@@ -212,16 +190,40 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return onlineStatusColor;
     }
 
+    public void setOnlineStatusColor(int onlineStatusColor) {
+        if (onlineStatusColor != 0) {
+            this.onlineStatusColor = onlineStatusColor;
+            notifyDataSetChanged();
+        }
+    }
+
     public @StyleRes int getAvatarStyle() {
         return avatarStyle;
+    }
+
+    public void setAvatarStyle(@StyleRes int avatarStyle) {
+        this.avatarStyle = avatarStyle;
+        notifyDataSetChanged();
     }
 
     public @StyleRes int getStatusIndicatorStyle() {
         return statusIndicatorStyle;
     }
 
+    public void setStatusIndicatorStyle(@StyleRes int statusIndicatorStyle) {
+        this.statusIndicatorStyle = statusIndicatorStyle;
+        notifyDataSetChanged();
+    }
+
     public Drawable getSelectionIcon() {
         return selectionIcon;
+    }
+
+    public void setSelectionIcon(Drawable selectionIcon) {
+        if (selectionIcon != null) {
+            this.selectionIcon = selectionIcon;
+            notifyDataSetChanged();
+        }
     }
 
     public void setListItemView(GroupMembersViewHolderListeners listItemView) {
@@ -254,8 +256,8 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private View customListItemView, customSubtitleView, customTailView;
         CometchatGroupMemberListItemBinding binding;
+        private View customListItemView, customSubtitleView, customTailView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -305,7 +307,10 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
 
                 binding.memberAvatar.setAvatar(groupMember.getName(), groupMember.getAvatar());
-                binding.tvMemberTitle.setText(groupMember.getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? binding.getRoot().getContext().getString(R.string.cometchat_you) : groupMember.getName());
+                binding.tvMemberTitle.setText(groupMember.getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? binding
+                    .getRoot()
+                    .getContext()
+                    .getString(R.string.cometchat_you) : groupMember.getName());
 
                 binding.memberStatusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
                 if (groupMember.getStatus().equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE)) {

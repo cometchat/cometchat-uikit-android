@@ -22,7 +22,7 @@ import com.cometchat.chatuikit.databinding.CometchatUserListStickyHeaderBinding;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.sticker_header.StickyHeaderAdapter;
 import com.cometchat.chatuikit.shared.viewholders.UsersViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatstatusindicator.StatusIndicator;
+import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,14 +76,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     /**
-     * Returns the view type of the item at the specified position.
+     * Selects users based on the provided map and refreshes the view.
      *
-     * @param position the position of the item within the adapter's data set
-     * @return an integer representing the view type for the item
+     * @param hashMap a map of users and their selection status
      */
-    @Override
-    public int getItemViewType(int position) {
-        return 1;
+    public void selectUser(HashMap<User, Boolean> hashMap) {
+        if (hashMap != null) {
+            this.selectedUsers = hashMap;
+        }
+        notifyDataSetChanged();
     }
 
     /**
@@ -108,6 +109,17 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         holder.bindView(userList.get(position), position);
+    }
+
+    /**
+     * Returns the view type of the item at the specified position.
+     *
+     * @param position the position of the item within the adapter's data set
+     * @return an integer representing the view type for the item
+     */
+    @Override
+    public int getItemViewType(int position) {
+        return 1;
     }
 
     /**
@@ -429,18 +441,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     /**
-     * Selects users based on the provided map and refreshes the view.
-     *
-     * @param hashMap a map of users and their selection status
-     */
-    public void selectUser(HashMap<User, Boolean> hashMap) {
-        if (hashMap != null) {
-            this.selectedUsers = hashMap;
-        }
-        notifyDataSetChanged();
-    }
-
-    /**
      * Returns the checkbox select icon drawable.
      *
      * @return the checkbox select icon drawable
@@ -497,7 +497,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
      */
     @Override
     public StickyViewHolder onCreateHeaderViewHolder(ViewGroup viewGroup) {
-        return new StickyViewHolder(CometchatUserListStickyHeaderBinding.inflate(LayoutInflater.from(viewGroup.getContext()), viewGroup, false).getRoot());
+        return new StickyViewHolder(CometchatUserListStickyHeaderBinding
+                                        .inflate(LayoutInflater.from(viewGroup.getContext()), viewGroup, false)
+                                        .getRoot());
     }
 
     /**
@@ -631,7 +633,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 if (Utils.isBlocked(user)) {
                     binding.statusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
                 } else {
-                    binding.statusIndicator.setStatusIndicator(user.getStatus().equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE) && !disableUsersPresence ? StatusIndicator.ONLINE : StatusIndicator.OFFLINE);
+                    binding.statusIndicator.setStatusIndicator(user
+                                                                   .getStatus()
+                                                                   .equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE) && !disableUsersPresence ? StatusIndicator.ONLINE : StatusIndicator.OFFLINE);
                 }
 
                 if (isSelectionEnabled) {

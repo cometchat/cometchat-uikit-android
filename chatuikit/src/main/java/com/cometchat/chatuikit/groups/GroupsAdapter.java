@@ -21,7 +21,7 @@ import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.CometchatListBaseItemsBinding;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.viewholders.GroupsViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatstatusindicator.StatusIndicator;
+import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,14 +71,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
     }
 
     /**
-     * Returns the view type of the item at the specified position.
+     * Sets the selected groups.
      *
-     * @param position The position of the item within the adapter's data set.
-     * @return The view type of the item at the specified position.
+     * @param hashMap A HashMap containing the selected groups.
      */
-    @Override
-    public int getItemViewType(int position) {
-        return 1;
+    public void selectGroup(HashMap<Group, Boolean> hashMap) {
+        if (hashMap != null) {
+            this.selectedGroups = hashMap;
+        }
+        notifyDataSetChanged();
     }
 
     /**
@@ -106,6 +107,17 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
         holder.bindView(groupList.get(position), position);
+    }
+
+    /**
+     * Returns the view type of the item at the specified position.
+     *
+     * @param position The position of the item within the adapter's data set.
+     * @return The view type of the item at the specified position.
+     */
+    @Override
+    public int getItemViewType(int position) {
+        return 1;
     }
 
     /**
@@ -355,18 +367,6 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
      */
     public void isSelectionEnabled(boolean selectionEnabled) {
         isSelectionEnabled = selectionEnabled;
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Sets the selected groups.
-     *
-     * @param hashMap A HashMap containing the selected groups.
-     */
-    public void selectGroup(HashMap<Group, Boolean> hashMap) {
-        if (hashMap != null) {
-            this.selectedGroups = hashMap;
-        }
         notifyDataSetChanged();
     }
 

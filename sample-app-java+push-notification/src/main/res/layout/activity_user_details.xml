@@ -66,7 +66,7 @@
         android:paddingStart="@dimen/cometchat_padding_4"
         android:paddingEnd="@dimen/cometchat_padding_4">
 
-        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+        <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
             android:id="@+id/avatar"
             style="@style/DetailsAvatarStyle"
             android:layout_width="@dimen/cometchat_120dp"

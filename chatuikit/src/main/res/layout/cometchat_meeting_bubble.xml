@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.SchedulerBubbleHeader
+                <com.cometchat.chatuikit.shared.views.schedulerbubble.SchedulerBubbleHeader
                     android:id="@+id/meeting_bubble_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -125,7 +125,7 @@
         android:padding="5dp"
         android:visibility="gone">
 
-        <com.cometchat.chatuikit.shared.views.cometchatquickview.CometChatQuickView
+        <com.cometchat.chatuikit.shared.views.quickview.CometChatQuickView
             android:id="@+id/quick_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

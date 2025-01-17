@@ -10,7 +10,7 @@
     android:paddingEnd="@dimen/cometchat_padding_4"
     android:paddingBottom="@dimen/cometchat_padding_3">
 
-    <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+    <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
         android:id="@+id/avatar"
         android:layout_width="@dimen/cometchat_48dp"
         android:layout_height="@dimen/cometchat_48dp" />

@@ -10,8 +10,10 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
 import com.cometchat.chatuikit.shared.cometchatuikit.UIKitSettings
 import com.cometchat.sampleapp.kotlin.AppCredentials
+import com.cometchat.sampleapp.kotlin.BuildConfig
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.utils.AppUtils
+import org.json.JSONObject
 
 /**
  * ViewModel for the SplashActivity to handle UI-related data and business
@@ -64,6 +66,20 @@ class SplashViewModel : ViewModel() {
                 callbackListener?.onError(e)
             }
         })
+    }
+
+    private fun getAppMetadata(context: Context): JSONObject {
+        val jsonObject = JSONObject()
+        try {
+            jsonObject.put("name", context.resources.getString(R.string.app_name))
+            jsonObject.put("type", "sample")
+            jsonObject.put("version", BuildConfig.VERSION_NAME)
+            jsonObject.put("bundle", BuildConfig.APPLICATION_ID)
+            jsonObject.put("platform", "android")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return jsonObject
     }
 
     /** Checks if the user is logged in and updates the login status.  */

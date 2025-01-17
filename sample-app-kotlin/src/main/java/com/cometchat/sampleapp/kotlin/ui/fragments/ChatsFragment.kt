@@ -17,7 +17,7 @@ import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.conversations.CometChatConversations
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
-import com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
 import com.cometchat.sampleapp.kotlin.BuildConfig
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.data.interfaces.OnItemClickListener

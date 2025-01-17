@@ -30,7 +30,7 @@ import com.cometchat.chatuikit.shared.models.CometChatMessageComposerAction;
 import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.viewholders.MessagesViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +52,45 @@ public class CollaborativeWhiteboardExtensionDecorator extends DataSourceDecorat
     }
 
     @Override
+    public List<CometChatMessageTemplate> getMessageTemplates(AdditionParameter additionParameter) {
+        List<CometChatMessageTemplate> templates = super.getMessageTemplates(additionParameter);
+        templates.add(getWhiteBoardTemplate(additionParameter));
+        return templates;
+    }
+
+    @Override
+    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
+        if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
+
+            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
+            messageComposerActions.add(new CometChatMessageComposerAction()
+                                           .setId(ExtensionConstants.ExtensionType.WHITEBOARD)
+                                           .setTitle(context.getString(R.string.cometchat_collaborative_whiteboard))
+                                           .setIcon(R.drawable.cometchat_ic_conversations_collaborative_whiteboard)
+                                           .setTitleColor(CometChatTheme.getTextColorPrimary(context))
+                                           .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
+                                           .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
+                                           .setBackground(CometChatTheme.getBackgroundColor1(context))
+                                           .setOnClick(() -> {
+                                               String id, type;
+                                               id = user != null ? user.getUid() : group.getGuid();
+                                               type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
+                                               Extensions.callWhiteBoardExtension(id, type, new ExtensionResponseListener() {
+                                                   @Override
+                                                   public void OnResponseSuccess(Object var) {
+                                                   }
+
+                                                   @Override
+                                                   public void OnResponseFailed(CometChatException e) {
+                                                       showError(context);
+                                                   }
+                                               });
+                                           }));
+            return messageComposerActions;
+        } else return super.getAttachmentOptions(context, user, group, idMap);
+    }
+
+    @Override
     public List<String> getDefaultMessageTypes() {
         List<String> types = super.getDefaultMessageTypes();
         if (!types.contains(collaborativeWhiteBoardExtensionTypeConstant)) {
@@ -69,69 +108,11 @@ public class CollaborativeWhiteboardExtensionDecorator extends DataSourceDecorat
     }
 
     @Override
-    public List<CometChatMessageTemplate> getMessageTemplates(AdditionParameter additionParameter) {
-        List<CometChatMessageTemplate> templates = super.getMessageTemplates(additionParameter);
-        templates.add(getWhiteBoardTemplate(additionParameter));
-        return templates;
-    }
-
-    @Override
-    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
-        if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
-
-            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
-            messageComposerActions.add(new CometChatMessageComposerAction().setId(ExtensionConstants.ExtensionType.WHITEBOARD).setTitle(context.getString(R.string.cometchat_collaborative_whiteboard)).setIcon(R.drawable.cometchat_ic_conversations_collaborative_whiteboard).setTitleColor(CometChatTheme.getTextColorPrimary(context)).setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context)).setIconTintColor(CometChatTheme.getIconTintHighlight(context)).setBackground(CometChatTheme.getBackgroundColor1(context)).setOnClick(() -> {
-                String id, type;
-                id = user != null ? user.getUid() : group.getGuid();
-                type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
-                Extensions.callWhiteBoardExtension(id, type, new ExtensionResponseListener() {
-                    @Override
-                    public void OnResponseSuccess(Object var) {
-                    }
-
-                    @Override
-                    public void OnResponseFailed(CometChatException e) {
-                        showError(context);
-                    }
-                });
-            }));
-            return messageComposerActions;
-        } else return super.getAttachmentOptions(context, user, group, idMap);
-    }
-
-    private void showError(Context context) {
-        String errorMessage = context.getString(R.string.cometchat_something_went_wrong);
-        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-    }
-
-    public CometChatMessageTemplate getWhiteBoardTemplate(AdditionParameter additionParameter) {
-        return new CometChatMessageTemplate().setCategory(UIKitConstants.MessageCategory.CUSTOM).setType(collaborativeWhiteBoardExtensionTypeConstant).setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign)).setContentView(new MessagesViewHolderListener() {
-            @NonNull
-            @Override
-            public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
-                return CollaborativeUtils.getCollaborativeBubbleView(context, configuration, "Collaborative Whiteboard", "Open whiteboard to draw together.", "Open Whiteboard");
-            }
-
-            @Override
-            public void bindView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position) {
-                CollaborativeUtils.bindWhiteBordCollaborativeBubble(context, createdView, message.getSender().getUid().equals(CometChatUIKit.getLoggedInUser().getUid()) ? additionParameter.getOutgoingCollaborativeBubbleStyle() : additionParameter.getIncomingCollaborativeBubbleStyle(), message, additionParameter);
-            }
-        }).setBottomView(new MessagesViewHolderListener() {
-            @Override
-            public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
-                return CometChatUIKit.getDataSource().getBottomView(context, messageBubble, alignment);
-            }
-
-            @Override
-            public void bindView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position) {
-                CometChatUIKit.getDataSource().bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
-            }
-        });
-    }
-
-    @Override
     public SpannableString getLastConversationMessage(Context context, Conversation conversation, AdditionParameter additionParameter) {
-        if (conversation != null && conversation.getLastMessage() != null && (UIKitConstants.MessageCategory.CUSTOM.equals(conversation.getLastMessage().getCategory()) && ExtensionConstants.ExtensionType.WHITEBOARD.equalsIgnoreCase(conversation.getLastMessage().getType())))
+        if (conversation != null && conversation.getLastMessage() != null && (UIKitConstants.MessageCategory.CUSTOM.equals(conversation
+                                                                                                                               .getLastMessage()
+                                                                                                                               .getCategory()) && ExtensionConstants.ExtensionType.WHITEBOARD.equalsIgnoreCase(
+            conversation.getLastMessage().getType())))
             return SpannableString.valueOf(getLastConversationMessage_(context, conversation, additionParameter));
         else return super.getLastConversationMessage(context, conversation, additionParameter);
     }
@@ -156,6 +137,68 @@ public class CollaborativeWhiteboardExtensionDecorator extends DataSourceDecorat
 
     public String getLastMessage(Context context, BaseMessage lastMessage) {
         return Utils.getMessagePrefix(lastMessage, context) + context.getString(R.string.cometchat_custom_message_whiteboard);
+    }
+
+    private void showError(Context context) {
+        String errorMessage = context.getString(R.string.cometchat_something_went_wrong);
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    public CometChatMessageTemplate getWhiteBoardTemplate(AdditionParameter additionParameter) {
+        return new CometChatMessageTemplate()
+            .setCategory(UIKitConstants.MessageCategory.CUSTOM)
+            .setType(collaborativeWhiteBoardExtensionTypeConstant)
+            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign))
+            .setContentView(new MessagesViewHolderListener() {
+                @NonNull
+                @Override
+                public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
+                    return CollaborativeUtils.getCollaborativeBubbleView(context,
+                                                                         configuration,
+                                                                         "Collaborative Whiteboard",
+                                                                         "Open whiteboard to draw together.",
+                                                                         "Open Whiteboard");
+                }
+
+                @Override
+                public void bindView(Context context,
+                                     View createdView,
+                                     BaseMessage message,
+                                     UIKitConstants.MessageBubbleAlignment alignment,
+                                     RecyclerView.ViewHolder holder,
+                                     List<BaseMessage> messageList,
+                                     int position) {
+                    CollaborativeUtils.bindWhiteBordCollaborativeBubble(context,
+                                                                        createdView,
+                                                                        message
+                                                                            .getSender()
+                                                                            .getUid()
+                                                                            .equals(CometChatUIKit
+                                                                                        .getLoggedInUser()
+                                                                                        .getUid()) ? additionParameter.getOutgoingCollaborativeBubbleStyle() : additionParameter.getIncomingCollaborativeBubbleStyle(),
+                                                                        message,
+                                                                        additionParameter);
+                }
+            })
+            .setBottomView(new MessagesViewHolderListener() {
+                @Override
+                public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
+                    return CometChatUIKit.getDataSource().getBottomView(context, messageBubble, alignment);
+                }
+
+                @Override
+                public void bindView(Context context,
+                                     View createdView,
+                                     BaseMessage message,
+                                     UIKitConstants.MessageBubbleAlignment alignment,
+                                     RecyclerView.ViewHolder holder,
+                                     List<BaseMessage> messageList,
+                                     int position) {
+                    CometChatUIKit
+                        .getDataSource()
+                        .bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
+                }
+            });
     }
 
     @Override

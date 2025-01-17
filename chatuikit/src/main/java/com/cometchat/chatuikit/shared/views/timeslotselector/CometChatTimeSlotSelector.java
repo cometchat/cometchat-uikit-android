@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.DateTimeRange;
-import com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.SchedulerUtils;
+import com.cometchat.chatuikit.shared.views.schedulerbubble.DateTimeRange;
+import com.cometchat.chatuikit.shared.views.schedulerbubble.SchedulerUtils;
 import com.cometchat.chatuikit.shared.views.timeslotitem.TimeSlotItemStyle;
 import com.google.android.material.card.MaterialCardView;
 
@@ -39,16 +39,6 @@ public class CometChatTimeSlotSelector extends MaterialCardView {
         init();
     }
 
-    public CometChatTimeSlotSelector(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
-
-    public CometChatTimeSlotSelector(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
     private void init() {
         Utils.initMaterialCard(this);
         View view = View.inflate(getContext(), R.layout.cometchat_time_slot, null);
@@ -67,10 +57,14 @@ public class CometChatTimeSlotSelector extends MaterialCardView {
         addView(view);
     }
 
-    public void setSeparatorColor(@ColorInt int separatorColor) {
-        if (separatorColor != 0) {
-            separator.setBackgroundColor(separatorColor);
-        }
+    public CometChatTimeSlotSelector(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public CometChatTimeSlotSelector(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
     }
 
     public void setSelectedDate(String date) {
@@ -89,22 +83,6 @@ public class CometChatTimeSlotSelector extends MaterialCardView {
         selectedDateTextView.setVisibility(visibility);
     }
 
-    public void setSelectDateTextColor(int color) {
-        if (color != 0) selectDateTextView.setTextColor(color);
-    }
-
-    public void setSelectedDateTextColor(int color) {
-        if (color != 0) selectedDateTextView.setTextColor(color);
-    }
-
-    public void setSelectedDateTextAppearance(int resId) {
-        if (resId != 0) selectedDateTextView.setTextAppearance(resId);
-    }
-
-    public void setSelectDateTextAppearance(int resId) {
-        if (resId != 0) selectDateTextView.setTextAppearance(resId);
-    }
-
     public void setEmptyTimeSlotText(String text) {
         if (text != null && !text.isEmpty()) emptyTimeSlotText.setText(text);
     }
@@ -117,26 +95,8 @@ public class CometChatTimeSlotSelector extends MaterialCardView {
         noTimeSlotView.setVisibility(visibility);
     }
 
-    public void setEmptyTimeSlotTextColor(int color) {
-        if (color != 0) emptyTimeSlotText.setTextColor(color);
-    }
-
-    public void setEmptyTimeSlotTextAppearance(int resId) {
-        if (resId != 0) emptyTimeSlotText.setTextAppearance(resId);
-    }
-
     public void setEmptyTimeSlotIconVisibility(int visibility) {
         emptyTimeSlotIcon.setVisibility(visibility);
-    }
-
-    public void setEmptyTimeSlotIconTint(int color) {
-        if (color != 0) emptyTimeSlotIcon.setImageTintList(ColorStateList.valueOf(color));
-    }
-
-    public void setCalenderImageTint(int color) {
-        if (color != 0) {
-            calenderImageView.setImageTintList(ColorStateList.valueOf(color));
-        }
     }
 
     public void setTime(List<DateTimeRange> availability, List<DateTimeRange> otherMeetings, int duration, int bufferTime) {
@@ -169,6 +129,46 @@ public class CometChatTimeSlotSelector extends MaterialCardView {
             if (style.getStrokeWidth() >= 0) this.setStrokeWidth(style.getStrokeWidth());
             if (style.getCornerRadius() >= 0) this.setRadius(style.getCornerRadius());
             if (style.getStrokeColor() != 0) this.setStrokeColor(style.getStrokeColor());
+        }
+    }
+
+    public void setEmptyTimeSlotIconTint(int color) {
+        if (color != 0) emptyTimeSlotIcon.setImageTintList(ColorStateList.valueOf(color));
+    }
+
+    public void setEmptyTimeSlotTextColor(int color) {
+        if (color != 0) emptyTimeSlotText.setTextColor(color);
+    }
+
+    public void setEmptyTimeSlotTextAppearance(int resId) {
+        if (resId != 0) emptyTimeSlotText.setTextAppearance(resId);
+    }
+
+    public void setSelectedDateTextAppearance(int resId) {
+        if (resId != 0) selectedDateTextView.setTextAppearance(resId);
+    }
+
+    public void setSelectedDateTextColor(int color) {
+        if (color != 0) selectedDateTextView.setTextColor(color);
+    }
+
+    public void setSelectDateTextAppearance(int resId) {
+        if (resId != 0) selectDateTextView.setTextAppearance(resId);
+    }
+
+    public void setSelectDateTextColor(int color) {
+        if (color != 0) selectDateTextView.setTextColor(color);
+    }
+
+    public void setSeparatorColor(@ColorInt int separatorColor) {
+        if (separatorColor != 0) {
+            separator.setBackgroundColor(separatorColor);
+        }
+    }
+
+    public void setCalenderImageTint(int color) {
+        if (color != 0) {
+            calenderImageView.setImageTintList(ColorStateList.valueOf(color));
         }
     }
 

@@ -13,8 +13,11 @@ import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.cometchatuikit.UIKitSettings;
 import com.cometchat.sampleapp.java.fcm.AppCredentials;
+import com.cometchat.sampleapp.java.fcm.BuildConfig;
 import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.utils.AppUtils;
+
+import org.json.JSONObject;
 
 /**
  * ViewModel for the SplashActivity to handle UI-related data and business
@@ -50,6 +53,7 @@ public class SplashViewModel extends ViewModel {
         CometChatUIKit.init(context, uiKitSettings, new CometChat.CallbackListener<String>() {
             @Override
             public void onSuccess(String s) {
+                CometChat.setDemoMetaInfo(getAppMetadata(context));
                 checkUserIsNotLoggedIn();
                 if (callbackListener != null) {
                     callbackListener.onSuccess(s);
@@ -64,6 +68,20 @@ public class SplashViewModel extends ViewModel {
                 }
             }
         });
+    }
+
+    private JSONObject getAppMetadata(Context context) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name", context.getResources().getString(R.string.app_name));
+            jsonObject.put("type", "sample");
+            jsonObject.put("version", BuildConfig.VERSION_NAME);
+            jsonObject.put("bundle", BuildConfig.APPLICATION_ID);
+            jsonObject.put("platform", "android");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 
     /**

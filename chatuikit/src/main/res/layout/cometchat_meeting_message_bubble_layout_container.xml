@@ -7,7 +7,7 @@
     android:orientation="vertical"
     app:flexWrap="wrap">
 
-    <com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.CometChatSchedulerBubble
+    <com.cometchat.chatuikit.shared.views.schedulerbubble.CometChatSchedulerBubble
         android:id="@+id/cometchat_meeting_bubble_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

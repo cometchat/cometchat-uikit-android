@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">CometChat Team Messenger</string>
+    <string name="app_name" translatable="false">CometChat Sample App</string>
     <string name="app_bottom_nav_chats" translatable="false">Chats</string>
     <string name="app_bottom_nav_calls" translatable="false">Calls</string>
     <string name="app_bottom_nav_users" translatable="false">Users</string>

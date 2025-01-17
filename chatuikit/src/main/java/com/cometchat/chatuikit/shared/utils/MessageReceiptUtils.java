@@ -4,7 +4,7 @@ import com.cometchat.chat.models.BaseMessage;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
 
 import org.json.JSONObject;
 
@@ -12,7 +12,7 @@ public class MessageReceiptUtils {
     private static final String TAG = MessageReceiptUtils.class.getSimpleName();
 
 
-    public static Receipt MessageReceipt(BaseMessage baseMessage) {
+    public static com.cometchat.chatuikit.shared.views.messagereceipt.Receipt MessageReceipt(BaseMessage baseMessage) {
         if (baseMessage != null) {
             if (baseMessage.getMetadata() != null) {
                 {
@@ -43,9 +43,13 @@ public class MessageReceiptUtils {
         if (baseMessage != null && baseMessage.getDeletedAt() == 0) {
             User user = CometChatUIKit.getLoggedInUser();
             if (user != null) {
-                if ((baseMessage.getCategory().equals(UIKitConstants.MessageCategory.MESSAGE) || baseMessage.getCategory().equals(UIKitConstants.MessageCategory.INTERACTIVE)) && baseMessage.getSender() != null) {
+                if ((baseMessage.getCategory().equals(UIKitConstants.MessageCategory.MESSAGE) || baseMessage
+                    .getCategory()
+                    .equals(UIKitConstants.MessageCategory.INTERACTIVE)) && baseMessage.getSender() != null) {
                     return !baseMessage.getSender().getUid().equals(CometChatUIKit.getLoggedInUser().getUid());
-                } else if (baseMessage.getMetadata() != null && baseMessage.getMetadata().has("incrementUnreadCount") && baseMessage.getSender() != null) {
+                } else if (baseMessage.getMetadata() != null && baseMessage
+                    .getMetadata()
+                    .has("incrementUnreadCount") && baseMessage.getSender() != null) {
                     return !baseMessage.getSender().getUid().equals(CometChatUIKit.getLoggedInUser().getUid());
                 }
             }

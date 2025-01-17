@@ -73,9 +73,9 @@ import com.cometchat.chatuikit.shared.resources.utils.MediaUtils;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.chatuikit.shared.spans.NonEditableSpan;
-import com.cometchat.chatuikit.shared.views.cometchatmediarecorder.CometChatMediaRecorder;
-import com.cometchat.chatuikit.shared.views.cometchatmessageinput.CometChatMessageInput;
-import com.cometchat.chatuikit.shared.views.cometchatmessageinput.CometChatTextWatcher;
+import com.cometchat.chatuikit.shared.views.mediarecorder.CometChatMediaRecorder;
+import com.cometchat.chatuikit.shared.views.messageinput.CometChatMessageInput;
+import com.cometchat.chatuikit.shared.views.messageinput.CometChatTextWatcher;
 import com.cometchat.chatuikit.shared.views.optionsheet.OptionSheetMenuItem;
 import com.cometchat.chatuikit.shared.views.optionsheet.aioptionsheet.CometChatAIOptionSheet;
 import com.cometchat.chatuikit.shared.views.optionsheet.attachmentoptionsheet.CometChatAttachmentOptionSheet;
@@ -841,13 +841,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
         this.cometchatTextFormatters.add(cometchatMentionsFormatter);
-    }    /**
-     * @param color The new color to set for the card background
-     */
-    @Override
-    public void setCardBackgroundColor(@ColorInt int color) {
-        this.backgroundColor = color;
-        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -896,12 +889,12 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
     }    /**
-     * @param strokeWidth The new width to set for the stroke
+     * @param color The new color to set for the card background
      */
     @Override
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
+    public void setCardBackgroundColor(@ColorInt int color) {
+        this.backgroundColor = color;
+        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -971,6 +964,13 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
         return query;
+    }    /**
+     * @param strokeWidth The new width to set for the stroke
+     */
+    @Override
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1712,6 +1712,38 @@ public class CometChatMessageComposer extends MaterialCardView {
     }
 
     /**
+     * Sets up the composer actions for the message composer.
+     *
+     * <p>
+     * This method clears the existing option sheet menu items, retrieves the
+     * available composer actions from the `cometchatMessageComposerActions`
+     * callback, creates option sheet menu items for each action, adds the items to
+     * the `optionSheetMenuItems` list, and stores the actions in the
+     * `actionHashMap`.
+     */
+    private void setComposerActions() {
+        attachmentOptionSheetMenuItems.clear();
+        for (CometChatMessageComposerAction option : cometchatMessageComposerActions.invoke(getContext(),
+                                                                                            user,
+                                                                                            group,
+                                                                                            composerViewModel.getIdMap())) {
+            if (option != null) {
+                actionHashMap.put(option.getId(), option);
+                attachmentOptionSheetMenuItems.add(new OptionSheetMenuItem(option.getId(),
+                                                                           option.getIcon(),
+                                                                           option.getIconTintColor(),
+                                                                           option.getIconBackground(),
+                                                                           option.getTitle(),
+                                                                           option.getTitleFont(),
+                                                                           option.getTitleAppearance(),
+                                                                           option.getTitleColor(),
+                                                                           option.getBackground(),
+                                                                           option.getCornerRadius()));
+            }
+        }
+    }
+
+    /**
      * Sets the attachment options for the composer.
      *
      * @param aiOptions The function to retrieve the list of composer actions.
@@ -1720,6 +1752,37 @@ public class CometChatMessageComposer extends MaterialCardView {
         if (aiOptions != null) {
             this.aiOptions = aiOptions;
             setAIActions();
+        }
+    }
+
+    /**
+     * Sets up the AI actions for the message composer. This method retrieves the
+     * available AI options from the `aiOptions` callback, creates action items for
+     * each option, adds the AI button layout to the auxiliary view container, and
+     * sets the list of action items to the AI action sheet.
+     */
+    private void setAIActions() {
+        aiOptionSheetMenuItems.clear();
+        if (aiOptions != null) {
+            List<CometChatMessageComposerAction> actions = aiOptions.invoke(getContext(), user, group, composerViewModel.getIdMap());
+            if (actions != null && !actions.isEmpty()) {
+                auxiliaryViewContainer.addView(cometchatAiButtonLayoutBinding.getRoot());
+                for (CometChatMessageComposerAction option : actions) {
+                    if (option != null) {
+                        actionHashMap.put(option.getId(), option);
+                        aiOptionSheetMenuItems.add(new OptionSheetMenuItem(option.getId(),
+                                                                           option.getIcon(),
+                                                                           option.getIconTintColor(),
+                                                                           option.getIconBackground(),
+                                                                           option.getTitle(),
+                                                                           option.getTitleFont(),
+                                                                           option.getTitleAppearance(),
+                                                                           option.getTitleColor(),
+                                                                           option.getBackground(),
+                                                                           option.getCornerRadius()));
+                    }
+                }
+            }
         }
     }
 
@@ -1816,6 +1879,30 @@ public class CometChatMessageComposer extends MaterialCardView {
     }
 
     /**
+     * sends the typing indicator
+     */
+    private void processFormatters() {
+        cometchatTextFormatterHashMap = new HashMap<>();
+        for (CometChatTextFormatter formatter : cometchatTextFormatters) {
+            if (formatter != null) {
+                formatter.getSuggestionItemList().observe((AppCompatActivity) getContext(), this::setTagList);
+                formatter.getTagInfoMessage().observe((AppCompatActivity) getContext(), this::setInfoMessage);
+                formatter.getTagInfoVisibility().observe((AppCompatActivity) getContext(), this::setInfoVisibility);
+                formatter.getShowLoadingIndicator().observe((AppCompatActivity) getContext(), this::setLoadingStateVisibility);
+                if (user != null) {
+                    formatter.setUser(user);
+                    formatter.setGroup(null);
+                } else if (group != null) {
+                    formatter.setGroup(group);
+                    formatter.setUser(null);
+                }
+                if (formatter.getTrackingCharacter() != '\0')
+                    cometchatTextFormatterHashMap.put(formatter.getTrackingCharacter(), formatter);
+            }
+        }
+    }
+
+    /**
      * Sets the auxiliary view for the message composer.
      */
     private void setAuxiliaryButtonViewInternally() {
@@ -1832,66 +1919,63 @@ public class CometChatMessageComposer extends MaterialCardView {
     }
 
     /**
-     * Sets up the composer actions for the message composer.
+     * Sets the list of suggestion items for the tag list.
      *
      * <p>
-     * This method clears the existing option sheet menu items, retrieves the
-     * available composer actions from the `cometchatMessageComposerActions`
-     * callback, creates option sheet menu items for each action, adds the items to
-     * the `optionSheetMenuItems` list, and stores the actions in the
-     * `actionHashMap`.
+     * This method updates the suggestion list with the provided list of
+     * {@link SuggestionItem}s. If the list is not empty and the temporary text
+     * formatter is available, the suggestion list is displayed with the provided
+     * items. If the list is empty or null, the suggestion list will be hidden.
+     *
+     * @param suggestionItems A list of {@link SuggestionItem}s to be displayed in the
+     *                        suggestion list. If this is null or empty, the suggestion list
+     *                        will be hidden.
      */
-    private void setComposerActions() {
-        attachmentOptionSheetMenuItems.clear();
-        for (CometChatMessageComposerAction option : cometchatMessageComposerActions.invoke(getContext(),
-                                                                                            user,
-                                                                                            group,
-                                                                                            composerViewModel.getIdMap())) {
-            if (option != null) {
-                actionHashMap.put(option.getId(), option);
-                attachmentOptionSheetMenuItems.add(new OptionSheetMenuItem(option.getId(),
-                                                                           option.getIcon(),
-                                                                           option.getIconTintColor(),
-                                                                           option.getIconBackground(),
-                                                                           option.getTitle(),
-                                                                           option.getTitleFont(),
-                                                                           option.getTitleAppearance(),
-                                                                           option.getTitleColor(),
-                                                                           option.getBackground(),
-                                                                           option.getCornerRadius()));
-            }
+    private void setTagList(@Nullable List<SuggestionItem> suggestionItems) {
+        if (tempTextFormatter != null && suggestionItems != null && !suggestionItems.isEmpty()) {
+            binding.suggestionList.setList(new ArrayList<>());
+            binding.suggestionList.setVisibility(View.VISIBLE);
+            binding.suggestionList.setList(suggestionItems);
+        } else {
+            binding.suggestionList.setVisibility(View.GONE);
         }
     }
 
     /**
-     * Sets up the AI actions for the message composer. This method retrieves the
-     * available AI options from the `aiOptions` callback, creates action items for
-     * each option, adds the AI button layout to the auxiliary view container, and
-     * sets the list of action items to the AI action sheet.
+     * @param visibility sets the visibility of the info view
      */
-    private void setAIActions() {
-        aiOptionSheetMenuItems.clear();
-        if (aiOptions != null) {
-            List<CometChatMessageComposerAction> actions = aiOptions.invoke(getContext(), user, group, composerViewModel.getIdMap());
-            if (actions != null && !actions.isEmpty()) {
-                auxiliaryViewContainer.addView(cometchatAiButtonLayoutBinding.getRoot());
-                for (CometChatMessageComposerAction option : actions) {
-                    if (option != null) {
-                        actionHashMap.put(option.getId(), option);
-                        aiOptionSheetMenuItems.add(new OptionSheetMenuItem(option.getId(),
-                                                                           option.getIcon(),
-                                                                           option.getIconTintColor(),
-                                                                           option.getIconBackground(),
-                                                                           option.getTitle(),
-                                                                           option.getTitleFont(),
-                                                                           option.getTitleAppearance(),
-                                                                           option.getTitleColor(),
-                                                                           option.getBackground(),
-                                                                           option.getCornerRadius()));
-                    }
-                }
+    public void setInfoVisibility(boolean visibility) {
+        if (visibility) {
+            if (binding.tagInfoParentLay.getVisibility() != VISIBLE) {
+                animateVisibilityVisible(binding.tagInfoParentLay);
             }
+        } else {
+            animateVisibilityGone(binding.tagInfoParentLay);
         }
+    }
+
+    /**
+     * Sets the visibility of the loading state in the suggestion list.
+     *
+     * <p>
+     * This method updates the suggestion list's loading indicator based on the
+     * provided boolean value. If {@code true}, the loading state is visible; if
+     * {@code false}, it is hidden.
+     *
+     * @param aBoolean A boolean value indicating whether to show or hide the loading
+     *                 state.
+     */
+    private void setLoadingStateVisibility(Boolean aBoolean) {
+        getCometChatSuggestionList().showShimmer(aBoolean);
+    }
+
+    /**
+     * Gets the `CometChatSuggestionList` instance used for displaying suggestions.
+     *
+     * @return The `CometChatSuggestionList` instance.
+     */
+    public CometChatSuggestionList getCometChatSuggestionList() {
+        return binding.suggestionList;
     }
 
     /**
@@ -2182,10 +2266,6 @@ public class CometChatMessageComposer extends MaterialCardView {
     public void setFooterView(View footerView) {
         this.footerView = footerView;
         Utils.handleView(binding.footerViewLayout, footerView, false);
-    }    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        composerViewModel.addListeners();
     }
 
     /**
@@ -2196,6 +2276,10 @@ public class CometChatMessageComposer extends MaterialCardView {
     @Nullable
     public View getSendButtonView() {
         return sendButtonView;
+    }    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        composerViewModel.addListeners();
     }
 
     /**
@@ -2346,90 +2430,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             cometchatTextFormatters.remove(cometchatMentionsFormatter);
             processFormatters();
         }
-    }
-
-    /**
-     * sends the typing indicator
-     */
-    private void processFormatters() {
-        cometchatTextFormatterHashMap = new HashMap<>();
-        for (CometChatTextFormatter formatter : cometchatTextFormatters) {
-            if (formatter != null) {
-                formatter.getSuggestionItemList().observe((AppCompatActivity) getContext(), this::setTagList);
-                formatter.getTagInfoMessage().observe((AppCompatActivity) getContext(), this::setInfoMessage);
-                formatter.getTagInfoVisibility().observe((AppCompatActivity) getContext(), this::setInfoVisibility);
-                formatter.getShowLoadingIndicator().observe((AppCompatActivity) getContext(), this::setLoadingStateVisibility);
-                if (user != null) {
-                    formatter.setUser(user);
-                    formatter.setGroup(null);
-                } else if (group != null) {
-                    formatter.setGroup(group);
-                    formatter.setUser(null);
-                }
-                if (formatter.getTrackingCharacter() != '\0')
-                    cometchatTextFormatterHashMap.put(formatter.getTrackingCharacter(), formatter);
-            }
-        }
-    }
-
-    /**
-     * Sets the list of suggestion items for the tag list.
-     *
-     * <p>
-     * This method updates the suggestion list with the provided list of
-     * {@link SuggestionItem}s. If the list is not empty and the temporary text
-     * formatter is available, the suggestion list is displayed with the provided
-     * items. If the list is empty or null, the suggestion list will be hidden.
-     *
-     * @param suggestionItems A list of {@link SuggestionItem}s to be displayed in the
-     *                        suggestion list. If this is null or empty, the suggestion list
-     *                        will be hidden.
-     */
-    private void setTagList(@Nullable List<SuggestionItem> suggestionItems) {
-        if (tempTextFormatter != null && suggestionItems != null && !suggestionItems.isEmpty()) {
-            binding.suggestionList.setList(new ArrayList<>());
-            binding.suggestionList.setVisibility(View.VISIBLE);
-            binding.suggestionList.setList(suggestionItems);
-        } else {
-            binding.suggestionList.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * @param visibility sets the visibility of the info view
-     */
-    public void setInfoVisibility(boolean visibility) {
-        if (visibility) {
-            if (binding.tagInfoParentLay.getVisibility() != VISIBLE) {
-                animateVisibilityVisible(binding.tagInfoParentLay);
-            }
-        } else {
-            animateVisibilityGone(binding.tagInfoParentLay);
-        }
-    }
-
-    /**
-     * Sets the visibility of the loading state in the suggestion list.
-     *
-     * <p>
-     * This method updates the suggestion list's loading indicator based on the
-     * provided boolean value. If {@code true}, the loading state is visible; if
-     * {@code false}, it is hidden.
-     *
-     * @param aBoolean A boolean value indicating whether to show or hide the loading
-     *                 state.
-     */
-    private void setLoadingStateVisibility(Boolean aBoolean) {
-        getCometChatSuggestionList().showShimmer(aBoolean);
-    }
-
-    /**
-     * Gets the `CometChatSuggestionList` instance used for displaying suggestions.
-     *
-     * @return The `CometChatSuggestionList` instance.
-     */
-    public CometChatSuggestionList getCometChatSuggestionList() {
-        return binding.suggestionList;
     }
 
     /**
@@ -3258,12 +3258,15 @@ public class CometChatMessageComposer extends MaterialCardView {
 
 
 
+
+
+
+
+
     @Override
     public @Dimension int getStrokeWidth() {
         return strokeWidth;
     }
-
-
 
 
 }

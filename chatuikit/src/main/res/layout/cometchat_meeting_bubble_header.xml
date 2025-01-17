@@ -21,7 +21,7 @@
             android:scaleType="fitXY"
             android:src="@drawable/cometchat_baseline_arrow_back_ios" />
 
-        <com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar
+        <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
             android:id="@+id/meeting_avatar"
             android:layout_width="48dp"
             android:layout_height="48dp" />

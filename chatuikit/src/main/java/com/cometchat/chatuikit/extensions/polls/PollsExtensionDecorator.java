@@ -35,8 +35,8 @@ import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.utils.MessageBubbleUtils;
 import com.cometchat.chatuikit.shared.viewholders.MessagesViewHolderListener;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.deletebubble.CometChatDeleteBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 
 import org.json.JSONObject;
 
@@ -48,6 +48,76 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
 
     public PollsExtensionDecorator(DataSource dataSource) {
         super(dataSource);
+    }
+
+    @Override
+    public List<CometChatMessageTemplate> getMessageTemplates(@NonNull AdditionParameter additionParameter) {
+        List<CometChatMessageTemplate> templates = super.getMessageTemplates(additionParameter);
+        templates.add(getPollTemplate(additionParameter));
+        return templates;
+    }
+
+    @Override
+    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
+        if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
+            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
+            messageComposerActions.add(new CometChatMessageComposerAction()
+                                           .setId(ExtensionConstants.ExtensionType.EXTENSION_POLL)
+                                           .setTitle(context.getString(R.string.cometchat_poll))
+                                           .setIcon(R.drawable.cometchat_ic_polls)
+                                           .setTitleColor(CometChatTheme.getTextColorPrimary(context))
+                                           .setBackground(CometChatTheme.getBackgroundColor1(context))
+                                           .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
+                                           .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
+                                           .setOnClick(() -> {
+                                               String id, type;
+                                               id = user != null ? user.getUid() : group.getGuid();
+                                               type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
+                                               AlertDialog.Builder alertDialog = new AlertDialog.Builder(context,
+                                                                                                         androidx.appcompat.R.style.AlertDialog_AppCompat);
+                                               CometChatCreatePoll chatCreatePoll = new CometChatCreatePoll(context);
+                                               ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                                                          ViewGroup.LayoutParams.MATCH_PARENT);
+                                               chatCreatePoll.setLayoutParams(params);
+                                               alertDialog.setView(chatCreatePoll);
+                                               Dialog dialog = alertDialog.create();
+                                               Utils.setDialogStatusBarColor(dialog, CometChatTheme.getBackgroundColor1(context));
+                                               chatCreatePoll.setBackClickListener(view -> dialog.dismiss());
+                                               chatCreatePoll.setOnSubmitClickListener((question, options) -> {
+                                                   try {
+                                                       chatCreatePoll.setErrorStateVisibility(View.GONE);
+                                                       chatCreatePoll.setProgressVisibility(View.VISIBLE);
+                                                       JSONObject jsonObject = new JSONObject();
+                                                       jsonObject.put("question", question);
+                                                       jsonObject.put("options", options);
+                                                       jsonObject.put("receiver", id);
+                                                       jsonObject.put("receiverType", type);
+                                                       CometChat.callExtension("polls",
+                                                                               "POST",
+                                                                               "/v2/create",
+                                                                               jsonObject,
+                                                                               new CometChat.CallbackListener<JSONObject>() {
+                                                                                   @Override
+                                                                                   public void onSuccess(JSONObject jsonObject) {
+                                                                                       chatCreatePoll.setProgressVisibility(View.GONE);
+                                                                                       dialog.dismiss();
+                                                                                   }
+
+                                                                                   @Override
+                                                                                   public void onError(CometChatException e) {
+                                                                                       chatCreatePoll.setProgressVisibility(View.GONE);
+                                                                                       chatCreatePoll.setErrorStateVisibility(View.VISIBLE);
+                                                                                   }
+                                                                               });
+                                                   } catch (Exception e) {
+                                                       CometChatLogger.e(TAG, e.toString());
+                                                   }
+                                               });
+
+                                               dialog.show();
+                                           }));
+            return messageComposerActions;
+        } else return super.getAttachmentOptions(context, user, group, idMap);
     }
 
     @Override
@@ -68,106 +138,11 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<CometChatMessageTemplate> getMessageTemplates(@NonNull AdditionParameter additionParameter) {
-        List<CometChatMessageTemplate> templates = super.getMessageTemplates(additionParameter);
-        templates.add(getPollTemplate(additionParameter));
-        return templates;
-    }
-
-    @Override
-    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
-        if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
-            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
-            messageComposerActions.add(new CometChatMessageComposerAction().setId(ExtensionConstants.ExtensionType.EXTENSION_POLL).setTitle(context.getString(R.string.cometchat_poll)).setIcon(R.drawable.cometchat_ic_polls).setTitleColor(CometChatTheme.getTextColorPrimary(context)).setBackground(CometChatTheme.getBackgroundColor1(context)).setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context)).setIconTintColor(CometChatTheme.getIconTintHighlight(context)).setOnClick(() -> {
-                String id, type;
-                id = user != null ? user.getUid() : group.getGuid();
-                type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context, androidx.appcompat.R.style.AlertDialog_AppCompat);
-                CometChatCreatePoll chatCreatePoll = new CometChatCreatePoll(context);
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                chatCreatePoll.setLayoutParams(params);
-                alertDialog.setView(chatCreatePoll);
-                Dialog dialog = alertDialog.create();
-                Utils.setDialogStatusBarColor(dialog, CometChatTheme.getBackgroundColor1(context));
-                chatCreatePoll.setBackClickListener(view -> dialog.dismiss());
-                chatCreatePoll.setOnSubmitClickListener((question, options) -> {
-                    try {
-                        chatCreatePoll.setErrorStateVisibility(View.GONE);
-                        chatCreatePoll.setProgressVisibility(View.VISIBLE);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("question", question);
-                        jsonObject.put("options", options);
-                        jsonObject.put("receiver", id);
-                        jsonObject.put("receiverType", type);
-                        CometChat.callExtension("polls", "POST", "/v2/create", jsonObject, new CometChat.CallbackListener<JSONObject>() {
-                            @Override
-                            public void onSuccess(JSONObject jsonObject) {
-                                chatCreatePoll.setProgressVisibility(View.GONE);
-                                dialog.dismiss();
-                            }
-
-                            @Override
-                            public void onError(CometChatException e) {
-                                chatCreatePoll.setProgressVisibility(View.GONE);
-                                chatCreatePoll.setErrorStateVisibility(View.VISIBLE);
-                            }
-                        });
-                    } catch (Exception e) {
-                        CometChatLogger.e(TAG, e.toString());
-                    }
-                });
-
-                dialog.show();
-            }));
-            return messageComposerActions;
-        } else return super.getAttachmentOptions(context, user, group, idMap);
-    }
-
-    public CometChatMessageTemplate getPollTemplate(@NonNull AdditionParameter additionParameter) {
-        return new CometChatMessageTemplate().setCategory(UIKitConstants.MessageCategory.CUSTOM).setType(ExtensionConstants.ExtensionType.EXTENSION_POLL).setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign)).setContentView(new MessagesViewHolderListener() {
-            @Override
-            public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
-                View view = View.inflate(context, R.layout.cometchat_poll_bubble_layout_container, null);
-                LinearLayout parent = view.findViewById(R.id.cometchat_poll_bubble_layout_container_parent);
-
-                MessageBubbleUtils.setDeletedMessageBubble(context, view);
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) parent.getLayoutParams();
-                parent.setGravity(alignment.equals(UIKitConstants.MessageBubbleAlignment.RIGHT) ? Gravity.END : Gravity.START);
-                parent.setLayoutParams(params);
-                return view;
-            }
-
-            @Override
-            public void bindView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position) {
-                CometChatPollBubble pollBubble = createdView.findViewById(R.id.cometchat_poll_bubble);
-                CometChatDeleteBubble deletedBubble = createdView.findViewById(R.id.cometchat_delete_text_bubble);
-                if (message.getDeletedAt() == 0) {
-                    deletedBubble.setVisibility(View.GONE);
-                    pollBubble.setVisibility(View.VISIBLE);
-                    pollBubble.setMessage((CustomMessage) message);
-                    pollBubble.setStyle(CometChatUIKit.getLoggedInUser().getUid().equals(message.getSender().getUid()) ? additionParameter.getOutgoingPollBubbleStyle() : additionParameter.getIncomingPollBubbleStyle());
-                } else {
-                    pollBubble.setVisibility(View.GONE);
-                    deletedBubble.setVisibility(View.VISIBLE);
-                    deletedBubble.setStyle(CometChatUIKit.getLoggedInUser().getUid().equals(message.getSender().getUid()) ? additionParameter.getOutgoingDeleteBubbleStyle() : additionParameter.getIncomingDeleteBubbleStyle());
-                }
-            }
-        }).setBottomView(new MessagesViewHolderListener() {
-            @Override
-            public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
-                return CometChatUIKit.getDataSource().getBottomView(context, messageBubble, alignment);
-            }
-
-            @Override
-            public void bindView(Context context, View createdView, BaseMessage message, UIKitConstants.MessageBubbleAlignment alignment, RecyclerView.ViewHolder holder, List<BaseMessage> messageList, int position) {
-                CometChatUIKit.getDataSource().bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
-            }
-        });
-    }
-
-    @Override
     public SpannableString getLastConversationMessage(Context context, Conversation conversation, AdditionParameter additionParameter) {
-        if (conversation != null && conversation.getLastMessage() != null && UIKitConstants.MessageCategory.CUSTOM.equals(conversation.getLastMessage().getCategory()) && ExtensionConstants.ExtensionType.EXTENSION_POLL.equalsIgnoreCase(conversation.getLastMessage().getType()))
+        if (conversation != null && conversation.getLastMessage() != null && UIKitConstants.MessageCategory.CUSTOM.equals(conversation
+                                                                                                                              .getLastMessage()
+                                                                                                                              .getCategory()) && ExtensionConstants.ExtensionType.EXTENSION_POLL.equalsIgnoreCase(
+            conversation.getLastMessage().getType()))
             return SpannableString.valueOf(getLastConversationMessage_(context, conversation, additionParameter));
         else return super.getLastConversationMessage(context, conversation, additionParameter);
     }
@@ -192,6 +167,77 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
 
     public String getLastMessage(@NonNull Context context, BaseMessage lastMessage) {
         return Utils.getMessagePrefix(lastMessage, context) + context.getString(R.string.cometchat_polls);
+    }
+
+    public CometChatMessageTemplate getPollTemplate(@NonNull AdditionParameter additionParameter) {
+        return new CometChatMessageTemplate()
+            .setCategory(UIKitConstants.MessageCategory.CUSTOM)
+            .setType(ExtensionConstants.ExtensionType.EXTENSION_POLL)
+            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign))
+            .setContentView(new MessagesViewHolderListener() {
+                @Override
+                public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
+                    View view = View.inflate(context, R.layout.cometchat_poll_bubble_layout_container, null);
+                    LinearLayout parent = view.findViewById(R.id.cometchat_poll_bubble_layout_container_parent);
+
+                    MessageBubbleUtils.setDeletedMessageBubble(context, view);
+                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) parent.getLayoutParams();
+                    parent.setGravity(alignment.equals(UIKitConstants.MessageBubbleAlignment.RIGHT) ? Gravity.END : Gravity.START);
+                    parent.setLayoutParams(params);
+                    return view;
+                }
+
+                @Override
+                public void bindView(Context context,
+                                     View createdView,
+                                     BaseMessage message,
+                                     UIKitConstants.MessageBubbleAlignment alignment,
+                                     RecyclerView.ViewHolder holder,
+                                     List<BaseMessage> messageList,
+                                     int position) {
+                    CometChatPollBubble pollBubble = createdView.findViewById(R.id.cometchat_poll_bubble);
+                    CometChatDeleteBubble deletedBubble = createdView.findViewById(R.id.cometchat_delete_text_bubble);
+                    if (message.getDeletedAt() == 0) {
+                        deletedBubble.setVisibility(View.GONE);
+                        pollBubble.setVisibility(View.VISIBLE);
+                        pollBubble.setMessage((CustomMessage) message);
+                        pollBubble.setStyle(CometChatUIKit
+                                                .getLoggedInUser()
+                                                .getUid()
+                                                .equals(message
+                                                            .getSender()
+                                                            .getUid()) ? additionParameter.getOutgoingPollBubbleStyle() : additionParameter.getIncomingPollBubbleStyle());
+                    } else {
+                        pollBubble.setVisibility(View.GONE);
+                        deletedBubble.setVisibility(View.VISIBLE);
+                        deletedBubble.setStyle(CometChatUIKit
+                                                   .getLoggedInUser()
+                                                   .getUid()
+                                                   .equals(message
+                                                               .getSender()
+                                                               .getUid()) ? additionParameter.getOutgoingDeleteBubbleStyle() : additionParameter.getIncomingDeleteBubbleStyle());
+                    }
+                }
+            })
+            .setBottomView(new MessagesViewHolderListener() {
+                @Override
+                public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
+                    return CometChatUIKit.getDataSource().getBottomView(context, messageBubble, alignment);
+                }
+
+                @Override
+                public void bindView(Context context,
+                                     View createdView,
+                                     BaseMessage message,
+                                     UIKitConstants.MessageBubbleAlignment alignment,
+                                     RecyclerView.ViewHolder holder,
+                                     List<BaseMessage> messageList,
+                                     int position) {
+                    CometChatUIKit
+                        .getDataSource()
+                        .bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
+                }
+            });
     }
 
     @Override

@@ -16,7 +16,7 @@
         android:maxWidth="240dp"
         android:maxLines="1" />
 
-    <com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate
+    <com.cometchat.chatuikit.shared.views.date.CometChatDate
         android:id="@+id/cometchat_bubble_header_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

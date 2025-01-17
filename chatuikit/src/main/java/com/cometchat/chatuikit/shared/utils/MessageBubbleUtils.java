@@ -37,18 +37,18 @@ import com.cometchat.chatuikit.shared.models.interactivemessage.FormMessage;
 import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.views.actionbubble.CometChatActionBubble;
-import com.cometchat.chatuikit.shared.views.cometchataudiobubble.CometChatAudioBubble;
-import com.cometchat.chatuikit.shared.views.cometchatavatar.CometChatAvatar;
-import com.cometchat.chatuikit.shared.views.cometchatcardbubble.CometChatCardBubble;
-import com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate;
-import com.cometchat.chatuikit.shared.views.cometchatfilebubble.CometChatFileBubble;
-import com.cometchat.chatuikit.shared.views.cometchatformbubble.CometChatFormBubble;
-import com.cometchat.chatuikit.shared.views.cometchatimagebubble.CometChatImageBubble;
-import com.cometchat.chatuikit.shared.views.cometchatmessagebubble.CometChatMessageBubble;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.CometChatMessageReceipt;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.Receipt;
-import com.cometchat.chatuikit.shared.views.cometchatschedulerbubble.CometChatSchedulerBubble;
+import com.cometchat.chatuikit.shared.views.audiobubble.CometChatAudioBubble;
+import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar;
+import com.cometchat.chatuikit.shared.views.cardbubble.CometChatCardBubble;
+import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 import com.cometchat.chatuikit.shared.views.deletebubble.CometChatDeleteBubble;
+import com.cometchat.chatuikit.shared.views.filebubble.CometChatFileBubble;
+import com.cometchat.chatuikit.shared.views.formbubble.CometChatFormBubble;
+import com.cometchat.chatuikit.shared.views.imagebubble.CometChatImageBubble;
+import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt;
+import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.schedulerbubble.CometChatSchedulerBubble;
 import com.cometchat.chatuikit.shared.views.textbubble.CometChatTextBubble;
 import com.cometchat.chatuikit.shared.views.videobubble.CometChatVideoBubble;
 import com.google.android.material.card.MaterialCardView;
@@ -64,7 +64,14 @@ public class MessageBubbleUtils {
         return View.inflate(context, R.layout.cometchat_top_view, null);
     }
 
-    public static void bindHeaderView(View view, boolean showName, String name, String time, boolean showTime, @ColorInt int nameColor, @StyleRes int nameAppearance, @StyleRes int dateStyle) {
+    public static void bindHeaderView(View view,
+                                      boolean showName,
+                                      String name,
+                                      String time,
+                                      boolean showTime,
+                                      @ColorInt int nameColor,
+                                      @StyleRes int nameAppearance,
+                                      @StyleRes int dateStyle) {
         if (view != null) {
             TextView nameText = view.findViewById(R.id.cometchat_bubble_header_name_tv);
             CometChatDate cometchatDate = view.findViewById(R.id.cometchat_bubble_header_time);
@@ -84,7 +91,13 @@ public class MessageBubbleUtils {
         return View.inflate(context, R.layout.cometchat_status_info_view, null);
     }
 
-    public static void bindStatusInfoView(View view, boolean showReceipt, Receipt receipt, String time, boolean showTime, @StyleRes int receiptStyle, @StyleRes int dateStyle) {
+    public static void bindStatusInfoView(View view,
+                                          boolean showReceipt,
+                                          Receipt receipt,
+                                          String time,
+                                          boolean showTime,
+                                          @StyleRes int receiptStyle,
+                                          @StyleRes int dateStyle) {
         if (view != null) {
             CometChatMessageReceipt cometchatMessageReceipt = view.findViewById(R.id.receipt);
             MaterialCardView dateTimeContainer = view.findViewById(R.id.date_time_container);
@@ -122,13 +135,18 @@ public class MessageBubbleUtils {
         View view = View.inflate(context, R.layout.cometchat_reaction_layout_container, null);
         LinearLayout reactionLayout = view.findViewById(R.id.cometchat_reaction_layout_parent_container);
         int gravity = alignment.equals(UIKitConstants.MessageBubbleAlignment.RIGHT) ? Gravity.END : Gravity.START;
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                                               LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = gravity;
         reactionLayout.setLayoutParams(layoutParams);
         return view;
     }
 
-    public static void bindReactionsView(View footerView, BaseMessage baseMessage, int reactionLimit, @StyleRes int reactionStyle, CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents) {
+    public static void bindReactionsView(View footerView,
+                                         BaseMessage baseMessage,
+                                         int reactionLimit,
+                                         @StyleRes int reactionStyle,
+                                         CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents) {
         CometChatMessageReaction messageReaction = footerView.findViewById(R.id.cometchat_reaction_view);
         messageReaction.setStyle(reactionStyle);
         messageReaction.setReactionsEventListener(cometchatUIKitReactionActionEvents);
@@ -141,7 +159,17 @@ public class MessageBubbleUtils {
         return view;
     }
 
-    public static void bindTextContentView(View view, TextMessage textMessage, UIKitConstants.MessageBubbleAlignment alignment, @StyleRes int textBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void setDeletedMessageBubble(Context context, View view) {
+        CometChatDeleteBubble cometchatDeleteBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
+        cometchatDeleteBubble.setText(context.getResources().getString(R.string.cometchat_this_message_deleted));
+    }
+
+    public static void bindTextContentView(View view,
+                                           TextMessage textMessage,
+                                           UIKitConstants.MessageBubbleAlignment alignment,
+                                           @StyleRes int textBubbleStyle,
+                                           @StyleRes int deleteBubbleStyle,
+                                           AdditionParameter additionParameter) {
         if (view != null) {
             CometChatTextBubble cometchatTextBubble = view.findViewById(R.id.text_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -168,7 +196,13 @@ public class MessageBubbleUtils {
         return null;
     }
 
-    public static void bindImageContentView(View view, String thumbnail, UIKitConstants.MessageBubbleAlignment alignment, MediaMessage mediaMessage, @StyleRes int imageBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindImageContentView(View view,
+                                            String thumbnail,
+                                            UIKitConstants.MessageBubbleAlignment alignment,
+                                            MediaMessage mediaMessage,
+                                            @StyleRes int imageBubbleStyle,
+                                            @StyleRes int deleteBubbleStyle,
+                                            AdditionParameter additionParameter) {
         if (view != null) {
             CometChatImageBubble cometchatImageBubble = view.findViewById(R.id.image_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -178,11 +212,18 @@ public class MessageBubbleUtils {
                 cometchatImageBubble.setVisibility(View.VISIBLE);
                 Attachment attachment = mediaMessage.getAttachment();
                 File file = Utils.getFileFromLocalPath(mediaMessage);
-                cometchatImageBubble.setImageUrl(file, attachment != null ? attachment.getFileUrl() : "", attachment != null ? attachment.getFileExtension().equalsIgnoreCase("gif") : Utils.isGifFile(file));
+                cometchatImageBubble.setImageUrl(file,
+                                                 attachment != null ? attachment.getFileUrl() : "",
+                                                 attachment != null ? attachment.getFileExtension().equalsIgnoreCase("gif") : Utils.isGifFile(file));
                 if (file == null && (thumbnail != null && !thumbnail.isEmpty()))
                     cometchatImageBubble.setImageThumbnail(thumbnail);
                 if (mediaMessage.getCaption() != null) {
-                    cometchatImageBubble.setCaption(SpannableString.valueOf(FormatterUtils.getFormattedText(view.getContext(), mediaMessage, UIKitConstants.FormattingType.MESSAGE_BUBBLE, alignment, mediaMessage.getCaption(), additionParameter != null && additionParameter.getTextFormatters() != null ? additionParameter.getTextFormatters() : new ArrayList<>())));
+                    cometchatImageBubble.setCaption(SpannableString.valueOf(FormatterUtils.getFormattedText(view.getContext(),
+                                                                                                            mediaMessage,
+                                                                                                            UIKitConstants.FormattingType.MESSAGE_BUBBLE,
+                                                                                                            alignment,
+                                                                                                            mediaMessage.getCaption(),
+                                                                                                            additionParameter != null && additionParameter.getTextFormatters() != null ? additionParameter.getTextFormatters() : new ArrayList<>())));
                 }
             } else {
                 cometchatImageBubble.setVisibility(View.GONE);
@@ -201,7 +242,12 @@ public class MessageBubbleUtils {
         return null;
     }
 
-    public static void bindVideoContentView(View view, String thumbnailUrl, MediaMessage mediaMessage, @StyleRes int videoBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindVideoContentView(View view,
+                                            String thumbnailUrl,
+                                            MediaMessage mediaMessage,
+                                            @StyleRes int videoBubbleStyle,
+                                            @StyleRes int deleteBubbleStyle,
+                                            AdditionParameter additionParameter) {
         if (view != null) {
             CometChatVideoBubble cometchatVideoBubble = view.findViewById(R.id.video_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -231,7 +277,12 @@ public class MessageBubbleUtils {
         return null;
     }
 
-    public static void bindFileContentView(Context context, View view, MediaMessage mediaMessage, @StyleRes int fileBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindFileContentView(Context context,
+                                           View view,
+                                           MediaMessage mediaMessage,
+                                           @StyleRes int fileBubbleStyle,
+                                           @StyleRes int deleteBubbleStyle,
+                                           AdditionParameter additionParameter) {
         if (view != null) {
             CometChatFileBubble cometchatFileBubble = view.findViewById(R.id.file_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -257,7 +308,12 @@ public class MessageBubbleUtils {
         return null;
     }
 
-    public static void bindAudioContentView(Context context, View view, MediaMessage mediaMessage, @StyleRes int audioBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindAudioContentView(Context context,
+                                            View view,
+                                            MediaMessage mediaMessage,
+                                            @StyleRes int audioBubbleStyle,
+                                            @StyleRes int deleteBubbleStyle,
+                                            AdditionParameter additionParameter) {
         if (view != null) {
             CometChatAudioBubble cometchatAudioBubble = view.findViewById(R.id.audio_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -315,13 +371,16 @@ public class MessageBubbleUtils {
                     String newScope = action.getNewScope();
                     switch (newScope.toLowerCase()) {
                         case CometChatConstants.SCOPE_MODERATOR:
-                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(R.string.cometchat_moderator);
+                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(
+                                R.string.cometchat_moderator);
                             break;
                         case CometChatConstants.SCOPE_ADMIN:
-                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(R.string.cometchat_admin);
+                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(
+                                R.string.cometchat_admin);
                             break;
                         case CometChatConstants.SCOPE_PARTICIPANT:
-                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(R.string.cometchat_participant);
+                            actionMessage = ((User) action.getActionBy()).getName() + " " + context.getString(R.string.cometchat_made) + " " + ((User) action.getActionOn()).getName() + " " + context.getString(
+                                R.string.cometchat_participant);
                             break;
                         default:
                             actionMessage = action.getMessage();
@@ -367,7 +426,14 @@ public class MessageBubbleUtils {
         return null;
     }
 
-    public static void bindThreadView(View view, BaseMessage baseMessage, String text, UIKitConstants.MessageBubbleAlignment iconAlignment, @ColorInt int textColor, @StyleRes int textAppearance, @ColorInt int iconTint, @DrawableRes int icon) {
+    public static void bindThreadView(View view,
+                                      BaseMessage baseMessage,
+                                      String text,
+                                      UIKitConstants.MessageBubbleAlignment iconAlignment,
+                                      @ColorInt int textColor,
+                                      @StyleRes int textAppearance,
+                                      @ColorInt int iconTint,
+                                      @DrawableRes int icon) {
         if (view != null) {
             TextView textView = view.findViewById(R.id.cometchat_thread_reply_count);
             ImageView imageView;
@@ -387,12 +453,17 @@ public class MessageBubbleUtils {
         }
     }
 
-    public static CometChatMessageBubble getMessageBubble(Context context, BaseMessage baseMessage, CometChatMessageTemplate template, UIKitConstants.MessageBubbleAlignment alignment) {
+    public static CometChatMessageBubble getMessageBubble(Context context,
+                                                          BaseMessage baseMessage,
+                                                          CometChatMessageTemplate template,
+                                                          UIKitConstants.MessageBubbleAlignment alignment) {
         CometChatMessageBubble messageBubble = new CometChatMessageBubble(context);
         messageBubble.setMessageAlignment(alignment);
 
         View bubbleView = template.getContentView().createView(context, messageBubble, UIKitConstants.MessageBubbleAlignment.RIGHT);
-        template.getContentView().bindView(context, bubbleView, baseMessage, UIKitConstants.MessageBubbleAlignment.RIGHT, null, Collections.singletonList(baseMessage), 0);
+        template
+            .getContentView()
+            .bindView(context, bubbleView, baseMessage, UIKitConstants.MessageBubbleAlignment.RIGHT, null, Collections.singletonList(baseMessage), 0);
         messageBubble.setContentView(bubbleView);
         return messageBubble;
     }
@@ -403,7 +474,16 @@ public class MessageBubbleUtils {
         return view;
     }
 
-    public static void bindFormBubble(View view, FormMessage formMessage, @StyleRes int formBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void setNotSupportedMessageBubble(Context context, View view) {
+        CometChatDeleteBubble cometchatDeleteBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
+        cometchatDeleteBubble.setText(context.getResources().getString(R.string.cometchat_this_message_type_is_not_supported));
+    }
+
+    public static void bindFormBubble(View view,
+                                      FormMessage formMessage,
+                                      @StyleRes int formBubbleStyle,
+                                      @StyleRes int deleteBubbleStyle,
+                                      AdditionParameter additionParameter) {
         if (view != null) {
             CometChatFormBubble messageBubble = view.findViewById(R.id.cometchat_form_bubble_container);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -427,7 +507,11 @@ public class MessageBubbleUtils {
         return view;
     }
 
-    public static void bindSchedulerBubble(@Nullable View view, SchedulerMessage schedulerMessage, @StyleRes int schedulerBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindSchedulerBubble(@Nullable View view,
+                                           SchedulerMessage schedulerMessage,
+                                           @StyleRes int schedulerBubbleStyle,
+                                           @StyleRes int deleteBubbleStyle,
+                                           AdditionParameter additionParameter) {
         if (view != null) {
             CometChatSchedulerBubble messageBubble = view.findViewById(R.id.cometchat_meeting_bubble_container);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -451,7 +535,11 @@ public class MessageBubbleUtils {
         return view;
     }
 
-    public static void bindCardBubble(View view, CardMessage cardMessage, @StyleRes int cardBubbleStyle, @StyleRes int deleteBubbleStyle, AdditionParameter additionParameter) {
+    public static void bindCardBubble(View view,
+                                      CardMessage cardMessage,
+                                      @StyleRes int cardBubbleStyle,
+                                      @StyleRes int deleteBubbleStyle,
+                                      AdditionParameter additionParameter) {
         if (view != null) {
             CometChatCardBubble messageBubble = view.findViewById(R.id.cc_card_bubble);
             CometChatDeleteBubble deletedBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
@@ -467,15 +555,5 @@ public class MessageBubbleUtils {
              * deletedBubble.setVisibility(View.VISIBLE); }
              */
         }
-    }
-
-    public static void setDeletedMessageBubble(Context context, View view) {
-        CometChatDeleteBubble cometchatDeleteBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
-        cometchatDeleteBubble.setText(context.getResources().getString(R.string.cometchat_this_message_deleted));
-    }
-
-    public static void setNotSupportedMessageBubble(Context context, View view) {
-        CometChatDeleteBubble cometchatDeleteBubble = view.findViewById(R.id.cometchat_delete_text_bubble);
-        cometchatDeleteBubble.setText(context.getResources().getString(R.string.cometchat_this_message_type_is_not_supported));
     }
 }

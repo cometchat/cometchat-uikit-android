@@ -28,7 +28,7 @@ import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.views.cometchatmessagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerAdapter;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -97,17 +97,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     private @StyleRes int messageReceipt;
 
     /**
-     * Interface definition for a callback to be invoked when the bottom sheet is
-     * dismissed.
-     */
-    public interface BottomSheetListener {
-        /**
-         * Called when the bottom sheet is dismissed.
-         */
-        void onDismiss();
-    }
-
-    /**
      * Default constructor for {@code CometChatMessageInformation}.
      *
      * <p>
@@ -133,7 +122,9 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     public void init(@NonNull Context context, @NonNull BaseMessage message) {
         this.context = context;
         this.message = message;
-        conversationType = message.getReceiverType().equals(UIKitConstants.ConversationType.USERS) ? UIKitConstants.ConversationType.USERS : UIKitConstants.ConversationType.GROUPS;
+        conversationType = message
+            .getReceiverType()
+            .equals(UIKitConstants.ConversationType.USERS) ? UIKitConstants.ConversationType.USERS : UIKitConstants.ConversationType.GROUPS;
 
         // Inflate the view
         binding = CometchatMessageInformationBinding.inflate(LayoutInflater.from(context));
@@ -250,19 +241,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     }
 
     /**
-     * Applies the default style attributes for {@code CometChatMessageInformation}.
-     *
-     * <p>
-     * This method is responsible for retrieving the default attributes defined in
-     * the XML styleable and applying them to the view, including background color,
-     * corner radius, and text appearance.
-     */
-    private void applyStyleAttributes() {
-        TypedArray typedArray = context.obtainStyledAttributes(R.styleable.CometChatMessageInformation);
-        extractAttributesAndApplyDefaults(typedArray);
-    }
-
-    /**
      * Extracts the style attributes from the given {@link TypedArray} and applies
      * default values if the attributes are not defined.
      *
@@ -281,20 +259,28 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
             titleTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationTitleTextAppearance, 0);
             titleTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationTitleTextColor, 0);
             backgroundColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationBackgroundColor, 0);
-            backgroundHighlightColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationBackgroundHighlightColor, 0);
+            backgroundHighlightColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationBackgroundHighlightColor,
+                                                           0);
             cornerRadius = typedArray.getDimensionPixelSize(R.styleable.CometChatMessageInformation_cometchatMessageInformationCornerRadius, 0);
             strokeWidth = typedArray.getDimensionPixelSize(R.styleable.CometChatMessageInformation_cometchatMessageInformationStrokeWidth, 0);
             strokeColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationStrokeColor, 0);
-            itemNameTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemNameTextAppearance, 0);
+            itemNameTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemNameTextAppearance,
+                                                              0);
             itemNameTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemNameTextColor, 0);
-            itemReadTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadTextAppearance, 0);
+            itemReadTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadTextAppearance,
+                                                              0);
             itemReadTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadTextColor, 0);
-            itemReadDateTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadDateTextAppearance, 0);
+            itemReadDateTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadDateTextAppearance,
+                                                                  0);
             itemReadDateTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemReadDateTextColor, 0);
-            itemDeliveredTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredTextAppearance, 0);
-            itemDeliveredTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredTextColor, 0);
-            itemDeliveredDateTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredDateTextAppearance, 0);
-            itemDeliveredDateTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredDateTextColor, 0);
+            itemDeliveredTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredTextAppearance,
+                                                                   0);
+            itemDeliveredTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredTextColor,
+                                                         0);
+            itemDeliveredDateTextAppearance = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredDateTextAppearance,
+                                                                       0);
+            itemDeliveredDateTextColor = typedArray.getColor(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemDeliveredDateTextColor,
+                                                             0);
             itemAvatarStyle = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationItemAvatarStyle, 0);
             messageReceipt = typedArray.getResourceId(R.styleable.CometChatMessageInformation_cometchatMessageInformationMessageReceiptStyle, 0);
             // Apply default styles
@@ -332,6 +318,29 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
         setItemDeliveredDateTextColor(itemDeliveredDateTextColor);
         setItemAvatarStyle(itemAvatarStyle);
         setMessageReceipt(messageReceipt);
+    }
+
+    /**
+     * Sets the stroke color for the layout.
+     *
+     * @param strokeColor The stroke color to apply.
+     */
+    public void setStrokeColor(@ColorInt int strokeColor) {
+        this.strokeColor = strokeColor;
+        binding.parentLayout.setStrokeColor(ColorStateList.valueOf(strokeColor));
+    }
+
+    /**
+     * Applies the default style attributes for {@code CometChatMessageInformation}.
+     *
+     * <p>
+     * This method is responsible for retrieving the default attributes defined in
+     * the XML styleable and applying them to the view, including background color,
+     * corner radius, and text appearance.
+     */
+    private void applyStyleAttributes() {
+        TypedArray typedArray = context.obtainStyledAttributes(R.styleable.CometChatMessageInformation);
+        extractAttributesAndApplyDefaults(typedArray);
     }
 
     /**
@@ -426,7 +435,13 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
      */
     public void setCornerRadius(@Dimension int cornerRadius) {
         this.cornerRadius = cornerRadius;
-        ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel().toBuilder().setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius).setTopRightCorner(CornerFamily.ROUNDED, cornerRadius).setBottomLeftCorner(CornerFamily.ROUNDED, 0).setBottomRightCorner(CornerFamily.ROUNDED, 0).build();
+        ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel()
+            .toBuilder()
+            .setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius)
+            .setTopRightCorner(CornerFamily.ROUNDED, cornerRadius)
+            .setBottomLeftCorner(CornerFamily.ROUNDED, 0)
+            .setBottomRightCorner(CornerFamily.ROUNDED, 0)
+            .build();
         binding.parentLayout.setShapeAppearanceModel(shapeAppearanceModel);
     }
 
@@ -456,16 +471,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
      */
     public ColorStateList getStrokeColorStateList() {
         return ColorStateList.valueOf(strokeColor);
-    }
-
-    /**
-     * Sets the stroke color for the layout.
-     *
-     * @param strokeColor The stroke color to apply.
-     */
-    public void setStrokeColor(@ColorInt int strokeColor) {
-        this.strokeColor = strokeColor;
-        binding.parentLayout.setStrokeColor(ColorStateList.valueOf(strokeColor));
     }
 
     /**
@@ -869,17 +874,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     }
 
     /**
-     * Sets the message template for displaying message information.
-     *
-     * @param template The CometChatMessageTemplate to use for message information.
-     */
-    public void setTemplate(@Nullable CometChatMessageTemplate template) {
-        if (template != null) {
-            this.template = template;
-        }
-    }
-
-    /**
      * Sets the list of message receipts in the adapter if the provided list is not
      * null or empty.
      *
@@ -946,6 +940,17 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     }
 
     /**
+     * Sets the message template for displaying message information.
+     *
+     * @param template The CometChatMessageTemplate to use for message information.
+     */
+    public void setTemplate(@Nullable CometChatMessageTemplate template) {
+        if (template != null) {
+            this.template = template;
+        }
+    }
+
+    /**
      * Retrieves the BottomSheetListener.
      *
      * @return The BottomSheetListener for the bottom sheet interactions.
@@ -961,5 +966,16 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
      */
     public void setBottomSheetListener(BottomSheetListener bottomSheetListener) {
         this.bottomSheetListener = bottomSheetListener;
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when the bottom sheet is
+     * dismissed.
+     */
+    public interface BottomSheetListener {
+        /**
+         * Called when the bottom sheet is dismissed.
+         */
+        void onDismiss();
     }
 }

@@ -11,7 +11,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.cometchat.chatuikit.shared.views.cometchatdate.CometChatDate
+        <com.cometchat.chatuikit.shared.views.date.CometChatDate
             android:id="@+id/call_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

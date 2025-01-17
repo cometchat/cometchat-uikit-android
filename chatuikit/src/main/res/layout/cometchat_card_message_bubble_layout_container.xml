@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.cometchat.chatuikit.shared.views.cometchatcardbubble.CometChatCardBubble
+    <com.cometchat.chatuikit.shared.views.cardbubble.CometChatCardBubble
         android:id="@+id/cc_card_bubble"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
