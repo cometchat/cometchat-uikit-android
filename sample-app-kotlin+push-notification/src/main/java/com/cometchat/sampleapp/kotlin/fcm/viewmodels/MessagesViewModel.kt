@@ -157,11 +157,7 @@ class MessagesViewModel : ViewModel() {
 
         CometChatConversationEvents.addListener(LISTENER_ID, object : CometChatConversationEvents() {
             override fun ccConversationDeleted(conversation: Conversation) {
-                if (baseMessage.value != null) {
-                    if (conversation.conversationId == baseMessage.value!!.conversationId) {
-                        isExitActivity.value = true
-                    }
-                }
+                isExitActivity.value = true
             }
         })
     }

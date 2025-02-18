@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.PopupWindow
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
@@ -30,6 +30,7 @@ import com.cometchat.sampleapp.kotlin.fcm.viewmodels.SplashViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * This is a custom Application class for managing call notifications and
@@ -39,9 +40,8 @@ import java.util.Locale
 class MyApplication : Application() {
     private var currentActivity: Activity? = null
     private var snackBar: Snackbar? = null
-    private lateinit var soundManager: CometChatSoundManager
-    private lateinit var sensorManager: SensorManager
     private var tempCall: Call? = null
+    private val isConnectedToWebSockets = AtomicBoolean(false)
 
     /**
      * Initializes the application by setting up Firebase, adding the CometChat call
@@ -49,13 +49,11 @@ class MyApplication : Application() {
      */
     override fun onCreate() {
         super.onCreate()
-
         if (!CometChatUIKit.isSDKInitialized()) {
             val viewModel = SplashViewModel()
             viewModel.initUIKit(this)
         } // Initialize the sensor manager and shake detector
         soundManager = CometChatSoundManager(this)
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
 
         FirebaseApp.initializeApp(this)
 
@@ -79,6 +77,17 @@ class MyApplication : Application() {
             }
 
             override fun onActivityStarted(activity: Activity) {
+                if (CometChatUIKit.isSDKInitialized() && isConnectedToWebSockets.compareAndSet(false, true)) {
+                    CometChat.connect(object : CometChat.CallbackListener<String?>() {
+                        override fun onSuccess(s: String?) {
+                            isConnectedToWebSockets.set(true)
+                        }
+
+                        override fun onError(e: CometChatException) {
+                            isConnectedToWebSockets.set(false)
+                        }
+                    })
+                }
                 currentActivity = activity
                 if (++activityReferences == 1 && !isActivityChangingConfigurations) {
                     isAppInForeground = true
@@ -89,7 +98,8 @@ class MyApplication : Application() {
                 currentActivity = activity
                 if (snackBar != null && snackBar!!.isShown && tempCall != null) {
                     showTopSnackBar(tempCall)
-                }
+                } else
+                    dismissTopSnackBar()
             }
 
             override fun onActivityPaused(activity: Activity) {
@@ -99,6 +109,16 @@ class MyApplication : Application() {
                 isActivityChangingConfigurations = activity.isChangingConfigurations
                 if (--activityReferences == 0 && !isActivityChangingConfigurations) {
                     isAppInForeground = false
+                }
+                if (CometChatUIKit.isSDKInitialized() && !isAppInForeground) {
+                    CometChat.disconnect(object : CometChat.CallbackListener<String?>() {
+                        override fun onSuccess(s: String?) {
+                            isConnectedToWebSockets.set(false)
+                        }
+
+                        override fun onError(e: CometChatException) {
+                        }
+                    })
                 }
             }
 
@@ -160,12 +180,12 @@ class MyApplication : Application() {
         binding.callerAvatar.setAvatar(callUser.name, callUser.avatar)
         binding.callTypeIcon.setImageResource(if (call.type == CometChatConstants.CALL_TYPE_AUDIO) com.cometchat.chatuikit.R.drawable.cometchat_ic_call_voice else com.cometchat.chatuikit.R.drawable.cometchat_ic_call_video)
 
-        binding.rejectButton.setOnClickListener { view: View? ->
+        binding.rejectButton.setOnClickListener {
             rejectCall(
                 call
             )
         }
-        binding.acceptButton.setOnClickListener { view: View? ->
+        binding.acceptButton.setOnClickListener {
             acceptCall(
                 call
             )
@@ -181,7 +201,10 @@ class MyApplication : Application() {
         )
 
         layout.addView(binding.root, 0)
-
+        for (popupWindow in popupWindows) {
+            if (popupWindow.isShowing) popupWindow.dismiss()
+        }
+        popupWindows.clear()
         snackBar!!.show()
     }
 
@@ -276,6 +299,7 @@ class MyApplication : Application() {
         })
     }
 
+
     /**
      * Starts the OngoingCallActivity to manage an accepted call.
      *
@@ -294,20 +318,33 @@ class MyApplication : Application() {
      * Plays the sound for an incoming call notification.
      */
     private fun playSound() {
-        soundManager.play(Sound.incomingCall)
+        soundManager?.play(Sound.incomingCall)
     }
 
     /**
      * Silently pauses any currently playing sound.
      */
     fun pauseSound() {
-        soundManager.pauseSilently()
+        soundManager?.pauseSilently()
     }
 
     companion object {
+        var popupWindows = ArrayList<PopupWindow>()
         private var LISTENER_ID: String = System.currentTimeMillis().toString()
         var currentOpenChatId: String? = null
         var isAppInForeground: Boolean = false
         var currentActivity: Activity? = null
+        var soundManager: CometChatSoundManager? = null
+        private var tempCall: Call? = null
+
+        fun getTempCall(): Call? {
+            return tempCall
+        }
+
+        fun setTempCall(call: Call?) {
+            tempCall = call
+            if (call == null && soundManager != null) soundManager?.pauseSilently()
+        }
+
     }
 }

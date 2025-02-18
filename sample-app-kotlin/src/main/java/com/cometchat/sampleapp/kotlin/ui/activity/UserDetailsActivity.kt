@@ -80,6 +80,8 @@ class UserDetailsActivity : AppCompatActivity() {
             }
         }
 
+        if (viewModel?.getBaseMessage()?.getValue() == null) binding!!.tvDeleteChat.visibility = View.GONE
+
         binding!!.tvDeleteChat.setOnClickListener { v: View? -> deleteChat() }
 
         binding!!.cardVoiceCall.setOnClickListener { v: View? ->

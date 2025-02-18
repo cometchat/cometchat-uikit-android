@@ -148,7 +148,7 @@ public class UserDetailsViewModel extends ViewModel {
     }
 
     public void deleteChat() {
-        if (user.getValue() != null && baseMessage.getValue() != null) {
+        if (user.getValue() != null) {
             Repository.deleteChat(
                 user.getValue().getUid(),
                 baseMessage.getValue(),
@@ -161,6 +161,7 @@ public class UserDetailsViewModel extends ViewModel {
 
                     @Override
                     public void onError(CometChatException e) {
+                        e.getMessage();
                         isChatDeleted.setValue(false);
                     }
                 }

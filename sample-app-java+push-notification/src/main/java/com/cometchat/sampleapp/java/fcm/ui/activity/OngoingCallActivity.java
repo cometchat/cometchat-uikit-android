@@ -10,9 +10,14 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cometchat.calls.core.CometChatCalls;
+import com.cometchat.chat.core.Call;
+import com.cometchat.chat.core.CometChat;
+import com.cometchat.chatuikit.calls.CallingExtension;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.databinding.ActivityOngoingCallBinding;
+
+import java.util.Objects;
 
 /**
  * This activity handles ongoing calls, setting up the UI and managing the call
@@ -20,6 +25,8 @@ import com.cometchat.sampleapp.java.fcm.databinding.ActivityOngoingCallBinding;
  * interface.
  */
 public class OngoingCallActivity extends AppCompatActivity {
+
+    private String LISTENER_ID;
 
     /**
      * Called when the activity is starting. It initializes the UI and starts the
@@ -34,6 +41,7 @@ public class OngoingCallActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Inflate the layout using View Binding
         ActivityOngoingCallBinding binding = ActivityOngoingCallBinding.inflate(getLayoutInflater());
+        addListeners();
 
         setContentView(binding.getRoot());
 
@@ -54,6 +62,33 @@ public class OngoingCallActivity extends AppCompatActivity {
             @Override
             public void handleOnBackPressed() {
                 startPictureInPictureMode();
+            }
+        });
+    }
+
+    public void addListeners() {
+        LISTENER_ID = System.currentTimeMillis() + "";
+        CometChat.addCallListener(LISTENER_ID, new CometChat.CallListener() {
+            @Override
+            public void onIncomingCallReceived(Call call) {
+            }
+
+            @Override
+            public void onOutgoingCallAccepted(Call call) {
+            }
+
+            @Override
+            public void onOutgoingCallRejected(Call call) {
+            }
+
+            @Override
+            public void onIncomingCallCancelled(Call call) {
+                String sessionId = "";
+                if (CallingExtension.getActiveCall() != null) {
+                    sessionId = CallingExtension.getActiveCall().getSessionId();
+                }
+                if (CometChat.getActiveCall() == null && (Objects.equals(call.getSessionId(), sessionId) || sessionId.isEmpty()))
+                    finish();
             }
         });
     }
@@ -84,4 +119,9 @@ public class OngoingCallActivity extends AppCompatActivity {
         startPictureInPictureMode();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CometChat.removeCallListener(LISTENER_ID);
+    }
 }

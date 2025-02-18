@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,17 +37,12 @@ import java.util.List;
 
 public class CometChatMessageOptionSheet extends MaterialCardView {
     private static final String TAG = CometChatMessageOptionSheet.class.getSimpleName();
-
-    private CometchatMessageOptionSheetBinding binding;
-
-    private boolean hideEmojiPicker;
     private final int emojiPickerIconViewId = View.generateViewId();
-
-    private OptionSheetAdapter adapter;
-
     private final List<String> quickReactionItems = new ArrayList<>();
     private final List<OptionSheetMenuItem> messageOptionItems = new ArrayList<>();
-
+    private CometchatMessageOptionSheetBinding binding;
+    private boolean hideEmojiPicker;
+    private OptionSheetAdapter adapter;
     private Drawable emojiPickerIcon;
     private @StyleRes int titleTextAppearance;
     private @ColorInt int titleColor;
@@ -96,15 +90,6 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     }
 
     /**
-     * Called when the view is attached to a window.
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        configureReactions();
-    }
-
-    /**
      * Inflates the layout and initializes the view components.
      *
      * @param attrs        the attributes set in XML
@@ -118,6 +103,26 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     }
 
     /**
+     * Initializes the RecyclerView for displaying options.
+     */
+    private void initRecyclerView() {
+        adapter = new OptionSheetAdapter(getContext(), messageOptionItems);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.scheduleLayoutAnimation();
+        binding.recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), binding.recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                view.setBackgroundColor(getContext().getResources().getColor(R.color.cometchat_color_background4, getContext().getTheme()));
+                OptionSheetMenuItem item = (OptionSheetMenuItem) view.getTag(R.string.cometchat_action_item);
+                if (messageOptionClickListener != null) {
+                    messageOptionClickListener.onMessageOptionClick(item);
+                }
+            }
+        }));
+    }
+
+    /**
      * Applies the style attributes from XML to the view.
      *
      * @param attrs        the attributes set in XML
@@ -128,18 +133,6 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
         @StyleRes int styleResId = directAttributes.getResourceId(R.styleable.CometChatMessageOptionSheet_cometchatMessageOptionSheetStyle, 0);
         directAttributes = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CometChatMessageOptionSheet, defStyleAttr, styleResId);
         extractAttributesAndApplyDefaults(directAttributes);
-    }
-
-    /**
-     * Sets the style of the message option sheet.
-     *
-     * @param style the resource ID of the style to apply
-     */
-    public void setStyle(@StyleRes int style) {
-        if (style != 0) {
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatMessageOptionSheet);
-            extractAttributesAndApplyDefaults(typedArray);
-        }
     }
 
     /**
@@ -181,84 +174,75 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     }
 
     /**
-     * Initializes the RecyclerView for displaying options.
+     * Sets the stroke color for the message option sheet.
+     *
+     * @param strokeColor the stroke color as an integer
      */
-    private void initRecyclerView() {
-        adapter = new OptionSheetAdapter(getContext(), messageOptionItems);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recyclerView.setAdapter(adapter);
-        binding.recyclerView.scheduleLayoutAnimation();
-        binding.recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), binding.recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                view.setBackgroundColor(getContext().getResources().getColor(R.color.cometchat_color_background4, getContext().getTheme()));
-                OptionSheetMenuItem item = (OptionSheetMenuItem) view.getTag(R.string.cometchat_action_item);
-                if (messageOptionClickListener != null) {
-                    messageOptionClickListener.onMessageOptionClick(item);
-                }
-            }
-        }));
+    public void setStrokeColor(@ColorInt int strokeColor) {
+        this.strokeColor = strokeColor;
+        if (binding != null) {
+            binding.viewBottomSheet.setStrokeColor(strokeColor);
+        }
     }
 
     /**
-     * Configures the quick reactions by either fetching default reactions or using
-     * provided quick reactions. Each reaction is represented as a chip in the view.
+     * Gets the stroke color of the message option sheet.
+     *
+     * @return the stroke color as an integer
      */
-    private void configureReactions() {
-        List<String> randomQuickReactions = quickReactionItems.isEmpty()
-                ? Arrays.asList(Utils.getDefaultReactionsList())
-                : quickReactionItems.subList(0, Math.min(5, quickReactionItems.size()));
+    public ColorStateList getStrokeColorStateList() {
+        return ColorStateList.valueOf(strokeColor);
+    }
 
-        int margin = getContext().getResources().getDimensionPixelSize(R.dimen.cometchat_padding_2);
-        int cardRadius = getContext().getResources().getDimensionPixelSize(R.dimen.cometchat_radius_max);
-        int textColor = getContext().getResources().getColor(R.color.cometchat_color_icon_white, getContext().getTheme());
-        int textAppearance = CometChatTheme.getTextAppearanceHeading1Regular(getContext());
-        int backgroundColor = CometChatTheme.getBackgroundColor3(getContext());
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        layoutParams.setMargins(margin, 0, margin, 0);
-
-        // Add reaction chips
-        for (String reaction : randomQuickReactions) {
-            addReactionChip(reaction, layoutParams, backgroundColor, cardRadius, textColor, textAppearance);
+    /**
+     * Sets the visibility of the emoji picker.
+     *
+     * @param hideEmojiPicker true to hide the emoji picker, false to show
+     */
+    public void hideEmojiPicker(boolean hideEmojiPicker) {
+        this.hideEmojiPicker = hideEmojiPicker;
+        View parentView = binding.viewReactions.findViewById(emojiPickerIconViewId);
+        if (parentView != null) {
+            parentView.setVisibility(hideEmojiPicker ? View.GONE : View.VISIBLE);
         }
-
-        // Add reaction icon chip
-        addReactionIconChip(layoutParams, backgroundColor, cardRadius);
     }
 
-    private void addReactionChip(String reaction, LinearLayout.LayoutParams layoutParams, int backgroundColor, int cardRadius, int textColor, int textAppearance) {
-        CometchatQuickReactionViewBinding reactionChipBinding = CometchatQuickReactionViewBinding.inflate(LayoutInflater.from(getContext()));
-
-        Utils.initMaterialCard(reactionChipBinding.cardReactionChip);
-        reactionChipBinding.cardReactionChip.setCardBackgroundColor(backgroundColor);
-        reactionChipBinding.cardReactionChip.setRadius(cardRadius);
-        reactionChipBinding.cardReactionChip.setLayoutParams(layoutParams);
-
-        reactionChipBinding.tvReaction.setText(reaction);
-        reactionChipBinding.tvReaction.setTextColor(textColor);
-        reactionChipBinding.tvReaction.setTextAppearance(textAppearance);
-
-        binding.viewReactions.addView(reactionChipBinding.getRoot());
-        reactionChipBinding.tvReaction.setOnClickListener(view -> reactionClickListener.onReactionClick(null, reaction));
+    /**
+     * Enables or disables the visibility of reactions.
+     *
+     * @param disableReaction true to hide reactions, false to show
+     */
+    public void disableReactions(boolean disableReaction) {
+        if (disableReaction) {
+            binding.horizontalContainerReactions.setVisibility(View.GONE);
+            hideDivider(true);
+        } else {
+            binding.horizontalContainerReactions.setVisibility(View.VISIBLE);
+            hideDivider(false);
+        }
     }
 
-    private void addReactionIconChip(LinearLayout.LayoutParams layoutParams, int backgroundColor, int cardRadius) {
-        CometchatQuickReactionViewBinding addReactionChipBinding = CometchatQuickReactionViewBinding.inflate(LayoutInflater.from(getContext()));
+    /**
+     * Hides or shows the divider based on the provided boolean.
+     *
+     * @param hide true to hide the divider, false to show
+     */
+    private void hideDivider(boolean hide) {
+        if (binding != null) {
+            binding.viewDivider.setVisibility(hide ? View.GONE : View.VISIBLE);
+        }
+    }
 
-        Utils.initMaterialCard(addReactionChipBinding.cardReactionChip);
-        addReactionChipBinding.getRoot().setId(emojiPickerIconViewId);
-        addReactionChipBinding.cardReactionChip.setCardBackgroundColor(backgroundColor);
-        addReactionChipBinding.cardReactionChip.setRadius(cardRadius);
-        addReactionChipBinding.cardReactionChip.setLayoutParams(layoutParams);
-
-        addReactionChipBinding.tvReaction.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.cometchat_add_reaction, null));
-
-        binding.viewReactions.addView(addReactionChipBinding.getRoot());
-        addReactionChipBinding.tvReaction.setOnClickListener(view -> emojiPickerClickListener.onEmojiPickerClick());
+    /**
+     * Sets the style of the message option sheet.
+     *
+     * @param style the resource ID of the style to apply
+     */
+    public void setStyle(@StyleRes int style) {
+        if (style != 0) {
+            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatMessageOptionSheet);
+            extractAttributesAndApplyDefaults(typedArray);
+        }
     }
 
     /**
@@ -278,50 +262,14 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     public void setCornerRadius(@Dimension int cornerRadius) {
         this.cornerRadius = cornerRadius;
         if (binding != null) {
-            ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel().toBuilder().setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius).setTopRightCorner(CornerFamily.ROUNDED, cornerRadius).setBottomLeftCorner(CornerFamily.ROUNDED, 0).setBottomRightCorner(CornerFamily.ROUNDED, 0).build();
+            ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel()
+                .toBuilder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius)
+                .setTopRightCorner(CornerFamily.ROUNDED, cornerRadius)
+                .setBottomLeftCorner(CornerFamily.ROUNDED, 0)
+                .setBottomRightCorner(CornerFamily.ROUNDED, 0)
+                .build();
             binding.viewBottomSheet.setShapeAppearanceModel(shapeAppearanceModel);
-        }
-    }
-
-    /**
-     * Gets the stroke width of the message option sheet.
-     *
-     * @return the stroke width in pixels
-     */
-    public @Dimension int getStrokeWidth() {
-        return strokeWidth;
-    }
-
-    /**
-     * Sets the stroke width for the message option sheet.
-     *
-     * @param strokeWidth the stroke width in pixels
-     */
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        if (binding != null) {
-            binding.viewBottomSheet.setStrokeWidth(strokeWidth);
-        }
-    }
-
-    /**
-     * Gets the stroke color of the message option sheet.
-     *
-     * @return the stroke color as an integer
-     */
-    public ColorStateList getStrokeColorStateList() {
-        return ColorStateList.valueOf(strokeColor);
-    }
-
-    /**
-     * Sets the stroke color for the message option sheet.
-     *
-     * @param strokeColor the stroke color as an integer
-     */
-    public void setStrokeColor(@ColorInt int strokeColor) {
-        this.strokeColor = strokeColor;
-        if (binding != null) {
-            binding.viewBottomSheet.setStrokeColor(strokeColor);
         }
     }
 
@@ -418,6 +366,13 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
         if (adapter != null) {
             adapter.addOptionItem(actionItem);
         }
+    }    /**
+     * Called when the view is attached to a window.
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        configureReactions();
     }
 
     /**
@@ -448,21 +403,6 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     public void setMessageOptionItems(List<OptionSheetMenuItem> messageOptionItems) {
         this.messageOptionItems.clear();
         this.messageOptionItems.addAll(messageOptionItems);
-    }
-
-    /**
-     * Enables or disables the visibility of reactions.
-     *
-     * @param disableReaction true to hide reactions, false to show
-     */
-    public void disableReactions(boolean disableReaction) {
-        if (disableReaction) {
-            binding.horizontalContainerReactions.setVisibility(View.GONE);
-            hideDivider(true);
-        } else {
-            binding.horizontalContainerReactions.setVisibility(View.VISIBLE);
-            hideDivider(false);
-        }
     }
 
     /**
@@ -498,19 +438,6 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     }
 
     /**
-     * Sets the visibility of the emoji picker.
-     *
-     * @param hideEmojiPicker true to hide the emoji picker, false to show
-     */
-    public void hideEmojiPicker(boolean hideEmojiPicker) {
-        this.hideEmojiPicker = hideEmojiPicker;
-        View parentView = binding.viewReactions.findViewById(emojiPickerIconViewId);
-        if (parentView != null) {
-            parentView.setVisibility(hideEmojiPicker ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    /**
      * Sets the list of reactions that will be quickly accessible for the user.
      *
      * @param quickReactions The list of reactions to display for quick access.
@@ -518,17 +445,6 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     public void setQuickReactions(List<String> quickReactions) {
         this.quickReactionItems.clear();
         this.quickReactionItems.addAll(quickReactions);
-    }
-
-    /**
-     * Hides or shows the divider based on the provided boolean.
-     *
-     * @param hide true to hide the divider, false to show
-     */
-    private void hideDivider(boolean hide) {
-        if (binding != null) {
-            binding.viewDivider.setVisibility(hide ? View.GONE : View.VISIBLE);
-        }
     }
 
     /**
@@ -584,4 +500,125 @@ public class CometChatMessageOptionSheet extends MaterialCardView {
     public void setReactionClickListener(ReactionClickListener reactionClickListener) {
         this.reactionClickListener = reactionClickListener;
     }
+
+
+
+
+    /**
+     * Configures the quick reactions by either fetching default reactions or using
+     * provided quick reactions. Each reaction is represented as a chip in the view.
+     */
+    private void configureReactions() {
+        List<String> randomQuickReactions = quickReactionItems.isEmpty()
+            ? Arrays.asList(Utils.getDefaultReactionsList())
+            : quickReactionItems;
+
+        int margin = getContext().getResources().getDimensionPixelSize(R.dimen.cometchat_margin_2);
+        int cardRadius = getContext().getResources().getDimensionPixelSize(R.dimen.cometchat_radius_max);
+        int textColor = getContext().getResources().getColor(R.color.cometchat_color_icon_white, getContext().getTheme());
+        int textAppearance = CometChatTheme.getTextAppearanceHeading1Regular(getContext());
+        int backgroundColor = CometChatTheme.getBackgroundColor3(getContext());
+
+        LinearLayout.LayoutParams layoutParams;
+
+        // Add reaction chips
+        for (int i = 0; i < randomQuickReactions.size(); i++) {
+            layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            layoutParams.rightMargin = margin;
+            if (i == 0) {
+                layoutParams.leftMargin = 0;
+            } else {
+                layoutParams.leftMargin = margin;
+            }
+            layoutParams.topMargin = 0;
+            layoutParams.bottomMargin = 0;
+
+            addReactionChip(randomQuickReactions.get(i), layoutParams, backgroundColor, cardRadius, textColor);
+        }
+
+        layoutParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.leftMargin = margin;
+        layoutParams.rightMargin = 0;
+        layoutParams.topMargin = 0;
+        layoutParams.bottomMargin = 0;
+        // Add reaction icon chip
+        addReactionIconChip(layoutParams, backgroundColor, cardRadius);
+    }
+
+
+    /**
+     * Adds a reaction chip to the view.
+     *
+     * @param reaction        the reaction to add
+     * @param layoutParams    the layout parameters for the chip
+     * @param backgroundColor the background color of the chip
+     * @param cardRadius      the corner radius of the chip
+     * @param textColor       the text color of the chip
+     */
+    private void addReactionChip(String reaction,
+                                 LinearLayout.LayoutParams layoutParams,
+                                 int backgroundColor,
+                                 int cardRadius,
+                                 int textColor) {
+        CometchatQuickReactionViewBinding reactionChipBinding = CometchatQuickReactionViewBinding.inflate(LayoutInflater.from(getContext()));
+
+        Utils.initMaterialCard(reactionChipBinding.cardReactionChip);
+        reactionChipBinding.cardReactionChip.setCardBackgroundColor(backgroundColor);
+        reactionChipBinding.cardReactionChip.setRadius(cardRadius);
+
+        reactionChipBinding.tvReaction.setText(reaction);
+        reactionChipBinding.tvReaction.setTextColor(textColor);
+//        reactionChipBinding.tvReaction.setTextAppearance(textAppearance);
+
+        binding.viewReactions.addView(reactionChipBinding.getRoot());
+        reactionChipBinding.cardReactionChip.setLayoutParams(layoutParams);
+        reactionChipBinding.tvReaction.setOnClickListener(view -> reactionClickListener.onReactionClick(null, reaction));
+    }
+
+
+    private void addReactionIconChip(LinearLayout.LayoutParams layoutParams, int backgroundColor, int cardRadius) {
+        CometchatQuickReactionViewBinding addReactionChipBinding = CometchatQuickReactionViewBinding.inflate(LayoutInflater.from(getContext()));
+        Utils.initMaterialCard(addReactionChipBinding.cardReactionChip);
+        addReactionChipBinding.getRoot().setId(emojiPickerIconViewId);
+        addReactionChipBinding.cardReactionChip.setCardBackgroundColor(backgroundColor);
+        addReactionChipBinding.cardReactionChip.setRadius(cardRadius);
+
+
+        addReactionChipBinding.tvReaction.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.cometchat_add_reaction, null));
+
+        binding.viewReactions.addView(addReactionChipBinding.getRoot());
+        addReactionChipBinding.cardReactionChip.setLayoutParams(layoutParams);
+        addReactionChipBinding.tvReaction.setOnClickListener(view -> emojiPickerClickListener.onEmojiPickerClick());
+    }
+
+
+    /**
+     * Gets the stroke width of the message option sheet.
+     *
+     * @return the stroke width in pixels
+     */
+    public @Dimension int getStrokeWidth() {
+        return strokeWidth;
+    }
+
+
+    /**
+     * Sets the stroke width for the message option sheet.
+     *
+     * @param strokeWidth the stroke width in pixels
+     */
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        if (binding != null) {
+            binding.viewBottomSheet.setStrokeWidth(strokeWidth);
+        }
+    }
+
+
 }

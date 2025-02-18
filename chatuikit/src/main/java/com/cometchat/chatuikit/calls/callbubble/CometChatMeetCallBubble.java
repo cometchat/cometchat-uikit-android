@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 
 import androidx.annotation.ColorInt;
@@ -312,14 +311,11 @@ public class CometChatMeetCallBubble extends MaterialCardView {
                 CometChatLogger.e(TAG, e.toString());
             }
             boolean isIncoming = !CometChatUIKit.getLoggedInUser().getUid().equals(customMessage.getSender().getUid());
-            Log.e("", "setMessage:data " + callType);
             switch (callType) {
                 case CometChatConstants.CALL_TYPE_AUDIO:
-                    Log.e("", "setMessage:data2 " + callType);
                     binding.callIcon.setImageDrawable(isIncoming ? incomingVoiceCallIcon : outgoingVoiceCallIcon);
                     break;
                 case CometChatConstants.CALL_TYPE_VIDEO:
-                    Log.e("", "setMessage:data3 " + callType);
                     binding.callIcon.setImageDrawable(isIncoming ? incomingVideoCallIcon : outgoingVideoCallIcon);
                     break;
             }
@@ -359,7 +355,7 @@ public class CometChatMeetCallBubble extends MaterialCardView {
         // Create a Date object with the milliseconds
         Date date = new Date(milliseconds);
         // Format the date to "dd MMM, HH:mm a"
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM, HH:mm a", Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -479,15 +475,6 @@ public class CometChatMeetCallBubble extends MaterialCardView {
     public void setCallIconTint(@ColorInt int incomingVoiceCallIconTint) {
         this.callIconTint = incomingVoiceCallIconTint;
         binding.callIcon.setColorFilter(incomingVoiceCallIconTint);
-    }    /**
-     * Sets the width of the card's border stroke.
-     *
-     * @param strokeWidth The width, in pixels, to set for the card's stroke.
-     */
-    @Override
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -497,6 +484,15 @@ public class CometChatMeetCallBubble extends MaterialCardView {
      */
     public int getIconBackgroundColor() {
         return iconBackgroundColor;
+    }    /**
+     * Sets the width of the card's border stroke.
+     *
+     * @param strokeWidth The width, in pixels, to set for the card's stroke.
+     */
+    @Override
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -716,6 +712,8 @@ public class CometChatMeetCallBubble extends MaterialCardView {
         }
     }
 
+
+
     /**
      * Retrieves the stroke width of the call bubble's border.
      *
@@ -725,7 +723,6 @@ public class CometChatMeetCallBubble extends MaterialCardView {
     public int getStrokeWidth() {
         return strokeWidth;
     }
-
 
 
 }

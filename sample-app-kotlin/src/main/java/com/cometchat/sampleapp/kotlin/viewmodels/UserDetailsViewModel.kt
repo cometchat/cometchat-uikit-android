@@ -31,6 +31,10 @@ class UserDetailsViewModel : ViewModel() {
         return onStarCallError
     }
 
+    fun getBaseMessage(): MutableLiveData<BaseMessage?> {
+        return baseMessage
+    }
+
     fun addListeners() {
         CometChat.addUserListener(USER_LISTENER_ID, object : UserListener() {
             override fun onUserOnline(mUser: User) {
@@ -118,9 +122,9 @@ class UserDetailsViewModel : ViewModel() {
     }
 
     fun deleteChat() {
-        if (user.value != null && baseMessage.value != null) {
+        if (user.value != null) {
             Repository.deleteChat(user.value!!.uid,
-                baseMessage.value!!,
+                baseMessage.value,
                 CometChatConstants.RECEIVER_TYPE_USER,
                 object : CometChat.CallbackListener<String>() {
                     override fun onSuccess(s: String) {

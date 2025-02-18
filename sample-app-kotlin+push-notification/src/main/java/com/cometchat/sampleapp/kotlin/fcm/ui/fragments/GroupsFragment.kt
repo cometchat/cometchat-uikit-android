@@ -49,7 +49,7 @@ class GroupsFragment : Fragment() {
         viewModel = ViewModelProvider.NewInstanceFactory().create(
             GroupsViewModel::class.java
         )
-        bottomSheetDialog = BottomSheetDialog(requireActivity())
+        bottomSheetDialog = BottomSheetDialog(requireActivity(), R.style.DialogStyle)
         return binding.root
     }
 
@@ -132,15 +132,24 @@ class GroupsFragment : Fragment() {
         createGroupLayoutBinding.createGroupCard.shapeAppearanceModel = shapeAppearanceModel
         val groupType = AtomicReference(UIKitConstants.GroupType.PUBLIC)
         createGroupLayoutBinding.toggle.setOnCheckedChangeListener { radio: RadioGroup?, i: Int ->
-            if (i == R.id.radio_public) {
-                groupType.set(UIKitConstants.GroupType.PUBLIC)
-                hidePasswordField(createGroupLayoutBinding)
-            } else if (i == R.id.radio_private) {
-                groupType.set(UIKitConstants.GroupType.PRIVATE)
-                hidePasswordField(createGroupLayoutBinding)
-            } else if (i == R.id.radio_password) {
-                groupType.set(UIKitConstants.GroupType.PASSWORD)
-                showPasswordField(createGroupLayoutBinding)
+            when (i) {
+                R.id.radio_public -> {
+                    groupType.set(UIKitConstants.GroupType.PUBLIC)
+                    hidePasswordField(createGroupLayoutBinding)
+                    scrollCreateGroupToBottom(createGroupLayoutBinding, 0)
+                }
+
+                R.id.radio_private -> {
+                    groupType.set(UIKitConstants.GroupType.PRIVATE)
+                    hidePasswordField(createGroupLayoutBinding)
+                    scrollCreateGroupToBottom(createGroupLayoutBinding, 0)
+                }
+
+                R.id.radio_password -> {
+                    groupType.set(UIKitConstants.GroupType.PASSWORD)
+                    showPasswordField(createGroupLayoutBinding)
+                    scrollCreateGroupToBottom(createGroupLayoutBinding, 0)
+                }
             }
         }
         createGroupLayoutBinding.createGroupBtn.setOnClickListener { view: View? ->
@@ -154,7 +163,20 @@ class GroupsFragment : Fragment() {
         Utils.showBottomSheet(
             context, bottomSheetDialog!!, true, false, createGroupLayoutBinding.root
         )
+        bottomSheetDialog!!.behavior.peekHeight = 1000
+
         bottomSheetDialog!!.show()
+
+        createGroupLayoutBinding.etName.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 200)
+            }
+        }
+        createGroupLayoutBinding.etPassword.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 200)
+            }
+        }
     }
 
     /**
@@ -243,5 +265,14 @@ class GroupsFragment : Fragment() {
      */
     private fun setErrorMessage(message: String) {
         if (tvError != null) tvError!!.text = message
+    }
+
+    private fun scrollCreateGroupToBottom(createGroupLayoutBinding: CreateGroupLayoutBinding, delay: Int) {
+        createGroupLayoutBinding.createGroupScrollLayout.postDelayed({
+            createGroupLayoutBinding.createGroupScrollLayout.scrollTo(
+                0,
+                createGroupLayoutBinding.createGroupScrollLayout.height
+            )
+        }, delay.toLong())
     }
 }

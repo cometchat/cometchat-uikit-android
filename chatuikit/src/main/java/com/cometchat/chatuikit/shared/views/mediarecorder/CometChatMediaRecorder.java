@@ -26,6 +26,7 @@ import com.cometchat.chatuikit.databinding.CometchatMediarecorderBinding;
 import com.cometchat.chatuikit.shared.interfaces.OnClick;
 import com.cometchat.chatuikit.shared.permission.CometChatPermissionHandler;
 import com.cometchat.chatuikit.shared.permission.builder.PermissionHandlerBuilder;
+import com.cometchat.chatuikit.shared.resources.utils.AudioPlayer;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.shape.CornerFamily;
@@ -149,12 +150,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
         }
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        stopRecording();
-    }
-
     /**
      * Inflates the layout for this view and initializes necessary components.
      *
@@ -180,11 +175,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
         // Other initializations
         initClickListeners();
         recordingStateHandler(RecordingState.START);
-    }    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        recordingStateHandler(RecordingState.RECORDING);
-        startRecording();
     }
 
     /**
@@ -223,9 +213,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
         AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         if (audioManager.isMusicActive()) {
             audioManager.requestAudioFocus(focusChange -> {
-                if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                    deleteRecording();
-                }
             }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         }
     }
@@ -237,19 +224,15 @@ public class CometChatMediaRecorder extends MaterialCardView {
      */
     private void initClickListeners() {
         binding.ivCenterStart.setOnClickListener(v -> {
-            recordingStateHandler(RecordingState.RECORDING);
             startRecording();
         });
         binding.ivCenterPause.setOnClickListener(v -> {
-            recordingStateHandler(RecordingState.PAUSED);
             pauseRecording();
         });
         binding.ivCenterResume.setOnClickListener(v -> {
-            recordingStateHandler(RecordingState.RECORDING);
             resumeRecording();
         });
         binding.ivRightRestart.setOnClickListener(v -> {
-            recordingStateHandler(RecordingState.RECORDING);
             startRecording();
         });
         binding.ivCenterSend.setOnClickListener(v -> {
@@ -261,8 +244,7 @@ public class CometChatMediaRecorder extends MaterialCardView {
             }
         });
         binding.ivRightStop.setOnClickListener(v -> {
-            binding.audioBubble.setAudioUrl(recordedFilePath, "");
-            recordingStateHandler(RecordingState.STOPPED);
+            binding.audioBubble.setAudioUrl(recordedFilePath, Utils.getFileSize(recordedFilePath));
             stopRecording();
         });
         binding.ivLeftDelete.setOnClickListener(v -> {
@@ -415,6 +397,84 @@ public class CometChatMediaRecorder extends MaterialCardView {
     }
 
     /**
+     * Sets the attributes for the delete icon based on the defined properties.
+     */
+    private void setDeleteIconAttributes() {
+        setDeleteIcon(deleteIcon);
+        setDeleteIconTint(deleteIconTint);
+        setDeleteIconBackgroundColor(deleteIconBackgroundColor);
+        setDeleteIconRadius(deleteIconRadius);
+        setDeleteIconStrokeColor(deleteIconStrokeColor);
+        setDeleteIconStrokeWidth(deleteIconStrokeWidth);
+        setDeleteIconElevation(deleteIconElevation);
+    }
+
+    /**
+     * Sets the attributes for the start icon based on the defined properties.
+     */
+    private void setStartIconAttributes() {
+        setStartIcon(startIcon);
+        setStartIconTint(startIconTint);
+        setStartIconBackgroundColor(startIconBackgroundColor);
+        setStartIconRadius(startIconRadius);
+        setStartIconStrokeColor(startIconStrokeColor);
+        setStartIconStrokeWidth(startIconStrokeWidth);
+        setStartIconElevation(startIconElevation);
+    }
+
+    /**
+     * Sets the attributes for the pause icon based on the defined properties.
+     */
+    private void setPauseIconAttributes() {
+        setPauseIcon(pauseIcon);
+        setPauseIconTint(pauseIconTint);
+        setPauseIconBackgroundColor(pauseIconBackgroundColor);
+        setPauseIconRadius(pauseIconRadius);
+        setPauseIconStrokeColor(pauseIconStrokeColor);
+        setPauseIconStrokeWidth(pauseIconStrokeWidth);
+        setPauseIconElevation(pauseIconElevation);
+    }
+
+    /**
+     * Sets the attributes for the stop icon based on the defined properties.
+     */
+    private void setStopIconAttributes() {
+        setStopIcon(stopIcon);
+        setStopIconTint(stopIconTint);
+        setStopIconBackgroundColor(stopIconBackgroundColor);
+        setStopIconRadius(stopIconRadius);
+        setStopIconStrokeColor(stopIconStrokeColor);
+        setStopIconStrokeWidth(stopIconStrokeWidth);
+        setStopIconElevation(stopIconElevation);
+    }
+
+    /**
+     * Sets the attributes for the send icon based on the defined properties.
+     */
+    private void setSendIconAttributes() {
+        setSendIcon(sendIcon);
+        setSendIconTint(sendIconTint);
+        setSendIconBackgroundColor(sendIconBackgroundColor);
+        setSendIconRadius(sendIconRadius);
+        setSendIconStrokeColor(sendIconStrokeColor);
+        setSendIconStrokeWidth(sendIconStrokeWidth);
+        setSendIconElevation(sendIconElevation);
+    }
+
+    /**
+     * Sets the attributes for the restart icon based on the defined properties.
+     */
+    private void setRestartIconAttributes() {
+        setRestartIcon(restartIcon);
+        setRestartIconTint(restartIconTint);
+        setRestartIconBackgroundColor(restartIconBackgroundColor);
+        setRestartIconRadius(restartIconRadius);
+        setRestartIconStrokeColor(restartIconStrokeColor);
+        setRestartIconStrokeWidth(restartIconStrokeWidth);
+        setRestartIconElevation(restartIconElevation);
+    }
+
+    /**
      * Applies the outgoing audio bubble style by obtaining styled attributes from
      * the specified style resource and updating the UI accordingly.
      *
@@ -466,14 +526,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
     public void setBackgroundColor(@ColorInt int backgroundColor) {
         this.backgroundColor = backgroundColor;
         super.setCardBackgroundColor(backgroundColor);
-    }    /**
-     * Returns the current stroke width of the media recorder.
-     *
-     * @return the stroke width
-     */
-    @Override
-    public @Dimension int getStrokeWidth() {
-        return strokeWidth;
     }
 
     /**
@@ -483,15 +535,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
      */
     public @Dimension int getCornerRadius() {
         return cornerRadius;
-    }    /**
-     * Sets the stroke width of the media recorder.
-     *
-     * @param strokeWidth the stroke width to set
-     */
-    @Override
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -614,6 +657,14 @@ public class CometChatMediaRecorder extends MaterialCardView {
      */
     public Drawable getDeleteIcon() {
         return deleteIcon;
+    }    /**
+     * Returns the current stroke width of the media recorder.
+     *
+     * @return the stroke width
+     */
+    @Override
+    public @Dimension int getStrokeWidth() {
+        return strokeWidth;
     }
 
     /**
@@ -767,6 +818,15 @@ public class CometChatMediaRecorder extends MaterialCardView {
      */
     public @ColorInt int getStartIconTint() {
         return startIconTint;
+    }    /**
+     * Sets the stroke width of the media recorder.
+     *
+     * @param strokeWidth the stroke width to set
+     */
+    @Override
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1480,6 +1540,7 @@ public class CometChatMediaRecorder extends MaterialCardView {
      * effect animation and removes the timer updates.
      */
     private void pauseRecording() {
+        recordingStateHandler(RecordingState.PAUSED);
         if (isRecording) {
             pauseTime = System.currentTimeMillis() - startTime;
             recorder.pause();
@@ -1494,6 +1555,7 @@ public class CometChatMediaRecorder extends MaterialCardView {
      * animation and resumes the timer updates.
      */
     private void resumeRecording() {
+        recordingStateHandler(RecordingState.RECORDING);
         recorder.resume();
         binding.audioRippleEffect.startAnimation();
         isRecording = true;
@@ -1510,26 +1572,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
         startRecording();
         binding.tvRecordingTime.setText("00:00");
         timerHandler.removeCallbacks(timerRunnable);
-    }    /**
-     * Starts the audio recording process. Checks for permissions and initiates the
-     * recording if allowed.
-     */
-    public void startRecording() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            permissions = new String[]{Manifest.permission.RECORD_AUDIO};
-        }
-        isAutoPermissionCheck = false;
-        permissionHandlerBuilder.withPermissions(permissions).check();
-    }
-
-    /**
-     * Deletes the recorded audio file and invokes the onClose callback if defined.
-     */
-    private void deleteRecording() {
-        stopRecording();
-        if (onClose != null) {
-            onClose.onClick();
-        }
     }
 
     /**
@@ -1549,68 +1591,26 @@ public class CometChatMediaRecorder extends MaterialCardView {
     }
 
     /**
-     * Sets the click listener for the close (delete) button.
-     *
-     * @param onClose The click listener to be set for the close button.
-     */
-    public void setOnCloseClickListener(@Nullable OnClick onClose) {
-        if (onClose != null) {
-            this.onClose = onClose;
-        }
-    }
-
-    /**
-     * Sets the click listener for the submit button.
-     *
-     * @param onSubmit The click listener to be set for the submit button.
-     */
-    public void setOnSubmitClickListener(OnSubmitClick onSubmit) {
-        if (onSubmit != null) {
-            this.onSubmit = onSubmit;
-        }
-    }    /**
      * Stops the audio recording if it is currently in progress. Releases the
      * MediaRecorder resources and resets the UI elements.
      */
-    private void stopRecording() {
+    public void stopRecording() {
+        AudioPlayer.getInstance().reset();
+        recordingStateHandler(RecordingState.STOPPED);
         if (recorder != null) {
-            recorder.stop();
-            binding.audioRippleEffect.stopAnimation();
-            recorder.release();
-            recorder = null;
-            isRecording = false;
-            binding.tvRecordingTime.setText("00:00");
-            timerHandler.removeCallbacks(timerRunnable);
+            try {
+                recorder.stop();
+                binding.audioRippleEffect.stopAnimation();
+                recorder.release();
+                recorder = null;
+                isRecording = false;
+                binding.tvRecordingTime.setText("00:00");
+                timerHandler.removeCallbacks(timerRunnable);
+            } catch (Exception ignored) {
+            }
+
         }
     }
-
-    /**
-     * Enum representing the various states of audio recording.
-     */
-    private enum RecordingState {
-        /**
-         * The state when recording is ready to start.
-         */
-        START,
-        /**
-         * The state when audio is currently being recorded.
-         */
-        RECORDING,
-        /**
-         * The state when recording is temporarily paused.
-         */
-        PAUSED,
-        /**
-         * The state when recording has been stopped.
-         */
-        STOPPED,
-    }
-
-
-
-
-
-
 
     /**
      * Handles the visibility and attributes of UI elements based on the current
@@ -1644,7 +1644,6 @@ public class CometChatMediaRecorder extends MaterialCardView {
                 setDeleteIconAttributes();
                 setSendIconAttributes();
                 setRestartIconAttributes();
-                stopRecording();
                 break;
         }
     }
@@ -1718,82 +1717,79 @@ public class CometChatMediaRecorder extends MaterialCardView {
     }
 
     /**
-     * Sets the attributes for the start icon based on the defined properties.
+     * Sets the click listener for the close (delete) button.
+     *
+     * @param onClose The click listener to be set for the close button.
      */
-    private void setStartIconAttributes() {
-        setStartIcon(startIcon);
-        setStartIconTint(startIconTint);
-        setStartIconBackgroundColor(startIconBackgroundColor);
-        setStartIconRadius(startIconRadius);
-        setStartIconStrokeColor(startIconStrokeColor);
-        setStartIconStrokeWidth(startIconStrokeWidth);
-        setStartIconElevation(startIconElevation);
+    public void setOnCloseClickListener(@Nullable OnClick onClose) {
+        if (onClose != null) {
+            this.onClose = onClose;
+        }
     }
 
     /**
-     * Sets the attributes for the delete icon based on the defined properties.
+     * Sets the click listener for the submit button.
+     *
+     * @param onSubmit The click listener to be set for the submit button.
      */
-    private void setDeleteIconAttributes() {
-        setDeleteIcon(deleteIcon);
-        setDeleteIconTint(deleteIconTint);
-        setDeleteIconBackgroundColor(deleteIconBackgroundColor);
-        setDeleteIconRadius(deleteIconRadius);
-        setDeleteIconStrokeColor(deleteIconStrokeColor);
-        setDeleteIconStrokeWidth(deleteIconStrokeWidth);
-        setDeleteIconElevation(deleteIconElevation);
+    public void setOnSubmitClickListener(OnSubmitClick onSubmit) {
+        if (onSubmit != null) {
+            this.onSubmit = onSubmit;
+        }
     }
 
     /**
-     * Sets the attributes for the pause icon based on the defined properties.
+     * Starts the audio recording process. Checks for permissions and initiates the
+     * recording if allowed.
      */
-    private void setPauseIconAttributes() {
-        setPauseIcon(pauseIcon);
-        setPauseIconTint(pauseIconTint);
-        setPauseIconBackgroundColor(pauseIconBackgroundColor);
-        setPauseIconRadius(pauseIconRadius);
-        setPauseIconStrokeColor(pauseIconStrokeColor);
-        setPauseIconStrokeWidth(pauseIconStrokeWidth);
-        setPauseIconElevation(pauseIconElevation);
+    public void startRecording() {
+        AudioPlayer.getInstance().reset();
+        recordingStateHandler(RecordingState.RECORDING);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
+            permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        }
+        isAutoPermissionCheck = false;
+        permissionHandlerBuilder.withPermissions(permissions).check();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopRecording();
     }
 
     /**
-     * Sets the attributes for the stop icon based on the defined properties.
+     * Deletes the recorded audio file and invokes the onClose callback if defined.
      */
-    private void setStopIconAttributes() {
-        setStopIcon(stopIcon);
-        setStopIconTint(stopIconTint);
-        setStopIconBackgroundColor(stopIconBackgroundColor);
-        setStopIconRadius(stopIconRadius);
-        setStopIconStrokeColor(stopIconStrokeColor);
-        setStopIconStrokeWidth(stopIconStrokeWidth);
-        setStopIconElevation(stopIconElevation);
+    private void deleteRecording() {
+        stopRecording();
+        if (onClose != null) {
+            onClose.onClick();
+        }
     }
 
     /**
-     * Sets the attributes for the send icon based on the defined properties.
+     * Enum representing the various states of audio recording.
      */
-    private void setSendIconAttributes() {
-        setSendIcon(sendIcon);
-        setSendIconTint(sendIconTint);
-        setSendIconBackgroundColor(sendIconBackgroundColor);
-        setSendIconRadius(sendIconRadius);
-        setSendIconStrokeColor(sendIconStrokeColor);
-        setSendIconStrokeWidth(sendIconStrokeWidth);
-        setSendIconElevation(sendIconElevation);
+    private enum RecordingState {
+        /**
+         * The state when recording is ready to start.
+         */
+        START,
+        /**
+         * The state when audio is currently being recorded.
+         */
+        RECORDING,
+        /**
+         * The state when recording is temporarily paused.
+         */
+        PAUSED,
+        /**
+         * The state when recording has been stopped.
+         */
+        STOPPED,
     }
 
-    /**
-     * Sets the attributes for the restart icon based on the defined properties.
-     */
-    private void setRestartIconAttributes() {
-        setRestartIcon(restartIcon);
-        setRestartIconTint(restartIconTint);
-        setRestartIconBackgroundColor(restartIconBackgroundColor);
-        setRestartIconRadius(restartIconRadius);
-        setRestartIconStrokeColor(restartIconStrokeColor);
-        setRestartIconStrokeWidth(restartIconStrokeWidth);
-        setRestartIconElevation(restartIconElevation);
-    }
 
 
 

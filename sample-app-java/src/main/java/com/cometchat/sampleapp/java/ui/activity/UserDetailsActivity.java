@@ -67,6 +67,9 @@ public class UserDetailsActivity extends AppCompatActivity {
             }
         });
 
+        if (viewModel.getBaseMessage().getValue() == null)
+            binding.tvDeleteChat.setVisibility(View.GONE);
+
         binding.tvDeleteChat.setOnClickListener(v -> deleteChat());
 
         binding.cardVoiceCall.setOnClickListener(v -> viewModel.startCall(CometChatConstants.CALL_TYPE_AUDIO));
@@ -152,73 +155,73 @@ public class UserDetailsActivity extends AppCompatActivity {
 
     private void blockUser() {
         showCometChatConfirmDialog(
-                R.style.ConfirmationDialogStyle,
-                ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_block, null),
-                CometChatTheme.getErrorColor(this),
-                getString(R.string.app_block_user_title),
-                getString(R.string.app_block_user_subtitle),
-                getString(R.string.app_block_user_positive_button),
-                getString(R.string.app_block_user_negative_button),
-                view -> {
-                    alertDialog.hidePositiveButtonProgressBar(false);
-                    viewModel.blockUser();
-                },
-                view -> alertDialog.dismiss(),
-                0,
-                false
+            R.style.ConfirmationDialogStyle,
+            ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_block, null),
+            CometChatTheme.getErrorColor(this),
+            getString(R.string.app_block_user_title),
+            getString(R.string.app_block_user_subtitle),
+            getString(R.string.app_block_user_positive_button),
+            getString(R.string.app_block_user_negative_button),
+            view -> {
+                alertDialog.hidePositiveButtonProgressBar(false);
+                viewModel.blockUser();
+            },
+            view -> alertDialog.dismiss(),
+            0,
+            false
         );
     }
 
     private void unblockUser() {
         showCometChatConfirmDialog(
-                R.style.ConfirmationDialogStyle,
-                ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_block, null),
-                CometChatTheme.getErrorColor(this),
-                getString(R.string.app_unblock_user_title),
-                getString(R.string.app_unblock_user_subtitle),
-                getString(R.string.app_unblock_user_positive_button),
-                getString(R.string.app_unblock_user_negative_button),
-                view -> {
-                    alertDialog.hidePositiveButtonProgressBar(false);
-                    viewModel.unblockUser();
-                },
-                view -> alertDialog.dismiss(),
-                0,
-                false
+            R.style.ConfirmationDialogStyle,
+            ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_block, null),
+            CometChatTheme.getErrorColor(this),
+            getString(R.string.app_unblock_user_title),
+            getString(R.string.app_unblock_user_subtitle),
+            getString(R.string.app_unblock_user_positive_button),
+            getString(R.string.app_unblock_user_negative_button),
+            view -> {
+                alertDialog.hidePositiveButtonProgressBar(false);
+                viewModel.unblockUser();
+            },
+            view -> alertDialog.dismiss(),
+            0,
+            false
         );
     }
 
     private void deleteChat() {
         showCometChatConfirmDialog(
-                R.style.ConfirmationDialogStyle,
-                ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_delete, null),
-                CometChatTheme.getErrorColor(this),
-                getString(R.string.app_delete_chat_title),
-                getString(R.string.app_delete_chat_subtitle),
-                getString(R.string.app_delete_chat_positive_button),
-                getString(R.string.app_delete_chat_negative_button),
-                view -> {
-                    alertDialog.hidePositiveButtonProgressBar(false);
-                    viewModel.deleteChat();
-                },
-                view -> alertDialog.dismiss(),
-                0,
-                false
+            R.style.ConfirmationDialogStyle,
+            ResourcesCompat.getDrawable(getResources(), com.cometchat.chatuikit.R.drawable.cometchat_ic_delete, null),
+            CometChatTheme.getErrorColor(this),
+            getString(R.string.app_delete_chat_title),
+            getString(R.string.app_delete_chat_subtitle),
+            getString(R.string.app_delete_chat_positive_button),
+            getString(R.string.app_delete_chat_negative_button),
+            view -> {
+                alertDialog.hidePositiveButtonProgressBar(false);
+                viewModel.deleteChat();
+            },
+            view -> alertDialog.dismiss(),
+            0,
+            false
         );
     }
 
     private void showCometChatConfirmDialog(
-            @StyleRes int style,
-            Drawable icon,
-            @ColorInt int iconTint,
-            String title,
-            String subtitle,
-            String positiveButtonText,
-            String negativeButtonText,
-            View.OnClickListener onPositiveButtonClick,
-            View.OnClickListener onNegativeButtonClick,
-            int elevation,
-            boolean cancelable
+        @StyleRes int style,
+        Drawable icon,
+        @ColorInt int iconTint,
+        String title,
+        String subtitle,
+        String positiveButtonText,
+        String negativeButtonText,
+        View.OnClickListener onPositiveButtonClick,
+        View.OnClickListener onNegativeButtonClick,
+        int elevation,
+        boolean cancelable
     ) {
         alertDialog = new CometChatConfirmDialog(this, style);
         alertDialog.setConfirmDialogIcon(icon);

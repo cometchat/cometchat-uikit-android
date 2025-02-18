@@ -112,6 +112,9 @@
     <string name="app_view_members" translatable="false">View Members</string>
     <string name="app_add_members" translatable="false">Add Members</string>
     <string name="app_banned_members" translatable="false">Banned Members</string>
+    <string name="app_view_members_chip" translatable="false">View \nMembers</string>
+    <string name="app_add_members_chip" translatable="false">Add \nMembers</string>
+    <string name="app_banned_members_chip" translatable="false">Banned \nMembers</string>
     <string name="app_leave" translatable="false">Leave</string>
     <string name="app_block_user_unable_to_send_message" translatable="false">You can\'t send message to this group because you\'re no longer a member.</string>
     <string name="app_unblock_user" translatable="false">Unblock User</string>

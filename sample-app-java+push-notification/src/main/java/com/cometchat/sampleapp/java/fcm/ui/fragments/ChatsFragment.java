@@ -35,6 +35,7 @@ import com.cometchat.sampleapp.java.fcm.fcm.FCMMessageDTO;
 import com.cometchat.sampleapp.java.fcm.ui.activity.MessagesActivity;
 import com.cometchat.sampleapp.java.fcm.ui.activity.SplashActivity;
 import com.cometchat.sampleapp.java.fcm.utils.AppConstants;
+import com.cometchat.sampleapp.java.fcm.utils.MyApplication;
 import com.google.gson.Gson;
 
 /**
@@ -116,7 +117,7 @@ public class ChatsFragment extends Fragment {
         User user = CometChatUIKit.getLoggedInUser();
         if (user != null) {
             CometChatAvatar cometchatAvatar = new CometChatAvatar(requireContext());
-            cometchatAvatar.setAvatar(CometChatUIKit.getLoggedInUser().getName(), CometChatUIKit.getLoggedInUser().getAvatar());
+            cometchatAvatar.setAvatar(user.getName(), user.getAvatar());
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 getResources().getDimensionPixelSize(com.cometchat.chatuikit.R.dimen.cometchat_40dp),
                 getResources().getDimensionPixelSize(com.cometchat.chatuikit.R.dimen.cometchat_40dp)
@@ -140,7 +141,7 @@ public class ChatsFragment extends Fragment {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             true
         );
-
+        MyApplication.popupWindows.add(popupWindow);
         popupMenuBinding.tvUserName.setText(CometChatUIKit.getLoggedInUser().getName());
         String version = "V" + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")";
         popupMenuBinding.tvVersion.setText(version);

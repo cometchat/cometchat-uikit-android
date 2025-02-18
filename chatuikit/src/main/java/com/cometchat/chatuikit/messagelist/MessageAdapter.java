@@ -461,6 +461,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private @ColorInt int outgoingMeetCallBubbleThreadIndicatorTextColor;
     private @ColorInt int outgoingMeetCallBubbleThreadIndicatorIconTint;
     private @ColorInt int outgoingMeetCallBubbleSenderNameTextColor;
+    private @StyleRes int outgoingMeetCallBubbleSenderNameTextAppearance;
+    private @StyleRes int incomingMeetCallBubbleSenderNameTextAppearance;
 
     /**
      * Constructor for the MessageAdapter class.
@@ -1606,7 +1608,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                        getDatePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingMeetCallBubbleSenderNameTextColor,
-                                       incomingSchedulerBubbleSenderNameTextAppearance,
+                                       incomingMeetCallBubbleSenderNameTextAppearance,
                                        0);
                         bindLeadingView(leadingView, message, messageBubbleAlignment, incomingMeetCallBubbleAvatarStyle);
                         bindThreadView(threadView,
@@ -1630,7 +1632,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                        getDatePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingMeetCallBubbleSenderNameTextColor,
-                                       outgoingSchedulerBubbleSenderNameTextAppearance,
+                                       outgoingMeetCallBubbleSenderNameTextAppearance,
                                        0);
                         bindLeadingView(leadingView, message, messageBubbleAlignment, outgoingMeetCallBubbleAvatarStyle);
                         bindThreadView(threadView,
@@ -4012,6 +4014,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *                                                       sender name
      */
     public void setIncomingMeetCallBubbleSenderNameTextAppearance(@StyleRes int incomingMeetCallBubbleSenderNameTextAppearance) {
+        this.incomingMeetCallBubbleSenderNameTextAppearance = incomingMeetCallBubbleSenderNameTextAppearance;
     }
 
     /**
@@ -6105,6 +6108,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *                                                       sender name
      */
     public void setOutgoingMeetCallBubbleSenderNameTextAppearance(@StyleRes int outgoingMeetCallBubbleSenderNameTextAppearance) {
+        this.outgoingMeetCallBubbleSenderNameTextAppearance = outgoingMeetCallBubbleSenderNameTextAppearance;
     }
 
     /**

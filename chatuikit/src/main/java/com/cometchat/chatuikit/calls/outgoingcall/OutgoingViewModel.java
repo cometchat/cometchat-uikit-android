@@ -14,12 +14,14 @@ public class OutgoingViewModel extends ViewModel {
     private final MutableLiveData<Call> rejectCall;
     private final MutableLiveData<Call> acceptedCall;
     private final MutableLiveData<CometChatException> exception;
+    private final MutableLiveData<Boolean> disableEndCallButton;
     private String LISTENER_ID;
 
     public OutgoingViewModel() {
         rejectCall = new MutableLiveData<>();
         acceptedCall = new MutableLiveData<>();
         exception = new MutableLiveData<>();
+        disableEndCallButton = new MutableLiveData<>();
     }
 
     public MutableLiveData<Call> getRejectCall() {
@@ -32,6 +34,10 @@ public class OutgoingViewModel extends ViewModel {
 
     public MutableLiveData<CometChatException> getException() {
         return exception;
+    }
+
+    public MutableLiveData<Boolean> getDisableEndCallButton() {
+        return disableEndCallButton;
     }
 
     public void rejectCall(Call call) {
@@ -60,6 +66,7 @@ public class OutgoingViewModel extends ViewModel {
             @Override
             public void onOutgoingCallAccepted(Call call) {
                 acceptedCall.setValue(call);
+                disableEndCallButton.setValue(true);
             }
 
             @Override

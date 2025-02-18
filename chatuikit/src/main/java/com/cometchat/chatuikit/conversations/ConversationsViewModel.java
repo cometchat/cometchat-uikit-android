@@ -47,18 +47,8 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class ConversationsViewModel extends ViewModel {
     private static final String TAG = ConversationsViewModel.class.getSimpleName();
-    private String LISTENERS_TAG;
-
-    private boolean hasMore = true;
-    private boolean disableReceipt;
-    private boolean connectionListerAttached;
-
-    private ConversationsRequest conversationsRequest;
-    private ConversationsRequest.ConversationsRequestBuilder conversationsRequestBuilder;
-
     private final List<Conversation> conversationList = new ArrayList<>();
     private final HashMap<Conversation, TypingIndicator> typingIndicatorHashMap = new HashMap<>();
-
     private final MutableLiveData<Integer> moveToTop;
     private final MutableLiveData<Integer> insertAtTop;
     private final MutableLiveData<List<Conversation>> mutableConversationList;
@@ -70,14 +60,19 @@ public class ConversationsViewModel extends ViewModel {
     @NonNull
     private final MutableLiveData<HashMap<Conversation, TypingIndicator>> typing;
     private final MutableLiveData<Boolean> playSound;
-
-    private Handler handler = new Handler();
     private final Runnable updateTypingRunnable = new Runnable() {
         @Override
         public void run() {
             typing.setValue(typingIndicatorHashMap);
         }
     };
+    private String LISTENERS_TAG;
+    private boolean hasMore = true;
+    private boolean disableReceipt;
+    private boolean connectionListerAttached;
+    private ConversationsRequest conversationsRequest;
+    private ConversationsRequest.ConversationsRequestBuilder conversationsRequestBuilder;
+    private Handler handler = new Handler();
 
     public ConversationsViewModel() {
         typing = new MutableLiveData<>();
@@ -99,11 +94,12 @@ public class ConversationsViewModel extends ViewModel {
     public Conversation typing(TypingIndicator typingIndicator) {
         for (Conversation conversation : conversationList) {
             if (typingIndicator.getReceiverType().equalsIgnoreCase(CometChatConstants.RECEIVER_TYPE_USER)) {
-                if (conversation.getConversationId().contains(typingIndicator.getSender().getUid()) && !Utils.isBlocked((User) conversation.getConversationWith()))
+                if (conversation
+                    .getConversationId()
+                    .contains(typingIndicator.getSender().getUid()) && !Utils.isBlocked((User) conversation.getConversationWith()))
                     return conversation;
             } else {
-                if (conversation.getConversationId().contains(typingIndicator.getReceiverId()))
-                    return conversation;
+                if (conversation.getConversationId().contains(typingIndicator.getReceiverId())) return conversation;
             }
         }
         return null;
@@ -176,10 +172,26 @@ public class ConversationsViewModel extends ViewModel {
                 if (conversation.getLastMessage() instanceof CustomMessage) {
                     incrementUnreadCount = shouldUpdateConversationForCustomMessage((CustomMessage) conversation.getLastMessage());
                 }
-                boolean isCategoryMessage = conversation.getLastMessage().getCategory().equalsIgnoreCase(CometChatConstants.CATEGORY_MESSAGE) || (conversation.getLastMessage().getCategory().equalsIgnoreCase(CometChatConstants.CATEGORY_ACTION) && conversation.getLastMessage().getType().equalsIgnoreCase(CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER)) || conversation.getLastMessage().getCategory().equalsIgnoreCase(CometChatConstants.CATEGORY_INTERACTIVE) || conversation.getLastMessage().getCategory().equalsIgnoreCase(CometChatConstants.CATEGORY_CALL);
+                boolean isCategoryMessage = conversation
+                    .getLastMessage()
+                    .getCategory()
+                    .equalsIgnoreCase(CometChatConstants.CATEGORY_MESSAGE) || (conversation
+                    .getLastMessage()
+                    .getCategory()
+                    .equalsIgnoreCase(CometChatConstants.CATEGORY_ACTION) && conversation
+                    .getLastMessage()
+                    .getType()
+                    .equalsIgnoreCase(CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER)) || conversation
+                    .getLastMessage()
+                    .getCategory()
+                    .equalsIgnoreCase(CometChatConstants.CATEGORY_INTERACTIVE) || conversation
+                    .getLastMessage()
+                    .getCategory()
+                    .equalsIgnoreCase(CometChatConstants.CATEGORY_CALL);
                 if (!conversation.getLastMessage().getSender().getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid())) {
                     if (conversation.getLastMessage().getReadAt() == 0) {
                         if (isActionMessage) {
+                            conversation.setConversationWith(oldConversation.getConversationWith());
                             conversation.setUnreadMessageCount(oldConversation.getUnreadMessageCount());
                             updateConversationObject(oldIndex, conversation);
                         } else if (incrementUnreadCount || isCategoryMessage) {
@@ -202,7 +214,13 @@ public class ConversationsViewModel extends ViewModel {
     }
 
     private void itemInsertedAtTop(Conversation conversation) {
-        if (!conversation.getLastMessage().getSender().getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) && !(conversation.getLastMessage() instanceof Action || conversation.getLastMessage() instanceof Call)) {
+        if (!conversation
+            .getLastMessage()
+            .getSender()
+            .getUid()
+            .equalsIgnoreCase(CometChatUIKit
+                                  .getLoggedInUser()
+                                  .getUid()) && !(conversation.getLastMessage() instanceof Action || conversation.getLastMessage() instanceof Call)) {
             conversation.setUnreadMessageCount(1);
         }
         conversationList.add(0, conversation);
@@ -211,7 +229,9 @@ public class ConversationsViewModel extends ViewModel {
     }
 
     private void handleUnreadCount(int oldConversationIndex, Conversation oldConversation, @NonNull Conversation conversation, boolean isSent) {
-        if (oldConversation.getLastMessage() != null && conversation.getLastMessage() != null && (oldConversation.getLastMessage().getId() != conversation.getLastMessage().getId())) {
+        if (oldConversation.getLastMessage() != null && conversation.getLastMessage() != null && (oldConversation
+            .getLastMessage()
+            .getId() != conversation.getLastMessage().getId())) {
             if (conversation.getLastMessage().getEditedAt() != 0 || conversation.getLastMessage().getDeletedAt() != 0) {
                 return;
             }
@@ -233,26 +253,6 @@ public class ConversationsViewModel extends ViewModel {
         LISTENERS_TAG = System.currentTimeMillis() + "";
         CometChat.addGroupListener(LISTENERS_TAG, new CometChat.GroupListener() {
             @Override
-            public void onGroupMemberKicked(Action action, @NonNull User kickedUser, User kickedBy, Group kickedFrom) {
-                updateConversationForGroup(action, kickedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()));
-            }
-
-            @Override
-            public void onGroupMemberBanned(Action action, User bannedUser, User bannedBy, Group group) {
-                updateConversationForGroup(action, bannedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()));
-            }
-
-            @Override
-            public void onMemberAddedToGroup(Action action, User addedBy, User userAdded, Group addedTo) {
-                if (userAdded.getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
-                    addedTo.setScope(CometChatConstants.SCOPE_PARTICIPANT);
-                    addedTo.setHasJoined(true);
-                }
-                action.setActionFor(addedTo);
-                updateConversationForGroup(action, false);
-            }
-
-            @Override
             public void onGroupMemberJoined(@NonNull Action action, User joinedUser, Group joinedGroup) {
                 updateConversationForGroup(action, false);
             }
@@ -263,7 +263,45 @@ public class ConversationsViewModel extends ViewModel {
             }
 
             @Override
-            public void onGroupMemberScopeChanged(Action action, User updatedBy, User updatedUser, String scopeChangedTo, String scopeChangedFrom, Group group) {
+            public void onGroupMemberKicked(Action action, @NonNull User kickedUser, User kickedBy, Group kickedFrom) {
+                updateConversationForGroup(action, kickedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()));
+            }
+
+            @Override
+            public void onGroupMemberBanned(Action action, User bannedUser, User bannedBy, Group group) {
+                updateConversationForGroup(action, bannedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()));
+            }
+
+            @Override
+            public void onGroupMemberScopeChanged(Action action,
+                                                  User updatedBy,
+                                                  User updatedUser,
+                                                  String scopeChangedTo,
+                                                  String scopeChangedFrom,
+                                                  Group group) {
+                if (updatedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
+                    group.setScope(scopeChangedTo);
+                    group.setHasJoined(true);
+                    updateGroupConversation(group);
+                }
+                updateConversationForGroup(action, false);
+            }
+
+            @Override
+            public void onMemberAddedToGroup(Action action, User addedBy, User userAdded, Group addedTo) {
+                if (userAdded.getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
+                    addedTo.setScope(CometChatConstants.SCOPE_PARTICIPANT);
+                    addedTo.setHasJoined(true);
+                    action.setActionFor(addedTo);
+                } else {
+                    Group group = getGroupFromConversation(addedTo.getGuid());
+                    if (group == null) {
+                        group = addedTo;
+                        group.setHasJoined(true);
+                        group.setScope(CometChatConstants.SCOPE_PARTICIPANT);
+                    }
+                    action.setActionFor(group);
+                }
                 updateConversationForGroup(action, false);
             }
         });
@@ -289,16 +327,18 @@ public class ConversationsViewModel extends ViewModel {
 
         CometChatGroupEvents.addGroupListener(LISTENERS_TAG, new CometChatGroupEvents() {
             @Override
+            public void ccGroupDeleted(Group group) {
+                if (group != null) removeGroup(group);
+            }
+
+            @Override
             public void ccGroupLeft(Action actionMessage, User leftUser, Group leftGroup) {
                 removeGroup(leftGroup);
             }
 
             @Override
-            public void ccGroupMemberBanned(Action actionMessage, User bannedUser, User bannedBy, Group bannedFrom) {
-                if (bannedFrom != null) {
-                    updateGroupConversation(bannedFrom);
-                    updateConversationForGroup(actionMessage, false);
-                }
+            public void ccGroupMemberJoined(User joinedUser, Group joinedGroup) {
+                if (joinedGroup != null) updateGroupConversation(joinedGroup);
             }
 
             @Override
@@ -320,26 +360,9 @@ public class ConversationsViewModel extends ViewModel {
             }
 
             @Override
-            public void ccGroupMemberJoined(User joinedUser, Group joinedGroup) {
-                if (joinedGroup != null) updateGroupConversation(joinedGroup);
-            }
-
-            @Override
-            public void ccGroupDeleted(Group group) {
-                if (group != null) removeGroup(group);
-            }
-
-            @Override
-            public void ccOwnershipChanged(Group group, GroupMember newOwner) {
-                if (group != null) {
-                    updateGroupConversation(group);
-                }
-            }
-
-            @Override
-            public void ccGroupMemberScopeChanged(Action actionMessage, User updatedUser, String scopeChangedTo, String scopeChangedFrom, Group group) {
-                if (group != null) {
-                    updateGroupConversation(group);
+            public void ccGroupMemberBanned(Action actionMessage, User bannedUser, User bannedBy, Group bannedFrom) {
+                if (bannedFrom != null) {
+                    updateGroupConversation(bannedFrom);
                     updateConversationForGroup(actionMessage, false);
                 }
             }
@@ -349,6 +372,25 @@ public class ConversationsViewModel extends ViewModel {
                 if (unBannedFrom != null) {
                     updateGroupConversation(unBannedFrom);
                     updateConversationForGroup(actionMessage, false);
+                }
+            }
+
+            @Override
+            public void ccGroupMemberScopeChanged(Action actionMessage,
+                                                  User updatedUser,
+                                                  String scopeChangedTo,
+                                                  String scopeChangedFrom,
+                                                  Group group) {
+                if (group != null) {
+                    updateGroupConversation(group);
+                    updateConversationForGroup(actionMessage, false);
+                }
+            }
+
+            @Override
+            public void ccOwnershipChanged(Group group, GroupMember newOwner) {
+                if (group != null) {
+                    updateGroupConversation(group);
                 }
             }
         });
@@ -368,6 +410,30 @@ public class ConversationsViewModel extends ViewModel {
 
         CometChatMessageEvents.addListener(LISTENERS_TAG, new CometChatMessageEvents() {
             @Override
+            public void ccMessageSent(BaseMessage baseMessage, int status) {
+                if (status == MessageStatus.SUCCESS && baseMessage != null) {
+                    checkAndUpdateConversation(baseMessage, false);
+                }
+            }
+
+            @Override
+            public void ccMessageEdited(BaseMessage baseMessage, int status) {
+                if (status == MessageStatus.SUCCESS && baseMessage != null) checkAndUpdateConversation(baseMessage, false);
+            }
+
+            @Override
+            public void ccMessageDeleted(BaseMessage baseMessage) {
+                if (baseMessage != null) checkAndUpdateConversation(baseMessage, false);
+            }
+
+            @Override
+            public void ccMessageRead(BaseMessage baseMessage) {
+                if (baseMessage != null) {
+                    clearConversationUnreadCount(convertMessageToConversation(baseMessage));
+                }
+            }
+
+            @Override
             public void onTextMessageReceived(TextMessage message) {
                 checkAndUpdateConversation(message, true);
             }
@@ -375,6 +441,46 @@ public class ConversationsViewModel extends ViewModel {
             @Override
             public void onMediaMessageReceived(MediaMessage message) {
                 checkAndUpdateConversation(message, true);
+            }
+
+            @Override
+            public void onCustomMessageReceived(CustomMessage message) {
+                checkAndUpdateConversation(message, true);
+            }
+
+            @Override
+            public void onTypingStarted(TypingIndicator typingIndicator) {
+                typingIndicatorHashMap.put(typing(typingIndicator), typingIndicator);
+                typing.setValue(typingIndicatorHashMap);
+            }
+
+            @Override
+            public void onTypingEnded(TypingIndicator typingIndicator) {
+                Conversation conversation = typing(typingIndicator);
+                typingIndicatorHashMap.put(conversation, null);
+                handler.removeCallbacks(updateTypingRunnable);
+                handler = new Handler();
+                handler.postDelayed(updateTypingRunnable, UIKitUtilityConstants.TYPING_INDICATOR_DEBOUNCER);
+            }
+
+            @Override
+            public void onMessagesDelivered(MessageReceipt messageReceipt) {
+                updateDeliveredReceipts(messageReceipt);
+            }
+
+            @Override
+            public void onMessagesRead(MessageReceipt messageReceipt) {
+                updateReadReceipts(messageReceipt);
+            }
+
+            @Override
+            public void onMessageEdited(BaseMessage message) {
+                update(convertMessageToConversation(message), false);
+            }
+
+            @Override
+            public void onMessageDeleted(BaseMessage message) {
+                update(convertMessageToConversation(message), false);
             }
 
             @Override
@@ -398,21 +504,6 @@ public class ConversationsViewModel extends ViewModel {
             }
 
             @Override
-            public void onCustomMessageReceived(CustomMessage message) {
-                checkAndUpdateConversation(message, true);
-            }
-
-            @Override
-            public void onMessagesDelivered(MessageReceipt messageReceipt) {
-                updateDeliveredReceipts(messageReceipt);
-            }
-
-            @Override
-            public void onMessagesRead(MessageReceipt messageReceipt) {
-                updateReadReceipts(messageReceipt);
-            }
-
-            @Override
             public void onMessagesDeliveredToAll(MessageReceipt messageReceipt) {
                 updateDeliveredReceipts(messageReceipt);
             }
@@ -420,56 +511,6 @@ public class ConversationsViewModel extends ViewModel {
             @Override
             public void onMessagesReadByAll(MessageReceipt messageReceipt) {
                 updateReadReceipts(messageReceipt);
-            }
-
-            @Override
-            public void onMessageEdited(BaseMessage message) {
-                update(convertMessageToConversation(message), false);
-            }
-
-            @Override
-            public void onMessageDeleted(BaseMessage message) {
-                update(convertMessageToConversation(message), false);
-            }
-
-            @Override
-            public void onTypingStarted(TypingIndicator typingIndicator) {
-                typingIndicatorHashMap.put(typing(typingIndicator), typingIndicator);
-                typing.setValue(typingIndicatorHashMap);
-            }
-
-            @Override
-            public void onTypingEnded(TypingIndicator typingIndicator) {
-                Conversation conversation = typing(typingIndicator);
-                typingIndicatorHashMap.put(conversation, null);
-                handler.removeCallbacks(updateTypingRunnable);
-                handler = new Handler();
-                handler.postDelayed(updateTypingRunnable, UIKitUtilityConstants.TYPING_INDICATOR_DEBOUNCER);
-            }
-
-            @Override
-            public void ccMessageSent(BaseMessage baseMessage, int status) {
-                if (status == MessageStatus.SUCCESS && baseMessage != null) {
-                    checkAndUpdateConversation(baseMessage, false);
-                }
-            }
-
-            @Override
-            public void ccMessageRead(BaseMessage baseMessage) {
-                if (baseMessage != null) {
-                    clearConversationUnreadCount(convertMessageToConversation(baseMessage));
-                }
-            }
-
-            @Override
-            public void ccMessageEdited(BaseMessage baseMessage, int status) {
-                if (status == MessageStatus.SUCCESS && baseMessage != null)
-                    checkAndUpdateConversation(baseMessage, false);
-            }
-
-            @Override
-            public void ccMessageDeleted(BaseMessage baseMessage) {
-                if (baseMessage != null) checkAndUpdateConversation(baseMessage, false);
             }
         });
 
@@ -623,16 +664,14 @@ public class ConversationsViewModel extends ViewModel {
         Conversation conversation = CometChatHelper.getConversationFromMessage(baseMessage);
         if (isRemove) remove(conversation);
         else {
-            if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnGroupActions())
-                update(conversation, true);
+            if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnGroupActions()) update(conversation, true);
         }
     }
 
     private boolean isAddToConversationList(Conversation conversation) {
         if (conversation != null && conversationsRequest != null) {
             if (conversationsRequest.getConversationType() == null) return true;
-            else
-                return conversation.getConversationType().equalsIgnoreCase(conversationsRequest.getConversationType());
+            else return conversation.getConversationType().equalsIgnoreCase(conversationsRequest.getConversationType());
         }
         return false;
     }
@@ -653,7 +692,10 @@ public class ConversationsViewModel extends ViewModel {
         for (int i = 0; i < conversationList.size() - 1; i++) {
             Conversation conversation = conversationList.get(i);
             if (receipt.getReceivertype().equals(UIKitConstants.ReceiverType.USER)) {
-                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_USER) && receipt.getSender().getUid().equals(((User) conversation.getConversationWith()).getUid())) {
+                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_USER) && receipt
+                    .getSender()
+                    .getUid()
+                    .equals(((User) conversation.getConversationWith()).getUid())) {
                     BaseMessage baseMessage = conversation.getLastMessage();
                     if (baseMessage != null && baseMessage.getDeliveredAt() == 0 && baseMessage.getId() == receipt.getMessageId()) {
                         baseMessage.setDeliveredAt(receipt.getDeliveredAt());
@@ -664,7 +706,11 @@ public class ConversationsViewModel extends ViewModel {
                     }
                 }
             } else if (receipt.getReceivertype().equals(UIKitConstants.ReceiverType.GROUP)) {
-                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_GROUP) && receipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL) && receipt.getReceiverId().equals(((Group) conversation.getConversationWith()).getGuid())) {
+                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_GROUP) && receipt
+                    .getReceiptType()
+                    .equals(MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL) && receipt
+                    .getReceiverId()
+                    .equals(((Group) conversation.getConversationWith()).getGuid())) {
                     BaseMessage baseMessage = conversation.getLastMessage();
                     if (baseMessage != null && baseMessage.getDeliveredAt() == 0 && baseMessage.getId() == receipt.getMessageId()) {
                         baseMessage.setDeliveredAt(receipt.getDeliveredAt());
@@ -683,7 +729,10 @@ public class ConversationsViewModel extends ViewModel {
             Conversation conversation = conversationList.get(i);
 
             if (receipt.getReceivertype().equals(UIKitConstants.ReceiverType.USER)) {
-                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_USER) && receipt.getSender().getUid().equals(((User) conversation.getConversationWith()).getUid())) {
+                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_USER) && receipt
+                    .getSender()
+                    .getUid()
+                    .equals(((User) conversation.getConversationWith()).getUid())) {
                     BaseMessage baseMessage = conversation.getLastMessage();
                     if (baseMessage != null && baseMessage.getReadAt() == 0 && baseMessage.getId() == receipt.getMessageId()) {
                         baseMessage.setReadAt(receipt.getReadAt());
@@ -699,7 +748,11 @@ public class ConversationsViewModel extends ViewModel {
                     }
                 }
             } else if (receipt.getReceivertype().equals(UIKitConstants.ReceiverType.GROUP)) {
-                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_GROUP) && receipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_READ_BY_ALL) && receipt.getReceiverId().equals(((Group) conversation.getConversationWith()).getGuid())) {
+                if (conversation.getConversationType().equals(CometChatConstants.RECEIVER_TYPE_GROUP) && receipt
+                    .getReceiptType()
+                    .equals(MessageReceipt.RECEIPT_TYPE_READ_BY_ALL) && receipt
+                    .getReceiverId()
+                    .equals(((Group) conversation.getConversationWith()).getGuid())) {
                     BaseMessage baseMessage = conversation.getLastMessage();
                     if (baseMessage != null && baseMessage.getReadAt() == 0 && baseMessage.getId() == receipt.getMessageId()) {
                         baseMessage.setReadAt(receipt.getReadAt());
@@ -815,6 +868,19 @@ public class ConversationsViewModel extends ViewModel {
                 }
             }
         }
+    }
+
+    public Group getGroupFromConversation(String guid) {
+        for (int i = 0; i < conversationList.size(); i++) {
+            Conversation conversation = conversationList.get(i);
+            if (conversation.getConversationType().equalsIgnoreCase(UIKitConstants.ConversationType.GROUPS)) {
+                Group conversationGroup = ((Group) conversation.getConversationWith());
+                if (conversationGroup != null && conversationGroup.getGuid().equals(guid)) {
+                    return conversationGroup;
+                }
+            }
+        }
+        return null;
     }
 
     public void updateUserConversation(User user) {

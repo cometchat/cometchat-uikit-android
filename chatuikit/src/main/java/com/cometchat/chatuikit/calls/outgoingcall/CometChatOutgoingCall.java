@@ -27,7 +27,6 @@ import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.CometchatOutgoingCallLayoutBinding;
-import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
 import com.cometchat.chatuikit.shared.interfaces.OnClick;
@@ -129,6 +128,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
         viewModel.getAcceptedCall().observe((AppCompatActivity) context, this::acceptedCall);
         viewModel.getRejectCall().observe((AppCompatActivity) context, this::rejectedCall);
         viewModel.getException().observe((AppCompatActivity) context, this::triggerError);
+        viewModel.getDisableEndCallButton().observe((AppCompatActivity) context, this::setDisableEndCallButton);
 
         binding.endCall.getButton().setOnClickListener(view -> {
             binding.endCall.getButton().setEnabled(false);
@@ -138,6 +138,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
         });
         applyStyleAttributes(attrs, defStyleAttr);
     }
+
 
     private void initSensors(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -196,6 +197,10 @@ public class CometChatOutgoingCall extends MaterialCardView {
         } else {
             onError.onError(getContext(), e);
         }
+    }
+
+    private void setDisableEndCallButton(Boolean disable) {
+        binding.endCall.getButton().setEnabled(!disable);
     }
 
     /**
@@ -522,15 +527,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
     public void setSubtitleTextAppearance(@StyleRes int appearance) {
         this.subtitleTextAppearance = appearance;
         binding.subtitleText.setTextAppearance(appearance);
-    }    /**
-     * Plays the outgoing call sound if sound notifications are not disabled. It
-     * uses the custom sound resource if provided; otherwise, it defaults to the
-     * standard outgoing call sound.
-     */
-    private void playSound() {
-        if (!disableSoundForCall) {
-            soundManager.play(Sound.outgoingCall, customSoundForCalls);
-        }
     }
 
     /**
@@ -569,6 +565,15 @@ public class CometChatOutgoingCall extends MaterialCardView {
     public void setEndCallIconTint(@ColorInt int endCallIconTint) {
         this.endCallIconTint = endCallIconTint;
         binding.endCall.setButtonIconTint(endCallIconTint);
+    }    /**
+     * Plays the outgoing call sound if sound notifications are not disabled. It
+     * uses the custom sound resource if provided; otherwise, it defaults to the
+     * standard outgoing call sound.
+     */
+    private void playSound() {
+        if (!disableSoundForCall) {
+            soundManager.play(Sound.outgoingCall, customSoundForCalls);
+        }
     }
 
     /**
@@ -676,6 +681,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
 
 
 
+
     /**
      * Sets the stroke width for the UI element.
      *
@@ -713,7 +719,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         viewModel.addListeners();
-        CometChatLogger.e(TAG, "===>>>>>::: onAttachedToWindow: ");
         if (user != null) {
             playSound();
         }

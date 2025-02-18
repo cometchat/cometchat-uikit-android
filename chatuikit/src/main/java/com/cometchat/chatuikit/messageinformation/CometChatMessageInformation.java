@@ -154,53 +154,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
         }
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (binding == null) {
-            binding = CometchatMessageInformationBinding.inflate(inflater, container, false);
-        }
-        return binding.getRoot();
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
-        dialog.setOnShowListener(dialogInterface -> {
-            View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if (bottomSheet != null) {
-                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-                behavior.setFitToContents(false);
-                bottomSheet.setBackgroundResource(R.color.cometchat_color_transparent);
-                behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            bottomSheetListener.onDismiss();
-                            dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                    }
-                });
-            }
-        });
-
-        return dialog;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-        if (messageInformationViewModel != null) {
-            messageInformationViewModel.removeListener();
-        }
-    }
-
     /**
      * Initializes the {@code MessageInformationViewModel} and sets up observers for
      * various live data components, such as message receipt updates, state changes,
@@ -223,20 +176,80 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     }
 
     /**
-     * Sets the custom style for {@code CometChatMessageInformation} using the
-     * provided style resource.
+     * Applies the default style attributes for {@code CometChatMessageInformation}.
      *
      * <p>
-     * This method applies the style attributes to customize the appearance of the
-     * message information view, such as title text appearance, background color,
-     * stroke width, and corner radius.
-     *
-     * @param style The resource ID of the style to be applied.
+     * This method is responsible for retrieving the default attributes defined in
+     * the XML styleable and applying them to the view, including background color,
+     * corner radius, and text appearance.
      */
-    public void setStyle(@StyleRes int style) {
-        if (style != 0) {
-            TypedArray typedArray = context.obtainStyledAttributes(style, R.styleable.CometChatMessageInformation);
-            extractAttributesAndApplyDefaults(typedArray);
+    private void applyStyleAttributes() {
+        TypedArray typedArray = context.obtainStyledAttributes(R.styleable.CometChatMessageInformation);
+        extractAttributesAndApplyDefaults(typedArray);
+    }
+
+    /**
+     * Sets the list of message receipts in the adapter if the provided list is not
+     * null or empty.
+     *
+     * @param messageReceipts The list of message receipts to set.
+     */
+    private void setList(List<MessageReceipt> messageReceipts) {
+        if (messageReceipts != null && !messageReceipts.isEmpty()) {
+            adapter.setMessageReceipts(messageReceipts);
+        }
+    }
+
+    /**
+     * Notifies the adapter to update a receipt at the specified index.
+     *
+     * @param index The index of the receipt to update.
+     */
+    private void notifyUpdateReceipt(int index) {
+        adapter.notifyItemChanged(index);
+    }
+
+    /**
+     * Notifies the adapter to insert a new receipt at the specified position.
+     *
+     * @param integer The position where the new receipt should be inserted.
+     */
+    private void notifyAddReceipt(Integer integer) {
+        adapter.notifyItemInserted(integer);
+    }
+
+    /**
+     * Displays an error state when a CometChatException is encountered.
+     *
+     * @param exception The exception to handle.
+     */
+    private void showError(CometChatException exception) {
+        if (exception != null) {
+            handleErrorState();
+        }
+    }
+
+    /**
+     * Clears the adapter's data and refreshes the view.
+     *
+     * @param unused Unused parameter.
+     */
+    public void clear(Void unused) {
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Observes state changes and triggers the appropriate handler.
+     *
+     * @param states The current state of the component.
+     */
+    private void stateChangeObserver(UIKitConstants.States states) {
+        if (UIKitConstants.States.LOADING.equals(states)) {
+            handleLoadingState();
+        } else if (UIKitConstants.States.LOADED.equals(states)) {
+            handleLoadedState();
+        } else if (UIKitConstants.States.EMPTY.equals(states)) {
+            handleEmptyState();
         }
     }
 
@@ -291,6 +304,49 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     }
 
     /**
+     * Handles the error state by invoking the empty state handler.
+     */
+    private void handleErrorState() {
+        handleEmptyState();
+    }
+
+    /**
+     * Handles the loading state by starting the shimmer effect and hiding other
+     * views.
+     */
+    private void handleLoadingState() {
+        CometChatShimmerAdapter adapter = new CometChatShimmerAdapter(30, R.layout.shimmer_cometchat_message_information);
+        binding.shimmerRecyclerview.setAdapter(adapter);
+        binding.shimmerEffectFrame.setShimmer(CometChatShimmerUtils.getCometChatShimmerConfig(context));
+        binding.shimmerEffectFrame.startShimmer();
+        binding.messageInfoRecyclerViewGroup.setVisibility(View.GONE);
+        binding.messageReceiptsUser.setVisibility(View.GONE);
+        binding.shimmerEffectFrame.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Handles the loaded state by stopping the shimmer effect and displaying the
+     * relevant views.
+     */
+    private void handleLoadedState() {
+        binding.shimmerEffectFrame.stopShimmer();
+        binding.messageInfoRecyclerViewGroup.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.GONE : View.VISIBLE);
+        binding.messageReceiptsUser.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.VISIBLE : View.GONE);
+        binding.shimmerEffectFrame.setVisibility(View.GONE);
+    }
+
+    /**
+     * Handles the empty state by stopping the shimmer effect and updating the
+     * visibility of views.
+     */
+    private void handleEmptyState() {
+        binding.shimmerEffectFrame.stopShimmer();
+        binding.messageInfoRecyclerViewGroup.setVisibility(View.GONE);
+        binding.messageReceiptsUser.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.VISIBLE : View.GONE);
+        binding.shimmerEffectFrame.setVisibility(View.GONE);
+    }
+
+    /**
      * Updates the UI components with the extracted style attributes.
      *
      * <p>
@@ -330,17 +386,69 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
         binding.parentLayout.setStrokeColor(ColorStateList.valueOf(strokeColor));
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (binding == null) {
+            binding = CometchatMessageInformationBinding.inflate(inflater, container, false);
+        }
+        return binding.getRoot();
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        dialog.setOnShowListener(dialogInterface -> {
+            View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setFitToContents(false);
+                bottomSheet.setBackgroundResource(R.color.cometchat_color_transparent);
+                behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                            bottomSheetListener.onDismiss();
+                            dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    }
+                });
+            }
+        });
+
+        return dialog;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+        if (messageInformationViewModel != null) {
+            messageInformationViewModel.removeListener();
+        }
+    }
+
     /**
-     * Applies the default style attributes for {@code CometChatMessageInformation}.
+     * Sets the custom style for {@code CometChatMessageInformation} using the
+     * provided style resource.
      *
      * <p>
-     * This method is responsible for retrieving the default attributes defined in
-     * the XML styleable and applying them to the view, including background color,
-     * corner radius, and text appearance.
+     * This method applies the style attributes to customize the appearance of the
+     * message information view, such as title text appearance, background color,
+     * stroke width, and corner radius.
+     *
+     * @param style The resource ID of the style to be applied.
      */
-    private void applyStyleAttributes() {
-        TypedArray typedArray = context.obtainStyledAttributes(R.styleable.CometChatMessageInformation);
-        extractAttributesAndApplyDefaults(typedArray);
+    public void setStyle(@StyleRes int style) {
+        if (style != 0) {
+            TypedArray typedArray = context.obtainStyledAttributes(style, R.styleable.CometChatMessageInformation);
+            extractAttributesAndApplyDefaults(typedArray);
+        }
     }
 
     /**
@@ -773,116 +881,6 @@ public class CometChatMessageInformation extends BottomSheetDialogFragment {
     public void setHideToolBar(boolean hideToolBar) {
         this.hideToolBar = hideToolBar;
         binding.toolBarView.setVisibility(hideToolBar ? View.GONE : View.VISIBLE);
-    }
-
-    /**
-     * Observes state changes and triggers the appropriate handler.
-     *
-     * @param states The current state of the component.
-     */
-    private void stateChangeObserver(UIKitConstants.States states) {
-        if (UIKitConstants.States.LOADING.equals(states)) {
-            handleLoadingState();
-        } else if (UIKitConstants.States.LOADED.equals(states)) {
-            handleLoadedState();
-        } else if (UIKitConstants.States.EMPTY.equals(states)) {
-            handleEmptyState();
-        } else if (UIKitConstants.States.NON_EMPTY.equals(states)) {
-            handleErrorState();
-        }
-    }
-
-    /**
-     * Handles the loading state by starting the shimmer effect and hiding other
-     * views.
-     */
-    private void handleLoadingState() {
-        CometChatShimmerAdapter adapter = new CometChatShimmerAdapter(30, R.layout.shimmer_cometchat_message_information);
-        binding.shimmerRecyclerview.setAdapter(adapter);
-        binding.shimmerEffectFrame.setShimmer(CometChatShimmerUtils.getCometChatShimmerConfig(context));
-        binding.shimmerEffectFrame.startShimmer();
-        binding.messageInfoRecyclerViewGroup.setVisibility(View.GONE);
-        binding.messageReceiptsUser.setVisibility(View.GONE);
-        binding.shimmerEffectFrame.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * Handles the loaded state by stopping the shimmer effect and displaying the
-     * relevant views.
-     */
-    private void handleLoadedState() {
-        binding.shimmerEffectFrame.stopShimmer();
-        binding.messageInfoRecyclerViewGroup.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.GONE : View.VISIBLE);
-        binding.messageReceiptsUser.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.VISIBLE : View.GONE);
-        binding.shimmerEffectFrame.setVisibility(View.GONE);
-    }
-
-    /**
-     * Handles the error state by invoking the empty state handler.
-     */
-    private void handleErrorState() {
-        handleEmptyState();
-    }
-
-    /**
-     * Handles the empty state by stopping the shimmer effect and updating the
-     * visibility of views.
-     */
-    private void handleEmptyState() {
-        binding.shimmerEffectFrame.stopShimmer();
-        binding.messageInfoRecyclerViewGroup.setVisibility(View.GONE);
-        binding.messageReceiptsUser.setVisibility(conversationType.equals(UIKitConstants.ConversationType.USERS) ? View.VISIBLE : View.GONE);
-        binding.shimmerEffectFrame.setVisibility(View.GONE);
-    }
-
-    /**
-     * Displays an error state when a CometChatException is encountered.
-     *
-     * @param exception The exception to handle.
-     */
-    private void showError(CometChatException exception) {
-        if (exception != null) {
-            handleErrorState();
-        }
-    }
-
-    /**
-     * Clears the adapter's data and refreshes the view.
-     *
-     * @param unused Unused parameter.
-     */
-    public void clear(Void unused) {
-        adapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Notifies the adapter to insert a new receipt at the specified position.
-     *
-     * @param integer The position where the new receipt should be inserted.
-     */
-    private void notifyAddReceipt(Integer integer) {
-        adapter.notifyItemInserted(integer);
-    }
-
-    /**
-     * Notifies the adapter to update a receipt at the specified index.
-     *
-     * @param index The index of the receipt to update.
-     */
-    private void notifyUpdateReceipt(int index) {
-        adapter.notifyItemChanged(index);
-    }
-
-    /**
-     * Sets the list of message receipts in the adapter if the provided list is not
-     * null or empty.
-     *
-     * @param messageReceipts The list of message receipts to set.
-     */
-    private void setList(List<MessageReceipt> messageReceipts) {
-        if (messageReceipts != null && !messageReceipts.isEmpty()) {
-            adapter.setMessageReceipts(messageReceipts);
-        }
     }
 
     /**

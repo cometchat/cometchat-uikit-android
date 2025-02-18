@@ -272,7 +272,7 @@ public class CometChatUIKitHelper {
     public static void onActiveChatChanged(HashMap<String, String> id, BaseMessage message, User user, Group group, int unreadCount) {
         for (CometChatUIEvents events : CometChatUIEvents.uiEvents.values()) {
             events.ccActiveChatChanged(id, message, user, group, unreadCount);
-            if (message != null) events.ccActiveChatChanged(id, message, user, group);
+            events.ccActiveChatChanged(id, message, user, group);
         }
     }
 

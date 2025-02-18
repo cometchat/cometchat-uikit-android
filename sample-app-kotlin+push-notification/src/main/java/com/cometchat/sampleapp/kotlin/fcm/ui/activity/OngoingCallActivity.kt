@@ -1,11 +1,15 @@
 package com.cometchat.sampleapp.kotlin.fcm.ui.activity
 
+import android.annotation.SuppressLint
 import android.app.PictureInPictureParams
 import android.os.Bundle
 import android.util.Rational
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.chat.core.Call
+import com.cometchat.chat.core.CometChat
+import com.cometchat.chatuikit.calls.CallingExtension
 import com.cometchat.chatuikit.shared.constants.UIKitConstants
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.databinding.ActivityOngoingCallBinding
@@ -16,6 +20,8 @@ import com.cometchat.sampleapp.kotlin.fcm.databinding.ActivityOngoingCallBinding
  * interface.
  */
 class OngoingCallActivity : AppCompatActivity() {
+    private var LISTENER_ID: String? = null
+
     /**
      * Called when the activity is starting. It initializes the UI and starts the
      * call.
@@ -30,6 +36,7 @@ class OngoingCallActivity : AppCompatActivity() {
         val binding = ActivityOngoingCallBinding.inflate(
             layoutInflater
         )
+        addListeners()
 
         setContentView(binding.root)
 
@@ -53,10 +60,34 @@ class OngoingCallActivity : AppCompatActivity() {
         })
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         startPictureInPictureMode()
     }
+
+    fun addListeners() {
+        LISTENER_ID = System.currentTimeMillis().toString() + ""
+        CometChat.addCallListener(LISTENER_ID!!, object : CometChat.CallListener() {
+            override fun onIncomingCallReceived(call: Call) {
+            }
+
+            override fun onOutgoingCallAccepted(call: Call) {
+            }
+
+            override fun onOutgoingCallRejected(call: Call) {
+            }
+
+            override fun onIncomingCallCancelled(call: Call) {
+                var sessionId = ""
+                if (CallingExtension.getActiveCall() != null) {
+                    sessionId = CallingExtension.getActiveCall().sessionId
+                }
+                if (CometChat.getActiveCall() == null && (call.sessionId == sessionId || sessionId.isEmpty())) finish()
+            }
+        })
+    }
+
 
     private fun startPictureInPictureMode() {
         val metrics = resources.displayMetrics
@@ -75,5 +106,10 @@ class OngoingCallActivity : AppCompatActivity() {
         } else {
             CometChatCalls.exitPIPMode()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CometChat.removeCallListener(LISTENER_ID!!)
     }
 }

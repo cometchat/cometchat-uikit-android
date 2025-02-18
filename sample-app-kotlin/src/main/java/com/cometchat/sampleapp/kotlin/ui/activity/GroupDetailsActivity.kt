@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import com.cometchat.chat.models.Group
+import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.CometChatTheme
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
@@ -43,7 +44,7 @@ class GroupDetailsActivity : AppCompatActivity() {
     private var progressBar: ProgressBar? = null
     private var btnText: TextView? = null
     private var confirmDialog: CometChatConfirmDialog? = null
-
+    private var groupMember: GroupMember? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -125,16 +126,19 @@ class GroupDetailsActivity : AppCompatActivity() {
                     GroupAction.LEAVE
                 )
             } else {
-                showAlertDialog(
-                    resources.getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
-                    getString(R.string.app_transfer_ownership_description),
-                    getString(R.string.app_btn_cancel),
-                    getString(R.string.app_btn_continue),
-                    true,
-                    CometChatTheme.getPrimaryColor(this),
-                    0,
-                    GroupAction.TRANSFER_OWNERSHIP
-                )
+                if (group.membersCount > 2) {
+                    showTransferOwnership()
+                } else
+                    showAlertDialog(
+                        resources.getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                        getString(R.string.app_transfer_ownership_description),
+                        getString(R.string.app_btn_cancel),
+                        getString(R.string.app_btn_continue),
+                        true,
+                        CometChatTheme.getPrimaryColor(this),
+                        0,
+                        GroupAction.TRANSFER_OWNERSHIP
+                    )
             }
         }
 
@@ -184,7 +188,8 @@ class GroupDetailsActivity : AppCompatActivity() {
             } else if (GroupAction.TRANSFER_OWNERSHIP == groupAction) {
                 if (group.membersCount > 2) {
                     confirmDialog!!.dismiss()
-                    showTransferOwnership()
+                    viewModel.transferOwnership(groupMember!!)
+                    groupMember = null
                 } else if (group.membersCount == 2) {
                     viewModel.fetchAndTransferOwnerShip()
                 } else if (group.membersCount == 1) {
@@ -370,7 +375,17 @@ class GroupDetailsActivity : AppCompatActivity() {
         transferOwnershipLayoutBinding.transferOwnership.setOnBackPressListener { dialog.dismiss() }
         transferOwnershipLayoutBinding.transferOwnershipBtn.setOnClickListener {
             if (transferOwnershipLayoutBinding.transferOwnership.selectedGroupMembers.isNotEmpty()) {
-                viewModel.transferOwnership(transferOwnershipLayoutBinding.transferOwnership.selectedGroupMembers[0])
+                groupMember = transferOwnershipLayoutBinding.transferOwnership.selectedGroupMembers[0]
+                showAlertDialog(
+                    resources.getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                    getString(R.string.app_transfer_ownership_description),
+                    getString(R.string.app_btn_cancel),
+                    getString(R.string.app_btn_continue),
+                    true,
+                    CometChatTheme.getPrimaryColor(this),
+                    0,
+                    GroupAction.TRANSFER_OWNERSHIP
+                )
             }
         }
     }
@@ -416,6 +431,7 @@ class GroupDetailsActivity : AppCompatActivity() {
         when (state) {
             DialogState.INITIATED -> confirmDialog!!.hidePositiveButtonProgressBar(false)
             DialogState.SUCCESS -> if (confirmDialog != null) {
+                dialog.dismiss()
                 confirmDialog!!.dismiss()
                 binding.leaveGroupLay.performClick()
             }

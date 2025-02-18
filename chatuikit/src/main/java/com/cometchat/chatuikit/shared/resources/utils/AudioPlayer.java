@@ -10,6 +10,7 @@ public class AudioPlayer {
     private static AudioPlayer instance;
     private final MediaPlayer mediaPlayer;
     private boolean isPrepared;
+    private MediaPlayer.OnCompletionListener completionListener;
 
     private AudioPlayer() {
         mediaPlayer = new MediaPlayer();
@@ -22,16 +23,12 @@ public class AudioPlayer {
         return instance;
     }
 
-    public void reset() {
-        mediaPlayer.reset();
-        isPrepared = false; // Reset prepared state
-    }
-
     public void setAudioUrl(String url, MediaPlayer.OnPreparedListener preparedListener, MediaPlayer.OnCompletionListener completionListener) {
         try {
             reset();
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
+            this.completionListener = completionListener;
             mediaPlayer.setOnPreparedListener(mp -> {
                 isPrepared = true;
                 mediaPlayer.start();
@@ -43,6 +40,13 @@ public class AudioPlayer {
         } catch (Exception e) {
             CometChatLogger.e(TAG, e.toString());
         }
+    }
+
+    public void reset() {
+        mediaPlayer.reset();
+        if (completionListener != null)
+            completionListener.onCompletion(mediaPlayer);
+        isPrepared = false; // Reset prepared state
     }
 
     public void start() {

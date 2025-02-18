@@ -43,15 +43,12 @@ public class MessageInformationAdapter extends RecyclerView.Adapter<MessageInfor
         this.message = baseMessage;
     }
 
-    @Override
-    public int getItemCount() {
-        return messageReceipts.size();
-    }
-
     @NonNull
     @Override
     public MessageInformtionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CometchatMessageInformationItemsBinding binding = CometchatMessageInformationItemsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        CometchatMessageInformationItemsBinding binding = CometchatMessageInformationItemsBinding.inflate(LayoutInflater.from(parent.getContext()),
+                                                                                                          parent,
+                                                                                                          false);
         return new MessageInformtionViewHolder(binding.getRoot());
     }
 
@@ -73,7 +70,7 @@ public class MessageInformationAdapter extends RecyclerView.Adapter<MessageInfor
             holder.binding.messageInformationRead.setTextColor(itemReadTextColor);
             holder.binding.messageInformationReadTimeStamp.setTextAppearance(itemReadDateTextAppearance);
             holder.binding.messageInformationReadTimeStamp.setTextColor(itemReadDateTextColor);
-            holder.binding.messageInformationReadTimeStamp.setText(Utils.getDateTimeMessageInformation(messageReceipt.getDeliveredAt() * 1000));
+            holder.binding.messageInformationReadTimeStamp.setText(Utils.getDateTimeMessageInformation(messageReceipt.getReadAt() * 1000));
         } else {
             holder.binding.messageInformationReadLayout.setVisibility(View.GONE);
         }
@@ -89,6 +86,11 @@ public class MessageInformationAdapter extends RecyclerView.Adapter<MessageInfor
             holder.binding.messageInformationDeliveredLayout.setVisibility(View.GONE);
         }
         holder.itemView.setTag(R.string.cometchat_message_receipt, messageReceipt);
+    }
+
+    @Override
+    public int getItemCount() {
+        return messageReceipts.size();
     }
 
     public BaseMessage getMessage() {

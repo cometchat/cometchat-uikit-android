@@ -783,7 +783,6 @@ public class MessageListViewModel extends ViewModel {
             if (baseMessage.getReadAt() == 0 || baseMessage.getId() == messageReceipt.getMessageId()) {
                 isRead = true;
                 baseMessage.setReadAt(messageReceipt.getReadAt());
-                baseMessage.setDeliveredAt(messageReceipt.getDeliveredAt() == 0 ? messageReceipt.getDeliveredAt() : baseMessage.getDeliveredAt());
             } else if (isRead) {
                 break;
             }

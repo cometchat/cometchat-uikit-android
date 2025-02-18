@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.cometchat.chat.models.Group;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.resources.utils.AnimationUtils;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.sampleapp.java.fcm.R;
@@ -49,7 +48,7 @@ public class GroupsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentGroupsBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider.NewInstanceFactory().create(GroupsViewModel.class);
-        bottomSheetDialog = new BottomSheetDialog(requireActivity());
+        bottomSheetDialog = new BottomSheetDialog(requireActivity(), R.style.DialogStyle);
         return binding.getRoot();
     }
 
@@ -204,12 +203,15 @@ public class GroupsFragment extends Fragment {
             if (i == R.id.radio_public) {
                 groupType.set(UIKitConstants.GroupType.PUBLIC);
                 hidePasswordField(createGroupLayoutBinding);
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 0);
             } else if (i == R.id.radio_private) {
                 groupType.set(UIKitConstants.GroupType.PRIVATE);
                 hidePasswordField(createGroupLayoutBinding);
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 0);
             } else if (i == R.id.radio_password) {
                 groupType.set(UIKitConstants.GroupType.PASSWORD);
                 showPasswordField(createGroupLayoutBinding);
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 0);
             }
         });
         createGroupLayoutBinding.createGroupBtn.setOnClickListener(view -> {
@@ -221,7 +223,21 @@ public class GroupsFragment extends Fragment {
             viewModel.createGroup(group);
         });
         Utils.showBottomSheet(getContext(), bottomSheetDialog, true, false, createGroupLayoutBinding.getRoot());
+
+        bottomSheetDialog.getBehavior().setPeekHeight(1000);
         bottomSheetDialog.show();
+
+        createGroupLayoutBinding.etName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 200);
+            }
+        });
+        createGroupLayoutBinding.etPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                scrollCreateGroupToBottom(createGroupLayoutBinding, 200);
+            }
+        });
+
     }
 
     /**
@@ -230,7 +246,17 @@ public class GroupsFragment extends Fragment {
      * @param createGroupLayoutBinding The binding object for the create group layout.
      */
     private void hidePasswordField(CreateGroupLayoutBinding createGroupLayoutBinding) {
-        AnimationUtils.animateVisibilityGone(createGroupLayoutBinding.groupPasswordCard);
+        createGroupLayoutBinding.groupPasswordCard.setVisibility(View.GONE);
+        createGroupLayoutBinding.etPassword.setVisibility(View.GONE);
+    }
+
+    private void scrollCreateGroupToBottom(CreateGroupLayoutBinding createGroupLayoutBinding, int delay) {
+        createGroupLayoutBinding.createGroupScrollLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                createGroupLayoutBinding.createGroupScrollLayout.scrollTo(0, createGroupLayoutBinding.createGroupScrollLayout.getHeight());
+            }
+        }, delay);
     }
 
     /**
@@ -239,6 +265,16 @@ public class GroupsFragment extends Fragment {
      * @param createGroupLayoutBinding The binding object for the create group layout.
      */
     private void showPasswordField(CreateGroupLayoutBinding createGroupLayoutBinding) {
-        AnimationUtils.animateVisibilityVisible(createGroupLayoutBinding.groupPasswordCard);
+        createGroupLayoutBinding.groupPasswordCard.setVisibility(View.VISIBLE);
+        createGroupLayoutBinding.etPassword.setVisibility(View.VISIBLE);
+    }
+
+    // Method to get the height of the status bar
+    private int getStatusBarHeight() {
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return getResources().getDimensionPixelSize(resourceId);
+        }
+        return 0;
     }
 }

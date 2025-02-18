@@ -227,7 +227,7 @@ public class MessagesActivity extends AppCompatActivity {
         if (user != null) {
             intent = new Intent(this, UserDetailsActivity.class);
             intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
-            intent.putExtra(getString(R.string.app_base_message), new Gson().toJson(baseMessage));
+            intent.putExtra(getString(R.string.app_base_message), new Gson().toJson(binding.messageList.getViewModel().getLastMessage()));
         } else if (group != null) {
             intent = new Intent(this, GroupDetailsActivity.class);
             intent.putExtra(getString(R.string.app_group), new Gson().toJson(group));

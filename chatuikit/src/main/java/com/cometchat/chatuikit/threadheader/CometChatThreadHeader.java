@@ -105,7 +105,7 @@ public class CometChatThreadHeader extends MaterialCardView {
     /**
      * ViewModel for managing and observing threaded header data.
      */
-    private ThreadedHeaderViewModel threadedHeaderViewModel;
+    private ThreadHeaderViewModel threadHeaderViewModel;
 
     /**
      * Adapter for handling and displaying messages in the message list.
@@ -258,31 +258,12 @@ public class CometChatThreadHeader extends MaterialCardView {
         binding.rvParentBubbleView.setAdapter(adapter);
 
         // Initialize and set up the ViewModel
-        threadedHeaderViewModel = new ViewModelProvider.NewInstanceFactory().create(ThreadedHeaderViewModel.class);
-        threadedHeaderViewModel.getParentMessageListLiveData().observe((AppCompatActivity) getContext(), this::updateMessage);
-        threadedHeaderViewModel.getReplyCount().observe((AppCompatActivity) getContext(), this::updateReplyCount);
+        threadHeaderViewModel = new ViewModelProvider.NewInstanceFactory().create(ThreadHeaderViewModel.class);
+        threadHeaderViewModel.getParentMessageListLiveData().observe((AppCompatActivity) getContext(), this::updateMessage);
+        threadHeaderViewModel.getReplyCount().observe((AppCompatActivity) getContext(), this::updateReplyCount);
 
         // Apply additional style attributes to the view
         applyStyleAttributes(attrs, defStyleAttr, 0);
-    }
-
-    /**
-     * Sets the parent message for the thread and updates the view model
-     * accordingly.
-     *
-     * <p>
-     * This method is used to set the parent message of the thread and notify the
-     * threaded header's view model of this change. The parent message provides
-     * context for the threaded conversation and is essential for displaying the
-     * correct message details. Additionally, this method triggers the processing of
-     * formatters to apply any necessary formatting or styling to the message.
-     *
-     * @param message The parent message for the thread. Must not be null.
-     */
-    public void setParentMessage(@NonNull BaseMessage message) {
-        this.parentMessage = message;
-        threadedHeaderViewModel.setParentMessage(message);
-        processFormatters();
     }
 
     /**
@@ -308,47 +289,22 @@ public class CometChatThreadHeader extends MaterialCardView {
      */
     private void extractAttributesAndApplyDefaults(TypedArray typedArray) {
         try {
-            setIncomingMessageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatThreadHeader_cometchatThreadHeaderIncomingMessageBubbleStyle, 0));
-            setOutgoingMessageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatThreadHeader_cometchatThreadHeaderOutgoingMessageBubbleStyle, 0));
+            setIncomingMessageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatThreadHeader_cometchatThreadHeaderIncomingMessageBubbleStyle,
+                                                                   0));
+            setOutgoingMessageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatThreadHeader_cometchatThreadHeaderOutgoingMessageBubbleStyle,
+                                                                   0));
             setCardBackgroundColor(typedArray.getColor(R.styleable.CometChatThreadHeader_cometchatThreadHeaderBackgroundColor, 0));
             setStrokeColor(ColorStateList.valueOf(typedArray.getColor(R.styleable.CometChatThreadHeader_cometchatThreadHeaderStrokeColor, 0)));
             setStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatThreadHeader_cometchatThreadHeaderStrokeWidth, 0));
             setRadius(typedArray.getDimension(R.styleable.CometChatThreadHeader_cometchatThreadHeaderCornerRadius, 0));
             Drawable backgroundDrawable = typedArray.getDrawable(R.styleable.CometChatThreadHeader_cometchatThreadHeaderBackgroundDrawable);
             if (backgroundDrawable != null) setBackgroundDrawable(backgroundDrawable);
-            setReplyCountBackgroundColor(typedArray.getColor(R.styleable.CometChatThreadHeader_cometchatThreadHeaderReplyCountBackgroundColor, CometChatTheme.getExtendedPrimaryColor100(getContext())));
+            setReplyCountBackgroundColor(typedArray.getColor(R.styleable.CometChatThreadHeader_cometchatThreadHeaderReplyCountBackgroundColor,
+                                                             CometChatTheme.getExtendedPrimaryColor100(getContext())));
             setReplyCountTextAppearance(typedArray.getResourceId(R.styleable.CometChatThreadHeader_cometchatThreadHeaderReplyCountTextAppearance, 0));
             setReplyCountTextColor(typedArray.getColor(R.styleable.CometChatThreadHeader_cometchatThreadHeaderReplyCountTextColor, 0));
         } finally {
             typedArray.recycle();
-        }
-    }
-
-    /**
-     * Sets the incoming message bubble style and applies the extracted styles.
-     *
-     * @param incomingMessageBubbleStyle The style resource ID for the incoming message bubble.
-     */
-    public void setIncomingMessageBubbleStyle(@StyleRes int incomingMessageBubbleStyle) {
-        if (incomingMessageBubbleStyle != 0) {
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(null, R.styleable.CometChatMessageBubble, R.attr.cometchatThreadHeaderIncomingMessageBubbleStyle, incomingMessageBubbleStyle);
-            extractAttributesAndApplyBubbleDefaults(typedArray, true);
-            adapter.setIncomingMessageBubbleStyle(incomingMessageBubbleStyle);
-            this.incomingMessageBubbleStyle = incomingMessageBubbleStyle;
-        }
-    }
-
-    /**
-     * Sets the outgoing message bubble style and applies the extracted styles.
-     *
-     * @param outgoingMessageBubbleStyle The style resource ID for the outgoing message bubble.
-     */
-    public void setOutgoingMessageBubbleStyle(@StyleRes int outgoingMessageBubbleStyle) {
-        if (outgoingMessageBubbleStyle != 0) {
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(null, R.styleable.CometChatMessageBubble, R.attr.cometchatThreadHeaderOutgoingMessageBubbleStyle, outgoingMessageBubbleStyle);
-            extractAttributesAndApplyBubbleDefaults(typedArray, false);
-            adapter.setOutgoingMessageBubbleStyle(outgoingMessageBubbleStyle);
-            this.outgoingMessageBubbleStyle = outgoingMessageBubbleStyle;
         }
     }
 
@@ -363,33 +319,52 @@ public class CometChatThreadHeader extends MaterialCardView {
     private void extractAttributesAndApplyBubbleDefaults(TypedArray typedArray, boolean isIncoming) {
         try {
             if (isIncoming) {
-                additionParameter.setIncomingTextBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatTextBubbleStyle, 0));
-                additionParameter.setIncomingImageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatImageBubbleStyle, 0));
-                additionParameter.setIncomingFileBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatFileBubbleStyle, 0));
-                additionParameter.setIncomingAudioBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatAudioBubbleStyle, 0));
-                additionParameter.setIncomingVideoBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatVideoBubbleStyle, 0));
-                additionParameter.setIncomingDeleteBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatDeleteBubbleStyle, 0));
-                additionParameter.setIncomingPollBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatPollBubbleStyle, 0));
-                additionParameter.setIncomingCollaborativeBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatCollaborativeBubbleStyle, 0));
-                additionParameter.setIncomingMeetCallBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMeetCallBubbleStyle, 0));
-                setIncomingMessageBubbleMentionsStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMessageBubbleMentionsStyle, 0));
+                additionParameter.setIncomingTextBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatTextBubbleStyle,
+                                                                                      0));
+                additionParameter.setIncomingImageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatImageBubbleStyle,
+                                                                                       0));
+                additionParameter.setIncomingFileBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatFileBubbleStyle,
+                                                                                      0));
+                additionParameter.setIncomingAudioBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatAudioBubbleStyle,
+                                                                                       0));
+                additionParameter.setIncomingVideoBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatVideoBubbleStyle,
+                                                                                       0));
+                additionParameter.setIncomingDeleteBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatDeleteBubbleStyle,
+                                                                                        0));
+                additionParameter.setIncomingPollBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatPollBubbleStyle,
+                                                                                      0));
+                additionParameter.setIncomingCollaborativeBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatCollaborativeBubbleStyle,
+                                                                                               0));
+                additionParameter.setIncomingMeetCallBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMeetCallBubbleStyle,
+                                                                                          0));
+                setIncomingMessageBubbleMentionsStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMessageBubbleMentionsStyle,
+                                                                               0));
             } else {
-                additionParameter.setOutgoingTextBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatTextBubbleStyle, 0));
-                additionParameter.setOutgoingImageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatImageBubbleStyle, 0));
-                additionParameter.setOutgoingFileBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatFileBubbleStyle, 0));
-                additionParameter.setOutgoingAudioBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatAudioBubbleStyle, 0));
-                additionParameter.setOutgoingVideoBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatVideoBubbleStyle, 0));
-                additionParameter.setOutgoingDeleteBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatDeleteBubbleStyle, 0));
-                additionParameter.setOutgoingPollBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatPollBubbleStyle, 0));
-                additionParameter.setOutgoingCollaborativeBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatCollaborativeBubbleStyle, 0));
-                additionParameter.setOutgoingMeetCallBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMeetCallBubbleStyle, 0));
-                setOutgoingMessageBubbleMentionsStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMessageBubbleMentionsStyle, 0));
+                additionParameter.setOutgoingTextBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatTextBubbleStyle,
+                                                                                      0));
+                additionParameter.setOutgoingImageBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatImageBubbleStyle,
+                                                                                       0));
+                additionParameter.setOutgoingFileBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatFileBubbleStyle,
+                                                                                      0));
+                additionParameter.setOutgoingAudioBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatAudioBubbleStyle,
+                                                                                       0));
+                additionParameter.setOutgoingVideoBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatVideoBubbleStyle,
+                                                                                       0));
+                additionParameter.setOutgoingDeleteBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatDeleteBubbleStyle,
+                                                                                        0));
+                additionParameter.setOutgoingPollBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatPollBubbleStyle,
+                                                                                      0));
+                additionParameter.setOutgoingCollaborativeBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatCollaborativeBubbleStyle,
+                                                                                               0));
+                additionParameter.setOutgoingMeetCallBubbleStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMeetCallBubbleStyle,
+                                                                                          0));
+                setOutgoingMessageBubbleMentionsStyle(typedArray.getResourceId(R.styleable.CometChatMessageBubble_cometchatMessageBubbleMentionsStyle,
+                                                                               0));
             }
         } finally {
             typedArray.recycle();
         }
     }
-
 
     /**
      * Sets the styles for the CometChatThreadHeader by applying a given style
@@ -480,6 +455,22 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
+     * Called when the view is attached to a window.
+     *
+     * <p>
+     * This method is invoked when the view is being attached to a window. It calls
+     * the superclass implementation and then adds a listener to the
+     * {@link ThreadHeaderViewModel}. This listener is responsible for receiving
+     * updates and changes related to the parent message and its replies while the
+     * view is active.
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        threadHeaderViewModel.addListener();
+    }
+
+    /**
      * Updates the reply count displayed in the thread header.
      *
      * <p>
@@ -490,7 +481,9 @@ public class CometChatThreadHeader extends MaterialCardView {
      * @param integer The number of replies to display in the thread header.
      */
     private void updateReplyCount(Integer integer) {
-        binding.tvReplies.setText(integer < 2 ? integer + " " + getContext().getResources().getString(R.string.cometchat_reply_lowercase) : integer + " " + getContext().getResources().getString(R.string.cometchat_replies));
+        binding.tvReplies.setText(integer < 2 ? integer + " " + getContext()
+            .getResources()
+            .getString(R.string.cometchat_reply_lowercase) : integer + " " + getContext().getResources().getString(R.string.cometchat_replies));
     }
 
     /**
@@ -503,18 +496,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Sets the alignment of messages in the Thread Header.
-     *
-     * @param alignment The {@link UIKitConstants.MessageListAlignment} enum representing
-     *                  the alignment of the messages (e.g., left, right, or standard
-     *                  alignment).
-     */
-    public void setAlignment(UIKitConstants.MessageListAlignment alignment) {
-        this.alignment = alignment;
-        adapter.setAlignment(alignment);
-    }
-
-    /**
      * Shows or hides the avatar in the Thread Header.
      *
      * @param showAvatar True to show the avatar, false to hide it. Controls whether the
@@ -523,29 +504,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     public void showAvatar(boolean showAvatar) {
         this.showAvatar = showAvatar;
         adapter.showAvatar(showAvatar);
-    }
-
-    /**
-     * Sets the date pattern for displaying message dates in the Thread Header.
-     *
-     * @param datePattern The {@link Function1} object representing the function that
-     *                    formats the date for each message. This allows customization of
-     *                    the date display format.
-     */
-    public void setDatePattern(Function1<BaseMessage, String> datePattern) {
-        this.datePattern = datePattern;
-        adapter.setDatePattern(datePattern);
-    }
-
-    /**
-     * Sets the alignment of the timestamp for messages in the Thread Header.
-     *
-     * @param timeStampAlignment The {@link UIKitConstants.TimeStampAlignment} enum representing
-     *                           the alignment of the timestamp (e.g., top, bottom).
-     */
-    public void setTimeStampAlignment(UIKitConstants.TimeStampAlignment timeStampAlignment) {
-        this.timeStampAlignment = timeStampAlignment;
-        adapter.setTimeStampAlignment(timeStampAlignment);
     }
 
     /**
@@ -581,29 +539,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Sets the list of message templates used in the Thread Header.
-     *
-     * <p>
-     * This method replaces the current list of message templates with the provided
-     * list. If the list is not null and not empty, the templates will be updated;
-     * otherwise, it will reset to an empty list. After setting the templates, it
-     * creates a map to manage these templates.
-     *
-     * @param cometchatMessageTemplates A list of {@link CometChatMessageTemplate} instances to set. If
-     *                                  the list is null or empty, an empty list will be used.
-     */
-    public void setTemplates(List<CometChatMessageTemplate> cometchatMessageTemplates) {
-        if (cometchatMessageTemplates != null) {
-            if (!cometchatMessageTemplates.isEmpty()) {
-                messageTemplates = cometchatMessageTemplates;
-            } else {
-                messageTemplates = new ArrayList<>();
-            }
-            createMessageMap();
-        }
-    }
-
-    /**
      * Creates a map of message templates and assigns them to the adapter.
      *
      * <p>
@@ -627,21 +562,25 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Sets the list of custom text formatters.
+     * Sets the list of message templates used in the Thread Header.
      *
      * <p>
-     * This method allows the addition of custom text formatters to the current list
-     * of formatters used in the Thread Header. If the provided list is not null,
-     * these formatters will be added to the existing ones and processed
-     * accordingly.
+     * This method replaces the current list of message templates with the provided
+     * list. If the list is not null and not empty, the templates will be updated;
+     * otherwise, it will reset to an empty list. After setting the templates, it
+     * creates a map to manage these templates.
      *
-     * @param cometchatTextFormatters A list of {@link CometChatTextFormatter} to add to the current
-     *                                list of formatters.
+     * @param cometchatMessageTemplates A list of {@link CometChatMessageTemplate} instances to set. If
+     *                                  the list is null or empty, an empty list will be used.
      */
-    public void setTextFormatters(List<CometChatTextFormatter> cometchatTextFormatters) {
-        if (cometchatTextFormatters != null) {
-            this.textFormatters.addAll(cometchatTextFormatters);
-            processFormatters();
+    public void setTemplates(List<CometChatMessageTemplate> cometchatMessageTemplates) {
+        if (cometchatMessageTemplates != null) {
+            if (!cometchatMessageTemplates.isEmpty()) {
+                messageTemplates = cometchatMessageTemplates;
+            } else {
+                messageTemplates = new ArrayList<>();
+            }
+            createMessageMap();
         }
     }
 
@@ -660,19 +599,6 @@ public class CometChatThreadHeader extends MaterialCardView {
             textFormatters.remove(cometchatMentionsFormatter);
             processFormatters();
         }
-    }
-
-    /**
-     * Processes the text formatters by updating the {@link AdditionParameter} with
-     * the current list of text formatters.
-     *
-     * <p>
-     * This method ensures that the {@link AdditionParameter} is always up-to-date
-     * with the current list of text formatters, allowing the thread view to apply
-     * formatting consistently.
-     */
-    private void processFormatters() {
-        additionParameter.setTextFormatters(textFormatters);
     }
 
     /**
@@ -700,24 +626,8 @@ public class CometChatThreadHeader extends MaterialCardView {
      */
     public void disableReactions(boolean disableReactions) {
         this.hideReaction = disableReactions;
-        threadedHeaderViewModel.setHideReaction(disableReactions);
+        threadHeaderViewModel.setHideReaction(disableReactions);
         adapter.disableReactions(disableReactions);
-    }
-
-    /**
-     * Called when the view is attached to a window.
-     *
-     * <p>
-     * This method is invoked when the view is being attached to a window. It calls
-     * the superclass implementation and then adds a listener to the
-     * {@link ThreadedHeaderViewModel}. This listener is responsible for receiving
-     * updates and changes related to the parent message and its replies while the
-     * view is active.
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        threadedHeaderViewModel.addListener();
     }
 
     /**
@@ -726,14 +636,14 @@ public class CometChatThreadHeader extends MaterialCardView {
      * <p>
      * This method is invoked when the view is being detached from a window. It
      * calls the superclass implementation and then removes the listener from the
-     * {@link ThreadedHeaderViewModel}. This is done to prevent memory leaks and
+     * {@link ThreadHeaderViewModel}. This is done to prevent memory leaks and
      * ensure that the view model no longer sends updates to a view that is no
      * longer displayed.
      */
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        threadedHeaderViewModel.removeListener();
+        threadHeaderViewModel.removeListener();
     }
 
     /**
@@ -757,11 +667,11 @@ public class CometChatThreadHeader extends MaterialCardView {
     /**
      * Returns the view model used for managing the state of the thread header.
      *
-     * @return The {@link ThreadedHeaderViewModel} instance associated with the
+     * @return The {@link ThreadHeaderViewModel} instance associated with the
      * thread header.
      */
-    public ThreadedHeaderViewModel getThreadedHeaderViewModel() {
-        return threadedHeaderViewModel;
+    public ThreadHeaderViewModel getThreadedHeaderViewModel() {
+        return threadHeaderViewModel;
     }
 
     /**
@@ -793,6 +703,38 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
+     * Sets the parent message for the thread and updates the view model
+     * accordingly.
+     *
+     * <p>
+     * This method is used to set the parent message of the thread and notify the
+     * threaded header's view model of this change. The parent message provides
+     * context for the threaded conversation and is essential for displaying the
+     * correct message details. Additionally, this method triggers the processing of
+     * formatters to apply any necessary formatting or styling to the message.
+     *
+     * @param message The parent message for the thread. Must not be null.
+     */
+    public void setParentMessage(@NonNull BaseMessage message) {
+        this.parentMessage = message;
+        threadHeaderViewModel.setParentMessage(message);
+        processFormatters();
+    }
+
+    /**
+     * Processes the text formatters by updating the {@link AdditionParameter} with
+     * the current list of text formatters.
+     *
+     * <p>
+     * This method ensures that the {@link AdditionParameter} is always up-to-date
+     * with the current list of text formatters, allowing the thread view to apply
+     * formatting consistently.
+     */
+    private void processFormatters() {
+        additionParameter.setTextFormatters(textFormatters);
+    }
+
+    /**
      * Checks if reactions are hidden in the Thread Header.
      *
      * @return True if reactions are hidden, false otherwise.
@@ -812,6 +754,18 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
+     * Sets the alignment of messages in the Thread Header.
+     *
+     * @param alignment The {@link UIKitConstants.MessageListAlignment} enum representing
+     *                  the alignment of the messages (e.g., left, right, or standard
+     *                  alignment).
+     */
+    public void setAlignment(UIKitConstants.MessageListAlignment alignment) {
+        this.alignment = alignment;
+        adapter.setAlignment(alignment);
+    }
+
+    /**
      * Returns the alignment of timestamps in the Thread Header.
      *
      * @return The {@link UIKitConstants.TimeStampAlignment} enum representing the
@@ -819,6 +773,17 @@ public class CometChatThreadHeader extends MaterialCardView {
      */
     public UIKitConstants.TimeStampAlignment getTimeStampAlignment() {
         return timeStampAlignment;
+    }
+
+    /**
+     * Sets the alignment of the timestamp for messages in the Thread Header.
+     *
+     * @param timeStampAlignment The {@link UIKitConstants.TimeStampAlignment} enum representing
+     *                           the alignment of the timestamp (e.g., top, bottom).
+     */
+    public void setTimeStampAlignment(UIKitConstants.TimeStampAlignment timeStampAlignment) {
+        this.timeStampAlignment = timeStampAlignment;
+        adapter.setTimeStampAlignment(timeStampAlignment);
     }
 
     /**
@@ -837,6 +802,18 @@ public class CometChatThreadHeader extends MaterialCardView {
      */
     public Function1<BaseMessage, String> getDatePattern() {
         return datePattern;
+    }
+
+    /**
+     * Sets the date pattern for displaying message dates in the Thread Header.
+     *
+     * @param datePattern The {@link Function1} object representing the function that
+     *                    formats the date for each message. This allows customization of
+     *                    the date display format.
+     */
+    public void setDatePattern(Function1<BaseMessage, String> datePattern) {
+        this.datePattern = datePattern;
+        adapter.setDatePattern(datePattern);
     }
 
     /**
@@ -859,6 +836,25 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
+     * Sets the list of custom text formatters.
+     *
+     * <p>
+     * This method allows the addition of custom text formatters to the current list
+     * of formatters used in the Thread Header. If the provided list is not null,
+     * these formatters will be added to the existing ones and processed
+     * accordingly.
+     *
+     * @param cometchatTextFormatters A list of {@link CometChatTextFormatter} to add to the current
+     *                                list of formatters.
+     */
+    public void setTextFormatters(List<CometChatTextFormatter> cometchatTextFormatters) {
+        if (cometchatTextFormatters != null) {
+            this.textFormatters.addAll(cometchatTextFormatters);
+            processFormatters();
+        }
+    }
+
+    /**
      * Returns the list of message templates used in the Thread Header.
      *
      * @return A list of {@link CometChatMessageTemplate} instances.
@@ -877,11 +873,49 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
+     * Sets the incoming message bubble style and applies the extracted styles.
+     *
+     * @param incomingMessageBubbleStyle The style resource ID for the incoming message bubble.
+     */
+    public void setIncomingMessageBubbleStyle(@StyleRes int incomingMessageBubbleStyle) {
+        if (incomingMessageBubbleStyle != 0) {
+            TypedArray typedArray = getContext()
+                .getTheme()
+                .obtainStyledAttributes(null,
+                                        R.styleable.CometChatMessageBubble,
+                                        R.attr.cometchatThreadHeaderIncomingMessageBubbleStyle,
+                                        incomingMessageBubbleStyle);
+            extractAttributesAndApplyBubbleDefaults(typedArray, true);
+            adapter.setIncomingMessageBubbleStyle(incomingMessageBubbleStyle);
+            this.incomingMessageBubbleStyle = incomingMessageBubbleStyle;
+        }
+    }
+
+    /**
      * Returns the style resource ID for outgoing message bubbles.
      *
      * @return The style resource ID for outgoing message bubbles.
      */
     public int getOutgoingMessageBubbleStyle() {
         return outgoingMessageBubbleStyle;
+    }
+
+    /**
+     * Sets the outgoing message bubble style and applies the extracted styles.
+     *
+     * @param outgoingMessageBubbleStyle The style resource ID for the outgoing message bubble.
+     */
+    public void setOutgoingMessageBubbleStyle(@StyleRes int outgoingMessageBubbleStyle) {
+        if (outgoingMessageBubbleStyle != 0) {
+            TypedArray typedArray = getContext()
+                .getTheme()
+                .obtainStyledAttributes(null,
+                                        R.styleable.CometChatMessageBubble,
+                                        R.attr.cometchatThreadHeaderOutgoingMessageBubbleStyle,
+                                        outgoingMessageBubbleStyle);
+            extractAttributesAndApplyBubbleDefaults(typedArray, false);
+            adapter.setOutgoingMessageBubbleStyle(outgoingMessageBubbleStyle);
+            this.outgoingMessageBubbleStyle = outgoingMessageBubbleStyle;
+        }
     }
 }

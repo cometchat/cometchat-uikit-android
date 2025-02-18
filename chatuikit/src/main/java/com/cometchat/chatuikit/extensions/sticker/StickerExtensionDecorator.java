@@ -168,21 +168,23 @@ public class StickerExtensionDecorator extends DataSourceDecorator {
 
         stickerImage.setOnClickListener(view1 -> {
             Utils.hideKeyBoard(context, view1);
-            CometChatStickerKeyboard stickerKeyboard = getStickerKeyboard(context, user, group, mapId, configuration);
+            CometChatStickerKeyboard stickerKeyboard = getStickerKeyboard(context,
+                                                                          activeStickerImage,
+                                                                          stickerImage,
+                                                                          user,
+                                                                          group,
+                                                                          mapId,
+                                                                          configuration);
             CometChatUIKitHelper.showPanel(mapId, UIKitConstants.CustomUIPosition.COMPOSER_BOTTOM, var1 -> stickerKeyboard);
-            activeStickerImage.setVisibility(View.VISIBLE);
-            stickerImage.setVisibility(View.GONE);
         });
 
-        activeStickerImage.setOnClickListener(v -> {
-            CometChatUIKitHelper.hidePanel(mapId, UIKitConstants.CustomUIPosition.COMPOSER_BOTTOM);
-            activeStickerImage.setVisibility(View.GONE);
-            stickerImage.setVisibility(View.VISIBLE);
-        });
+        activeStickerImage.setOnClickListener(v -> CometChatUIKitHelper.hidePanel(mapId, UIKitConstants.CustomUIPosition.COMPOSER_BOTTOM));
         return view;
     }
 
     public CometChatStickerKeyboard getStickerKeyboard(Context context,
+                                                       ImageView activeStickerImage,
+                                                       ImageView stickerImage,
                                                        User user,
                                                        Group group,
                                                        HashMap<String, String> idMap,
@@ -198,6 +200,19 @@ public class StickerExtensionDecorator extends DataSourceDecorator {
             cometchatStickerKeyboard.setLoadingStateView(configuration.getLoadingStateView());
             cometchatStickerKeyboard.setErrorStateText(configuration.getErrorStateText());
         }
+        cometchatStickerKeyboard.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(@NonNull View v) {
+                activeStickerImage.setVisibility(View.VISIBLE);
+                stickerImage.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(@NonNull View v) {
+                activeStickerImage.setVisibility(View.GONE);
+                stickerImage.setVisibility(View.VISIBLE);
+            }
+        });
 
         cometchatStickerKeyboard.setState(UIKitConstants.States.LOADING);
         Extensions.fetchStickers(new ExtensionResponseListener() {

@@ -48,7 +48,7 @@ class SplashViewModel : ViewModel() {
 
         val uiKitSettings: UIKitSettings = UIKitSettings
             .UIKitSettingsBuilder()
-            .setAutoEstablishSocketConnection(true)
+            .setAutoEstablishSocketConnection(false)
             .setAppId(appId)
             .setRegion(region)
             .setAuthKey(authKey)
@@ -57,6 +57,7 @@ class SplashViewModel : ViewModel() {
 
         CometChatUIKit.init(context, uiKitSettings, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(s: String) {
+                CometChat.setDemoMetaInfo(getAppMetadata(context))
                 checkUserIsNotLoggedIn()
                 callbackListener?.onSuccess(s)
             }

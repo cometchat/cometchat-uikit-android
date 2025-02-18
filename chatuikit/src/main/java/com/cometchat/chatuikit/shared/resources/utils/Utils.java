@@ -46,7 +46,6 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
@@ -127,7 +126,10 @@ public class Utils {
         HashMap<String, String> idMap = new HashMap<>();
         if (baseMessage.getParentMessageId() > 0)
             idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(baseMessage.getParentMessageId()));
-        idMap.put(UIKitConstants.MapId.RECEIVER_ID, baseMessage.getReceiverUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? baseMessage.getSender().getUid() : baseMessage.getReceiverUid());
+        idMap.put(UIKitConstants.MapId.RECEIVER_ID,
+                  baseMessage.getReceiverUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? baseMessage
+                      .getSender()
+                      .getUid() : baseMessage.getReceiverUid());
         idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, baseMessage.getReceiverType());
         return idMap;
     }
@@ -265,11 +267,6 @@ public class Utils {
         }
     }
 
-    public static boolean isDarkMode(Context context) {
-        int nightMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return nightMode == Configuration.UI_MODE_NIGHT_YES;
-    }
-
     public static List<String> getMessageTypesFromTemplate(List<CometChatMessageTemplate> messageTemplates) {
         List<String> messageTypes = new ArrayList<>();
         for (CometChatMessageTemplate messageTemplate : messageTemplates) {
@@ -302,6 +299,10 @@ public class Utils {
         }
     }
 
+    public static boolean isCallingAvailable() {
+        return isClass("com.cometchat.calls.core.CometChatCalls");
+    }
+
     public static boolean isClass(String className) {
         try {
             Class.forName(className);
@@ -309,10 +310,6 @@ public class Utils {
         } catch (ClassNotFoundException e) {
             return false;
         }
-    }
-
-    public static boolean isCallingAvailable() {
-        return isClass("com.cometchat.calls.core.CometChatCalls");
     }
 
     public static String getMessagePrefix(BaseMessage lastMessage, Context context) {
@@ -351,7 +348,11 @@ public class Utils {
         }
     }
 
-    public static void showBottomSheet(Context context, @NonNull BottomSheetDialog bottomSheetDialog, boolean isCancelable, boolean openHalfScreen, View view) {
+    public static void showBottomSheet(Context context,
+                                       @NonNull BottomSheetDialog bottomSheetDialog,
+                                       boolean isCancelable,
+                                       boolean openHalfScreen,
+                                       View view) {
         try {
             Utils.removeParentFromView(view);
             bottomSheetDialog.setContentView(view);
@@ -375,7 +376,6 @@ public class Utils {
                 }
             });
             // Enable dialog to resize when the keyboard opens
-            bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             bottomSheetDialog.setCancelable(isCancelable);
             bottomSheetDialog.show();
         } catch (Exception ignored) {
@@ -407,7 +407,7 @@ public class Utils {
             messageReceipt.setSender(baseMessage.getReceiver() instanceof User ? (User) baseMessage.getReceiver() : null);
             messageReceipt.setReadAt(baseMessage.getReadAt());
             messageReceipt.setTimestamp(baseMessage.getReadAt());
-            messageReceipt.setDeliveredAt(baseMessage.getDeliveredAt() == 0 && baseMessage.getReadAt() != 0 ? baseMessage.getReadAt() : baseMessage.getDeliveredAt());
+            messageReceipt.setDeliveredAt(baseMessage.getDeliveredAt() == 0 ? baseMessage.getReadAt() : baseMessage.getDeliveredAt());
             messageReceipt.setMessageId(baseMessage.getId());
             messageReceipt.setReceivertype(baseMessage.getReceiverType());
             messageReceipt.setReceiverId(CometChatUIKit.getLoggedInUser().getUid());
@@ -451,7 +451,11 @@ public class Utils {
         long var2 = var0 / 1000L;
         long var4 = var2 / 60L % 60L;
         long var6 = var2 / 60L / 60L % 24L;
-        return var6 == 0L ? String.format(Locale.US, "%02d:%02d", var4, var2 % 60L) : String.format(Locale.US, "%02d:%02d:%02d", var6, var4, var2 % 60L);
+        return var6 == 0L ? String.format(Locale.US, "%02d:%02d", var4, var2 % 60L) : String.format(Locale.US,
+                                                                                                    "%02d:%02d:%02d",
+                                                                                                    var6,
+                                                                                                    var4,
+                                                                                                    var2 % 60L);
     }
 
     @NonNull
@@ -496,6 +500,16 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static String getFileSize(String filePath) {
+        File file = new File(filePath);
+
+        if (file.exists()) {
+            long fileSizeInBytes = file.length();
+            return getFileSize((int) fileSizeInBytes);
+        }
+        return "";
     }
 
     public static String getFileSize(int fileSize) {
@@ -629,22 +643,40 @@ public class Utils {
 
     public static Boolean checkDirExistence(Context context, String type) {
 
-        File audioDir = new File(Environment.getExternalStorageDirectory().toString() + "/" + context.getResources().getString(R.string.cometchat_app_name) + "/" + type + "/");
+        File audioDir = new File(Environment.getExternalStorageDirectory().toString() + "/" + context
+            .getResources()
+            .getString(R.string.cometchat_app_name) + "/" + type + "/");
 
         return audioDir.isDirectory();
     }
 
     public static void makeDirectory(Context context, String type) {
 
-        String audioDir = Environment.getExternalStorageDirectory().toString() + "/" + context.getResources().getString(R.string.cometchat_app_name) + "/" + type + "/";
+        String audioDir = Environment.getExternalStorageDirectory().toString() + "/" + context
+            .getResources()
+            .getString(R.string.cometchat_app_name) + "/" + type + "/";
 
         createDirectory(audioDir);
+    }
+
+    public static void createDirectory(@NonNull String mPath) {
+        File directory = new File(mPath);
+        // Check if the directory exists, if not, try creating it
+        if (!directory.exists()) {
+            boolean dirsCreated = directory.mkdirs();
+            if (!dirsCreated) {
+                // Log the failure if the directories couldn't be created
+                CometChatLogger.e(TAG, "Failed to create directory: " + directory.getAbsolutePath());
+            }
+        }
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
-                Logger.error(TAG, " hasPermissions() : Permission : " + permission + "checkSelfPermission : " + ActivityCompat.checkSelfPermission(context, permission));
+                Logger.error(TAG,
+                             " hasPermissions() : Permission : " + permission + "checkSelfPermission : " + ActivityCompat.checkSelfPermission(context,
+                                                                                                                                              permission));
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }
@@ -893,23 +925,13 @@ public class Utils {
             if (Environment.isExternalStorageManager()) {
                 dir = Environment.getExternalStorageState() + "/" + context.getResources().getString(R.string.cometchat_app_name) + "/" + "audio/";
             } else {
-                dir = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + "/" + context.getResources().getString(R.string.cometchat_app_name) + "/" + "audio/";
+                dir = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + "/" + context
+                    .getResources()
+                    .getString(R.string.cometchat_app_name) + "/" + "audio/";
             }
         }
         createDirectory(dir);
         return dir + (new SimpleDateFormat("yyyyMMddHHmmss", Locale.US)).format(new Date()) + ".m4a";
-    }
-
-    public static void createDirectory(@NonNull String mPath) {
-        File directory = new File(mPath);
-        // Check if the directory exists, if not, try creating it
-        if (!directory.exists()) {
-            boolean dirsCreated = directory.mkdirs();
-            if (!dirsCreated) {
-                // Log the failure if the directories couldn't be created
-                CometChatLogger.e(TAG, "Failed to create directory: " + directory.getAbsolutePath());
-            }
-        }
     }
 
     public static Bitmap blur(Context context, Bitmap image) {
@@ -1063,11 +1085,6 @@ public class Utils {
         ActivityCompat.requestPermissions((Activity) context, permissions, requestCode);
     }
 
-    public static int convertDpToPx(Context context, int dp) {
-        int px = Math.round(dp * context.getResources().getDisplayMetrics().density);
-        return px;
-    }
-
     public static void setStatusBarColor(Activity activity, @ColorInt int color) {
         // Change the status bar color
         if (color != 0) {
@@ -1078,6 +1095,11 @@ public class Utils {
         if (!isDarkMode(activity)) {
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+    }
+
+    public static boolean isDarkMode(Context context) {
+        int nightMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightMode == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public static void setDialogStatusBarColor(Dialog dialog, @ColorInt int color) {
@@ -1096,9 +1118,17 @@ public class Utils {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) layoutParams;
-            marginLayoutParams.setMargins(leftMargin != -1 ? Utils.convertDpToPx(context, leftMargin) : Utils.convertDpToPx(context, 0), topMargin != -1 ? Utils.convertDpToPx(context, topMargin) : Utils.convertDpToPx(context, 0), rightMargin != -1 ? Utils.convertDpToPx(context, rightMargin) : Utils.convertDpToPx(context, 0), bottomMargin != -1 ? Utils.convertDpToPx(context, bottomMargin) : Utils.convertDpToPx(context, 0));
+            marginLayoutParams.setMargins(leftMargin != -1 ? Utils.convertDpToPx(context, leftMargin) : Utils.convertDpToPx(context, 0),
+                                          topMargin != -1 ? Utils.convertDpToPx(context, topMargin) : Utils.convertDpToPx(context, 0),
+                                          rightMargin != -1 ? Utils.convertDpToPx(context, rightMargin) : Utils.convertDpToPx(context, 0),
+                                          bottomMargin != -1 ? Utils.convertDpToPx(context, bottomMargin) : Utils.convertDpToPx(context, 0));
             view.setLayoutParams(marginLayoutParams);
         }
+    }
+
+    public static int convertDpToPx(Context context, int dp) {
+        int px = Math.round(dp * context.getResources().getDisplayMetrics().density);
+        return px;
     }
 
     public static boolean isMediaMessage(BaseMessage baseMessage) {
@@ -1106,7 +1136,9 @@ public class Utils {
     }
 
     public static boolean isGoalCompleted(InteractiveMessage interactiveMessage) {
-        if (interactiveMessage.getInteractionGoal() == null || interactiveMessage.getInteractionGoal().getType() == null || interactiveMessage.getInteractions() == null) {
+        if (interactiveMessage.getInteractionGoal() == null || interactiveMessage
+            .getInteractionGoal()
+            .getType() == null || interactiveMessage.getInteractions() == null) {
             return false;
         }
 
@@ -1116,7 +1148,10 @@ public class Utils {
 
             case CometChatConstants.INTERACTION_TYPE_ANY_OF:
             case CometChatConstants.INTERACTION_TYPE_All_OF:
-                if (interactiveMessage.getInteractionGoal().getElementIds() == null || interactiveMessage.getInteractionGoal().getElementIds().isEmpty()) {
+                if (interactiveMessage.getInteractionGoal().getElementIds() == null || interactiveMessage
+                    .getInteractionGoal()
+                    .getElementIds()
+                    .isEmpty()) {
                     return false;
                 }
                 HashSet<String> interactionSet = new HashSet<>();
@@ -1182,6 +1217,15 @@ public class Utils {
         return dateFormat;
     }
 
+    public static boolean isDatePatternValid(String pattern) {
+        try {
+            new SimpleDateFormat(pattern, Locale.US);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     public static SimpleDateFormat getDateTimeReadFormat(DateTimeElement timeElement) {
         SimpleDateFormat dateFormat;
         if (timeElement.getMode().equals(UIKitConstants.DateTimeMode.DATE_TIME))
@@ -1193,15 +1237,6 @@ public class Utils {
         else dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
 
         return dateFormat;
-    }
-
-    public static boolean isDatePatternValid(String pattern) {
-        try {
-            new SimpleDateFormat(pattern, Locale.US);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
     public static String[] getDefaultReactionsList() {
@@ -1244,14 +1279,20 @@ public class Utils {
 
         // Check if the timestamp is within the last hour
         if (diffInMinutes == 0) {
-            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context.getResources().getQuantityString(R.plurals.cometchat_last_seen_minutes_ago, 1, 1);
+            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context
+                .getResources()
+                .getQuantityString(R.plurals.cometchat_last_seen_minutes_ago, 1, 1);
         } else if (diffInMinutes < 60) {
-            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context.getResources().getQuantityString(R.plurals.cometchat_last_seen_minutes_ago, (int) diffInMinutes, (int) diffInMinutes);
+            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context
+                .getResources()
+                .getQuantityString(R.plurals.cometchat_last_seen_minutes_ago, (int) diffInMinutes, (int) diffInMinutes);
         }
 
         // Check if the timestamp is within the last 24 hours
         if (diffInHours < 24) {
-            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context.getResources().getQuantityString(R.plurals.cometchat_last_seen_hours_ago, (int) diffInHours, (int) diffInHours);
+            return context.getResources().getString(R.string.cometchat_last_seen) + " " + context
+                .getResources()
+                .getQuantityString(R.plurals.cometchat_last_seen_hours_ago, (int) diffInHours, (int) diffInHours);
         }
 
         // Determine if the timestamp is within the current year

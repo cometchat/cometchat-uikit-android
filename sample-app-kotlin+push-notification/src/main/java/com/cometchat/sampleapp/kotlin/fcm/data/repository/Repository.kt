@@ -10,6 +10,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.helpers.CometChatHelper
 import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.BaseMessage
+import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
@@ -411,15 +412,12 @@ object Repository {
     }
 
     fun deleteChat(
-        uid: String, baseMessage: BaseMessage, conversationType: String, callbackListener: CometChat.CallbackListener<String>
+        uid: String, baseMessage: BaseMessage?, conversationType: String, callbackListener: CometChat.CallbackListener<String>
     ) {
         CometChat.deleteConversation(uid, conversationType, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(s: String) {
-                CometChatUIKitHelper.onConversationDeleted(
-                    CometChatHelper.getConversationFromMessage(
-                        baseMessage
-                    )
-                )
+                if (baseMessage != null) CometChatUIKitHelper.onConversationDeleted(CometChatHelper.getConversationFromMessage(baseMessage))
+                else CometChatUIKitHelper.onConversationDeleted(Conversation("", CometChatConstants.CONVERSATION_TYPE_USER))
                 callbackListener.onSuccess(s)
             }
 

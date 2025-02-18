@@ -49,7 +49,7 @@ class HomeActivity : AppCompatActivity(), OnItemClickListener {
         AppUtils.requestNotificationPermission(this)
 
         handleDeepLinking()
-
+        configureBottomNavigation()
         configureVoIP()
     }
 
@@ -107,7 +107,6 @@ class HomeActivity : AppCompatActivity(), OnItemClickListener {
         val notificationPayload = intent.getStringExtra(AppConstants.FCMConstants.NOTIFICATION_PAYLOAD)
         if (notificationType == null || notificationPayload == null) {
             loadFragment(getFragment(currentFragment))
-            configureBottomNavigation()
         } else {
             if (AppConstants.FCMConstants.NOTIFICATION_TYPE_MESSAGE == notificationType) {
                 val fcmMessageDTO = Gson().fromJson(

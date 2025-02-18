@@ -54,6 +54,14 @@ public class FCMService extends FirebaseMessagingService {
                 String type = message.getData().get("type");
                 if ("chat".equalsIgnoreCase(type)) {
                     FCMMessageDTO fcmMessageDTO = new Gson().fromJson(new Gson().toJson(message.getData()), FCMMessageDTO.class);
+
+                    CometChat.markAsDelivered(Integer.parseInt(fcmMessageDTO.getTag()),
+                                              fcmMessageDTO.getSender(),
+                                              fcmMessageDTO
+                                                  .getReceiverType()
+                                                  .equals(CometChatConstants.RECEIVER_TYPE_GROUP) ? CometChatConstants.RECEIVER_TYPE_GROUP : CometChatConstants.RECEIVER_TYPE_USER,
+                                              fcmMessageDTO.getReceiver());
+
                     boolean isUser = fcmMessageDTO.getReceiverType().equals(CometChatConstants.RECEIVER_TYPE_USER);
                     String uid = isUser ? fcmMessageDTO.getSender() : fcmMessageDTO.getReceiver();
                     if (!uid.equals(MyApplication.currentOpenChatId)) {
@@ -68,6 +76,16 @@ public class FCMService extends FirebaseMessagingService {
                         );
                     }
                 } else if ("call".equalsIgnoreCase(type)) {
+                    String sessionId = message.getData().get("sessionId");
+                    String callAction = message.getData().get("callAction");
+                    if (!MyApplication.isAppInForeground() &&
+                        MyApplication.getTempCall() != null &&
+                        MyApplication
+                            .getTempCall()
+                            .getSessionId()
+                            .equals(sessionId) && CometChatConstants.CALL_STATUS_CANCELLED.equals(callAction)) {
+                        MyApplication.setTempCall(null);
+                    }
                     if (!CometChatVoIP.hasReadPhoneStatePermission(this)) return;
 
                     if (!CometChatVoIP.hasManageOwnCallsPermission(this)) return;

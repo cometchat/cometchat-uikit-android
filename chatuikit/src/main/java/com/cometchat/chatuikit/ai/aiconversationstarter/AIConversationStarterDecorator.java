@@ -41,9 +41,13 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
     private @StyleRes int aiCardStyle;
     private AIConversationStarterConfiguration aiConversationStarterConfiguration;
 
-    public AIConversationStarterDecorator(DataSource dataSource) {
+    public AIConversationStarterDecorator(DataSource dataSource, AIConversationStarterConfiguration aiConversationStarterConfiguration) {
         super(dataSource);
         addMessageListener();
+        if (aiConversationStarterConfiguration != null) {
+            this.aiConversationStarterConfiguration = aiConversationStarterConfiguration;
+            aiCardStyle = aiConversationStarterConfiguration.getStyle();
+        }
     }
 
     private void addMessageListener() {
@@ -55,7 +59,7 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
                 userTemp = user;
                 groupTemp = group;
                 if (message == null && id != null && id.get(UIKitConstants.MapId.PARENT_MESSAGE_ID) == null) {
-                    showRepliesPanel(id, UIKitConstants.CustomUIPosition.COMPOSER_TOP);
+                    showRepliesPanel(id, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM);
                 }
             }
         });
@@ -106,7 +110,7 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
 
     public void hideRepliesPanel() {
         for (CometChatUIEvents events : CometChatUIEvents.uiEvents.values()) {
-            events.hidePanel(idMap, UIKitConstants.CustomUIPosition.COMPOSER_TOP);
+            events.hidePanel(idMap, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM);
         }
     }
 
@@ -114,8 +118,8 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
         if (baseMessage != null) {
             if (baseMessage.getReceiverType().equals(CometChatConstants.RECEIVER_TYPE_USER) && userTemp != null) {
                 if (baseMessage.getSender() != null && baseMessage.getSender().getUid() != null && userTemp.getUid().equalsIgnoreCase(baseMessage
-                                                                                                                                              .getSender()
-                                                                                                                                              .getUid())) {
+                                                                                                                                          .getSender()
+                                                                                                                                          .getUid())) {
                     hideRepliesPanel();
                 }
             } else if (baseMessage.getReceiverType().equals(UIKitConstants.ReceiverType.GROUP) && groupTemp != null) {
@@ -131,7 +135,7 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                                                                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        layoutParams.setMargins(Utils.convertDpToPx(context, 10), 0, Utils.convertDpToPx(context, 10), 0);
+        layoutParams.setMargins(Utils.convertDpToPx(context, 10), 0, Utils.convertDpToPx(context, 10), Utils.convertDpToPx(context, 10));
         aiConversationsStarterView.setLayoutParams(layoutParams);
 
         if (idMap != null && idMap.containsKey(UIKitConstants.MapId.RECEIVER_ID)) {
@@ -178,19 +182,10 @@ public class AIConversationStarterDecorator extends DataSourceDecorator {
         aiConversationsStarterView.setOnClick((id, text, pos) -> {
             for (CometChatUIEvents events : CometChatUIEvents.uiEvents.values()) {
                 events.ccComposeMessage(id, text);
-                events.hidePanel(idMap, UIKitConstants.CustomUIPosition.COMPOSER_TOP);
+                events.hidePanel(idMap, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM);
             }
         });
         return aiConversationsStarterView;
-    }
-
-    public AIConversationStarterDecorator(DataSource dataSource, AIConversationStarterConfiguration aiConversationStarterConfiguration) {
-        super(dataSource);
-        addMessageListener();
-        if (aiConversationStarterConfiguration != null) {
-            this.aiConversationStarterConfiguration = aiConversationStarterConfiguration;
-            aiCardStyle = aiConversationStarterConfiguration.getStyle();
-        }
     }
 
     @Override

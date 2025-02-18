@@ -43,7 +43,7 @@ public class SplashViewModel extends ViewModel {
         String authKey = AppUtils.getDataFromSharedPref(context, String.class, context.getString(R.string.app_cred_auth), AppCredentials.AUTH_KEY);
 
         UIKitSettings uiKitSettings = new UIKitSettings.UIKitSettingsBuilder()
-            .setAutoEstablishSocketConnection(true)
+            .setAutoEstablishSocketConnection(false)
             .setAppId(appId)
             .setRegion(region)
             .setAuthKey(authKey)

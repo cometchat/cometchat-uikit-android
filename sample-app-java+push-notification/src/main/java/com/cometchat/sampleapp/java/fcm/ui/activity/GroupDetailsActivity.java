@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cometchat.chat.models.Group;
+import com.cometchat.chat.models.GroupMember;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
@@ -50,6 +51,8 @@ public class GroupDetailsActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView btnText;
     private CometChatConfirmDialog confirmDialog;
+
+    private GroupMember groupMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,15 +112,18 @@ public class GroupDetailsActivity extends AppCompatActivity {
                                 GroupAction.LEAVE
                 );
             } else {
-                showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
-                                getString(R.string.app_transfer_ownership_description),
-                                getString(R.string.app_btn_cancel),
-                                getString(R.string.app_btn_continue),
-                                true,
-                                CometChatTheme.getPrimaryColor(this),
-                                0,
-                                GroupAction.TRANSFER_OWNERSHIP
-                );
+                if (group.getMembersCount() > 2) {
+                    showTransferOwnership();
+                } else
+                    showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                                    getString(R.string.app_transfer_ownership_description),
+                                    getString(R.string.app_btn_cancel),
+                                    getString(R.string.app_btn_continue),
+                                    true,
+                                    CometChatTheme.getPrimaryColor(this),
+                                    0,
+                                    GroupAction.TRANSFER_OWNERSHIP
+                    );
             }
         });
 
@@ -160,7 +166,8 @@ public class GroupDetailsActivity extends AppCompatActivity {
             } else if (GroupAction.TRANSFER_OWNERSHIP.equals(groupAction)) {
                 if (group.getMembersCount() > 2) {
                     confirmDialog.dismiss();
-                    showTransferOwnership();
+                    viewModel.transferOwnership(groupMember);
+                    groupMember = null;
                 } else if (group.getMembersCount() == 2) {
                     viewModel.fetchAndTransferOwnerShip();
                 } else if (group.getMembersCount() == 1) {
@@ -310,7 +317,16 @@ public class GroupDetailsActivity extends AppCompatActivity {
         transferOwnershipLayoutBinding.transferOwnership.setOnBackPressListener(() -> dialog.dismiss());
         transferOwnershipLayoutBinding.transferOwnershipBtn.setOnClickListener(v -> {
             if (!transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().isEmpty()) {
-                viewModel.transferOwnership(transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().get(0));
+                groupMember = transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().get(0);
+                showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                                getString(R.string.app_transfer_ownership_description),
+                                getString(R.string.app_btn_cancel),
+                                getString(R.string.app_btn_continue),
+                                true,
+                                CometChatTheme.getPrimaryColor(this),
+                                0,
+                                GroupAction.TRANSFER_OWNERSHIP
+                );
             }
         });
     }
@@ -359,6 +375,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
                 confirmDialog.hidePositiveButtonProgressBar(false);
                 break;
             case SUCCESS:
+                if (dialog != null) dialog.dismiss();
                 if (confirmDialog != null) {
                     confirmDialog.dismiss();
                     binding.leaveGroupLay.performClick();

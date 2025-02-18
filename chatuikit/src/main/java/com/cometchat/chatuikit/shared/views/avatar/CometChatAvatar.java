@@ -174,13 +174,19 @@ public class CometChatAvatar extends MaterialCardView {
      * @param name The name to be displayed.
      */
     public void setName(String name) {
-        text = "";
+        String text = "";
         if (name != null && !name.isEmpty()) {
             String[] nameParts = name.trim().split("\\s+");
-            if (nameParts.length >= 2) {
-                text = nameParts[0].charAt(0) + nameParts[1].substring(0, 1);
+
+            if (containsOnlyEmojis(name)) {
+                // If the name contains only emojis, show the first emoji
+                text = getFirstCodePoint(name);
+            } else if (nameParts.length >= 2) {
+                // Get the first character from the first two parts of the name
+                text = getFirstCodePoint(nameParts[0]) + getFirstCodePoint(nameParts[1]);
             } else {
-                text = nameParts[0].substring(0, Math.min(nameParts[0].length(), 2));
+                // Get the first two characters from the first part of the name
+                text = getFirstCodePoint(nameParts[0]) + getNextCodePoint(nameParts[0], 1);
             }
         }
         setIvAvatarVisibility(View.GONE);
@@ -199,6 +205,48 @@ public class CometChatAvatar extends MaterialCardView {
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
             setAvatar(avatarUrl);
         }
+    }
+
+    private boolean containsOnlyEmojis(String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+        // Iterate through the string and check if all code points are emojis
+        int length = input.length();
+        for (int i = 0; i < length; ) {
+            int codePoint = input.codePointAt(i);
+            if (!isEmoji(codePoint)) {
+                return false;
+            }
+            i += Character.charCount(codePoint);
+        }
+        return true;
+    }
+
+    private String getFirstCodePoint(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+        int firstCodePoint = input.codePointAt(0);
+        return new String(Character.toChars(firstCodePoint));
+    }
+
+    private String getNextCodePoint(String input, int count) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+        int codePointIndex = 0;
+        for (int i = 0; i < count; i++) {
+            codePointIndex = input.offsetByCodePoints(codePointIndex, 1);
+            if (codePointIndex >= input.length()) {
+                break;
+            }
+        }
+        if (codePointIndex < input.length()) {
+            int nextCodePoint = input.codePointAt(codePointIndex);
+            return new String(Character.toChars(nextCodePoint));
+        }
+        return "";
     }
 
     private void setIvAvatarVisibility(int visibility) {
@@ -266,6 +314,18 @@ public class CometChatAvatar extends MaterialCardView {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
         invalidate();
+    }
+
+    private boolean isEmoji(int codePoint) {
+        // Check if the code point is within the emoji ranges
+        return (codePoint >= 0x1F600 && codePoint <= 0x1F64F) || // Emoticons
+            (codePoint >= 0x1F300 && codePoint <= 0x1F5FF) || // Misc Symbols and Pictographs
+            (codePoint >= 0x1F680 && codePoint <= 0x1F6FF) || // Transport and Map
+            (codePoint >= 0x2600 && codePoint <= 0x26FF) ||   // Misc symbols
+            (codePoint >= 0x2700 && codePoint <= 0x27BF) ||   // Dingbats
+            (codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||   // Variation Selectors
+            (codePoint >= 0x1F900 && codePoint <= 0x1F9FF) || // Supplemental Symbols and Pictographs
+            (codePoint >= 0x1FA70 && codePoint <= 0x1FAFF);   // Symbols and Pictographs Extended-A
     }
 
     /**

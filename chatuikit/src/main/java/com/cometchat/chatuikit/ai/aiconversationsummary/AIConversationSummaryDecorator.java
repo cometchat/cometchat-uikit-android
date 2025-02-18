@@ -135,6 +135,7 @@ public class AIConversationSummaryDecorator extends DataSourceDecorator {
     ) {
         for (CometChatUIEvents events : CometChatUIEvents.uiEvents.values()) {
             events.showPanel(id, alignment, context -> getSummaryPanel(id, context, aiConversationSummaryStyle, user, group));
+            events.hidePanel(id, UIKitConstants.CustomUIPosition.COMPOSER_BOTTOM);
         }
     }
 

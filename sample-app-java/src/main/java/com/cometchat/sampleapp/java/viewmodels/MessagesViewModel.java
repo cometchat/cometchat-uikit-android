@@ -191,11 +191,7 @@ public class MessagesViewModel extends ViewModel {
         CometChatConversationEvents.addListener(LISTENER_ID, new CometChatConversationEvents() {
             @Override
             public void ccConversationDeleted(@NonNull Conversation conversation) {
-                if (baseMessage.getValue() != null) {
-                    if (conversation.getConversationId().equals(baseMessage.getValue().getConversationId())) {
-                        isExitActivity.setValue(true);
-                    }
-                }
+                isExitActivity.setValue(true);
             }
         });
     }

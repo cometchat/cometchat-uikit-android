@@ -10,6 +10,12 @@
         </item>
     </style>
 
+    <style name="DialogStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
     <style name="AvatarPlaceHolderTextAppearance" parent="CometChatTextAppearanceHeading2.Bold">
         <item name="android:textSize">@dimen/cometchat_48sp</item>
     </style>

@@ -11,6 +11,7 @@ import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chat.helpers.CometChatHelper;
 import com.cometchat.chat.models.Action;
 import com.cometchat.chat.models.BaseMessage;
+import com.cometchat.chat.models.Conversation;
 import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.GroupMember;
 import com.cometchat.chat.models.User;
@@ -276,6 +277,7 @@ public class Repository {
      * @param callbackListener The callback to receive success or error updates.
      */
     public static void transferOwnership(Group group, GroupMember groupMember, CometChat.CallbackListener<String> callbackListener) {
+        if (groupMember == null) return;
         CometChat.transferGroupOwnership(group.getGuid(), groupMember.getUid(), new CometChat.CallbackListener<String>() {
             @Override
             public void onSuccess(String s) {
@@ -392,7 +394,10 @@ public class Repository {
         CometChat.deleteConversation(uid, conversationType, new CometChat.CallbackListener<String>() {
             @Override
             public void onSuccess(String s) {
-                CometChatUIKitHelper.onConversationDeleted(CometChatHelper.getConversationFromMessage(baseMessage));
+                if (baseMessage != null)
+                    CometChatUIKitHelper.onConversationDeleted(CometChatHelper.getConversationFromMessage(baseMessage));
+                else
+                    CometChatUIKitHelper.onConversationDeleted(new Conversation("", CometChatConstants.CONVERSATION_TYPE_USER));
                 callbackListener.onSuccess(s);
             }
 

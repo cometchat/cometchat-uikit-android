@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 
@@ -30,6 +31,8 @@ import com.cometchat.sampleapp.java.databinding.CustomCallNotificationBinding;
 import com.cometchat.sampleapp.java.ui.activity.OngoingCallActivity;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -40,17 +43,19 @@ import javax.annotation.Nonnull;
  * lifecycle callbacks to keep track of the currently active activity.
  */
 public class MyApplication extends Application {
+    public static final List<PopupWindow> popupWindows = new ArrayList<>();
     public static String currentOpenChatId;
     private static String LISTENER_ID;
     private static boolean isAppInForeground;
+    private static Call tempCall;
     private Activity currentActivity;
     private Snackbar snackbar;
     private CometChatSoundManager soundManager;
-    private Call tempCall;
 
     public static boolean isAppInForeground() {
         return isAppInForeground;
     }
+
 
     /**
      * Initializes the application by setting up Firebase, adding the CometChat call
@@ -95,7 +100,8 @@ public class MyApplication extends Application {
                 currentActivity = activity;
                 if (snackbar != null && snackbar.isShown() && tempCall != null) {
                     showTopSnackBar(tempCall);
-                }
+                } else
+                    dismissTopSnackBar();
             }
 
             @Override
@@ -189,6 +195,12 @@ public class MyApplication extends Application {
             layout.setBackgroundColor(currentActivity.getResources().getColor(android.R.color.transparent, null));
 
             layout.addView(binding.getRoot(), 0);
+
+            for (PopupWindow popupWindow : popupWindows) {
+                if (popupWindow.isShowing())
+                    popupWindow.dismiss();
+            }
+            popupWindows.clear();
 
             snackbar.show();
         }

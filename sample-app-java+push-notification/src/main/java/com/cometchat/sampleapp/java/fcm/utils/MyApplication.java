@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +33,10 @@ import com.cometchat.sampleapp.java.fcm.viewmodels.SplashViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 
@@ -42,13 +46,15 @@ import javax.annotation.Nonnull;
  * lifecycle callbacks to keep track of the currently active activity.
  */
 public class MyApplication extends Application {
+    public static final List<PopupWindow> popupWindows = new ArrayList<>();
     public static String currentOpenChatId;
     private static String LISTENER_ID;
     private static boolean isAppInForeground;
     private static Activity currentActivity;
+    private static Call tempCall;
+    private static CometChatSoundManager soundManager;
+    private final AtomicBoolean isConnectedToWebSockets = new AtomicBoolean(false);
     private Snackbar snackbar;
-    private CometChatSoundManager soundManager;
-    private Call tempCall;
 
     public static boolean isAppInForeground() {
         return isAppInForeground;
@@ -58,6 +64,16 @@ public class MyApplication extends Application {
         return currentActivity;
     }
 
+    public static Call getTempCall() {
+        return tempCall;
+    }
+
+    public static void setTempCall(Call call) {
+        tempCall = call;
+        if (tempCall == null && soundManager != null)
+            soundManager.pauseSilently();
+    }
+
     /**
      * Initializes the application by setting up Firebase, adding the CometChat call
      * listener, and registering activity lifecycle callbacks.
@@ -65,7 +81,6 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         if (!CometChatUIKit.isSDKInitialized()) {
             SplashViewModel viewModel = new SplashViewModel();
             viewModel.initUIKit(this);
@@ -97,6 +112,19 @@ public class MyApplication extends Application {
 
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
+                if (CometChatUIKit.isSDKInitialized() && isConnectedToWebSockets.compareAndSet(false, true)) {
+                    CometChat.connect(new CometChat.CallbackListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            isConnectedToWebSockets.set(true);
+                        }
+
+                        @Override
+                        public void onError(CometChatException e) {
+                            isConnectedToWebSockets.set(false);
+                        }
+                    });
+                }
                 currentActivity = activity;
                 if (++activityReferences == 1 && !isActivityChangingConfigurations) {
                     isAppInForeground = true;
@@ -108,7 +136,8 @@ public class MyApplication extends Application {
                 currentActivity = activity;
                 if (snackbar != null && snackbar.isShown() && tempCall != null) {
                     showTopSnackBar(tempCall);
-                }
+                } else
+                    dismissTopSnackBar();
             }
 
             @Override
@@ -120,6 +149,19 @@ public class MyApplication extends Application {
                 isActivityChangingConfigurations = activity.isChangingConfigurations();
                 if (--activityReferences == 0 && !isActivityChangingConfigurations) {
                     isAppInForeground = false;
+                }
+                if (CometChatUIKit.isSDKInitialized() && !isAppInForeground) {
+                    CometChat.disconnect(new CometChat.CallbackListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            isConnectedToWebSockets.set(false);
+                        }
+
+                        @Override
+                        public void onError(CometChatException e) {
+
+                        }
+                    });
                 }
             }
 
@@ -202,6 +244,12 @@ public class MyApplication extends Application {
             layout.setBackgroundColor(currentActivity.getResources().getColor(android.R.color.transparent, null));
 
             layout.addView(binding.getRoot(), 0);
+
+            for (PopupWindow popupWindow : popupWindows) {
+                if (popupWindow.isShowing())
+                    popupWindow.dismiss();
+            }
+            popupWindows.clear();
 
             snackbar.show();
         }

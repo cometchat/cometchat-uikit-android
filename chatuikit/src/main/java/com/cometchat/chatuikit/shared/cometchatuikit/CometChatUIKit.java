@@ -91,7 +91,7 @@ public final class CometChatUIKit {
                 if (CometChatUIKit.getLoggedInUser() != null) initiateChatExtensions();
 
                 if (callbackListener != null) callbackListener.onSuccess(successMessage);
-                CometChat.setSource("uikit-v4", "android", "java");
+                CometChat.setSource("uikit-v5", "android", "java");
             }
 
             @Override
@@ -124,6 +124,38 @@ public final class CometChatUIKit {
         return true;
     }
 
+    private static void initiateCallingExtension(Context context) {
+        if (isCallingAvailable()) new CallingExtension(context).enable();
+    }
+
+    /**
+     * Retrieves the currently logged-in user.
+     *
+     * @return The User object representing the logged-in user, or null if no user
+     * is logged in.
+     */
+    public static User getLoggedInUser() {
+        return CometChat.getLoggedInUser();
+    }
+
+    private static void initiateChatExtensions() {
+        if (authenticationSettings != null) {
+            List<AIExtensionDataSource> aiExtensions = authenticationSettings.getAIFeatures() == null ? DefaultAIFeature.get() : authenticationSettings.getAIFeatures();
+            if (!aiExtensions.isEmpty()) {
+                for (ExtensionsDataSource element : aiExtensions) {
+                    element.enable();
+                }
+            }
+
+            List<ExtensionsDataSource> extensionList = authenticationSettings.getExtensions() == null ? DefaultExtensions.get() : authenticationSettings.getExtensions();
+            if (!extensionList.isEmpty()) {
+                for (ExtensionsDataSource element : extensionList) {
+                    element.enable();
+                }
+            }
+        }
+    }
+
     /**
      * Logs in a user with the specified UID.
      *
@@ -154,16 +186,6 @@ public final class CometChatUIKit {
             if (callbackListener != null)
                 callbackListener.onSuccess(CometChatUIKit.getLoggedInUser());
         }
-    }
-
-    /**
-     * Retrieves the currently logged-in user.
-     *
-     * @return The User object representing the logged-in user, or null if no user
-     * is logged in.
-     */
-    public static User getLoggedInUser() {
-        return CometChat.getLoggedInUser();
     }
 
     public static boolean isSDKInitialized() {
@@ -245,28 +267,6 @@ public final class CometChatUIKit {
         });
     }
 
-    private static void initiateChatExtensions() {
-        if (authenticationSettings != null) {
-            List<AIExtensionDataSource> aiExtensions = authenticationSettings.getAIFeatures() == null ? DefaultAIFeature.get() : authenticationSettings.getAIFeatures();
-            if (!aiExtensions.isEmpty()) {
-                for (ExtensionsDataSource element : aiExtensions) {
-                    element.enable();
-                }
-            }
-
-            List<ExtensionsDataSource> extensionList = authenticationSettings.getExtensions() == null ? DefaultExtensions.get() : authenticationSettings.getExtensions();
-            if (!extensionList.isEmpty()) {
-                for (ExtensionsDataSource element : extensionList) {
-                    element.enable();
-                }
-            }
-        }
-    }
-
-    private static void initiateCallingExtension(Context context) {
-        if (isCallingAvailable()) new CallingExtension(context).enable();
-    }
-
     /**
      * Sends a custom message.
      *
@@ -275,7 +275,9 @@ public final class CometChatUIKit {
     public static void sendCustomMessage(CustomMessage customMessage, CometChat.CallbackListener<CustomMessage> messageCallbackListener) {
         if (customMessage == null) return;
         customMessage.setSender(customMessage.getSender() == null ? CometChat.getLoggedInUser() : customMessage.getSender());
-        customMessage.setMuid(customMessage.getMuid() == null || customMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : customMessage.getMuid());
+        customMessage.setMuid(customMessage.getMuid() == null || customMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : customMessage.getMuid());
         customMessage.setSentAt(customMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : customMessage.getSentAt());
 
         onMessageSent(customMessage, MessageStatus.IN_PROGRESS);
@@ -295,6 +297,13 @@ public final class CometChatUIKit {
         });
     }
 
+    private static void triggerMessageCallback(CometChat.CallbackListener listener, BaseMessage message, CometChatException exception) {
+        if (listener != null) {
+            if (exception == null) listener.onSuccess(message);
+            else listener.onError(exception);
+        }
+    }
+
     /**
      * Sends a text message.
      *
@@ -303,7 +312,9 @@ public final class CometChatUIKit {
     public static void sendTextMessage(TextMessage textMessage, CometChat.CallbackListener<TextMessage> messageCallbackListener) {
         if (textMessage == null) return;
         textMessage.setSender(textMessage.getSender() == null ? CometChat.getLoggedInUser() : textMessage.getSender());
-        textMessage.setMuid(textMessage.getMuid() == null || textMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : textMessage.getMuid());
+        textMessage.setMuid(textMessage.getMuid() == null || textMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : textMessage.getMuid());
         textMessage.setSentAt(textMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : textMessage.getSentAt());
 
         onMessageSent(textMessage, MessageStatus.IN_PROGRESS);
@@ -331,7 +342,9 @@ public final class CometChatUIKit {
     public static void sendMediaMessage(MediaMessage mediaMessage, CometChat.CallbackListener<MediaMessage> messageCallbackListener) {
         if (mediaMessage == null) return;
         mediaMessage.setSender(mediaMessage.getSender() == null ? CometChat.getLoggedInUser() : mediaMessage.getSender());
-        mediaMessage.setMuid(mediaMessage.getMuid() == null || mediaMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : mediaMessage.getMuid());
+        mediaMessage.setMuid(mediaMessage.getMuid() == null || mediaMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : mediaMessage.getMuid());
         mediaMessage.setSentAt(mediaMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : mediaMessage.getSentAt());
 
         onMessageSent(mediaMessage, MessageStatus.IN_PROGRESS);
@@ -351,10 +364,14 @@ public final class CometChatUIKit {
         });
     }
 
-    public static void sendFormMessage(FormMessage formMessage, boolean disableLocalEvents, CometChat.CallbackListener<FormMessage> messageCallbackListener) {
+    public static void sendFormMessage(FormMessage formMessage,
+                                       boolean disableLocalEvents,
+                                       CometChat.CallbackListener<FormMessage> messageCallbackListener) {
         if (formMessage == null) return;
         formMessage.setSender(formMessage.getSender() == null ? CometChat.getLoggedInUser() : formMessage.getSender());
-        formMessage.setMuid(formMessage.getMuid() == null || formMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : formMessage.getMuid());
+        formMessage.setMuid(formMessage.getMuid() == null || formMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : formMessage.getMuid());
         formMessage.setSentAt(formMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : formMessage.getSentAt());
 
         if (!disableLocalEvents) onMessageSent(formMessage, MessageStatus.IN_PROGRESS);
@@ -378,10 +395,14 @@ public final class CometChatUIKit {
         });
     }
 
-    public static void sendSchedulerMessage(SchedulerMessage schedulerMessage, boolean disableLocalEvents, CometChat.CallbackListener<SchedulerMessage> messageCallbackListener) {
+    public static void sendSchedulerMessage(SchedulerMessage schedulerMessage,
+                                            boolean disableLocalEvents,
+                                            CometChat.CallbackListener<SchedulerMessage> messageCallbackListener) {
         if (schedulerMessage == null) return;
         schedulerMessage.setSender(schedulerMessage.getSender() == null ? CometChat.getLoggedInUser() : schedulerMessage.getSender());
-        schedulerMessage.setMuid(schedulerMessage.getMuid() == null || schedulerMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : schedulerMessage.getMuid());
+        schedulerMessage.setMuid(schedulerMessage.getMuid() == null || schedulerMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : schedulerMessage.getMuid());
         schedulerMessage.setSentAt(schedulerMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : schedulerMessage.getSentAt());
 
         if (!disableLocalEvents) onMessageSent(schedulerMessage, MessageStatus.IN_PROGRESS);
@@ -405,10 +426,14 @@ public final class CometChatUIKit {
         });
     }
 
-    public static void sendCardMessage(CardMessage cardMessage, boolean disableLocalEvents, CometChat.CallbackListener<CardMessage> messageCallbackListener) {
+    public static void sendCardMessage(CardMessage cardMessage,
+                                       boolean disableLocalEvents,
+                                       CometChat.CallbackListener<CardMessage> messageCallbackListener) {
         if (cardMessage == null) return;
         cardMessage.setSender(cardMessage.getSender() == null ? CometChat.getLoggedInUser() : cardMessage.getSender());
-        cardMessage.setMuid(cardMessage.getMuid() == null || cardMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : cardMessage.getMuid());
+        cardMessage.setMuid(cardMessage.getMuid() == null || cardMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : cardMessage.getMuid());
         cardMessage.setSentAt(cardMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : cardMessage.getSentAt());
         if (!disableLocalEvents) onMessageSent(cardMessage, MessageStatus.IN_PROGRESS);
         InteractiveMessage interactiveMessage = cardMessage.toInteractiveMessage();
@@ -431,10 +456,14 @@ public final class CometChatUIKit {
         });
     }
 
-    public static void sendCustomInteractiveMessage(CustomInteractiveMessage customInteractiveMessage, boolean disableLocalEvents, CometChat.CallbackListener<CustomInteractiveMessage> messageCallbackListener) {
+    public static void sendCustomInteractiveMessage(CustomInteractiveMessage customInteractiveMessage,
+                                                    boolean disableLocalEvents,
+                                                    CometChat.CallbackListener<CustomInteractiveMessage> messageCallbackListener) {
         if (customInteractiveMessage == null) return;
         customInteractiveMessage.setSender(customInteractiveMessage.getSender() == null ? CometChat.getLoggedInUser() : customInteractiveMessage.getSender());
-        customInteractiveMessage.setMuid(customInteractiveMessage.getMuid() == null || customInteractiveMessage.getMuid().isEmpty() ? System.currentTimeMillis() + "" : customInteractiveMessage.getMuid());
+        customInteractiveMessage.setMuid(customInteractiveMessage.getMuid() == null || customInteractiveMessage
+            .getMuid()
+            .isEmpty() ? System.currentTimeMillis() + "" : customInteractiveMessage.getMuid());
         customInteractiveMessage.setSentAt(customInteractiveMessage.getSentAt() == 0 ? System.currentTimeMillis() / 1000 : customInteractiveMessage.getSentAt());
         if (!disableLocalEvents) onMessageSent(customInteractiveMessage, MessageStatus.IN_PROGRESS);
         InteractiveMessage interactiveMessage = customInteractiveMessage.toInteractiveMessage();
@@ -464,13 +493,6 @@ public final class CometChatUIKit {
 
     public static DataSource getDataSource() {
         return ChatConfigurator.getDataSource();
-    }
-
-    private static void triggerMessageCallback(CometChat.CallbackListener listener, BaseMessage message, CometChatException exception) {
-        if (listener != null) {
-            if (exception == null) listener.onSuccess(message);
-            else listener.onError(exception);
-        }
     }
 
     @NonNull

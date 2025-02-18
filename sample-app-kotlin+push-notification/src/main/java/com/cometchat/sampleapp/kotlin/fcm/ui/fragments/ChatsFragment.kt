@@ -31,6 +31,7 @@ import com.cometchat.sampleapp.kotlin.fcm.fcm.FCMMessageDTO
 import com.cometchat.sampleapp.kotlin.fcm.ui.activity.MessagesActivity
 import com.cometchat.sampleapp.kotlin.fcm.ui.activity.SplashActivity
 import com.cometchat.sampleapp.kotlin.fcm.utils.AppConstants
+import com.cometchat.sampleapp.kotlin.fcm.utils.MyApplication
 import com.google.gson.Gson
 
 /**
@@ -121,7 +122,7 @@ class ChatsFragment : Fragment() {
                 com.cometchat.chatuikit.R.dimen.cometchat_200dp
             ), LinearLayout.LayoutParams.WRAP_CONTENT, true
         )
-
+        MyApplication.popupWindows.add(popupWindow)
         popupMenuBinding.tvUserName.text = CometChatUIKit.getLoggedInUser().name
         val version = (("V" + BuildConfig.VERSION_NAME) + "(" + BuildConfig.VERSION_CODE) + ")"
         popupMenuBinding.tvVersion.text = version

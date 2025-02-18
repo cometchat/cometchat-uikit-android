@@ -184,9 +184,7 @@ public class CometChatAudioBubble extends MaterialCardView {
                 pauseIconImageView.setVisibility(VISIBLE);
                 subtitle.setVisibility(VISIBLE);
             },
-            mediaPlayer -> {
-                stopPlaying();
-            }
+            mediaPlayer -> stopPlaying()
         );
 
         // Get the duration of the audio

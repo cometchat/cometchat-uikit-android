@@ -23,7 +23,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@null"
-        android:hint="@string/cometchat_search" />
+        android:hint="@string/cometchat_search"
+        android:lines="1"
+        android:maxLines="1"
+        android:singleLine="true" />
 
     <ImageView
         android:id="@+id/iv_clear"

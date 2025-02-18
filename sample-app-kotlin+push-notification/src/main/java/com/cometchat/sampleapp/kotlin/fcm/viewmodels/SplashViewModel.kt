@@ -10,8 +10,11 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
 import com.cometchat.chatuikit.shared.cometchatuikit.UIKitSettings
 import com.cometchat.sampleapp.kotlin.fcm.AppCredentials
+import com.cometchat.sampleapp.kotlin.fcm.BuildConfig
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.utils.AppUtils
+import org.json.JSONObject
+
 
 /**
  * ViewModel for the SplashActivity to handle UI-related data and business
@@ -44,7 +47,7 @@ class SplashViewModel : ViewModel() {
         val authKey = AppUtils.getDataFromSharedPref(context, String::class.java, R.string.app_cred_auth, AppCredentials.AUTH_KEY)
         val uiKitSettings: UIKitSettings = UIKitSettings
             .UIKitSettingsBuilder()
-            .setAutoEstablishSocketConnection(true)
+            .setAutoEstablishSocketConnection(false)
             .setAppId(appId)
             .setRegion(region)
             .setAuthKey(authKey)
@@ -53,6 +56,7 @@ class SplashViewModel : ViewModel() {
 
         CometChatUIKit.init(context, uiKitSettings, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(s: String) {
+                CometChat.setDemoMetaInfo(getAppMetadata(context))
                 checkUserIsNotLoggedIn()
                 callbackListener?.onSuccess(s)
             }
@@ -62,6 +66,20 @@ class SplashViewModel : ViewModel() {
                 callbackListener?.onError(e)
             }
         })
+    }
+
+    private fun getAppMetadata(context: Context): JSONObject {
+        val jsonObject = JSONObject()
+        try {
+            jsonObject.put("name", context.resources.getString(R.string.app_name))
+            jsonObject.put("type", "sample")
+            jsonObject.put("version", BuildConfig.VERSION_NAME)
+            jsonObject.put("bundle", BuildConfig.APPLICATION_ID)
+            jsonObject.put("platform", "android")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return jsonObject
     }
 
     /** Checks if the user is logged in and updates the login status.  */

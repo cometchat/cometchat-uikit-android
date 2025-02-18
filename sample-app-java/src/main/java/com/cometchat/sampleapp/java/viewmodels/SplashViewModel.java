@@ -12,11 +12,11 @@ import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.cometchatuikit.UIKitSettings;
 import com.cometchat.sampleapp.java.AppCredentials;
+import com.cometchat.sampleapp.java.BuildConfig;
 import com.cometchat.sampleapp.java.R;
 import com.cometchat.sampleapp.java.utils.AppUtils;
 
 import org.json.JSONObject;
-import org.webkit.androidjsc.BuildConfig;
 
 
 /**

@@ -45,6 +45,12 @@ class FCMService : FirebaseMessagingService() {
                     val fcmMessageDTO: FCMMessageDTO = Gson().fromJson(
                         Gson().toJson(message.data), FCMMessageDTO::class.java
                     )
+                    CometChat.markAsDelivered(
+                        fcmMessageDTO.tag!!.toInt(),
+                        fcmMessageDTO.sender!!,
+                        fcmMessageDTO.receiverType!!,
+                        fcmMessageDTO.receiver!!
+                    )
                     val isUser = fcmMessageDTO.receiverType == CometChatConstants.RECEIVER_TYPE_USER
                     val uid: String = if (isUser) fcmMessageDTO.sender!! else fcmMessageDTO.receiver!!
                     if (uid != MyApplication.currentOpenChatId) {
@@ -59,6 +65,16 @@ class FCMService : FirebaseMessagingService() {
                         )
                     }
                 } else if ("call".equals(type, ignoreCase = true)) {
+                    val sessionId = message.data["sessionId"]
+                    val callAction = message.data["callAction"]
+                    if (MyApplication.isAppInForeground && MyApplication.getTempCall() != null &&
+                        (MyApplication
+                            .getTempCall()
+                            ?.sessionId.equals(sessionId)
+                            ) && CometChatConstants.CALL_STATUS_CANCELLED == callAction
+                    ) {
+                        MyApplication.setTempCall(null)
+                    }
                     if (!CometChatVoIP.hasReadPhoneStatePermission(this)) {
                         return
                     }

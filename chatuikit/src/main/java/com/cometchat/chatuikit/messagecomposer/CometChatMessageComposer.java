@@ -888,13 +888,6 @@ public class CometChatMessageComposer extends MaterialCardView {
                 sendSelectedListToFormatter(key);
             }
         }
-    }    /**
-     * @param color The new color to set for the card background
-     */
-    @Override
-    public void setCardBackgroundColor(@ColorInt int color) {
-        this.backgroundColor = color;
-        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -921,6 +914,13 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
         return new ArrayList<>();
+    }    /**
+     * @param color The new color to set for the card background
+     */
+    @Override
+    public void setCardBackgroundColor(@ColorInt int color) {
+        this.backgroundColor = color;
+        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -964,13 +964,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
         return query;
-    }    /**
-     * @param strokeWidth The new width to set for the stroke
-     */
-    @Override
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1023,6 +1016,13 @@ public class CometChatMessageComposer extends MaterialCardView {
             this.cometchatTextFormatters.addAll(cometchatTextFormatters);
             processFormatters();
         }
+    }    /**
+     * @param strokeWidth The new width to set for the stroke
+     */
+    @Override
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1610,12 +1610,14 @@ public class CometChatMessageComposer extends MaterialCardView {
             CometChatMediaRecorder cometchatMediaRecorder = new CometChatMediaRecorder(getContext());
             cometchatMediaRecorder.setStyle(mediaRecorderStyle);
             cometchatMediaRecorder.setOnCloseClickListener(bottomSheetDialog::dismiss);
+            cometchatMediaRecorder.startRecording();
             cometchatMediaRecorder.setOnSubmitClickListener((file, context) -> {
                 if (sendButtonClick != null) {
                     sendButtonClick.onClick(context, composerViewModel.getMediaMessage(file, UIKitConstants.MessageType.AUDIO));
                 } else if (file != null) {
                     sendMediaMessage(file, UIKitConstants.MessageType.AUDIO);
                 }
+                cometchatMediaRecorder.stopRecording();
                 bottomSheetDialog.dismiss();
             });
             showBottomSheet(bottomSheetDialog, true, cometchatMediaRecorder);
@@ -2276,10 +2278,6 @@ public class CometChatMessageComposer extends MaterialCardView {
     @Nullable
     public View getSendButtonView() {
         return sendButtonView;
-    }    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        composerViewModel.addListeners();
     }
 
     /**
@@ -2345,6 +2343,10 @@ public class CometChatMessageComposer extends MaterialCardView {
      */
     public Function4<Context, User, Group, HashMap<String, String>, View> getAuxiliaryButtonView() {
         return auxiliaryButtonView;
+    }    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        composerViewModel.addListeners();
     }
 
     /**

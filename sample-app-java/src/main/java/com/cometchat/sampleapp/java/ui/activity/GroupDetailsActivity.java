@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cometchat.chat.models.Group;
+import com.cometchat.chat.models.GroupMember;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
@@ -50,6 +51,8 @@ public class GroupDetailsActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView btnText;
     private CometChatConfirmDialog confirmDialog;
+
+    private GroupMember groupMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
         binding.avatar.setAvatar(group.getName(), group.getIcon());
         binding.tvGroupName.setText(group.getName());
         binding.tvMemberCount.setText(group.getMembersCount() > 1 ? group.getMembersCount() + " " + getResources().getString(com.cometchat.chatuikit.R.string.cometchat_members) : group.getMembersCount() + " " + getResources().getString(
-                com.cometchat.chatuikit.R.string.cometchat_member));
+            com.cometchat.chatuikit.R.string.cometchat_member));
         setOptionsVisibility();
 
         if (group.isJoined()) {
@@ -109,15 +112,18 @@ public class GroupDetailsActivity extends AppCompatActivity {
                                 GroupAction.LEAVE
                 );
             } else {
-                showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
-                                getString(R.string.app_transfer_ownership_description),
-                                getString(R.string.app_btn_cancel),
-                                getString(R.string.app_btn_continue),
-                                true,
-                                CometChatTheme.getPrimaryColor(this),
-                                0,
-                                GroupAction.TRANSFER_OWNERSHIP
-                );
+                if (group.getMembersCount() > 2) {
+                    showTransferOwnership();
+                } else
+                    showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                                    getString(R.string.app_transfer_ownership_description),
+                                    getString(R.string.app_btn_cancel),
+                                    getString(R.string.app_btn_continue),
+                                    true,
+                                    CometChatTheme.getPrimaryColor(this),
+                                    0,
+                                    GroupAction.TRANSFER_OWNERSHIP
+                    );
             }
         });
 
@@ -133,14 +139,14 @@ public class GroupDetailsActivity extends AppCompatActivity {
     }
 
     private void showAlertDialog(
-            String title,
-            String message,
-            String negativeButtonText,
-            String positiveButtonText,
-            boolean hideIcon,
-            @ColorInt int positiveButtonColor,
-            @DrawableRes int icon,
-            GroupAction groupAction
+        String title,
+        String message,
+        String negativeButtonText,
+        String positiveButtonText,
+        boolean hideIcon,
+        @ColorInt int positiveButtonColor,
+        @DrawableRes int icon,
+        GroupAction groupAction
     ) {
         confirmDialog = new CometChatConfirmDialog(this, com.cometchat.chatuikit.R.style.CometChatConfirmDialogStyle);
         if (icon != 0) confirmDialog.setConfirmDialogIcon(ResourcesCompat.getDrawable(getResources(), icon, null));
@@ -160,7 +166,8 @@ public class GroupDetailsActivity extends AppCompatActivity {
             } else if (GroupAction.TRANSFER_OWNERSHIP.equals(groupAction)) {
                 if (group.getMembersCount() > 2) {
                     confirmDialog.dismiss();
-                    showTransferOwnership();
+                    viewModel.transferOwnership(groupMember);
+                    groupMember = null;
                 } else if (group.getMembersCount() == 2) {
                     viewModel.fetchAndTransferOwnerShip();
                 } else if (group.getMembersCount() == 1) {
@@ -264,8 +271,10 @@ public class GroupDetailsActivity extends AppCompatActivity {
         addMembersLayoutBinding.addMembers.setItemClickListener(new OnItemClickListener<User>() {
             @Override
             public void OnItemClick(User var, int position) {
-                String count = !addMembersLayoutBinding.addMembers.getSelectedUsers().isEmpty() ? addMembersLayoutBinding.addMembers.getSelectedUsers().size() + " " + getString(
-                        R.string.app_members) : " " + getString(R.string.app_member);
+                String count = !addMembersLayoutBinding.addMembers.getSelectedUsers().isEmpty() ? addMembersLayoutBinding.addMembers
+                    .getSelectedUsers()
+                    .size() + " " + getString(
+                    R.string.app_members) : " " + getString(R.string.app_member);
                 addMembersLayoutBinding.tvAddMembers.setText(String.format(Locale.US, "%s %s", getString(R.string.app_add), count));
             }
         });
@@ -308,7 +317,16 @@ public class GroupDetailsActivity extends AppCompatActivity {
         transferOwnershipLayoutBinding.transferOwnership.setOnBackPressListener(() -> dialog.dismiss());
         transferOwnershipLayoutBinding.transferOwnershipBtn.setOnClickListener(v -> {
             if (!transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().isEmpty()) {
-                viewModel.transferOwnership(transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().get(0));
+                groupMember = transferOwnershipLayoutBinding.transferOwnership.getSelectedGroupMembers().get(0);
+                showAlertDialog(getResources().getString(com.cometchat.chatuikit.R.string.cometchat_transfer_ownership),
+                                getString(R.string.app_transfer_ownership_description),
+                                getString(R.string.app_btn_cancel),
+                                getString(R.string.app_btn_continue),
+                                true,
+                                CometChatTheme.getPrimaryColor(this),
+                                0,
+                                GroupAction.TRANSFER_OWNERSHIP
+                );
             }
         });
     }
@@ -357,6 +375,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
                 confirmDialog.hidePositiveButtonProgressBar(false);
                 break;
             case SUCCESS:
+                if (dialog != null) dialog.dismiss();
                 if (confirmDialog != null) {
                     confirmDialog.dismiss();
                     binding.leaveGroupLay.performClick();

@@ -155,7 +155,7 @@ public class AISmartRepliesDecorator extends DataSourceDecorator {
                 .setIcon(configuration != null ? configuration.getButtonIcon() : R.drawable.cometchat_ic_ai_smart_reply)
                 .setOnClick(() -> {
                     showRepliesPanel(idMap,
-                                     UIKitConstants.CustomUIPosition.COMPOSER_TOP,
+                                     UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM,
                                      getSmartReplyPanel(idMap, context, 0, configuration, user, group)
                     );
                 });
@@ -178,6 +178,7 @@ public class AISmartRepliesDecorator extends DataSourceDecorator {
 
     public void showRepliesPanel(HashMap<String, String> id, UIKitConstants.CustomUIPosition alignment, View view) {
         for (CometChatUIEvents events : CometChatUIEvents.uiEvents.values()) {
+            events.hidePanel(id, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM);
             events.showPanel(id, alignment, context -> view);
         }
     }
@@ -197,7 +198,7 @@ public class AISmartRepliesDecorator extends DataSourceDecorator {
         layoutParams.setMargins(Utils.convertDpToPx(context, 10),
                                 context.getResources().getDimensionPixelSize(R.dimen.cometchat_margin_2),
                                 Utils.convertDpToPx(context, 10),
-                                0
+                                Utils.convertDpToPx(context, 10)
         );
         aiSmartRepliesView.setLayoutParams(layoutParams);
 
@@ -243,10 +244,10 @@ public class AISmartRepliesDecorator extends DataSourceDecorator {
         aiSmartRepliesView.setStyle(aiCardStyle);
         aiSmartRepliesView.setOnClick((view, id, text, pos) -> {
             CometChatUIKitHelper.onComposeMessage(id, text);
-            hidePanel(idMap, UIKitConstants.CustomUIPosition.COMPOSER_TOP);
+            hidePanel(idMap, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM);
         });
 
-        aiSmartRepliesView.setOnCLoseIconClick(view -> hidePanel(idMap, UIKitConstants.CustomUIPosition.COMPOSER_TOP));
+        aiSmartRepliesView.setOnCLoseIconClick(view -> hidePanel(idMap, UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM));
         return aiSmartRepliesView;
     }
 }

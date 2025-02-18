@@ -52,7 +52,7 @@
         <activity
             android:name=".ui.activity.HomeActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.activity.MessagesActivity"
             android:exported="false"

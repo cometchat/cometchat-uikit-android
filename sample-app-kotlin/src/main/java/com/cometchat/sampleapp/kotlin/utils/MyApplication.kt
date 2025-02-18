@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.PopupWindow
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
@@ -47,7 +48,7 @@ class MyApplication : Application() {
      */
     override fun onCreate() {
         super.onCreate()
-        
+
         soundManager = CometChatSoundManager(this)
 
         addCallListener()
@@ -80,7 +81,8 @@ class MyApplication : Application() {
                 currentActivity = activity
                 if (snackBar != null && snackBar!!.isShown && tempCall != null) {
                     showTopSnackBar(tempCall)
-                }
+                } else
+                    dismissTopSnackBar()
             }
 
             override fun onActivityPaused(activity: Activity) {
@@ -151,12 +153,12 @@ class MyApplication : Application() {
         binding.callerAvatar.setAvatar(callUser.name, callUser.avatar)
         binding.callTypeIcon.setImageResource(if (call.type == CometChatConstants.CALL_TYPE_AUDIO) com.cometchat.chatuikit.R.drawable.cometchat_ic_call_voice else com.cometchat.chatuikit.R.drawable.cometchat_ic_call_video)
 
-        binding.rejectButton.setOnClickListener { view: View? ->
+        binding.rejectButton.setOnClickListener {
             rejectCall(
                 call
             )
         }
-        binding.acceptButton.setOnClickListener { view: View? ->
+        binding.acceptButton.setOnClickListener {
             acceptCall(
                 call
             )
@@ -172,7 +174,10 @@ class MyApplication : Application() {
         )
 
         layout.addView(binding.root, 0)
-
+        for (popupWindow in popupWindows) {
+            if (popupWindow.isShowing) popupWindow.dismiss()
+        }
+        popupWindows.clear()
         snackBar!!.show()
     }
 
@@ -296,6 +301,7 @@ class MyApplication : Application() {
     }
 
     companion object {
+        var popupWindows = ArrayList<PopupWindow>()
         private var LISTENER_ID: String = System.currentTimeMillis().toString()
         var currentOpenChatId: String? = null
         var isAppInForeground: Boolean = false

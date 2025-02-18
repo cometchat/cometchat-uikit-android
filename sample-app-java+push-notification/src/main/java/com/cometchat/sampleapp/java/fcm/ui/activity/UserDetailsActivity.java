@@ -67,6 +67,9 @@ public class UserDetailsActivity extends AppCompatActivity {
             }
         });
 
+        if (viewModel.getBaseMessage().getValue() == null)
+            binding.tvDeleteChat.setVisibility(View.GONE);
+
         binding.tvDeleteChat.setOnClickListener(v -> deleteChat());
 
         binding.cardVoiceCall.setOnClickListener(v -> viewModel.startCall(CometChatConstants.CALL_TYPE_AUDIO));

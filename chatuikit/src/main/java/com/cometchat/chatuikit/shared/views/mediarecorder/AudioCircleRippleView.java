@@ -126,7 +126,7 @@ public class AudioCircleRippleView extends MaterialCardView {
     public void startAnimation() {
         if (!isAnimating) {
             isAnimating = true;
-            new Handler().postDelayed(() -> animator.start(), 10);
+            if (animator != null) new Handler().postDelayed(() -> animator.start(), 10);
         }
     }
 
