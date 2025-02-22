@@ -26,12 +26,12 @@ import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.formatters.CometChatMentionsFormatter;
 import com.cometchat.chatuikit.shared.formatters.CometChatTextFormatter;
 import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
-import com.cometchat.chatuikit.shared.interfaces.Function1;
 import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,9 +123,9 @@ public class CometChatThreadHeader extends MaterialCardView {
     private BaseMessage parentMessage;
 
     /**
-     * A flag indicating whether reactions should be hidden in the thread.
+     * A property indicating whether reactions should be hidden in the thread.
      */
-    private boolean hideReaction = false;
+    private int reactionVisibility = VISIBLE;
 
     /**
      * The alignment of the message list.
@@ -133,19 +133,14 @@ public class CometChatThreadHeader extends MaterialCardView {
     private UIKitConstants.MessageListAlignment alignment = UIKitConstants.MessageListAlignment.STANDARD;
 
     /**
-     * The alignment for the timestamp in messages.
+     * A property indicating whether avatars should be shown in the message list.
      */
-    private UIKitConstants.TimeStampAlignment timeStampAlignment = UIKitConstants.TimeStampAlignment.BOTTOM;
+    private int avatarVisibility = VISIBLE;
 
     /**
-     * A flag indicating whether avatars should be shown in the message list.
+     * A SimpleDateFormat to format the date pattern for messages.
      */
-    private boolean showAvatar = true;
-
-    /**
-     * A function to format the date pattern for messages.
-     */
-    private Function1<BaseMessage, String> datePattern;
+    private SimpleDateFormat timePattern;
 
     /**
      * Additional parameters for customizing the message list.
@@ -173,6 +168,9 @@ public class CometChatThreadHeader extends MaterialCardView {
     private @StyleRes int outgoingMessageBubbleStyle;
 
     private @Dimension int maxHeightLimit;
+    private int receiptsVisibility = VISIBLE;
+    private int replyCountVisibility = VISIBLE;
+    private int replyCountBarVisibility = VISIBLE;
 
     /**
      * Constructs a new CometChatThreadHeader with the specified context.
@@ -427,17 +425,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Sets the maximum height limit for the suggestion list.
-     *
-     * @param maxHeightLimit the maximum height limit in pixels
-     */
-    public void setMaxHeightLimit(@Dimension int maxHeightLimit) {
-        if (maxHeightLimit > 0) {
-            this.maxHeightLimit = maxHeightLimit;
-        }
-    }
-
-    /**
      * Measures the dimensions of the Threaded Header, enforcing the maximum height
      * limit if set.
      *
@@ -487,26 +474,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Hide or show the read receipt in the Message list view.
-     *
-     * @param hideReceipt true to hide the read receipt, false to show it.
-     */
-    public void hideReceipt(boolean hideReceipt) {
-        adapter.hideReceipt(hideReceipt);
-    }
-
-    /**
-     * Shows or hides the avatar in the Thread Header.
-     *
-     * @param showAvatar True to show the avatar, false to hide it. Controls whether the
-     *                   sender's avatar appears alongside messages in the thread.
-     */
-    public void showAvatar(boolean showAvatar) {
-        this.showAvatar = showAvatar;
-        adapter.showAvatar(showAvatar);
-    }
-
-    /**
      * Processes and adds the {@link CometChatMentionsFormatter} to the list of text
      * formatters if it's available in the data source. This method iterates through
      * the formatters provided by the data source and sets the
@@ -515,7 +482,7 @@ public class CometChatThreadHeader extends MaterialCardView {
      * messages.
      */
     private void processMentionsFormatter() {
-        for (CometChatTextFormatter textFormatter : CometChatUIKit.getDataSource().getTextFormatters(getContext())) {
+        for (CometChatTextFormatter textFormatter : CometChatUIKit.getDataSource().getTextFormatters(getContext(), additionParameter)) {
             if (textFormatter instanceof CometChatMentionsFormatter) {
                 cometchatMentionsFormatter = (CometChatMentionsFormatter) textFormatter;
                 break;
@@ -585,23 +552,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Enables or disables the mentions feature in the text formatters.
-     *
-     * <p>
-     * If mentions are disabled, this method removes the
-     * {@link CometChatMentionsFormatter} from the list of formatters. This can be
-     * used when you want to turn off the mention functionality in the thread view.
-     *
-     * @param disable True to disable mentions, false to enable them.
-     */
-    public void setDisableMentions(boolean disable) {
-        if (disable) {
-            textFormatters.remove(cometchatMentionsFormatter);
-            processFormatters();
-        }
-    }
-
-    /**
      * Updates the messages displayed in the thread.
      *
      * <p>
@@ -613,21 +563,6 @@ public class CometChatThreadHeader extends MaterialCardView {
      */
     private void updateMessage(List<BaseMessage> message) {
         adapter.setBaseMessageList(message);
-    }
-
-    /**
-     * Sets whether reactions should be hidden in the Thread Header.
-     *
-     * <p>
-     * This method controls whether reactions to messages are shown or hidden. It
-     * updates the view model and the adapter to reflect the change.
-     *
-     * @param disableReactions True to hide reactions, false to show them.
-     */
-    public void disableReactions(boolean disableReactions) {
-        this.hideReaction = disableReactions;
-        threadHeaderViewModel.setHideReaction(disableReactions);
-        adapter.disableReactions(disableReactions);
     }
 
     /**
@@ -735,15 +670,6 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Checks if reactions are hidden in the Thread Header.
-     *
-     * @return True if reactions are hidden, false otherwise.
-     */
-    public boolean isHideReaction() {
-        return hideReaction;
-    }
-
-    /**
      * Returns the alignment of the message list in the Thread Header.
      *
      * @return The {@link UIKitConstants.MessageListAlignment} enum representing the
@@ -766,54 +692,24 @@ public class CometChatThreadHeader extends MaterialCardView {
     }
 
     /**
-     * Returns the alignment of timestamps in the Thread Header.
-     *
-     * @return The {@link UIKitConstants.TimeStampAlignment} enum representing the
-     * timestamp alignment.
-     */
-    public UIKitConstants.TimeStampAlignment getTimeStampAlignment() {
-        return timeStampAlignment;
-    }
-
-    /**
-     * Sets the alignment of the timestamp for messages in the Thread Header.
-     *
-     * @param timeStampAlignment The {@link UIKitConstants.TimeStampAlignment} enum representing
-     *                           the alignment of the timestamp (e.g., top, bottom).
-     */
-    public void setTimeStampAlignment(UIKitConstants.TimeStampAlignment timeStampAlignment) {
-        this.timeStampAlignment = timeStampAlignment;
-        adapter.setTimeStampAlignment(timeStampAlignment);
-    }
-
-    /**
-     * Checks if avatars are displayed in the Thread Header.
-     *
-     * @return True if avatars are shown, false otherwise.
-     */
-    public boolean isShowAvatar() {
-        return showAvatar;
-    }
-
-    /**
      * Returns the date pattern function used for formatting message dates.
      *
-     * @return The {@link Function1} object representing the date pattern function.
+     * @return The {@link SimpleDateFormat} object representing the date pattern function.
      */
-    public Function1<BaseMessage, String> getDatePattern() {
-        return datePattern;
+    public SimpleDateFormat getTimePattern() {
+        return timePattern;
     }
 
     /**
      * Sets the date pattern for displaying message dates in the Thread Header.
      *
-     * @param datePattern The {@link Function1} object representing the function that
+     * @param timePattern The {@link SimpleDateFormat} object representing the function that
      *                    formats the date for each message. This allows customization of
      *                    the date display format.
      */
-    public void setDatePattern(Function1<BaseMessage, String> datePattern) {
-        this.datePattern = datePattern;
-        adapter.setDatePattern(datePattern);
+    public void setTimeFormat(SimpleDateFormat timePattern) {
+        this.timePattern = timePattern;
+        adapter.setTimeFormat(timePattern);
     }
 
     /**
@@ -918,4 +814,131 @@ public class CometChatThreadHeader extends MaterialCardView {
             this.outgoingMessageBubbleStyle = outgoingMessageBubbleStyle;
         }
     }
+
+    /**
+     * Retrieves the visibility status of reactions.
+     *
+     * @return An integer representing the visibility of reactions.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getReactionVisibility() {
+        return reactionVisibility;
+    }
+
+    /**
+     * Sets whether reactions should be hidden in the Thread Header.
+     *
+     * <p>
+     * This method controls whether reactions to messages are shown or hidden. It
+     * updates the view model and the adapter to reflect the change.
+     *
+     * @param visibility GONE to hide reactions, VISIBLE to show them.
+     */
+    public void setReactionVisibility(int visibility) {
+        this.reactionVisibility = visibility;
+        threadHeaderViewModel.setHideReaction(visibility == GONE);
+        adapter.disableReactions(visibility == GONE);
+    }
+
+    /**
+     * Retrieves the visibility status of the avatar.
+     *
+     * @return An integer representing the visibility of the avatar.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getAvatarVisibility() {
+        return avatarVisibility;
+    }
+
+    /**
+     * Shows or hides the avatar in the Thread Header.
+     *
+     * @param visibility GONE to hide the avatar, VISIBLE to show it. Controls whether the
+     *                   sender's avatar appears alongside messages in the thread.
+     */
+    public void setAvatarVisibility(int visibility) {
+        this.avatarVisibility = visibility;
+        adapter.showAvatar(visibility == VISIBLE);
+    }
+
+    /**
+     * Retrieves the maximum height limit.
+     *
+     * @return An integer representing the maximum height limit.
+     */
+    public int getMaxHeight() {
+        return maxHeightLimit;
+    }
+
+    /**
+     * Sets the maximum height limit for the suggestion list.
+     *
+     * @param maxHeightLimit the maximum height limit in pixels
+     */
+    public void setMaxHeight(@Dimension int maxHeightLimit) {
+        if (maxHeightLimit > 0) {
+            this.maxHeightLimit = maxHeightLimit;
+        }
+    }
+
+    /**
+     * Retrieves the visibility status of read receipts.
+     *
+     * @return An integer representing the visibility of read receipts.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getReceiptsVisibility() {
+        return receiptsVisibility;
+    }
+
+    /**
+     * Hide or show the read receipt in the Message list view.
+     *
+     * @param visibility GONE to hide the read receipt, VISIBLE to show it.
+     */
+    public void setReceiptsVisibility(int visibility) {
+        this.receiptsVisibility = visibility;
+        adapter.hideReceipts(visibility != VISIBLE);
+    }
+
+    /**
+     * Retrieves the visibility status of the reply count.
+     *
+     * @return An integer representing the visibility of the reply count.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getReplyCountVisibility() {
+        return replyCountVisibility;
+    }
+
+    /**
+     * Hide or show the reply count in the Thread Header.
+     *
+     * @param visibility GONE to hide the reply count, VISIBLE to show it.
+     */
+    public void setReplyCountVisibility(int visibility) {
+        this.replyCountVisibility = visibility;
+        binding.tvReplies.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the reply count bar.
+     *
+     * @return An integer representing the visibility of the reply count bar.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getReplyCountBarVisibility() {
+        return replyCountBarVisibility;
+    }
+
+    /**
+     * Hide or show the reply count bar in the Thread Header.
+     *
+     * @param visibility GONE to hide the reply count bar, VISIBLE to show it.
+     */
+    public void setReplyCountBarVisibility(int visibility) {
+        this.replyCountBarVisibility = visibility;
+        binding.repliesLayout.setVisibility(visibility);
+    }
+
 }

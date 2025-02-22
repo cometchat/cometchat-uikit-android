@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.cometchat.chat.models.User
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.databinding.FragmentUsersBinding
 import com.cometchat.sampleapp.kotlin.ui.activity.MessagesActivity
@@ -27,12 +25,10 @@ class UsersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.users.setItemClickListener(object : OnItemClickListener<User>() {
-            override fun OnItemClick(user: User, position: Int) {
-                val intent = Intent(requireActivity(), MessagesActivity::class.java)
-                intent.putExtra(getString(R.string.app_user), Gson().toJson(user))
-                startActivity(intent)
-            }
-        })
+        binding.users.setOnItemClick { view, position, user ->
+            val intent = Intent(requireActivity(), MessagesActivity::class.java)
+            intent.putExtra(getString(R.string.app_user), Gson().toJson(user))
+            startActivity(intent)
+        }
     }
 }

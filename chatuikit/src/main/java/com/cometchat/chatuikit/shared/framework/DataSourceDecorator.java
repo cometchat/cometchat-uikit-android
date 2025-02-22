@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cometchat.chat.models.BaseMessage;
@@ -45,8 +46,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the text message.
      */
     @Override
-    public List<CometChatMessageOption> getTextMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getTextMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getTextMessageOptions(Context context,
+                                                              BaseMessage baseMessage,
+                                                              Group group,
+                                                              @NonNull AdditionParameter additionParameter) {
+        return dataSource.getTextMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -59,8 +63,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the image message.
      */
     @Override
-    public List<CometChatMessageOption> getImageMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getImageMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getImageMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               @NonNull AdditionParameter additionParameter) {
+        return dataSource.getImageMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -73,8 +80,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the video message.
      */
     @Override
-    public List<CometChatMessageOption> getVideoMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getVideoMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getVideoMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               @NonNull AdditionParameter additionParameter) {
+        return dataSource.getVideoMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -87,8 +97,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the audio message.
      */
     @Override
-    public List<CometChatMessageOption> getAudioMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getAudioMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getAudioMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               @NonNull AdditionParameter additionParameter) {
+        return dataSource.getAudioMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -101,8 +114,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the file message.
      */
     @Override
-    public List<CometChatMessageOption> getFileMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getFileMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getFileMessageOptions(Context context,
+                                                              BaseMessage baseMessage,
+                                                              Group group,
+                                                              @NonNull AdditionParameter additionParameter) {
+        return dataSource.getFileMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -134,7 +150,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                RecyclerView.ViewHolder holder,
                                List<BaseMessage> messageList,
                                int position,
-                               AdditionParameter additionParameter) {
+                               @NonNull AdditionParameter additionParameter) {
         dataSource.bindBottomView(context, createdView, message, alignment, holder, messageList, position, additionParameter);
     }
 
@@ -169,7 +185,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                           RecyclerView.ViewHolder holder,
                                           List<BaseMessage> messageList,
                                           int position,
-                                          AdditionParameter additionParameter) {
+                                          @NonNull AdditionParameter additionParameter) {
         dataSource.bindTextBubbleContentView(context,
                                              createdView,
                                              message,
@@ -212,7 +228,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                           RecyclerView.ViewHolder holder,
                                           List<BaseMessage> messageList,
                                           int position,
-                                          AdditionParameter additionParameter) {
+                                          @NonNull AdditionParameter additionParameter) {
         dataSource.bindFormBubbleContentView(context,
                                              createdView,
                                              message,
@@ -257,7 +273,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                                RecyclerView.ViewHolder holder,
                                                List<BaseMessage> messageList,
                                                int position,
-                                               AdditionParameter additionParameter) {
+                                               @NonNull AdditionParameter additionParameter) {
         dataSource.bindSchedulerBubbleContentView(context,
                                                   createdView,
                                                   message,
@@ -300,7 +316,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                           RecyclerView.ViewHolder holder,
                                           List<BaseMessage> messageList,
                                           int position,
-                                          AdditionParameter additionParameter) {
+                                          @NonNull AdditionParameter additionParameter) {
         dataSource.bindCardBubbleContentView(context,
                                              createdView,
                                              message,
@@ -345,7 +361,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                            RecyclerView.ViewHolder holder,
                                            List<BaseMessage> messageList,
                                            int position,
-                                           AdditionParameter additionParameter) {
+                                           @NonNull AdditionParameter additionParameter) {
         dataSource.bindImageBubbleContentView(context,
                                               createdView,
                                               imageUrl,
@@ -391,7 +407,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                            RecyclerView.ViewHolder holder,
                                            List<BaseMessage> messageList,
                                            int position,
-                                           AdditionParameter additionParameter) {
+                                           @NonNull AdditionParameter additionParameter) {
         dataSource.bindVideoBubbleContentView(context,
                                               createdView,
                                               thumbnailUrl,
@@ -435,7 +451,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                           RecyclerView.ViewHolder holder,
                                           List<BaseMessage> messageList,
                                           int position,
-                                          AdditionParameter additionParameter) {
+                                          @NonNull AdditionParameter additionParameter) {
         dataSource.bindFileBubbleContentView(context,
                                              createdView,
                                              message,
@@ -478,7 +494,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                            RecyclerView.ViewHolder holder,
                                            List<BaseMessage> messageList,
                                            int position,
-                                           AdditionParameter additionParameter) {
+                                           @NonNull AdditionParameter additionParameter) {
         dataSource.bindAudioBubbleContentView(context,
                                               createdView,
                                               message,
@@ -495,7 +511,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getAudioTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getAudioTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getAudioTemplate(additionParameter);
     }
 
@@ -504,7 +520,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getVideoTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getVideoTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getVideoTemplate(additionParameter);
     }
 
@@ -513,7 +529,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getImageTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getImageTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getImageTemplate(additionParameter);
     }
 
@@ -522,7 +538,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getGroupActionsTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getGroupActionsTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getGroupActionsTemplate(additionParameter);
     }
 
@@ -531,7 +547,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getFileTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getFileTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getFileTemplate(additionParameter);
     }
 
@@ -540,7 +556,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getTextTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getTextTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getTextTemplate(additionParameter);
     }
 
@@ -549,7 +565,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getFormTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getFormTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getFormTemplate(additionParameter);
     }
 
@@ -558,7 +574,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getSchedulerTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getSchedulerTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getSchedulerTemplate(additionParameter);
     }
 
@@ -567,7 +583,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public CometChatMessageTemplate getCardTemplate(AdditionParameter additionParameter) {
+    public CometChatMessageTemplate getCardTemplate(@NonNull AdditionParameter additionParameter) {
         return dataSource.getCardTemplate(additionParameter);
     }
 
@@ -576,7 +592,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public List<CometChatMessageTemplate> getMessageTemplates(AdditionParameter additionParameter) {
+    public List<CometChatMessageTemplate> getMessageTemplates(@NonNull AdditionParameter additionParameter) {
         return dataSource.getMessageTemplates(additionParameter);
     }
 
@@ -589,8 +605,8 @@ public abstract class DataSourceDecorator implements DataSource {
      * message template.
      */
     @Override
-    public CometChatMessageTemplate getMessageTemplate(String category, String type) {
-        return dataSource.getMessageTemplate(category, type);
+    public CometChatMessageTemplate getMessageTemplate(String category, String type, @NonNull AdditionParameter additionParameter) {
+        return dataSource.getMessageTemplate(category, type, additionParameter);
     }
 
     /**
@@ -603,8 +619,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the message.
      */
     @Override
-    public List<CometChatMessageOption> getMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getMessageOptions(Context context,
+                                                          BaseMessage baseMessage,
+                                                          Group group,
+                                                          @NonNull AdditionParameter additionParameter) {
+        return dataSource.getMessageOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -618,8 +637,12 @@ public abstract class DataSourceDecorator implements DataSource {
      * available attachment options.
      */
     @Override
-    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
-        return dataSource.getAttachmentOptions(context, user, group, idMap);
+    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context,
+                                                                     User user,
+                                                                     Group group,
+                                                                     HashMap<String, String> idMap,
+                                                                     @NonNull AdditionParameter additionParameter) {
+        return dataSource.getAttachmentOptions(context, user, group, idMap, additionParameter);
     }
 
     /**
@@ -639,7 +662,7 @@ public abstract class DataSourceDecorator implements DataSource {
                                                              Group group,
                                                              HashMap<String, String> idMap,
                                                              AIOptionsStyle aiOptionsStyle,
-                                                             AdditionParameter additionParameter) {
+                                                             @NonNull AdditionParameter additionParameter) {
         return dataSource.getAIOptions(context, user, group, idMap, aiOptionsStyle, additionParameter);
     }
 
@@ -653,7 +676,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return The auxiliary option view.
      */
     @Override
-    public View getAuxiliaryOption(Context context, User user, Group group, HashMap<String, String> id, AdditionParameter additionParameter) {
+    public View getAuxiliaryOption(Context context,
+                                   User user,
+                                   Group group,
+                                   HashMap<String, String> id,
+                                   @NonNull AdditionParameter additionParameter) {
         return dataSource.getAuxiliaryOption(context, user, group, id, additionParameter);
     }
 
@@ -667,8 +694,11 @@ public abstract class DataSourceDecorator implements DataSource {
      * options for the message.
      */
     @Override
-    public List<CometChatMessageOption> getCommonOptions(Context context, BaseMessage baseMessage, Group group) {
-        return dataSource.getCommonOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getCommonOptions(Context context,
+                                                         BaseMessage baseMessage,
+                                                         Group group,
+                                                         @NonNull AdditionParameter additionParameter) {
+        return dataSource.getCommonOptions(context, baseMessage, group, additionParameter);
     }
 
     /**
@@ -677,8 +707,8 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return A list of default message types.
      */
     @Override
-    public List<String> getDefaultMessageTypes() {
-        return dataSource.getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(@NonNull AdditionParameter additionParameter) {
+        return dataSource.getDefaultMessageTypes(additionParameter);
     }
 
     /**
@@ -687,8 +717,8 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return A list of default message categories.
      */
     @Override
-    public List<String> getDefaultMessageCategories() {
-        return dataSource.getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(@NonNull AdditionParameter additionParameter) {
+        return dataSource.getDefaultMessageCategories(additionParameter);
     }
 
     /**
@@ -698,7 +728,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public SpannableString getLastConversationMessage(Context context, Conversation conversation, AdditionParameter additionParameter) {
+    public SpannableString getLastConversationMessage(Context context, Conversation conversation, @NonNull AdditionParameter additionParameter) {
         return dataSource.getLastConversationMessage(context, conversation, additionParameter);
     }
 
@@ -711,7 +741,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return The auxiliary header menu view.
      */
     @Override
-    public View getAuxiliaryHeaderMenu(Context context, User user, Group group, AdditionParameter additionParameter) {
+    public View getAuxiliaryHeaderMenu(Context context, User user, Group group, @NonNull AdditionParameter additionParameter) {
         return dataSource.getAuxiliaryHeaderMenu(context, user, group, additionParameter);
     }
 
@@ -720,7 +750,7 @@ public abstract class DataSourceDecorator implements DataSource {
      * @return
      */
     @Override
-    public List<CometChatTextFormatter> getTextFormatters(Context context) {
-        return dataSource.getTextFormatters(context);
+    public List<CometChatTextFormatter> getTextFormatters(Context context, @NonNull AdditionParameter additionParameter) {
+        return dataSource.getTextFormatters(context, additionParameter);
     }
 }

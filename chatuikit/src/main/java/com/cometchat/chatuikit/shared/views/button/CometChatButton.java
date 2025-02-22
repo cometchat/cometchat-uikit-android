@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ public class CometChatButton extends MaterialCardView {
     private FloatingActionButton button;
     private TextView buttonText;
     private ImageView icon;
+    private RelativeLayout buttonContainer;
 
     /**
      * Constructs a CometChatButton object with the given context.
@@ -45,6 +47,24 @@ public class CometChatButton extends MaterialCardView {
     }
 
     /**
+     * Initializes the CometChatButton by inflating the layout and initializing its
+     * components.
+     *
+     * @param context The context in which the button is created.
+     */
+    private void init(Context context) {
+        this.context = context;
+        Utils.initMaterialCard(this);
+        View view = View.inflate(context, R.layout.cometchat_button, null);
+        button = view.findViewById(R.id.button);
+        buttonText = view.findViewById(R.id.button_text);
+        icon = view.findViewById(R.id.icon);
+        buttonContainer = view.findViewById(R.id.button_container);
+        addView(view);
+    }
+
+    /**
+     * ]
      * Constructs a CometChatButton object with the given context and attributes.
      *
      * @param context The context in which the button is created.
@@ -70,62 +90,6 @@ public class CometChatButton extends MaterialCardView {
     }
 
     /**
-     * Initializes the CometChatButton by inflating the layout and initializing its
-     * components.
-     *
-     * @param context The context in which the button is created.
-     */
-    private void init(Context context) {
-        this.context = context;
-        Utils.initMaterialCard(this);
-        View view = View.inflate(context, R.layout.cometchat_button, null);
-        button = view.findViewById(R.id.button);
-        buttonText = view.findViewById(R.id.button_text);
-        icon = view.findViewById(R.id.icon);
-        addView(view);
-    }
-
-    /**
-     * Sets the font for the button text.
-     *
-     * @param fonts The name of the font file in the assets directory.
-     */
-    public void setButtonTextFont(String fonts) {
-        if (fonts != null && !fonts.isEmpty())
-            buttonText.setTypeface(FontUtils.getInstance().getTypeFace(fonts, getContext()));
-    }
-
-    /**
-     * Sets the appearance of the button text.
-     *
-     * @param appearance The style resource for the button text appearance.
-     */
-    public void setButtonTextAppearance(int appearance) {
-        if (buttonText != null && appearance != 0) buttonText.setTextAppearance(appearance);
-    }
-
-    /**
-     * Sets the color of the button text.
-     *
-     * @param color The color resource for the button text.
-     */
-    public void setButtonTextColor(int color) {
-        if (color != 0) buttonText.setTextColor(color);
-    }
-
-    /**
-     * Sets the text for the button.
-     *
-     * @param titleStr The text to be displayed on the button.
-     */
-    public void setButtonText(@Nullable String titleStr) {
-        if (titleStr != null && !titleStr.isEmpty()) {
-            buttonText.setText(titleStr);
-            buttonText.setVisibility(VISIBLE);
-        } else buttonText.setVisibility(GONE);
-    }
-
-    /**
      * Sets the visibility of the button icon.
      *
      * @param hide Boolean indicating whether to hide the button icon (true) or show
@@ -143,55 +107,6 @@ public class CometChatButton extends MaterialCardView {
     public void setButtonIcon(Drawable icon) {
         if (icon != null) {
             this.icon.setImageDrawable(icon);
-        }
-    }
-
-    /**
-     * Sets the tint color for the button icon.
-     *
-     * @param color The color resource for the button icon tint.
-     */
-    public void setButtonIconTint(@ColorInt int color) {
-        if (color != 0) {
-            this.icon.setImageTintList(ColorStateList.valueOf(color));
-        }
-    }
-
-    /**
-     * Sets the background color for the button.
-     *
-     * @param color The color resource for the button background.
-     */
-    public void setButtonBackgroundColor(@ColorInt int color) {
-        if (color != 0) {
-            button.setBackgroundTintList(ColorStateList.valueOf(color));
-        }
-    }
-
-    /**
-     * Sets the background drawable for the button.
-     *
-     * @param drawable The drawable resource ID for the button background.
-     */
-    public void setButtonBackgroundDrawable(@DrawableRes int drawable) {
-        if (drawable != 0) {
-            button.setBackgroundResource(drawable);
-        }
-    }
-
-    /**
-     * Sets the size of the button.
-     *
-     * @param width  The width of the button in density-independent pixels (dp).
-     * @param height The height of the button in density-independent pixels (dp).
-     */
-    public void setButtonSize(int width, int height) {
-        if (width > 0 && height > 0) {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Utils.convertDpToPx(context, width), Utils.convertDpToPx(context, height));
-            button.setLayoutParams(params);
-            params = new RelativeLayout.LayoutParams(Utils.convertDpToPx(context, width - 10), Utils.convertDpToPx(context, height - 10));
-            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            icon.setLayoutParams(params);
         }
     }
 
@@ -241,12 +156,113 @@ public class CometChatButton extends MaterialCardView {
         }
     }
 
+    /**
+     * Sets the font for the button text.
+     *
+     * @param fonts The name of the font file in the assets directory.
+     */
+    public void setButtonTextFont(String fonts) {
+        if (fonts != null && !fonts.isEmpty())
+            buttonText.setTypeface(FontUtils.getInstance().getTypeFace(fonts, getContext()));
+    }
+
+    /**
+     * Sets the appearance of the button text.
+     *
+     * @param appearance The style resource for the button text appearance.
+     */
+    public void setButtonTextAppearance(int appearance) {
+        if (buttonText != null && appearance != 0) buttonText.setTextAppearance(appearance);
+    }
+
+    /**
+     * Sets the color of the button text.
+     *
+     * @param color The color resource for the button text.
+     */
+    public void setButtonTextColor(int color) {
+        if (color != 0) buttonText.setTextColor(color);
+    }
+
+    /**
+     * Sets the tint color for the button icon.
+     *
+     * @param color The color resource for the button icon tint.
+     */
+    public void setButtonIconTint(@ColorInt int color) {
+        if (color != 0) {
+            this.icon.setImageTintList(ColorStateList.valueOf(color));
+        }
+    }
+
+    /**
+     * Sets the background color for the button.
+     *
+     * @param color The color resource for the button background.
+     */
+    public void setButtonBackgroundColor(@ColorInt int color) {
+        if (color != 0) {
+            button.setBackgroundTintList(ColorStateList.valueOf(color));
+        }
+    }
+
+    /**
+     * Sets the background drawable for the button.
+     *
+     * @param drawable The drawable resource ID for the button background.
+     */
+    public void setButtonBackgroundDrawable(@DrawableRes int drawable) {
+        if (drawable != 0) {
+            button.setBackgroundResource(drawable);
+        }
+    }
+
+    /**
+     * Sets the size of the button.
+     *
+     * @param width  The width of the button in density-independent pixels (dp).
+     * @param height The height of the button in density-independent pixels (dp).
+     */
+    public void setButtonSize(int width, int height) {
+        if (width > 0 && height > 0) {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Utils.convertDpToPx(context, width),
+                                                                                 Utils.convertDpToPx(context, height));
+            button.setLayoutParams(params);
+            params = new RelativeLayout.LayoutParams(Utils.convertDpToPx(context, width - 10), Utils.convertDpToPx(context, height - 10));
+            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            icon.setLayoutParams(params);
+        }
+    }
+
+    public void setButtonPadding(int padding) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                                         LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.topMargin = padding;
+        params.bottomMargin = padding;
+        params.leftMargin = padding;
+        params.rightMargin = padding;
+
+        buttonContainer.setLayoutParams(params);
+    }
+
     public FloatingActionButton getButton() {
         return button;
     }
 
     public TextView getButtonText() {
         return buttonText;
+    }
+
+    /**
+     * Sets the text for the button.
+     *
+     * @param titleStr The text to be displayed on the button.
+     */
+    public void setButtonText(@Nullable String titleStr) {
+        if (titleStr != null && !titleStr.isEmpty()) {
+            buttonText.setText(titleStr);
+            buttonText.setVisibility(VISIBLE);
+        } else buttonText.setVisibility(GONE);
     }
 
     public ImageView getIcon() {

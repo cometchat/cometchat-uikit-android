@@ -125,21 +125,6 @@ public class CometChatReactionList extends MaterialCardView {
         }
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (reactedUsersAdapter != null) {
-            reactedUsersAdapter.setBaseMessage(baseMessage);
-        }
-        if (reactionListViewModel != null) {
-            reactionListViewModel.addListener();
-            String newBaseMessageString = new Gson().toJson(baseMessage);
-            BaseMessage newBaseMessage = new Gson().fromJson(newBaseMessageString, BaseMessage.class);
-            reactionListViewModel.setBaseMessageLiveData(newBaseMessage);
-            reactionListViewModel.setReactionHeaderLiveData(baseMessage.getReactions());
-        }
-    }
-
     /**
      * Inflates the layout and initializes the view.
      *
@@ -230,15 +215,101 @@ public class CometChatReactionList extends MaterialCardView {
     }
 
     /**
-     * Sets the style for the CometChatReactionList view by applying a style
-     * resource.
-     *
-     * @param style The style resource to apply.
+     * Returns the request builder for fetching reactions.
      */
-    public void setStyle(@StyleRes int style) {
-        if (style != 0) {
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatReactionList);
-            extractAttributesAndApplyDefaults(typedArray);
+    private void stateChangeObserver(UIKitConstants.States loadingState) {
+        if (loadingState == UIKitConstants.States.LOADING) {
+            if (getLoadingView() != null) {
+                binding.layoutLoadingState.removeAllViews();
+                Utils.removeParentFromView(getLoadingView());
+                binding.layoutLoadingState.addView(getLoadingView());
+            } else {
+                CometChatShimmerAdapter adapter = new CometChatShimmerAdapter(10, R.layout.shimmer_cometchat_reaction_list_items);
+                binding.shimmerParentLayout.shimmerRecyclerviewReactionList.setAdapter(adapter);
+                binding.shimmerParentLayout.shimmerEffectFrame.setShimmer(CometChatShimmerUtils.getCometChatShimmerConfig(getContext()));
+                binding.shimmerParentLayout.shimmerEffectFrame.startShimmer();
+            }
+            binding.layoutLoadingState.setVisibility(View.VISIBLE);
+            binding.recyclerViewUsers.setVisibility(GONE);
+        } else if (loadingState == UIKitConstants.States.LOADED) {
+            if (getLoadingView() == null) {
+                binding.shimmerParentLayout.shimmerEffectFrame.stopShimmer();
+            }
+            binding.layoutLoadingState.setVisibility(View.GONE);
+            binding.recyclerViewUsers.setVisibility(VISIBLE);
+        } else {
+            if (getErrorView() != null) {
+                binding.layoutErrorState.removeAllViews();
+                Utils.removeParentFromView(getErrorView());
+                binding.layoutErrorState.addView(getErrorView());
+            } else {
+                if (getErrorText() != null) {
+                    setErrorText(getErrorText());
+                } else {
+                    setErrorText(getContext().getString(R.string.cometchat_reaction_list_error));
+                }
+            }
+            binding.layoutLoadingState.setVisibility(View.GONE);
+            binding.recyclerViewUsers.setVisibility(GONE);
+            binding.layoutErrorState.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Sets the list of reaction headers for the reaction list.
+     *
+     * @param reactionHeaderList The list of ReactionCount objects.
+     */
+    public void setReactionHeaderList(List<ReactionCount> reactionHeaderList) {
+        this.reactionHeaderList = reactionHeaderList;
+        if (reactionListViewModel != null)
+            reactionListViewModel.setSelectedReactionLiveData(selectedReaction);
+    }
+
+    /**
+     * Updates the selected reaction and handles the loader state.
+     *
+     * @param selectedReaction The newly selected reaction string.
+     */
+    public void updatedSelectedReaction(String selectedReaction) {
+        this.selectedReaction = selectedReaction;
+        if (reactionListViewModel != null) {
+            reactionListViewModel.setActiveTabIndexLiveData(0);
+        }
+    }
+
+    /**
+     * Sets the active tab in the reaction header.
+     *
+     * @param activeTab The index of the active tab.
+     */
+    public void setActiveTab(int activeTab) {
+        if (reactionsHeaderAdapter != null) {
+            if (reactionHeaderList.isEmpty()) {
+                reactedUsersAdapter.setReactedUsersList(new ArrayList<>());
+                if (onEmpty != null) {
+                    onEmpty.onClick();
+                }
+            }
+            reactionsHeaderAdapter.setActiveTab(activeTab);
+            reactionsHeaderAdapter.updateReactionHeaderList(reactionHeaderList);
+            if (reactionListViewModel != null) {
+                reactionListViewModel.getReactedUsersList(activeTab == 0 ? getContext().getString(R.string.cometchat_all) : this.selectedReaction,
+                                                          getReactionsRequestBuilder());
+            }
+        }
+    }
+
+    /**
+     * Sets the list of reactions for the reaction list.
+     *
+     * @param reactions The list of Reaction objects.
+     */
+    public void setReactedUsersList(List<Reaction> reactions) {
+        if (reactions != null) {
+            if (reactedUsersAdapter != null) {
+                reactedUsersAdapter.setReactedUsersList(reactions);
+            }
         }
     }
 
@@ -252,28 +323,100 @@ public class CometChatReactionList extends MaterialCardView {
         if (typedArray == null) return;
         try {
             // Extract attributes or apply default values
-            reactionListBackgroundColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListBackgroundColor, reactionListBackgroundColor);
-            reactionListStrokeColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListStrokeColor, reactionListStrokeColor);
-            reactionListTitleTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTitleTextColor, reactionListTitleTextColor);
-            reactionListTabTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabTextColor, reactionListTabTextColor);
-            reactionListTabTextActiveColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabTextActiveColor, reactionListTabTextActiveColor);
-            reactionListTabActiveIndicatorColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabActiveIndicatorColor, reactionListTabActiveIndicatorColor);
-            reactionListSubTitleTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListSubTitleTextColor, reactionListSubTitleTextColor);
-            reactionListErrorTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListErrorTextColor, reactionListErrorTextColor);
-            reactionListAvatarStyle = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListAvatarStyle, reactionListAvatarStyle);
-            reactionListStrokeWidth = typedArray.getDimensionPixelSize(R.styleable.CometChatReactionList_cometchatReactionListStrokeWidth, reactionListStrokeWidth);
-            reactionListCornerRadius = typedArray.getDimensionPixelSize(R.styleable.CometChatReactionList_cometchatReactionListCornerRadius, reactionListCornerRadius);
-            reactionListTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTitleTextAppearance, reactionListTitleTextAppearance);
-            reactionListTabTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTabTextAppearance, reactionListTabTextAppearance);
-            reactionListTailViewTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTailViewTextAppearance, reactionListTailViewTextAppearance);
-            reactionListSubTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListSubTitleTextAppearance, reactionListSubTitleTextAppearance);
-            reactionListErrorTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListErrorTextApAppearance, reactionListErrorTextAppearance);
+            reactionListBackgroundColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListBackgroundColor,
+                                                              reactionListBackgroundColor);
+            reactionListStrokeColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListStrokeColor,
+                                                          reactionListStrokeColor);
+            reactionListTitleTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTitleTextColor,
+                                                             reactionListTitleTextColor);
+            reactionListTabTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabTextColor,
+                                                           reactionListTabTextColor);
+            reactionListTabTextActiveColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabTextActiveColor,
+                                                                 reactionListTabTextActiveColor);
+            reactionListTabActiveIndicatorColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListTabActiveIndicatorColor,
+                                                                      reactionListTabActiveIndicatorColor);
+            reactionListSubTitleTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListSubTitleTextColor,
+                                                                reactionListSubTitleTextColor);
+            reactionListErrorTextColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListErrorTextColor,
+                                                             reactionListErrorTextColor);
+            reactionListAvatarStyle = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListAvatarStyle,
+                                                               reactionListAvatarStyle);
+            reactionListStrokeWidth = typedArray.getDimensionPixelSize(R.styleable.CometChatReactionList_cometchatReactionListStrokeWidth,
+                                                                       reactionListStrokeWidth);
+            reactionListCornerRadius = typedArray.getDimensionPixelSize(R.styleable.CometChatReactionList_cometchatReactionListCornerRadius,
+                                                                        reactionListCornerRadius);
+            reactionListTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTitleTextAppearance,
+                                                                       reactionListTitleTextAppearance);
+            reactionListTabTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTabTextAppearance,
+                                                                     reactionListTabTextAppearance);
+            reactionListTailViewTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListTailViewTextAppearance,
+                                                                          reactionListTailViewTextAppearance);
+            reactionListSubTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListSubTitleTextAppearance,
+                                                                          reactionListSubTitleTextAppearance);
+            reactionListErrorTextAppearance = typedArray.getResourceId(R.styleable.CometChatReactionList_cometchatReactionListErrorTextApAppearance,
+                                                                       reactionListErrorTextAppearance);
             reactionListSeparatorColor = typedArray.getColor(R.styleable.CometChatReactionList_cometchatReactionListSeparatorColor, 0);
 
             updateUI();
         } finally {
             typedArray.recycle();
         }
+    }
+
+    /**
+     * Returns the loading view in the reaction list.
+     *
+     * @return The loading view object.
+     */
+    public View getLoadingView() {
+        return loadingView;
+    }
+
+    /**
+     * Returns the error view in the reaction list.
+     *
+     * @return The error view object.
+     */
+    public View getErrorView() {
+        return errorView;
+    }
+
+    /**
+     * Sets the error view for the reaction list.
+     *
+     * @param errorView The view to display when there is an error.
+     */
+    public void setErrorView(View errorView) {
+        this.errorView = errorView;
+    }
+
+    /**
+     * Returns the error text in the reaction list.
+     *
+     * @return The error text string.
+     */
+    public String getErrorText() {
+        return errorText;
+    }
+
+    /**
+     * Sets the error text for the reaction list. This text will be displayed when
+     * an error occurs.
+     *
+     * @param errorText The error message string.
+     */
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+        binding.tvErrorState.setText(errorText);
+    }
+
+    /**
+     * Returns the request builder for fetching reactions.
+     *
+     * @return The ReactionsRequest.ReactionsRequestBuilder object.
+     */
+    public ReactionsRequest.ReactionsRequestBuilder getReactionsRequestBuilder() {
+        return reactionsRequestBuilder;
     }
 
     /**
@@ -297,6 +440,53 @@ public class CometChatReactionList extends MaterialCardView {
         setReactionListSubTitleTextAppearance(reactionListSubTitleTextAppearance);
         setReactionListErrorTextAppearance(reactionListErrorTextAppearance);
         setReactionListSeparatorColor(reactionListSeparatorColor);
+    }
+
+    /**
+     * Sets the request builder for fetching reactions.
+     *
+     * @param reactionsRequestBuilder The ReactionsRequest.ReactionsRequestBuilder object.
+     */
+    public void setReactionsRequestBuilder(ReactionsRequest.ReactionsRequestBuilder reactionsRequestBuilder) {
+        if (reactionsRequestBuilder != null)
+            this.reactionsRequestBuilder = reactionsRequestBuilder;
+    }
+
+    /**
+     * Sets the loading view for the reaction list.
+     *
+     * @param loadingView The view to display when reactions are loading.
+     */
+    public void setLoadingView(View loadingView) {
+        this.loadingView = loadingView;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (reactedUsersAdapter != null) {
+            reactedUsersAdapter.setBaseMessage(baseMessage);
+        }
+        if (reactionListViewModel != null) {
+            reactionListViewModel.addListener();
+            String newBaseMessageString = new Gson().toJson(baseMessage);
+            BaseMessage newBaseMessage = new Gson().fromJson(newBaseMessageString, BaseMessage.class);
+            reactionListViewModel.setBaseMessageLiveData(newBaseMessage);
+            reactionListViewModel.setReactionHeaderLiveData(baseMessage.getReactions());
+        }
+    }
+
+    /**
+     * Sets the style for the CometChatReactionList view by applying a style
+     * resource.
+     *
+     * @param style The style resource to apply.
+     */
+    public void setStyle(@StyleRes int style) {
+        if (style != 0) {
+            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatReactionList);
+            extractAttributesAndApplyDefaults(typedArray);
+        }
     }
 
     /**
@@ -393,7 +583,13 @@ public class CometChatReactionList extends MaterialCardView {
      */
     public void setReactionListCornerRadius(@Dimension int reactionListCornerRadius) {
         this.reactionListCornerRadius = reactionListCornerRadius;
-        ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel().toBuilder().setTopLeftCorner(CornerFamily.ROUNDED, reactionListCornerRadius).setTopRightCorner(CornerFamily.ROUNDED, reactionListCornerRadius).setBottomLeftCorner(CornerFamily.ROUNDED, 0).setBottomRightCorner(CornerFamily.ROUNDED, 0).build();
+        ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel()
+            .toBuilder()
+            .setTopLeftCorner(CornerFamily.ROUNDED, reactionListCornerRadius)
+            .setTopRightCorner(CornerFamily.ROUNDED, reactionListCornerRadius)
+            .setBottomLeftCorner(CornerFamily.ROUNDED, 0)
+            .setBottomRightCorner(CornerFamily.ROUNDED, 0)
+            .build();
         binding.cardReactionList.setShapeAppearanceModel(shapeAppearanceModel);
     }
 
@@ -578,6 +774,15 @@ public class CometChatReactionList extends MaterialCardView {
     }
 
     /**
+     * Sets the item click listener for the ReactedUsersAdapter.
+     *
+     * @param onReactionListItemClick The item click listener to set.
+     */
+    public void setOnReactionListItemClick(OnReactionListItemClick onReactionListItemClick) {
+        reactedUsersAdapter.setOnReactionListItemClick(onReactionListItemClick);
+    }
+
+    /**
      * Returns the error text color for the reaction list.
      *
      * @return The color integer of the error text.
@@ -658,74 +863,6 @@ public class CometChatReactionList extends MaterialCardView {
     }
 
     /**
-     * Returns the error view in the reaction list.
-     *
-     * @return The error view object.
-     */
-    public View getErrorView() {
-        return errorView;
-    }
-
-    /**
-     * Sets the error view for the reaction list.
-     *
-     * @param errorView The view to display when there is an error.
-     */
-    public void setErrorView(View errorView) {
-        this.errorView = errorView;
-    }
-
-    /**
-     * Returns the loading view in the reaction list.
-     *
-     * @return The loading view object.
-     */
-    public View getLoadingView() {
-        return loadingView;
-    }
-
-    /**
-     * Sets the loading view for the reaction list.
-     *
-     * @param loadingView The view to display when reactions are loading.
-     */
-    public void setLoadingView(View loadingView) {
-        this.loadingView = loadingView;
-    }
-
-    /**
-     * Returns the error text in the reaction list.
-     *
-     * @return The error text string.
-     */
-    public String getErrorText() {
-        return errorText;
-    }
-
-    /**
-     * Sets the error text for the reaction list. This text will be displayed when
-     * an error occurs.
-     *
-     * @param errorText The error message string.
-     */
-    public void setErrorText(String errorText) {
-        this.errorText = errorText;
-        binding.tvErrorState.setText(errorText);
-    }
-
-    /**
-     * Updates the selected reaction and handles the loader state.
-     *
-     * @param selectedReaction The newly selected reaction string.
-     */
-    public void updatedSelectedReaction(String selectedReaction) {
-        this.selectedReaction = selectedReaction;
-        if (reactionListViewModel != null) {
-            reactionListViewModel.setActiveTabIndexLiveData(0);
-        }
-    }
-
-    /**
      * Returns the base message of the reaction list.
      *
      * @return The BaseMessage object.
@@ -744,116 +881,12 @@ public class CometChatReactionList extends MaterialCardView {
     }
 
     /**
-     * Sets the list of reaction headers for the reaction list.
-     *
-     * @param reactionHeaderList The list of ReactionCount objects.
-     */
-    public void setReactionHeaderList(List<ReactionCount> reactionHeaderList) {
-        this.reactionHeaderList = reactionHeaderList;
-        if (reactionListViewModel != null)
-            reactionListViewModel.setSelectedReactionLiveData(selectedReaction);
-    }
-
-    /**
-     * Sets the active tab in the reaction header.
-     *
-     * @param activeTab The index of the active tab.
-     */
-    public void setActiveTab(int activeTab) {
-        if (reactionsHeaderAdapter != null) {
-            if (reactionHeaderList.isEmpty()) {
-                reactedUsersAdapter.setReactedUsersList(new ArrayList<>());
-                if (onEmpty != null) {
-                    onEmpty.onClick();
-                }
-            }
-            reactionsHeaderAdapter.setActiveTab(activeTab);
-            reactionsHeaderAdapter.updateReactionHeaderList(reactionHeaderList);
-            if (reactionListViewModel != null) {
-                reactionListViewModel.getReactedUsersList(activeTab == 0 ? getContext().getString(R.string.cometchat_all) : this.selectedReaction, getReactionsRequestBuilder());
-            }
-        }
-    }
-
-    /**
-     * Returns the request builder for fetching reactions.
-     */
-    private void stateChangeObserver(UIKitConstants.States loadingState) {
-        if (loadingState == UIKitConstants.States.LOADING) {
-            if (getLoadingView() != null) {
-                binding.layoutLoadingState.removeAllViews();
-                Utils.removeParentFromView(getLoadingView());
-                binding.layoutLoadingState.addView(getLoadingView());
-            } else {
-                CometChatShimmerAdapter adapter = new CometChatShimmerAdapter(10, R.layout.shimmer_cometchat_reaction_list_items);
-                binding.shimmerParentLayout.shimmerRecyclerviewReactionList.setAdapter(adapter);
-                binding.shimmerParentLayout.shimmerEffectFrame.setShimmer(CometChatShimmerUtils.getCometChatShimmerConfig(getContext()));
-                binding.shimmerParentLayout.shimmerEffectFrame.startShimmer();
-            }
-            binding.layoutLoadingState.setVisibility(View.VISIBLE);
-            binding.recyclerViewUsers.setVisibility(GONE);
-        } else if (loadingState == UIKitConstants.States.LOADED) {
-            if (getLoadingView() == null) {
-                binding.shimmerParentLayout.shimmerEffectFrame.stopShimmer();
-            }
-            binding.layoutLoadingState.setVisibility(View.GONE);
-            binding.recyclerViewUsers.setVisibility(VISIBLE);
-        } else {
-            if (getErrorView() != null) {
-                binding.layoutErrorState.removeAllViews();
-                Utils.removeParentFromView(getErrorView());
-                binding.layoutErrorState.addView(getErrorView());
-            } else {
-                if (getErrorText() != null) {
-                    setErrorText(getErrorText());
-                } else {
-                    setErrorText(getContext().getString(R.string.cometchat_reaction_list_error));
-                }
-            }
-            binding.layoutLoadingState.setVisibility(View.GONE);
-            binding.recyclerViewUsers.setVisibility(GONE);
-            binding.layoutErrorState.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
      * Sets the loading state for the reacted users list.
      *
      * @param isReactedUserListLoading A boolean indicating whether the reacted user list is loading.
      */
     public void isReactedUserListLoading(boolean isReactedUserListLoading) {
         this.isReactedUserListLoading = isReactedUserListLoading;
-    }
-
-    /**
-     * Sets the list of reactions for the reaction list.
-     *
-     * @param reactions The list of Reaction objects.
-     */
-    public void setReactedUsersList(List<Reaction> reactions) {
-        if (reactions != null) {
-            if (reactedUsersAdapter != null) {
-                reactedUsersAdapter.setReactedUsersList(reactions);
-            }
-        }
-    }
-
-    /**
-     * Sets the request builder for fetching reactions.
-     *
-     * @param reactionsRequestBuilder The ReactionsRequest.ReactionsRequestBuilder object.
-     */
-    public void setReactionsRequestBuilder(ReactionsRequest.ReactionsRequestBuilder reactionsRequestBuilder) {
-        this.reactionsRequestBuilder = reactionsRequestBuilder;
-    }
-
-    /**
-     * Returns the request builder for fetching reactions.
-     *
-     * @return The ReactionsRequest.ReactionsRequestBuilder object.
-     */
-    public ReactionsRequest.ReactionsRequestBuilder getReactionsRequestBuilder() {
-        return reactionsRequestBuilder;
     }
 
     /**

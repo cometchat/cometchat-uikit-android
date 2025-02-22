@@ -18,10 +18,10 @@ import com.cometchat.calls.model.RTCUser;
 import com.cometchat.chat.core.Call;
 import com.cometchat.chat.core.CometChat;
 import com.cometchat.chat.exceptions.CometChatException;
+import com.cometchat.chatuikit.calls.CometChatOngoingCallActivity;
 import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.data.repository.Repository;
-import com.cometchat.sampleapp.java.fcm.ui.activity.OngoingCallActivity;
 import com.cometchat.sampleapp.java.fcm.utils.MyApplication;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class CometChatVoIPConnection extends Connection implements CometChatCall
         Repository.acceptCall(call, new CometChat.CallbackListener<Call>() {
             @Override
             public void onSuccess(Call call) {
-                Intent intent = new Intent(context, OngoingCallActivity.class);
+                Intent intent = new Intent(context, CometChatOngoingCallActivity.class);
                 intent.putExtra(context.getString(R.string.app_session_id), call.getSessionId());
                 intent.putExtra(context.getString(R.string.app_call_type), call.getType());
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

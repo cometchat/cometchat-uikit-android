@@ -12,7 +12,7 @@ public final class UIKitConstants {
         USERS, USERS_AND_GROUP_MEMBERS
     }
 
-    public enum CallWorkFlow{
+    public enum CallWorkFlow {
         MEETING, DEFAULT
     }
 
@@ -60,6 +60,18 @@ public final class UIKitConstants {
         DATE, TIME, DATE_TIME
     }
 
+    public enum DeleteState {
+        INITIATED_DELETE, SUCCESS_DELETE, FAILURE_DELETE
+    }
+
+    public enum DialogState {
+        INITIATED, SUCCESS, FAILURE
+    }
+
+    public enum CustomUIPosition {
+        COMPOSER_TOP, COMPOSER_BOTTOM, MESSAGE_LIST_TOP, MESSAGE_LIST_BOTTOM
+    }
+
     public static final class SharedPreferencesKeys {
         public static final String CALL = "initiated_call";
         public static final String CALL_MESSAGE = "call_message";
@@ -70,14 +82,6 @@ public final class UIKitConstants {
         public static final String INTERNAL_STATUS_INFO_VIEW = "internal_status_info_view";
         public static final String INTERNAL_THREAD_VIEW = "internal_thread_view";
         public static final String INTERNAL_LEADING_VIEW = "internal_leading_view";
-    }
-
-    public enum DeleteState {
-        INITIATED_DELETE, SUCCESS_DELETE, FAILURE_DELETE
-    }
-
-    public enum DialogState {
-        INITIATED, SUCCESS, FAILURE
     }
 
     public static final class IntentStrings {
@@ -161,10 +165,6 @@ public final class UIKitConstants {
         public static final String PARTICIPANTS = "participants";
         public static final String RECORDING = "recording";
         public static final String CALL_HISTORY = "callHistory";
-    }
-
-    public enum CustomUIPosition {
-        COMPOSER_TOP, COMPOSER_BOTTOM, MESSAGE_LIST_TOP, MESSAGE_LIST_BOTTOM
     }
 
     public static final class GroupMemberOption {
@@ -300,7 +300,7 @@ public final class UIKitConstants {
         public static final String UI_ELEMENT_DATE_TIME = "dateTime";
     }
 
-    public static final class CallingJSONConstants{
+    public static final class CallingJSONConstants {
         public static final String CALL_TYPE = "callType";
         public static final String CALL_SESSION_ID = "sessionID";
     }

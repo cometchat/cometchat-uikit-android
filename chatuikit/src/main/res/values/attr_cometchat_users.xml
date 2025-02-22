@@ -19,8 +19,6 @@
         <attr name="cometchatUsersSubmitSelectionIcon" format="reference" />
         <attr name="cometchatUsersSubmitSelectionIconTint" format="color" />
 
-        <attr name="cometchatUsersSearchInputStartIcon" format="reference" />
-        <attr name="cometchatUsersSearchInputStartIconTint" format="color" />
         <attr name="cometchatUsersSearchInputEndIcon" format="reference" />
         <attr name="cometchatUsersSearchInputEndIconTint" format="color" />
 

@@ -20,7 +20,6 @@ import com.cometchat.chatuikit.extensions.ExtensionConstants;
 import com.cometchat.chatuikit.extensions.Extensions;
 import com.cometchat.chatuikit.extensions.collaborative.CollaborativeBoardBubbleConfiguration;
 import com.cometchat.chatuikit.extensions.collaborative.CollaborativeUtils;
-import com.cometchat.chatuikit.extensions.reaction.ExtensionResponseListener;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
@@ -32,6 +31,7 @@ import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.viewholders.MessagesViewHolderListener;
 import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.reaction.ExtensionResponseListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -61,39 +61,40 @@ public class CollaborativeDocumentExtensionDecorator extends DataSourceDecorator
     public List<CometChatMessageComposerAction> getAttachmentOptions(Context context,
                                                                      @Nullable User user,
                                                                      Group group,
-                                                                     HashMap<String, String> idMap) {
+                                                                     HashMap<String, String> idMap, AdditionParameter additionParameter) {
         if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
-            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
-            messageComposerActions.add(new CometChatMessageComposerAction()
-                                           .setId(ExtensionConstants.ExtensionType.DOCUMENT)
-                                           .setTitle(context.getString(R.string.cometchat_collaborative_doc))
-                                           .setIcon(R.drawable.cometchat_ic_collaborative_document)
-                                           .setTitleColor(CometChatTheme.getTextColorPrimary(context))
-                                           .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
-                                           .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
-                                           .setBackground(CometChatTheme.getBackgroundColor1(context))
-                                           .setOnClick(() -> {
-                                               String id, type;
-                                               id = user != null ? user.getUid() : group.getGuid();
-                                               type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
-                                               Extensions.callWriteBoardExtension(id, type, new ExtensionResponseListener() {
-                                                   @Override
-                                                   public void OnResponseSuccess(Object var) {
-                                                   }
+            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap, additionParameter);
+            if (additionParameter != null && additionParameter.getCollaborativeDocumentOptionVisibility() == View.VISIBLE)
+                messageComposerActions.add(new CometChatMessageComposerAction()
+                                               .setId(ExtensionConstants.ExtensionType.DOCUMENT)
+                                               .setTitle(context.getString(R.string.cometchat_collaborative_doc))
+                                               .setIcon(R.drawable.cometchat_ic_collaborative_document)
+                                               .setTitleColor(CometChatTheme.getTextColorPrimary(context))
+                                               .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
+                                               .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
+                                               .setBackground(CometChatTheme.getBackgroundColor1(context))
+                                               .setOnClick(() -> {
+                                                   String id, type;
+                                                   id = user != null ? user.getUid() : group.getGuid();
+                                                   type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
+                                                   Extensions.callWriteBoardExtension(id, type, new ExtensionResponseListener() {
+                                                       @Override
+                                                       public void OnResponseSuccess(Object var) {
+                                                       }
 
-                                                   @Override
-                                                   public void OnResponseFailed(CometChatException e) {
-                                                       showError(context);
-                                                   }
-                                               });
-                                           }));
+                                                       @Override
+                                                       public void OnResponseFailed(CometChatException e) {
+                                                           showError(context);
+                                                       }
+                                                   });
+                                               }));
             return messageComposerActions;
-        } else return super.getAttachmentOptions(context, user, group, idMap);
+        } else return super.getAttachmentOptions(context, user, group, idMap, additionParameter);
     }
 
     @Override
-    public List<String> getDefaultMessageTypes() {
-        List<String> types = super.getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(AdditionParameter additionParameter) {
+        List<String> types = super.getDefaultMessageTypes(additionParameter);
         if (!types.contains(collaborativeDocumentExtensionTypeConstant)) {
             types.add(collaborativeDocumentExtensionTypeConstant);
         }
@@ -101,8 +102,8 @@ public class CollaborativeDocumentExtensionDecorator extends DataSourceDecorator
     }
 
     @Override
-    public List<String> getDefaultMessageCategories() {
-        List<String> categories = super.getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(AdditionParameter additionParameter) {
+        List<String> categories = super.getDefaultMessageCategories(additionParameter);
         if (!categories.contains(UIKitConstants.MessageCategory.CUSTOM))
             categories.add(UIKitConstants.MessageCategory.CUSTOM);
         return categories;
@@ -150,7 +151,9 @@ public class CollaborativeDocumentExtensionDecorator extends DataSourceDecorator
         return new CometChatMessageTemplate()
             .setCategory(UIKitConstants.MessageCategory.CUSTOM)
             .setType(collaborativeDocumentExtensionTypeConstant)
-            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign))
+            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, isLeftAlign, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @NonNull
                 @Override

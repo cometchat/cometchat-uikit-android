@@ -8,13 +8,13 @@
         android:id="@+id/iv_attachments"
         android:layout_width="@dimen/cometchat_24dp"
         android:layout_height="@dimen/cometchat_24dp"
-        android:layout_marginEnd="@dimen/cometchat_margin_4"
         android:importantForAccessibility="no" />
 
     <ImageView
         android:id="@+id/iv_microphone"
         android:layout_width="@dimen/cometchat_24dp"
         android:layout_height="@dimen/cometchat_24dp"
+        android:layout_marginStart="@dimen/cometchat_margin_4"
         android:background="@android:color/transparent"
         android:importantForAccessibility="no" />
 </LinearLayout>

@@ -58,71 +58,76 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
+    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context,
+                                                                     User user,
+                                                                     Group group,
+                                                                     HashMap<String, String> idMap,
+                                                                     AdditionParameter additionParameter) {
         if (!idMap.containsKey(UIKitConstants.MapId.PARENT_MESSAGE_ID)) {
-            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap);
-            messageComposerActions.add(new CometChatMessageComposerAction()
-                                           .setId(ExtensionConstants.ExtensionType.EXTENSION_POLL)
-                                           .setTitle(context.getString(R.string.cometchat_poll))
-                                           .setIcon(R.drawable.cometchat_ic_polls)
-                                           .setTitleColor(CometChatTheme.getTextColorPrimary(context))
-                                           .setBackground(CometChatTheme.getBackgroundColor1(context))
-                                           .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
-                                           .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
-                                           .setOnClick(() -> {
-                                               String id, type;
-                                               id = user != null ? user.getUid() : group.getGuid();
-                                               type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
-                                               AlertDialog.Builder alertDialog = new AlertDialog.Builder(context,
-                                                                                                         androidx.appcompat.R.style.AlertDialog_AppCompat);
-                                               CometChatCreatePoll chatCreatePoll = new CometChatCreatePoll(context);
-                                               ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                                                          ViewGroup.LayoutParams.MATCH_PARENT);
-                                               chatCreatePoll.setLayoutParams(params);
-                                               alertDialog.setView(chatCreatePoll);
-                                               Dialog dialog = alertDialog.create();
-                                               Utils.setDialogStatusBarColor(dialog, CometChatTheme.getBackgroundColor1(context));
-                                               chatCreatePoll.setBackClickListener(view -> dialog.dismiss());
-                                               chatCreatePoll.setOnSubmitClickListener((question, options) -> {
-                                                   try {
-                                                       chatCreatePoll.setErrorStateVisibility(View.GONE);
-                                                       chatCreatePoll.setProgressVisibility(View.VISIBLE);
-                                                       JSONObject jsonObject = new JSONObject();
-                                                       jsonObject.put("question", question);
-                                                       jsonObject.put("options", options);
-                                                       jsonObject.put("receiver", id);
-                                                       jsonObject.put("receiverType", type);
-                                                       CometChat.callExtension("polls",
-                                                                               "POST",
-                                                                               "/v2/create",
-                                                                               jsonObject,
-                                                                               new CometChat.CallbackListener<JSONObject>() {
-                                                                                   @Override
-                                                                                   public void onSuccess(JSONObject jsonObject) {
-                                                                                       chatCreatePoll.setProgressVisibility(View.GONE);
-                                                                                       dialog.dismiss();
-                                                                                   }
+            List<CometChatMessageComposerAction> messageComposerActions = super.getAttachmentOptions(context, user, group, idMap, additionParameter);
+            if (additionParameter != null && additionParameter.getPollAttachmentOptionVisibility() == View.VISIBLE)
+                messageComposerActions.add(new CometChatMessageComposerAction()
+                                               .setId(ExtensionConstants.ExtensionType.EXTENSION_POLL)
+                                               .setTitle(context.getString(R.string.cometchat_poll))
+                                               .setIcon(R.drawable.cometchat_ic_polls)
+                                               .setTitleColor(CometChatTheme.getTextColorPrimary(context))
+                                               .setBackground(CometChatTheme.getBackgroundColor1(context))
+                                               .setTitleAppearance(CometChatTheme.getTextAppearanceBodyRegular(context))
+                                               .setIconTintColor(CometChatTheme.getIconTintHighlight(context))
+                                               .setOnClick(() -> {
+                                                   String id, type;
+                                                   id = user != null ? user.getUid() : group.getGuid();
+                                                   type = user != null ? UIKitConstants.ReceiverType.USER : UIKitConstants.ReceiverType.GROUP;
+                                                   AlertDialog.Builder alertDialog = new AlertDialog.Builder(context,
+                                                                                                             androidx.appcompat.R.style.AlertDialog_AppCompat);
+                                                   CometChatCreatePoll chatCreatePoll = new CometChatCreatePoll(context);
+                                                   ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                                                              ViewGroup.LayoutParams.MATCH_PARENT);
+                                                   chatCreatePoll.setLayoutParams(params);
+                                                   alertDialog.setView(chatCreatePoll);
+                                                   Dialog dialog = alertDialog.create();
+                                                   Utils.setDialogStatusBarColor(dialog, CometChatTheme.getBackgroundColor1(context));
+                                                   chatCreatePoll.setBackClickListener(view -> dialog.dismiss());
+                                                   chatCreatePoll.setOnSubmitClickListener((question, options) -> {
+                                                       try {
+                                                           chatCreatePoll.setErrorStateVisibility(View.GONE);
+                                                           chatCreatePoll.setProgressVisibility(View.VISIBLE);
+                                                           JSONObject jsonObject = new JSONObject();
+                                                           jsonObject.put("question", question);
+                                                           jsonObject.put("options", options);
+                                                           jsonObject.put("receiver", id);
+                                                           jsonObject.put("receiverType", type);
+                                                           CometChat.callExtension("polls",
+                                                                                   "POST",
+                                                                                   "/v2/create",
+                                                                                   jsonObject,
+                                                                                   new CometChat.CallbackListener<JSONObject>() {
+                                                                                       @Override
+                                                                                       public void onSuccess(JSONObject jsonObject) {
+                                                                                           chatCreatePoll.setProgressVisibility(View.GONE);
+                                                                                           dialog.dismiss();
+                                                                                       }
 
-                                                                                   @Override
-                                                                                   public void onError(CometChatException e) {
-                                                                                       chatCreatePoll.setProgressVisibility(View.GONE);
-                                                                                       chatCreatePoll.setErrorStateVisibility(View.VISIBLE);
-                                                                                   }
-                                                                               });
-                                                   } catch (Exception e) {
-                                                       CometChatLogger.e(TAG, e.toString());
-                                                   }
-                                               });
+                                                                                       @Override
+                                                                                       public void onError(CometChatException e) {
+                                                                                           chatCreatePoll.setProgressVisibility(View.GONE);
+                                                                                           chatCreatePoll.setErrorStateVisibility(View.VISIBLE);
+                                                                                       }
+                                                                                   });
+                                                       } catch (Exception e) {
+                                                           CometChatLogger.e(TAG, e.toString());
+                                                       }
+                                                   });
 
-                                               dialog.show();
-                                           }));
+                                                   dialog.show();
+                                               }));
             return messageComposerActions;
-        } else return super.getAttachmentOptions(context, user, group, idMap);
+        } else return super.getAttachmentOptions(context, user, group, idMap, additionParameter);
     }
 
     @Override
-    public List<String> getDefaultMessageTypes() {
-        List<String> types = super.getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(AdditionParameter additionParameter) {
+        List<String> types = super.getDefaultMessageTypes(additionParameter);
         if (!types.contains(ExtensionConstants.ExtensionType.EXTENSION_POLL)) {
             types.add(ExtensionConstants.ExtensionType.EXTENSION_POLL);
         }
@@ -130,8 +135,8 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<String> getDefaultMessageCategories() {
-        List<String> categories = super.getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(AdditionParameter additionParameter) {
+        List<String> categories = super.getDefaultMessageCategories(additionParameter);
         if (!categories.contains(UIKitConstants.MessageCategory.CUSTOM))
             categories.add(UIKitConstants.MessageCategory.CUSTOM);
         return categories;
@@ -173,7 +178,9 @@ public class PollsExtensionDecorator extends DataSourceDecorator {
         return new CometChatMessageTemplate()
             .setCategory(UIKitConstants.MessageCategory.CUSTOM)
             .setType(ExtensionConstants.ExtensionType.EXTENSION_POLL)
-            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign))
+            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, isLeftAlign, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {

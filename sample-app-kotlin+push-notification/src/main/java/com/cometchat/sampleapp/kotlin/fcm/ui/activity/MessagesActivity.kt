@@ -204,7 +204,7 @@ class MessagesActivity : AppCompatActivity() {
 
     /** Configures the overflow menu for additional actions.  */
     private fun setOverFlowMenu() {
-        binding.messageHeader.tailView = Function3 { context: Context?, user: User?, group: Group? ->
+        binding.messageHeader.auxiliaryButtonView = Function3 { context: Context?, user: User?, group: Group? ->
             val linearLayout = LinearLayout(context)
             val view = ChatConfigurator
                 .getDataSource()
@@ -273,7 +273,7 @@ class MessagesActivity : AppCompatActivity() {
         }
 
         // Set up back button behavior
-        binding.messageHeader.onBackButtonPressed {
+        binding.messageHeader.setOnBackButtonPressed {
             Utils.hideKeyBoard(
                 this, binding.root
             )

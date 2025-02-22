@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.cometchat.chatuikit.extensions.reaction.CometChatMessageReaction
+    <com.cometchat.chatuikit.shared.views.reaction.CometChatMessageReaction
         android:id="@+id/cometchat_reaction_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

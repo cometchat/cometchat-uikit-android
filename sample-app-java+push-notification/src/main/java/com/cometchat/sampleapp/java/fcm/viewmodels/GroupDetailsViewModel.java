@@ -110,30 +110,48 @@ public class GroupDetailsViewModel extends ViewModel {
     public void addListeners() {
         CometChat.addGroupListener(GROUP_LISTENER_ID, new CometChat.GroupListener() {
             @Override
+            public void onGroupMemberJoined(Action action, User user, Group group_) {
+                super.onGroupMemberJoined(action, user, group);
+                if (group_.getGuid().equals(group.getGuid())) {
+                    group.setMembersCount(group_.getMembersCount());
+                    group.setUpdatedAt(group_.getUpdatedAt());
+                    updatedGroup.setValue(group);
+                }
+            }
+
+            @Override
             public void onGroupMemberLeft(Action action, User user, @NonNull Group group_) {
-                super.onGroupMemberLeft(action, user, group_);
-                group.setMembersCount(group_.getMembersCount());
-                group.setUpdatedAt(group_.getUpdatedAt());
+                if (group_.getGuid().equals(group.getGuid())) {
+                    group.setMembersCount(group_.getMembersCount());
+                    group.setUpdatedAt(group_.getUpdatedAt());
+                    updatedGroup.setValue(group);
+                }
             }
 
             @Override
             public void onGroupMemberKicked(Action action, User kickedUser, User kickedBy, Group group_) {
                 super.onGroupMemberKicked(action, kickedUser, kickedBy, group_);
-                group.setMembersCount(group_.getMembersCount());
-                group.setUpdatedAt(group_.getUpdatedAt());
+                if (group_.getGuid().equals(group.getGuid())) {
+                    group.setMembersCount(group_.getMembersCount());
+                    group.setUpdatedAt(group_.getUpdatedAt());
 
-                if (kickedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()) && group_.getGuid().equals(group.getGuid())) {
-                    group.setHasJoined(false);
+                    if (kickedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
+                        group.setHasJoined(false);
+                    }
+                    updatedGroup.setValue(group);
                 }
-                updatedGroup.setValue(group);
             }
 
             @Override
             public void onGroupMemberBanned(Action action, User bannedUser, User bannedBy, Group group_) {
                 super.onGroupMemberBanned(action, bannedUser, bannedBy, group_);
-                if (bannedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()) && group_.getGuid().equals(group.getGuid()))
-                    group.setHasJoined(false);
-                updatedGroup.setValue(group);
+                if (group_.getGuid().equals(group.getGuid())) {
+                    group.setMembersCount(group_.getMembersCount());
+                    group.setUpdatedAt(group_.getUpdatedAt());
+                    if (bannedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()))
+                        group.setHasJoined(false);
+                    updatedGroup.setValue(group);
+                }
             }
 
             @Override
@@ -141,8 +159,19 @@ public class GroupDetailsViewModel extends ViewModel {
                 Action action, User updatedBy, User updatedUser, String scopeChangedTo, String scopeChangedFrom, Group group_
             ) {
                 super.onGroupMemberScopeChanged(action, updatedBy, updatedUser, scopeChangedTo, scopeChangedFrom, group_);
-                if (updatedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid()) && group_.getGuid().equals(group.getGuid())) {
-                    group.setScope(scopeChangedTo);
+                if (group_.getGuid().equals(group.getGuid())) {
+                    if (updatedUser.getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
+                        group.setScope(scopeChangedTo);
+                        updatedGroup.setValue(group);
+                    }
+                }
+            }
+
+            @Override
+            public void onMemberAddedToGroup(Action action, User user, User user1, Group group_) {
+                if (group_.getGuid().equals(group.getGuid())) {
+                    group.setMembersCount(group_.getMembersCount());
+                    group.setUpdatedAt(group_.getUpdatedAt());
                     updatedGroup.setValue(group);
                 }
             }

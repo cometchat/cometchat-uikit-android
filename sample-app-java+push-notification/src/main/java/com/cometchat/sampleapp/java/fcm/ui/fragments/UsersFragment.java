@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.cometchat.chat.models.User;
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.databinding.FragmentUsersBinding;
 import com.cometchat.sampleapp.java.fcm.ui.activity.MessagesActivity;
@@ -30,13 +28,11 @@ public class UsersFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.users.setItemClickListener(new OnItemClickListener<User>() {
-            @Override
-            public void OnItemClick(User user, int position) {
-                Intent intent = new Intent(requireActivity(), MessagesActivity.class);
-                intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
-                startActivity(intent);
-            }
+        binding.users.setOnItemClick((view1, position, user) -> {
+            Intent intent = new Intent(requireActivity(), MessagesActivity.class);
+            intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
+            startActivity(intent);
         });
+
     }
 }

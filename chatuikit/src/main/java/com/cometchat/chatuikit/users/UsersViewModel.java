@@ -14,41 +14,29 @@ import com.cometchat.chatuikit.shared.resources.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * ViewModel for managing user data in the application.
  */
 public class UsersViewModel extends ViewModel {
     private static final String TAG = UsersViewModel.class.getSimpleName();
-
-
+    private final Semaphore semaphore = new Semaphore(1);  // Allow only one thread at a time
     public UsersRequest.UsersRequestBuilder usersRequestBuilder;
-
     public UsersRequest.UsersRequestBuilder searchUsersRequestBuilder;
-
-    private UsersRequest usersRequest;
-
     public String LISTENERS_TAG;
-
     public MutableLiveData<List<User>> mutableUsersList;
-
     public MutableLiveData<Integer> insertAtTop;
-
     public MutableLiveData<Integer> moveToTop;
-
     public List<User> userArrayList;
-
     public MutableLiveData<Integer> updateUser;
-
     public MutableLiveData<Integer> removeUser;
-
     public MutableLiveData<CometChatException> cometchatException;
-
     public MutableLiveData<UIKitConstants.States> states;
-
     public int limit = 30;
     public boolean connectionListerAttached;
     public boolean hasMore = true;
+    private UsersRequest usersRequest;
 
     /**
      * Initializes the ViewModel and sets up initial values for user requests and
@@ -170,6 +158,32 @@ public class UsersViewModel extends ViewModel {
     }
 
     /**
+     * Moves a specific user to the top of the user list.
+     *
+     * @param user the user to move
+     */
+    public void moveToTop(User user) {
+        if (userArrayList.contains(user)) {
+            int oldIndex = userArrayList.indexOf(user);
+            userArrayList.remove(user);
+            userArrayList.add(0, user);
+            moveToTop.setValue(oldIndex);
+        }
+    }
+
+    /**
+     * Updates the information of a specific user in the user list.
+     *
+     * @param user the user to update
+     */
+    public void updateUser(User user) {
+        if (userArrayList.contains(user)) {
+            userArrayList.set(userArrayList.indexOf(user), user);
+            updateUser.setValue(userArrayList.indexOf(user));
+        }
+    }
+
+    /**
      * Adds a connection listener to refresh the user list upon connection.
      */
     public void addConnectionListener() {
@@ -211,32 +225,6 @@ public class UsersViewModel extends ViewModel {
     }
 
     /**
-     * Updates the information of a specific user in the user list.
-     *
-     * @param user the user to update
-     */
-    public void updateUser(User user) {
-        if (userArrayList.contains(user)) {
-            userArrayList.set(userArrayList.indexOf(user), user);
-            updateUser.setValue(userArrayList.indexOf(user));
-        }
-    }
-
-    /**
-     * Moves a specific user to the top of the user list.
-     *
-     * @param user the user to move
-     */
-    public void moveToTop(User user) {
-        if (userArrayList.contains(user)) {
-            int oldIndex = userArrayList.indexOf(user);
-            userArrayList.remove(user);
-            userArrayList.add(0, user);
-            moveToTop.setValue(oldIndex);
-        }
-    }
-
-    /**
      * Adds a user to the top of the user list.
      *
      * @param user the user to add
@@ -263,9 +251,20 @@ public class UsersViewModel extends ViewModel {
     }
 
     /**
+     * Checks if the provided list of users is empty.
+     *
+     * @param users the list of users to check
+     * @return the state indicating whether the list is empty or not
+     */
+    private UIKitConstants.States checkIsEmpty(List<User> users) {
+        if (users.isEmpty()) return UIKitConstants.States.EMPTY;
+        return UIKitConstants.States.NON_EMPTY;
+    }
+
+    /**
      * Fetches the user list if it is empty and there are more users to load.
      */
-    public void fetchUser() {
+    public void fetchUsers() {
         if (userArrayList.isEmpty()) {
             states.setValue(UIKitConstants.States.LOADING);
         }
@@ -280,24 +279,11 @@ public class UsersViewModel extends ViewModel {
      * @param cleanAndLoad whether to clear the current list before loading new data
      */
     private void fetchUsersList(boolean cleanAndLoad) {
+
         usersRequest.fetchNext(new CometChat.CallbackListener<List<User>>() {
             @Override
             public void onSuccess(List<User> users) {
-                if (cleanAndLoad) clear();
-
-                hasMore = !users.isEmpty();
-                if (hasMore) {
-                    addList(users);
-                }
-
-                // Update state to either LOADED or EMPTY based on the list size
-                states.setValue(checkIsEmpty(userArrayList));
-
-                // Attach the connection listener if not already attached
-                if (!connectionListerAttached) {
-                    addConnectionListener();
-                    connectionListerAttached = true;
-                }
+                setupFetchedData(cleanAndLoad, users);
             }
 
             @Override
@@ -308,6 +294,25 @@ public class UsersViewModel extends ViewModel {
                 }
             }
         });
+
+    }
+
+    private synchronized void setupFetchedData(boolean cleanAndLoad, List<User> users) {
+        if (cleanAndLoad) clear();
+
+        hasMore = !users.isEmpty();
+        if (hasMore) {
+            addList(users);
+        }
+
+        // Update state to either LOADED or EMPTY based on the list size
+        states.setValue(checkIsEmpty(userArrayList));
+
+        // Attach the connection listener if not already attached
+        if (!connectionListerAttached) {
+            addConnectionListener();
+            connectionListerAttached = true;
+        }
     }
 
     /**
@@ -330,10 +335,9 @@ public class UsersViewModel extends ViewModel {
     public void searchUsers(String search) {
         clear();
         hasMore = true;
-        if (search != null)
-            usersRequest = searchUsersRequestBuilder.setSearchKeyword(search).build();
+        if (search != null) usersRequest = searchUsersRequestBuilder.setSearchKeyword(search).build();
         else usersRequest = usersRequestBuilder.build();
-        fetchUser();
+        fetchUsers();
     }
 
     /**
@@ -352,17 +356,6 @@ public class UsersViewModel extends ViewModel {
             }
         }
         mutableUsersList.setValue(userArrayList);
-    }
-
-    /**
-     * Checks if the provided list of users is empty.
-     *
-     * @param users the list of users to check
-     * @return the state indicating whether the list is empty or not
-     */
-    private UIKitConstants.States checkIsEmpty(List<User> users) {
-        if (users.isEmpty()) return UIKitConstants.States.EMPTY;
-        return UIKitConstants.States.NON_EMPTY;
     }
 
     /**

@@ -29,13 +29,18 @@ import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
+import com.cometchat.chatuikit.shared.interfaces.OnEmpty;
 import com.cometchat.chatuikit.shared.interfaces.OnError;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
+import com.cometchat.chatuikit.shared.interfaces.OnItemLongClick;
+import com.cometchat.chatuikit.shared.interfaces.OnLoad;
+import com.cometchat.chatuikit.shared.interfaces.OnSelection;
 import com.cometchat.chatuikit.shared.models.CometChatOption;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.chatuikit.shared.resources.utils.recycler_touch.ClickListener;
 import com.cometchat.chatuikit.shared.resources.utils.recycler_touch.RecyclerTouchListener;
 import com.cometchat.chatuikit.shared.viewholders.GroupsViewHolderListener;
+import com.cometchat.chatuikit.shared.views.popupmenu.CometChatPopupMenu;
 import com.cometchat.chatuikit.shared.views.searchbox.CometChatSearchBox;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerAdapter;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerUtils;
@@ -55,66 +60,76 @@ import java.util.List;
  */
 public class CometChatGroups extends MaterialCardView {
     private static final String TAG = CometChatGroups.class.getSimpleName();
-
+    private final HashMap<Group, Boolean> hashMap = new HashMap<>();
     private CometchatGroupListBinding binding;
-
     private boolean showShimmer = true;
     private boolean isGroupListEmpty = true;
-
     private GroupsViewModel groupsViewModel;
     private GroupsAdapter groupsAdapter;
-    private LinearLayoutManager layoutManager;
-
-    private boolean hideTitle = false;
-    private boolean hideBackIcon = true;
-    private boolean hideSearchBox = false;
-    private boolean hideSelectionCount = true;
-    private boolean hideDiscardSelectionIcon = true;
-    private boolean hideSubmitSelectionIcon = true;
-    private boolean hideErrorState = false;
-    private boolean hideEmptyState = false;
-
+    /**
+     * Observer that updates an item in the list.
+     */
+    Observer<Integer> update = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            groupsAdapter.notifyItemChanged(integer);
+        }
+    };
+    /**
+     * Observer that removes an item from the list.
+     */
+    Observer<Integer> remove = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            groupsAdapter.notifyItemRemoved(integer);
+        }
+    };
     private boolean isFurtherSelectionEnabled = true;
     private String searchPlaceholderText;
-
     private View customEmptyView = null;
     private View customErrorView = null;
     private View customLoadingView = null;
     private View overflowMenu = null;
-
     private OnError onError;
-    private OnSelection onSelection;
-    private OnItemClickListener<Group> onItemClickListener;
+    /**
+     * Observer that handles exceptions and triggers the OnError listener.
+     */
+    Observer<CometChatException> exceptionObserver = exception -> {
+        if (onError != null) onError.onError(exception);
+    };
+    private OnLoad<Group> onLoad;
+    /**
+     * Observer for the list of groups. Updates the groups adapter with the new
+     * group list.
+     */
+    Observer<List<Group>> listObserver = groups -> {
+        if (onLoad != null) onLoad.onLoad(groups);
+        isGroupListEmpty = groups.isEmpty();
+        groupsAdapter.setGroupList(groups);
+    };
+    private OnEmpty onEmpty;
+    private OnSelection<Group> onSelection;
+    private OnItemClick<Group> onItemClick;
+    private OnItemLongClick<Group> onItemLongClick;
     private OnBackPress onBackPress;
-
-    private final HashMap<Group, Boolean> hashMap = new HashMap<>();
     private UIKitConstants.SelectionMode selectionMode = UIKitConstants.SelectionMode.NONE;
-
     private @ColorInt int backgroundColor;
     private @ColorInt int titleTextColor;
     private @StyleRes int titleTextAppearance;
-
     private @Dimension int strokeWidth;
     private @ColorInt int strokeColor;
     private @Dimension int cornerRadius;
-
     private Drawable backIcon;
     private @ColorInt int backIconTint;
     private @ColorInt int separatorColor;
-
     private Drawable discardSelectionIcon;
     private @ColorInt int discardSelectionIconTint;
     private Drawable submitSelectionIcon;
     private @ColorInt int submitSelectionIconTint;
-
     private @StyleRes int subtitleTextAppearance;
     private @ColorInt int subtitleTextColor;
-
-    private Drawable searchInputStarIcon;
-    private @ColorInt int searchInputStarIconTint;
     private Drawable searchInputEndIcon;
     private @ColorInt int searchInputEndIconTint;
-
     private @Dimension int searchInputStrokeWidth;
     private @ColorInt int searchInputStrokeColor;
     private @Dimension int searchInputCornerRadius;
@@ -125,14 +140,12 @@ public class CometChatGroups extends MaterialCardView {
     private @ColorInt int searchInputPlaceHolderTextColor;
     private @ColorInt int searchInputIconTint;
     private Drawable searchInputIcon;
-
     private @StyleRes int avatar;
     private @StyleRes int itemTitleTextAppearance;
     private @ColorInt int itemTitleTextColor;
     private @ColorInt int itemBackgroundColor;
     private @StyleRes int statusIndicatorStyle;
     private @ColorInt int itemSelectedBackgroundColor;
-
     private @Dimension int checkBoxStrokeWidth;
     private @Dimension int checkBoxCornerRadius;
     private @ColorInt int checkBoxStrokeColor;
@@ -140,24 +153,79 @@ public class CometChatGroups extends MaterialCardView {
     private @ColorInt int checkBoxCheckedBackgroundColor;
     private @ColorInt int checkBoxSelectIconTint;
     private Drawable checkBoxSelectIcon;
-
     private @StyleRes int emptyStateTextAppearance;
     private @ColorInt int emptyStateTextColor;
     private @StyleRes int emptyStateSubTitleTextAppearance;
     private @ColorInt int emptyStateSubtitleTextColor;
-
     private @StyleRes int errorStateTextAppearance;
     private @ColorInt int errorStateTextColor;
     private @StyleRes int errorStateSubtitleTextAppearance;
     private @ColorInt int errorStateSubtitleColor;
-
     private @ColorInt int retryButtonTextColor;
     private @StyleRes int retryButtonTextAppearance;
     private @ColorInt int retryButtonBackgroundColor;
     private @ColorInt int retryButtonStrokeColor;
     private @Dimension int retryButtonStrokeWidth;
     private @Dimension int retryButtonCornerRadius;
-    private int separatorVisibility;
+    private @LayoutRes int loadingViewId;
+    private @LayoutRes int emptyViewId;
+    private @LayoutRes int errorViewId;
+    private LinearLayoutManager layoutManager;
+    /**
+     * Observer that inserts an item at the top of the list and scrolls to the top.
+     */
+    Observer<Integer> insertAtTop = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            groupsAdapter.notifyItemInserted(integer);
+            scrollToTop();
+        }
+    };
+    /**
+     * Observer that moves an item to the top of the list and scrolls to the top.
+     */
+    Observer<Integer> moveToTop = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            groupsAdapter.notifyItemMoved(integer, 0);
+            groupsAdapter.notifyItemChanged(0);
+            scrollToTop();
+        }
+    };
+    private int toolbarVisibility = VISIBLE;
+    private int searchBoxVisibility = VISIBLE;
+    private int backIconVisibility = GONE;
+    private int emptyStateVisibility = VISIBLE;
+    private int loadingStateVisibility = VISIBLE;
+    private int errorStateVisibility = VISIBLE;
+    /**
+     * Observer that handles state changes for the UI.
+     */
+    Observer<UIKitConstants.States> stateChangeObserver = states -> {
+        hideAllStates();
+
+        switch (states) {
+            case LOADING:
+                handleLoadingState();
+                break;
+            case NON_EMPTY:
+                handleNonEmptyState();
+                break;
+            case ERROR:
+                handleErrorState();
+                break;
+            case EMPTY:
+                handleEmptyState();
+                break;
+        }
+    };
+    private int groupTypeVisibility = VISIBLE;
+    private int separatorVisibility = VISIBLE;
+    private int titleVisibility = VISIBLE;
+    private Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> addOptions;
+    private Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> options;
+    private CometChatPopupMenu cometchatPopUpMenu;
+
 
     /**
      * The CometChatGroups class is a custom view in Android that extends the
@@ -270,23 +338,29 @@ public class CometChatGroups extends MaterialCardView {
      * Initializes click event listeners for the RecyclerView and search box.
      */
     private void initClickEvents() {
+        cometchatPopUpMenu = new CometChatPopupMenu(getContext(), 0);
+
         binding.recyclerViewList.addOnItemTouchListener(new RecyclerTouchListener(getContext(), binding.recyclerViewList, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 Group group = (Group) view.getTag(R.string.cometchat_group);
-                if (!UIKitConstants.SelectionMode.NONE.equals(selectionMode)) {
-                    selectGroup(group, selectionMode);
-                }
-                if (onItemClickListener != null) {
-                    onItemClickListener.OnItemClick(group, position);
+
+                if (onItemClick != null) {
+                    onItemClick.click(view, position, group);
+                } else {
+                    if (!UIKitConstants.SelectionMode.NONE.equals(selectionMode)) {
+                        selectGroup(group, selectionMode);
+                    }
                 }
             }
 
             @Override
             public void onLongClick(@NonNull View view, int position) {
                 Group group = (Group) view.getTag(R.string.cometchat_group);
-                if (onItemClickListener != null) {
-                    onItemClickListener.OnItemLongClick(group, position);
+                if (onItemLongClick != null) {
+                    onItemLongClick.longClick(view, position, group);
+                } else {
+                    preparePopupMenu(view, group);
                 }
             }
         }));
@@ -332,7 +406,9 @@ public class CometChatGroups extends MaterialCardView {
     private void applyStyleAttributes(AttributeSet attrs, int defStyleAttr) {
         TypedArray directAttributes = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CometChatGroups, defStyleAttr, 0);
         @StyleRes int styleResId = directAttributes.getResourceId(R.styleable.CometChatGroups_cometchatGroupsStyle, 0);
-        directAttributes = styleResId != 0 ? getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CometChatGroups, defStyleAttr, styleResId) : null;
+        directAttributes = styleResId != 0 ? getContext()
+            .getTheme()
+            .obtainStyledAttributes(attrs, R.styleable.CometChatGroups, defStyleAttr, styleResId) : null;
         extractAttributesAndApplyDefaults(directAttributes);
     }
 
@@ -371,8 +447,6 @@ public class CometChatGroups extends MaterialCardView {
             discardSelectionIconTint = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsDiscardSelectionIconTint, 0);
             submitSelectionIcon = typedArray.getDrawable(R.styleable.CometChatGroups_cometchatGroupsSubmitSelectionIcon);
             submitSelectionIconTint = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSubmitSelectionIconTint, 0);
-            searchInputStarIcon = typedArray.getDrawable(R.styleable.CometChatGroups_cometchatGroupsSearchInputStartIcon);
-            searchInputStarIconTint = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputStartIconTint, 0);
             searchInputEndIcon = typedArray.getDrawable(R.styleable.CometChatGroups_cometchatGroupsSearchInputEndIcon);
             searchInputEndIconTint = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputEndIconTint, 0);
             searchInputStrokeWidth = typedArray.getDimensionPixelSize(R.styleable.CometChatGroups_cometchatGroupsSearchInputStrokeWidth, 0);
@@ -381,7 +455,8 @@ public class CometChatGroups extends MaterialCardView {
             searchInputBackgroundColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputBackgroundColor, 0);
             searchInputTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsSearchInputTextAppearance, 0);
             searchInputTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputTextColor, 0);
-            searchInputPlaceHolderTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsSearchInputPlaceHolderTextAppearance, 0);
+            searchInputPlaceHolderTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsSearchInputPlaceHolderTextAppearance,
+                                                                            0);
             searchInputPlaceHolderTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputPlaceHolderTextColor, 0);
             searchInputIcon = typedArray.getDrawable(R.styleable.CometChatGroups_cometchatGroupsSearchInputIcon);
             searchInputIconTint = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsSearchInputIconTint, 0);
@@ -400,11 +475,13 @@ public class CometChatGroups extends MaterialCardView {
             checkBoxCheckedBackgroundColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsCheckBoxCheckedBackgroundColor, 0);
             emptyStateTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsEmptyStateTextAppearance, 0);
             emptyStateTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsEmptyStateTextColor, 0);
-            emptyStateSubTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsEmptyStateSubTitleTextAppearance, 0);
+            emptyStateSubTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsEmptyStateSubTitleTextAppearance,
+                                                                        0);
             emptyStateSubtitleTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsEmptyStateSubtitleTextColor, 0);
             errorStateTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsErrorStateTextAppearance, 0);
             errorStateTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsErrorStateTextColor, 0);
-            errorStateSubtitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsErrorStateSubtitleTextAppearance, 0);
+            errorStateSubtitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsErrorStateSubtitleTextAppearance,
+                                                                        0);
             errorStateSubtitleColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsErrorStateSubtitleColor, 0);
             retryButtonTextColor = typedArray.getColor(R.styleable.CometChatGroups_cometchatGroupsRetryButtonTextColor, 0);
             retryButtonTextAppearance = typedArray.getResourceId(R.styleable.CometChatGroups_cometchatGroupsRetryButtonTextAppearance, 0);
@@ -474,8 +551,6 @@ public class CometChatGroups extends MaterialCardView {
         setRetryButtonStrokeColor(retryButtonStrokeColor);
         setRetryButtonStrokeWidth(retryButtonStrokeWidth);
         setRetryButtonCornerRadius(retryButtonCornerRadius);
-        setSearchInputStarIcon(searchInputStarIcon);
-        setSearchInputStarIconTint(searchInputStarIconTint);
         setSearchInputEndIcon(searchInputEndIcon);
         setSearchInputEndIconTint(searchInputEndIconTint);
         setCheckBoxSelectIcon(checkBoxSelectIcon);
@@ -487,10 +562,127 @@ public class CometChatGroups extends MaterialCardView {
         binding.tvSelectionCount.setTextColor(itemTitleTextColor);
 
         setSelectionMode(UIKitConstants.SelectionMode.NONE);
-        setErrorStateTitleText(null);
-        setErrorStateSubtitleText(null);
-        setEmptyStateTitleText(null);
-        setEmptyStateSubtitleText(null);
+    }
+
+    /**
+     * Sets the stroke color.
+     *
+     * @param strokeColor the stroke color to set.
+     */
+    public void setStrokeColor(@ColorInt int strokeColor) {
+        this.strokeColor = strokeColor;
+        super.setStrokeColor(strokeColor);
+    }
+
+    /**
+     * Gets the stroke color.
+     *
+     * @return the stroke color.
+     */
+    public ColorStateList getStrokeColorStateList() {
+        return ColorStateList.valueOf(strokeColor);
+    }
+
+    /**
+     * Sets the visibility of the discard selection icon based on the provided
+     * visibility parameter. If {@code hideDiscardSelectionIcon} is true or the
+     * visibility is set to {@code View.GONE}, the discard selection icon will be
+     * hidden. Otherwise, the discard selection icon will be visible, and the back
+     * icon will be hidden.
+     *
+     * @param visibility the desired visibility state of the discard selection icon.
+     */
+    private void setDiscardSelectionVisibility(int visibility) {
+        if (visibility == View.GONE) {
+            binding.ivDiscardSelection.setVisibility(View.GONE);
+        } else {
+            if (!hashMap.isEmpty()) {
+                binding.ivDiscardSelection.setVisibility(View.VISIBLE);
+                binding.ivBack.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /**
+     * Sets the visibility of the submit selection icon based on the provided
+     * visibility parameter. If {@code hideSubmitSelectionIcon} is true, the icon
+     * will be hidden (set to {@code View.GONE}). Otherwise, the visibility will be
+     * set according to the provided {@code visibility} parameter.
+     *
+     * @param visibility the desired visibility state of the submit selection icon.
+     */
+    private void setSubmitSelectionIconVisibility(int visibility) {
+        if (visibility == GONE) {
+            binding.ivSubmitSelection.setVisibility(View.GONE);
+        } else {
+            binding.ivSubmitSelection.setVisibility(VISIBLE);
+        }
+    }
+
+    /**
+     * Sets the visibility of the selection count based on the provided visibility
+     * parameter. If {@code hideSelectionCount} is true, the selection count will be
+     * hidden (set to {@code GONE}). Otherwise, the visibility will be set according
+     * to the provided {@code visibility} parameter.
+     *
+     * @param visibility the desired visibility state of the selection count.
+     */
+    private void setSelectionCountVisibility(int visibility) {
+        if (visibility == GONE) {
+            binding.tvSelectionCount.setVisibility(GONE);
+        } else {
+            binding.tvSelectionCount.setVisibility(VISIBLE);
+            if (!hashMap.isEmpty()) setTitleVisibility(GONE);
+        }
+    }
+
+    /**
+     * Prepares and displays a popup menu for the given group.
+     *
+     * <p>
+     * This method retrieves the menu items based on the provided group.
+     * If the {@link #options} function is set, it generates a list of menu
+     * items and sets up a click listener to handle user interactions with the menu
+     * options. If a menu item has a defined click action, that action is executed;
+     * otherwise, the method handles default click events.
+     *
+     * @param group The {@link Group} for whom the popup menu is being prepared.
+     */
+    private void preparePopupMenu(View view, Group group) {
+        List<CometChatPopupMenu.MenuItem> optionsArrayList = new ArrayList<>();
+        if (options != null) {
+            optionsArrayList.addAll(options.apply(getContext(), group));
+        } else {
+            if (addOptions != null) optionsArrayList.addAll(addOptions.apply(getContext(), group));
+        }
+        cometchatPopUpMenu.setMenuItems(optionsArrayList);
+        cometchatPopUpMenu.setOnMenuItemClickListener((id, name) -> {
+            for (CometChatPopupMenu.MenuItem item : optionsArrayList) {
+                if (id.equalsIgnoreCase(item.getId())) {
+                    if (item.getOnClick() != null) {
+                        item.getOnClick().onClick();
+                    }
+                    break;
+                }
+            }
+            cometchatPopUpMenu.dismiss();
+        });
+
+        cometchatPopUpMenu.show(view);
+    }
+
+    /**
+     * add options inside the popup menu
+     *
+     * @param addOptions the options to be added inside the popup menu
+     */
+    public void addOptions(Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> addOptions) {
+        this.addOptions = addOptions;
+    }
+
+    public void setSearchKeyword(String keyword) {
+        binding.searchBox.setSearchInputText(keyword);
+        groupsViewModel.searchGroups(keyword);
     }
 
     /**
@@ -551,44 +743,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Gets the stroke width.
-     *
-     * @return the stroke width.
-     */
-    public @Dimension int getStrokeWidth() {
-        return strokeWidth;
-    }
-
-    /**
-     * Sets the stroke width.
-     *
-     * @param strokeWidth the stroke width to set.
-     */
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
-    }
-
-    /**
-     * Gets the stroke color.
-     *
-     * @return the stroke color.
-     */
-    public ColorStateList getStrokeColorStateList() {
-        return ColorStateList.valueOf(strokeColor);
-    }
-
-    /**
-     * Sets the stroke color.
-     *
-     * @param strokeColor the stroke color to set.
-     */
-    public void setStrokeColor(@ColorInt int strokeColor) {
-        this.strokeColor = strokeColor;
-        super.setStrokeColor(strokeColor);
-    }
-
-    /**
      * Gets the corner radius.
      *
      * @return the corner radius.
@@ -608,15 +762,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Sets the visibility of the separator based on the provided parameter. If
-     * {@code visibility} is set to {@code GONE}, the separator will be hidden. Otherwise, it will be visible.
-     */
-    public void setSeparatorVisibility(int visibility) {
-        this.separatorVisibility = visibility;
-        binding.viewSeparator.setVisibility(visibility);
-    }
-
-    /**
      * Gets the visibility of the separator.
      *
      * @return the visibility of the separator.
@@ -626,42 +771,12 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Returns the visibility status of the back icon.
-     *
-     * @return true if the back icon is hidden, false otherwise.
+     * Sets the visibility of the separator based on the provided parameter. If
+     * {@code visibility} is set to {@code GONE}, the separator will be hidden. Otherwise, it will be visible.
      */
-    public boolean hideBackIcon() {
-        return hideBackIcon;
-    }
-
-    /**
-     * Sets the visibility of the back icon based on the provided parameter. If
-     * {@code hideBackButton} is true, the back icon will be hidden. Otherwise, it
-     * will be visible.
-     *
-     * @param hideBackButton true to hide the back icon, false to show it.
-     */
-    public void hideBackIcon(boolean hideBackButton) {
-        this.hideBackIcon = hideBackButton;
-        setBackIconVisibility(hideBackButton ? GONE : VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the back icon based on the provided visibility
-     * parameter. If {@code
-     * hideBackIcon} is true or visibility is set to {@code GONE}, the back icon
-     * will be hidden. Otherwise, the back icon will be visible, and the discard
-     * selection icon will be hidden.
-     *
-     * @param visibility the desired visibility state of the back icon.
-     */
-    private void setBackIconVisibility(int visibility) {
-        if (hideBackIcon || visibility == GONE) {
-            binding.ivBack.setVisibility(GONE);
-        } else {
-            binding.ivBack.setVisibility(VISIBLE);
-            binding.ivDiscardSelection.setVisibility(GONE);
-        }
+    public void setSeparatorVisibility(int visibility) {
+        this.separatorVisibility = visibility;
+        binding.viewSeparator.setVisibility(visibility);
     }
 
     /**
@@ -674,15 +789,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Returns the {@code ImageView} instance for the back icon.
-     *
-     * @return the {@code ImageView} that represents the back icon.
-     */
-    public ImageView getBackIconView() {
-        return binding.ivBack;
-    }
-
-    /**
      * Sets the back icon drawable.
      *
      * @param backIcon the back icon drawable to set.
@@ -690,6 +796,22 @@ public class CometChatGroups extends MaterialCardView {
     public void setBackIcon(Drawable backIcon) {
         this.backIcon = backIcon;
         binding.ivBack.setImageDrawable(backIcon);
+    }
+
+    /**
+     * Returns the {@code ImageView} instance for the back icon.
+     *
+     * @return the {@code ImageView} that represents the back icon.
+     */
+    public ImageView getBackIconView() {
+        return binding.ivBack;
+    }    /**
+     * Gets the stroke width.
+     *
+     * @return the stroke width.
+     */
+    public @Dimension int getStrokeWidth() {
+        return strokeWidth;
     }
 
     /**
@@ -831,7 +953,7 @@ public class CometChatGroups extends MaterialCardView {
      */
     public void setSearchInputStrokeColor(@ColorInt int searchInputStrokeColor) {
         this.searchInputStrokeColor = searchInputStrokeColor;
-        binding.searchBox.setStrokeWidth(searchInputStrokeColor);
+        binding.searchBox.setStrokeColor(searchInputStrokeColor);
     }
 
     /**
@@ -946,6 +1068,14 @@ public class CometChatGroups extends MaterialCardView {
     public void setSearchInputPlaceHolderTextColor(@ColorInt int searchInputPlaceHolderTextColor) {
         this.searchInputPlaceHolderTextColor = searchInputPlaceHolderTextColor;
         binding.searchBox.setSearchInputPlaceHolderTextColor(searchInputPlaceHolderTextColor);
+    }    /**
+     * Sets the stroke width.
+     *
+     * @param strokeWidth the stroke width to set.
+     */
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1457,15 +1587,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Sets the OnError listener for handling error events.
-     *
-     * @param onError The OnError listener to set.
-     */
-    public void setOnError(OnError onError) {
-        this.onError = onError;
-    }
-
-    /**
      * Retrieves a list of selected groups.
      *
      * @return A list of selected groups.
@@ -1476,17 +1597,6 @@ public class CometChatGroups extends MaterialCardView {
             groupList.add(entry.getKey());
         }
         return groupList;
-    }
-
-    /**
-     * Called when the view is attached to a window. Adds listeners and fetches
-     * groups.
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        groupsViewModel.addListeners();
-        groupsViewModel.fetchGroup();
     }
 
     /**
@@ -1507,62 +1617,29 @@ public class CometChatGroups extends MaterialCardView {
     public void setOverflowMenuOptions(Function2<Context, Group, List<CometChatOption>> options) {
     }
 
-    /**
-     * Sets the title text for the empty state. If the provided message is null or
-     * empty, a default empty state title is used.
-     *
-     * @param message The message to set as the empty state title. If null or empty, a
-     *                default title is used.
-     */
-    public void setEmptyStateTitleText(String message) {
-        if (message != null && !message.isEmpty()) {
-            binding.tvErrorStateTitle.setText(message);
-        } else {
-            binding.tvEmptyStateTitle.setText(getResources().getString(R.string.cometchat_group_list_empty_state_title));
-        }
+    public int getLoadingView() {
+        return loadingViewId;
     }
 
     /**
-     * Sets the subtitle text for the empty state. If the provided message is null
-     * or empty, a default empty state subtitle is used.
+     * Sets the loading state view layout resource.
      *
-     * @param message The message to set as the empty state subtitle. If null or empty,
-     *                a default subtitle is used.
+     * @param id The layout resource ID for the loading state view.
      */
-    public void setEmptyStateSubtitleText(String message) {
-        if (message != null && !message.isEmpty()) {
-            binding.tvEmptyStateSubtitle.setText(message);
-        } else {
-            binding.tvEmptyStateSubtitle.setText(getResources().getString(R.string.cometchat_group_list_empty_state_subtitle));
+    public void setLoadingView(@LayoutRes int id) {
+        if (id != 0) {
+            try {
+                this.loadingViewId = id;
+                customLoadingView = View.inflate(getContext(), id, null);
+            } catch (Exception e) {
+                customLoadingView = null;
+                CometChatLogger.e(TAG, e.toString());
+            }
         }
     }
 
-    /**
-     * Sets the error state text.
-     *
-     * @param errorTitleText The error state text to be set.
-     */
-    public void setErrorStateTitleText(String errorTitleText) {
-        if (errorTitleText != null) {
-            binding.tvErrorStateTitle.setText(errorTitleText);
-        } else {
-            binding.tvErrorStateTitle.setText(getResources().getString(R.string.cometchat_group_list_error_state_title));
-        }
-    }
-
-    /**
-     * Sets the subtitle text for the error state. If the provided error subtitle
-     * text is null, a default error state subtitle is used.
-     *
-     * @param errorSubtitleText The subtitle text to set for the error state. If null, a default
-     *                          subtitle is used.
-     */
-    public void setErrorStateSubtitleText(String errorSubtitleText) {
-        if (errorSubtitleText != null) {
-            binding.tvErrorStateSubtitle.setText(errorSubtitleText);
-        } else {
-            binding.tvErrorStateSubtitle.setText(getResources().getString(R.string.cometchat_group_list_error_state_subtitle));
-        }
+    public int getEmptyView() {
+        return emptyViewId;
     }
 
     /**
@@ -1570,9 +1647,10 @@ public class CometChatGroups extends MaterialCardView {
      *
      * @param id The layout resource ID for the empty state view.
      */
-    public void setEmptyStateView(@LayoutRes int id) {
+    public void setEmptyView(@LayoutRes int id) {
         if (id != 0) {
             try {
+                this.emptyViewId = id;
                 customEmptyView = View.inflate(getContext(), id, null);
             } catch (Exception e) {
                 customEmptyView = null;
@@ -1581,34 +1659,23 @@ public class CometChatGroups extends MaterialCardView {
         }
     }
 
+    public int getErrorView() {
+        return errorViewId;
+    }
+
     /**
      * setErrorStateView is method allows you to set layout, show when there is a
      * error if user want to set Error layout other wise it will load default layout
      *
      * @param id The layout resource ID for the error state view.
      */
-    public void setErrorStateView(@LayoutRes int id) {
+    public void setErrorView(@LayoutRes int id) {
         if (id != 0) {
             try {
+                this.errorViewId = id;
                 customErrorView = View.inflate(getContext(), id, null);
             } catch (Exception e) {
                 customErrorView = null;
-                CometChatLogger.e(TAG, e.toString());
-            }
-        }
-    }
-
-    /**
-     * Sets the loading state view layout resource.
-     *
-     * @param id The layout resource ID for the loading state view.
-     */
-    public void setLoadingStateView(@LayoutRes int id) {
-        if (id != 0) {
-            try {
-                customLoadingView = View.inflate(getContext(), id, null);
-            } catch (Exception e) {
-                customLoadingView = null;
                 CometChatLogger.e(TAG, e.toString());
             }
         }
@@ -1619,8 +1686,8 @@ public class CometChatGroups extends MaterialCardView {
      *
      * @param listItemView The listener to handle events for the list item view.
      */
-    public void setListItemView(GroupsViewHolderListener listItemView) {
-        groupsAdapter.setListItemView(listItemView);
+    public void setItemView(GroupsViewHolderListener listItemView) {
+        groupsAdapter.setItemView(listItemView);
     }
 
     /**
@@ -1628,8 +1695,8 @@ public class CometChatGroups extends MaterialCardView {
      *
      * @param tailView The listener to handle events for the tail view.
      */
-    public void setTailView(GroupsViewHolderListener tailView) {
-        groupsAdapter.setTailView(tailView);
+    public void setTrailingView(GroupsViewHolderListener tailView) {
+        groupsAdapter.setTrailingView(tailView);
     }
 
     /**
@@ -1642,41 +1709,21 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Retrieves the drawable resource used as the search input start icon.
+     * Sets the listener for the title view.
      *
-     * @return The drawable resource used as the search input start icon.
+     * @param titleView The listener to handle events for the title view.
      */
-    public Drawable getSearchInputStarIcon() {
-        return searchInputStarIcon;
+    public void setTitleView(GroupsViewHolderListener titleView) {
+        groupsAdapter.setTitleView(titleView);
     }
 
     /**
-     * Sets the drawable resource to be used as the search input start icon.
+     * Sets the listener for the leading view.
      *
-     * @param searchInputStarIcon The drawable resource to set as the search input start icon.
+     * @param leadingView The listener to handle events for the leading view.
      */
-    public void setSearchInputStarIcon(Drawable searchInputStarIcon) {
-        this.searchInputStarIcon = searchInputStarIcon;
-        binding.searchBox.setSearchInputStartIcon(searchInputStarIcon);
-    }
-
-    /**
-     * Retrieves the tint color for the search input start icon.
-     *
-     * @return The tint color for the search input start icon.
-     */
-    public @ColorInt int getSearchInputStarIconTint() {
-        return searchInputStarIconTint;
-    }
-
-    /**
-     * Sets the tint color for the search input start icon.
-     *
-     * @param searchInputStarIconTint The tint color to set for the search input start icon.
-     */
-    public void setSearchInputStarIconTint(@ColorInt int searchInputStarIconTint) {
-        this.searchInputStarIconTint = searchInputStarIconTint;
-        binding.searchBox.setSearchInputStartIconTint(searchInputStarIconTint);
+    public void setLeadingView(GroupsViewHolderListener leadingView) {
+        groupsAdapter.setLeadingView(leadingView);
     }
 
     /**
@@ -1727,17 +1774,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Sets the listener for group selection events.
-     *
-     * @param onSelection The listener to handle group selection events.
-     */
-    public void setOnSelection(OnSelection onSelection) {
-        if (onSelection != null) {
-            this.onSelection = onSelection;
-        }
-    }
-
-    /**
      * Sets the GroupsRequestBuilder for fetching groups.
      *
      * @param groupsRequestBuilder The builder used to create requests for groups.
@@ -1753,32 +1789,6 @@ public class CometChatGroups extends MaterialCardView {
      */
     public void setSearchRequestBuilder(GroupsRequest.GroupsRequestBuilder groupsRequestBuilder) {
         groupsViewModel.setSearchRequestBuilder(groupsRequestBuilder);
-    }
-
-    /**
-     * Sets the selection mode for the groups view.
-     *
-     * @param selectionMode The selection mode to set.
-     */
-    public void setSelectionMode(@NonNull UIKitConstants.SelectionMode selectionMode) {
-        hashMap.clear();
-        groupsAdapter.selectGroup(hashMap);
-        this.selectionMode = selectionMode;
-        if (UIKitConstants.SelectionMode.MULTIPLE.equals(selectionMode) || UIKitConstants.SelectionMode.SINGLE.equals(selectionMode)) {
-            isFurtherSelectionEnabled = true;
-            hideSelectionCount = false;
-            hideDiscardSelectionIcon = false;
-            hideSubmitSelectionIcon = false;
-            groupsAdapter.isSelectionEnabled(true);
-            setDiscardSelectionVisibility(VISIBLE);
-            setSubmitSelectionIconVisibility(VISIBLE);
-            setSelectionCountVisibility(VISIBLE);
-        } else {
-            isFurtherSelectionEnabled = false;
-            groupsAdapter.isSelectionEnabled(false);
-            setDiscardSelectionVisibility(GONE);
-            setSubmitSelectionIconVisibility(GONE);
-        }
     }
 
     /**
@@ -1839,171 +1849,30 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Observer that handles state changes for the UI.
-     */
-    Observer<UIKitConstants.States> stateChangeObserver = states -> {
-        hideAllStates();
-
-        switch (states) {
-            case LOADING:
-                handleLoadingState();
-                break;
-            case NON_EMPTY:
-                handleNonEmptyState();
-                break;
-            case ERROR:
-                handleErrorState();
-                break;
-            case EMPTY:
-                handleEmptyState();
-                break;
-        }
-    };
-
-    /**
      * Handles the loading state of the view based on the search box input and focus
      * status. If the search box is empty and not focused, this method either shows
      * a custom loading view or triggers the shimmer effect based on the current
      * settings.
      */
     private void handleLoadingState() {
-        if (binding.searchBox.getBinding().etSearch.getText() != null && binding.searchBox.getBinding().etSearch.getText().toString().trim().isEmpty() && !binding.searchBox.getBinding().etSearch.isFocused()) {
-
-            if (customLoadingView != null) {
-                Utils.handleView(binding.customLoadingLayout, customLoadingView, true);
-            } else {
-                if (showShimmer) {
-                    showShimmer = false;
-                    setShimmerVisibility(View.VISIBLE);
+        if (binding.searchBox.getBinding().etSearch.getText() != null && binding.searchBox.getBinding().etSearch
+            .getText()
+            .toString()
+            .trim()
+            .isEmpty() && !binding.searchBox.getBinding().etSearch.isFocused()) {
+            if (loadingStateVisibility == VISIBLE) {
+                if (customLoadingView != null) {
+                    Utils.handleView(binding.customLoadingLayout, customLoadingView, true);
+                } else {
+                    if (showShimmer) {
+                        showShimmer = false;
+                        setLoadingStateVisibility(View.VISIBLE);
+                    }
                 }
+            } else {
+                setLoadingStateVisibility(View.GONE);
             }
         }
-    }
-
-    /**
-     * Handles the state when the content is non-empty. It sets the visibility of
-     * the recycler view to visible.
-     */
-    private void handleNonEmptyState() {
-        setRecyclerViewVisibility(View.VISIBLE);
-    }
-
-    /**
-     * Handles the error state of the view. If a custom error view is set, it
-     * displays that; otherwise, it makes the default error state visible.
-     */
-    private void handleErrorState() {
-        if (customErrorView != null) {
-            Utils.handleView(binding.errorStateView, customErrorView, true);
-        } else {
-            setErrorStateVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     * Handles the empty state of the view. If a custom empty view is set, it
-     * displays that; otherwise, it makes the default empty state visible.
-     */
-    private void handleEmptyState() {
-        if (customEmptyView != null) {
-            Utils.handleView(binding.emptyStateView, customEmptyView, true);
-        } else {
-            setEmptyStateVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     * Hides all possible UI states like recycler view, empty state, error state,
-     * shimmer, and custom loader.
-     */
-    private void hideAllStates() {
-        setRecyclerViewVisibility(isGroupListEmpty ? View.GONE : View.VISIBLE);
-        setEmptyStateVisibility(View.GONE);
-        setErrorStateVisibility(View.GONE);
-        setShimmerVisibility(View.GONE);
-        setCustomLoaderVisibility(View.GONE);
-    }
-
-    /**
-     * Sets the visibility of the recycler view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setRecyclerViewVisibility(int visibility) {
-        binding.recyclerViewList.setVisibility(visibility);
-    }
-
-    /**
-     * Returns the visibility status of the error state.
-     *
-     * @return true if the error state is hidden, false otherwise.
-     */
-    public boolean hideErrorState() {
-        return hideErrorState;
-    }
-
-    /**
-     * Sets the error state visibility based on the provided parameter.
-     *
-     * @param hideErrorState true to hide the error state, false to show it.
-     */
-    public void hideErrorState(boolean hideErrorState) {
-        this.hideErrorState = hideErrorState;
-        setErrorStateVisibility(hideErrorState ? View.GONE : View.VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the error state view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setErrorStateVisibility(int visibility) {
-        if (hideErrorState || visibility == GONE) {
-            binding.errorStateView.setVisibility(GONE);
-        } else {
-            binding.errorStateView.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * Returns the visibility status of the empty state.
-     *
-     * @return true if the empty state is hidden, false otherwise.
-     */
-    public boolean hideEmptyState() {
-        return hideEmptyState;
-    }
-
-    /**
-     * Sets the empty state visibility based on the provided parameter.
-     *
-     * @param hideEmptyState true to hide the empty state, false to show it.
-     */
-    public void hideEmptyState(boolean hideEmptyState) {
-        this.hideEmptyState = hideEmptyState;
-        setEmptyStateVisibility(hideEmptyState ? View.GONE : View.VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the empty state view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setEmptyStateVisibility(int visibility) {
-        if (hideEmptyState || visibility == GONE) {
-            binding.emptyStateView.setVisibility(GONE);
-        } else {
-            binding.emptyStateView.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * Sets the visibility of the custom loader view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setCustomLoaderVisibility(int visibility) {
-        binding.customLoadingLayout.setVisibility(visibility);
     }
 
     /**
@@ -2025,27 +1894,77 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Observer that inserts an item at the top of the list and scrolls to the top.
+     * Handles the state when the content is non-empty. It sets the visibility of
+     * the recycler view to visible.
      */
-    Observer<Integer> insertAtTop = new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer integer) {
-            groupsAdapter.notifyItemInserted(integer);
-            scrollToTop();
-        }
-    };
+    private void handleNonEmptyState() {
+        setRecyclerViewVisibility(View.VISIBLE);
+    }
 
     /**
-     * Observer that moves an item to the top of the list and scrolls to the top.
+     * Sets the visibility of the recycler view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
      */
-    Observer<Integer> moveToTop = new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer integer) {
-            groupsAdapter.notifyItemMoved(integer, 0);
-            groupsAdapter.notifyItemChanged(0);
-            scrollToTop();
+    private void setRecyclerViewVisibility(int visibility) {
+        binding.recyclerViewList.setVisibility(visibility);
+    }
+
+    /**
+     * Handles the error state of the view. If a custom error view is set, it
+     * displays that; otherwise, it makes the default error state visible.
+     */
+    private void handleErrorState() {
+        if (errorStateVisibility == VISIBLE) {
+            if (customErrorView != null) {
+                Utils.handleView(binding.errorStateView, customErrorView, true);
+            } else {
+                setErrorStateVisibility(VISIBLE);
+            }
+        } else {
+            setErrorStateVisibility(GONE);
         }
-    };
+    }
+
+    /**
+     * Handles the empty state of the view. If a custom empty view is set, it
+     * displays that; otherwise, it makes the default empty state visible.
+     */
+    private void handleEmptyState() {
+        if (onEmpty != null) {
+            onEmpty.onEmpty();
+        }
+        if (emptyStateVisibility == VISIBLE) {
+            if (customEmptyView != null) {
+                Utils.handleView(binding.emptyStateView, customEmptyView, true);
+            } else {
+                setEmptyStateVisibility(VISIBLE);
+            }
+        } else {
+            setEmptyStateVisibility(GONE);
+        }
+    }
+
+    /**
+     * Hides all possible UI states like recycler view, empty state, error state,
+     * shimmer, and custom loader.
+     */
+    private void hideAllStates() {
+        setRecyclerViewVisibility(isGroupListEmpty ? View.GONE : View.VISIBLE);
+        binding.emptyStateView.setVisibility(View.GONE);
+        binding.errorStateView.setVisibility(GONE);
+        setShimmerVisibility(View.GONE);
+        setCustomLoaderVisibility(View.GONE);
+    }
+
+    /**
+     * Sets the visibility of the custom loader view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    private void setCustomLoaderVisibility(int visibility) {
+        binding.customLoadingLayout.setVisibility(visibility);
+    }
 
     /**
      * Scrolls the recycler view to the top if the first visible item is less than
@@ -2053,42 +1972,6 @@ public class CometChatGroups extends MaterialCardView {
      */
     private void scrollToTop() {
         if (layoutManager.findFirstVisibleItemPosition() < 5) layoutManager.scrollToPosition(0);
-    }
-
-    /**
-     * Observer that updates an item in the list.
-     */
-    Observer<Integer> update = new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer integer) {
-            groupsAdapter.notifyItemChanged(integer);
-        }
-    };
-
-    /**
-     * Observer that removes an item from the list.
-     */
-    Observer<Integer> remove = new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer integer) {
-            groupsAdapter.notifyItemRemoved(integer);
-        }
-    };
-
-    /**
-     * Observer that handles exceptions and triggers the OnError listener.
-     */
-    Observer<CometChatException> exceptionObserver = exception -> {
-        if (onError != null) onError.onError(getContext(), exception);
-    };
-
-    /**
-     * This method helps to get Click events of CometChatGroupList
-     *
-     * @param onItemClickListener object of the OnItemClickListener
-     */
-    public void setItemClickListener(OnItemClickListener<Group> onItemClickListener) {
-        if (onItemClickListener != null) this.onItemClickListener = onItemClickListener;
     }
 
     /**
@@ -2130,183 +2013,12 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Returns the visibility status of the discard selection icon.
-     *
-     * @return true if the discard selection icon is hidden, false otherwise.
-     */
-    public boolean hideDiscardSelectionIcon() {
-        return hideDiscardSelectionIcon;
-    }
-
-    /**
-     * Hides or shows the discard selection icon based on the provided flag.
-     *
-     * @param hideDiscardSelectionIcon true to hide the discard selection icon, false to show it.
-     */
-    public void hideDiscardSelectionIcon(boolean hideDiscardSelectionIcon) {
-        this.hideDiscardSelectionIcon = hideDiscardSelectionIcon;
-        setDiscardSelectionVisibility(hideDiscardSelectionIcon ? GONE : VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the discard selection icon based on the provided
-     * visibility parameter. If {@code hideDiscardSelectionIcon} is true or the
-     * visibility is set to {@code View.GONE}, the discard selection icon will be
-     * hidden. Otherwise, the discard selection icon will be visible, and the back
-     * icon will be hidden.
-     *
-     * @param visibility the desired visibility state of the discard selection icon.
-     */
-    private void setDiscardSelectionVisibility(int visibility) {
-        if (hideDiscardSelectionIcon || visibility == View.GONE) {
-            binding.ivDiscardSelection.setVisibility(View.GONE);
-        } else {
-            binding.ivDiscardSelection.setVisibility(View.VISIBLE);
-            binding.ivBack.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Hides or shows the search box container.
-     *
-     * @param hideSearchBox true to hide the search box container, false to show it.
-     */
-    public void hideSearchBox(boolean hideSearchBox) {
-        this.hideSearchBox = hideSearchBox;
-        setSearchBoxVisibility(hideSearchBox ? GONE : VISIBLE);
-    }
-
-    /**
-     * Returns the visibility status of the search box.
-     *
-     * @return true if the search box is hidden, false otherwise.
-     */
-    public boolean hideSearchBox() {
-        return hideSearchBox;
-    }
-
-    /**
-     * Sets the visibility of the search box based on the provided visibility
-     * parameter. If {@code
-     * hideSearchBox} is true, the search box will be hidden (set to
-     * {@code View.GONE}). Otherwise, the visibility will be set according to the
-     * provided {@code visibility} parameter.
-     *
-     * @param visibility the desired visibility state of the search box.
-     */
-    private void setSearchBoxVisibility(int visibility) {
-        if (hideSearchBox || visibility == GONE) {
-            binding.searchBox.setVisibility(GONE);
-        } else {
-            binding.searchBox.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * Returns the visibility status of the submit selection icon.
-     *
-     * @return true if the submit selection icon is hidden, false otherwise.
-     */
-    public boolean hideSubmitSelectionIcon() {
-        return hideSubmitSelectionIcon;
-    }
-
-    /**
-     * Hides or shows the submit selection icon.
-     *
-     * @param hideSubmitSelectionIcon true to hide the submit selection icon, false to show it.
-     */
-    public void hideSubmitSelectionIcon(boolean hideSubmitSelectionIcon) {
-        this.hideSubmitSelectionIcon = hideSubmitSelectionIcon;
-        setSubmitSelectionIconVisibility(hideSubmitSelectionIcon ? GONE : VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the submit selection icon based on the provided
-     * visibility parameter. If {@code hideSubmitSelectionIcon} is true, the icon
-     * will be hidden (set to {@code View.GONE}). Otherwise, the visibility will be
-     * set according to the provided {@code visibility} parameter.
-     *
-     * @param visibility the desired visibility state of the submit selection icon.
-     */
-    private void setSubmitSelectionIconVisibility(int visibility) {
-        if (hideSubmitSelectionIcon || visibility == GONE) {
-            binding.ivSubmitSelection.setVisibility(View.GONE);
-        } else {
-            binding.ivSubmitSelection.setVisibility(VISIBLE);
-        }
-    }
-
-    /**
-     * Returns the visibility status of the selection count.
-     *
-     * @return true if the selection count is hidden, false otherwise.
-     */
-    public boolean hideSelectionCount() {
-        return hideSelectionCount;
-    }
-
-    /**
-     * Hides or shows the selection count display.
-     *
-     * @param hideSelectionCount true to hide the selection count, false to show it.
-     */
-    public void hideSelectionCount(boolean hideSelectionCount) {
-        this.hideSelectionCount = hideSelectionCount;
-        setSelectionCountVisibility(hideSelectionCount ? GONE : VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the selection count based on the provided visibility
-     * parameter. If {@code hideSelectionCount} is true, the selection count will be
-     * hidden (set to {@code GONE}). Otherwise, the visibility will be set according
-     * to the provided {@code visibility} parameter.
-     *
-     * @param visibility the desired visibility state of the selection count.
-     */
-    private void setSelectionCountVisibility(int visibility) {
-        if (hideSelectionCount || visibility == GONE) {
-            binding.tvSelectionCount.setVisibility(GONE);
-        } else {
-            binding.tvSelectionCount.setVisibility(VISIBLE);
-            setTitleVisibility(GONE);
-        }
-    }
-
-    /**
      * Sets the selection count text.
      *
      * @param count The number of selected items to display.
      */
     public void setSelectionCount(int count) {
         binding.tvSelectionCount.setText(String.valueOf(count));
-    }
-
-    /**
-     * Hides or shows the title view based on the provided flag.
-     *
-     * @param hideTitle true to hide the title, false to show it
-     */
-    public void hideTitle(boolean hideTitle) {
-        this.hideTitle = hideTitle;
-        setTitleVisibility(hideTitle ? GONE : VISIBLE);
-    }
-
-    /**
-     * Sets the visibility of the title based on the provided visibility parameter.
-     * If {@code
-     * hideTitle} is true, the title will be hidden (set to {@code GONE}).
-     * Otherwise, the visibility of the title will be set according to the provided
-     * {@code visibility} parameter.
-     *
-     * @param visibility the desired visibility state of the title.
-     */
-    private void setTitleVisibility(int visibility) {
-        if (hideTitle || visibility == GONE) {
-            binding.tvTitle.setVisibility(GONE);
-        } else {
-            binding.tvTitle.setVisibility(VISIBLE);
-        }
     }
 
     /**
@@ -2338,15 +2050,6 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Observer for the list of groups. Updates the groups adapter with the new
-     * group list.
-     */
-    Observer<List<Group>> listObserver = groups -> {
-        isGroupListEmpty = groups.isEmpty();
-        groupsAdapter.setGroupList(groups);
-    };
-
-    /**
      * Gets the OnError listener for error handling.
      *
      * @return The OnError listener.
@@ -2356,10 +2059,48 @@ public class CometChatGroups extends MaterialCardView {
     }
 
     /**
-     * Interface for handling group selection events.
+     * Sets the OnError listener for handling error events.
+     *
+     * @param onError The OnError listener to set.
      */
-    public interface OnSelection {
-        void onSelection(List<Group> groupList);
+    public void setOnError(OnError onError) {
+        this.onError = onError;
+    }
+
+    /**
+     * Retrieves the callback associated with the empty state.
+     *
+     * @return The {@link OnEmpty} callback that is triggered when there is no data available.
+     */
+    public OnEmpty getOnEmpty() {
+        return onEmpty;
+    }
+
+    /**
+     * Sets the callback for handling the empty state.
+     *
+     * @param onEmpty The {@link OnEmpty} callback to be invoked when the data is empty.
+     */
+    public void setOnEmpty(OnEmpty onEmpty) {
+        this.onEmpty = onEmpty;
+    }
+
+    /**
+     * Retrieves the callback for handling data loading events related to groups.
+     *
+     * @return The {@link OnLoad} callback for loading group data.
+     */
+    public OnLoad<Group> getOnLoad() {
+        return onLoad;
+    }
+
+    /**
+     * Sets the callback for handling data loading events related to groups.
+     *
+     * @param onLoad The {@link OnLoad} callback to be invoked when group data needs to be loaded.
+     */
+    public void setOnLoad(OnLoad<Group> onLoad) {
+        this.onLoad = onLoad;
     }
 
     /**
@@ -2376,19 +2117,10 @@ public class CometChatGroups extends MaterialCardView {
      *
      * @param onBackPress The listener to be added.
      */
-    public void addOnBackPressListener(OnBackPress onBackPress) {
+    public void setOnBackPressListener(OnBackPress onBackPress) {
         if (onBackPress != null) {
             this.onBackPress = onBackPress;
         }
-    }
-
-    /**
-     * Hides or shows the toolbar based on the provided flag.
-     *
-     * @param hideToolbar true to hide the toolbar, false to show it.
-     */
-    public void hideToolbar(boolean hideToolbar) {
-        binding.toolbar.setVisibility(hideToolbar ? GONE : VISIBLE);
     }
 
     /**
@@ -2476,6 +2208,342 @@ public class CometChatGroups extends MaterialCardView {
         hashMap.clear();
         setSelectionCount(0);
         setSelectionCountVisibility(GONE);
+        setTitleVisibility(VISIBLE);
+        setSelectionCountVisibility(GONE);
+        setSubmitSelectionIconVisibility(GONE);
         groupsAdapter.selectGroup(hashMap);
     }
+
+    /**
+     * Retrieves the visibility status of the toolbar.
+     *
+     * @return An integer representing the visibility of the toolbar.
+     */
+    public int getToolbarVisibility() {
+        return toolbarVisibility;
+    }
+
+    /**
+     * Sets the visibility of the toolbar.
+     * Updates the toolbar's visibility state based on the provided value.
+     *
+     * @param toolbarVisibility An integer representing the visibility status of the toolbar.
+     *                          Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                          or {@code View.GONE}.
+     */
+    public void setToolbarVisibility(int toolbarVisibility) {
+        this.toolbarVisibility = toolbarVisibility;
+        binding.toolbar.setVisibility(toolbarVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the search box.
+     *
+     * @return An integer representing the visibility of the search box.
+     */
+    public int getSearchBoxVisibility() {
+        return searchBoxVisibility;
+    }
+
+    /**
+     * Sets the visibility of the search box based on the provided visibility
+     * parameter. If {@code
+     * hideSearchBox} is true, the search box will be hidden (set to
+     * {@code View.GONE}). Otherwise, the visibility will be set according to the
+     * provided {@code visibility} parameter.
+     *
+     * @param visibility the desired visibility state of the search box.
+     */
+    private void setSearchBoxVisibility(int visibility) {
+        this.searchBoxVisibility = visibility;
+        binding.searchBox.setVisibility(visibility);
+
+    }
+
+    /**
+     * Retrieves the visibility status of the back icon.
+     *
+     * @return An integer representing the visibility of the back icon.
+     */
+    public int getBackIconVisibility() {
+        return backIconVisibility;
+    }
+
+    /**
+     * Sets the visibility of the back icon based on the provided visibility
+     * parameter. If {@code
+     * hideBackIcon} is true or visibility is set to {@code GONE}, the back icon
+     * will be hidden. Otherwise, the back icon will be visible, and the discard
+     * selection icon will be hidden.
+     *
+     * @param visibility the desired visibility state of the back icon.
+     */
+    private void setBackIconVisibility(int visibility) {
+        this.backIconVisibility = visibility;
+        if (visibility == GONE) {
+            binding.ivBack.setVisibility(GONE);
+        } else {
+            binding.ivBack.setVisibility(VISIBLE);
+            binding.ivDiscardSelection.setVisibility(GONE);
+        }
+    }
+
+    /**
+     * Retrieves the visibility status of the empty state indicator.
+     *
+     * @return An integer representing the visibility of the empty state.
+     */
+    public int getEmptyStateVisibility() {
+        return emptyStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the empty state view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    private void setEmptyStateVisibility(int visibility) {
+        this.emptyStateVisibility = visibility;
+        binding.emptyStateView.setVisibility(visibility);
+    }    /**
+     * Called when the view is attached to a window. Adds listeners and fetches
+     * groups.
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        groupsViewModel.addListeners();
+        groupsViewModel.fetchGroup();
+    }
+
+    /**
+     * Retrieves the visibility status of the loading state indicator.
+     *
+     * @return An integer representing the visibility of the loading state.
+     */
+    public int getLoadingStateVisibility() {
+        return loadingStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the loading state.
+     * Also updates the shimmer effect visibility based on the provided value.
+     *
+     * @param loadingStateVisibility An integer representing the visibility status of the loading state.
+     *                               Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                               or {@code View.GONE}.
+     */
+    public void setLoadingStateVisibility(int loadingStateVisibility) {
+        this.loadingStateVisibility = loadingStateVisibility;
+        setShimmerVisibility(loadingStateVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the error state indicator.
+     *
+     * @return An integer representing the visibility of the error state.
+     */
+    public int getErrorStateVisibility() {
+        return errorStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the error state view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    private void setErrorStateVisibility(int visibility) {
+        this.errorStateVisibility = visibility;
+        binding.errorStateView.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the group type indicator.
+     *
+     * @return An integer representing the visibility of the group type.
+     */
+    public int getGroupTypeVisibility() {
+        return groupTypeVisibility;
+    }
+
+    /**
+     * Sets the visibility of the group type indicator.
+     * If the visibility is not {@code View.VISIBLE}, the group type is hidden in the adapter.
+     *
+     * @param groupTypeVisibility An integer representing the visibility status of the group type.
+     *                            Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                            or {@code View.GONE}.
+     */
+    public void setGroupTypeVisibility(int groupTypeVisibility) {
+        this.groupTypeVisibility = groupTypeVisibility;
+        groupsAdapter.hideGroupType(groupTypeVisibility != VISIBLE);
+    }
+
+    /**
+     * Retrieves the visibility status of the title.
+     *
+     * @return An integer representing the visibility of the title.
+     */
+    public int getTitleVisibility() {
+        return titleVisibility;
+    }
+
+    /**
+     * Sets the visibility of the title based on the provided visibility parameter.
+     * If {@code
+     * hideTitle} is true, the title will be hidden (set to {@code GONE}).
+     * Otherwise, the visibility of the title will be set according to the provided
+     * {@code visibility} parameter.
+     *
+     * @param visibility the desired visibility state of the title.
+     */
+    public void setTitleVisibility(int visibility) {
+        this.titleVisibility = visibility;
+        binding.tvTitle.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the function that provides additional options for a group.
+     *
+     * @return A {@link Function2} that takes a {@link Context} and a {@link Group}
+     * as input and returns a list of {@link CometChatPopupMenu.MenuItem}.
+     */
+    public Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> getAddOptions() {
+        return addOptions;
+    }
+
+    /**
+     * Retrieves the function that provides menu options for a group.
+     *
+     * @return A {@link Function2} that takes a {@link Context} and a {@link Group}
+     * as input and returns a list of {@link CometChatPopupMenu.MenuItem}.
+     */
+    public Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> getOptions() {
+        return options;
+    }
+
+    /**
+     * replace options inside the popup menu
+     *
+     * @param options the options to be added inside the popup menu
+     */
+    public void setOptions(Function2<Context, Group, List<CometChatPopupMenu.MenuItem>> options) {
+        this.options = options;
+    }
+
+    /**
+     * Retrieves the current selection mode.
+     *
+     * @return The {@link UIKitConstants.SelectionMode} representing the selection mode.
+     */
+    public UIKitConstants.SelectionMode getSelectionMode() {
+        return selectionMode;
+    }
+
+    /**
+     * Sets the selection mode for the groups view.
+     *
+     * @param selectionMode The selection mode to set.
+     */
+    public void setSelectionMode(@NonNull UIKitConstants.SelectionMode selectionMode) {
+        hashMap.clear();
+        groupsAdapter.selectGroup(hashMap);
+        this.selectionMode = selectionMode;
+        if (UIKitConstants.SelectionMode.MULTIPLE.equals(selectionMode) || UIKitConstants.SelectionMode.SINGLE.equals(selectionMode)) {
+            isFurtherSelectionEnabled = true;
+            groupsAdapter.isSelectionEnabled(true);
+            setDiscardSelectionVisibility(VISIBLE);
+            setSubmitSelectionIconVisibility(GONE);
+            setSelectionCountVisibility(VISIBLE);
+        } else {
+            isFurtherSelectionEnabled = false;
+            groupsAdapter.isSelectionEnabled(false);
+            setDiscardSelectionVisibility(GONE);
+            setSubmitSelectionIconVisibility(GONE);
+        }
+    }
+
+    /**
+     * Retrieves the callback for item click events.
+     *
+     * @return An instance of {@link OnItemClick} that handles group item click events.
+     */
+    public OnItemClick<Group> getOnItemClick() {
+        return onItemClick;
+    }
+
+    /**
+     * This method helps to get Click events of CometChatGroupList
+     *
+     * @param onItemClickListener object of the OnItemClickListener
+     */
+    public void setOnItemClick(OnItemClick<Group> onItemClickListener) {
+        if (onItemClickListener != null) this.onItemClick = onItemClickListener;
+    }
+
+    /**
+     * Retrieves the callback for item long-click events.
+     *
+     * @return An instance of {@link OnItemLongClick} that handles group item long-click events.
+     */
+    public OnItemLongClick<Group> getOnItemLongClick() {
+        return onItemLongClick;
+    }
+
+    /**
+     * This method helps to get Long Click events of CometChatGroupList
+     *
+     * @param onItemLongClickListener object of the OnItemLongClickListener
+     */
+    public void setOnItemLongClick(OnItemLongClick<Group> onItemLongClickListener) {
+        if (onItemLongClickListener != null) this.onItemLongClick = onItemLongClickListener;
+    }
+
+    /**
+     * Retrieves the callback for item selection events.
+     *
+     * @return An instance of {@link OnSelection} that handles group item selection events.
+     */
+    public OnSelection<Group> getOnSelection() {
+        return onSelection;
+    }
+
+    /**
+     * Sets the listener for group selection events.
+     *
+     * @param onSelection The listener to handle group selection events.
+     */
+    public void setOnSelection(OnSelection<Group> onSelection) {
+        if (onSelection != null) {
+            this.onSelection = onSelection;
+        }
+    }
+
+    /**
+     * Retrieves the adapter used for displaying the group list.
+     *
+     * @return The {@link GroupsAdapter} instance.
+     */
+    public GroupsAdapter getAdapter() {
+        return groupsAdapter;
+    }
+
+    /**
+     * Sets the adapter for the group list.
+     * Binds the provided {@link GroupsAdapter} to the recycler view.
+     *
+     * @param adapter The {@link GroupsAdapter} instance to be set.
+     */
+    public void setAdapter(GroupsAdapter adapter) {
+        this.groupsAdapter = adapter;
+        binding.recyclerViewList.setAdapter(adapter);
+    }
+
+
+
+
+
+
+
+
 }

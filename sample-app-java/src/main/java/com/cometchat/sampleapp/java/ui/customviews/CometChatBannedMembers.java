@@ -68,7 +68,7 @@ public class CometChatBannedMembers extends MaterialCardView {
      * When an exception is observed, the onError callback is triggered.
      */
     Observer<CometChatException> exceptionObserver = exception -> {
-        if (onError != null) onError.onError(getContext(), exception);
+        if (onError != null) onError.onError(exception);
     };
     // Error visibility
     private boolean hideError;
@@ -189,7 +189,7 @@ public class CometChatBannedMembers extends MaterialCardView {
                                                                                                   @Override
                                                                                                   public void onClick(View view, int position) {
                                                                                                       GroupMember groupMember = (GroupMember) view.getTag(
-                                                                                                              com.cometchat.chatuikit.R.string.cometchat_member);
+                                                                                                          com.cometchat.chatuikit.R.string.cometchat_member);
                                                                                                       showConfirmationAlertDialog(groupMember,
                                                                                                                                   "Unban " + groupMember.getName(),
                                                                                                                                   "Are you sure you want to unban " + groupMember.getName() + "?",
@@ -201,7 +201,7 @@ public class CometChatBannedMembers extends MaterialCardView {
                                                                                                   @Override
                                                                                                   public void onLongClick(View view, int position) {
                                                                                                       GroupMember groupMember = (GroupMember) view.getTag(
-                                                                                                              com.cometchat.chatuikit.R.string.cometchat_member);
+                                                                                                          com.cometchat.chatuikit.R.string.cometchat_member);
                                                                                                       // Additional actions on long click can be handled here if needed
                                                                                                   }
                                                                                               }
@@ -357,7 +357,7 @@ public class CometChatBannedMembers extends MaterialCardView {
      * @param negativeButtonText The text for the negative button.
      */
     private void showConfirmationAlertDialog(
-            GroupMember groupMember, String title, String message, String positiveButtonText, String negativeButtonText
+        GroupMember groupMember, String title, String message, String positiveButtonText, String negativeButtonText
     ) {
         confirmDialog = new CometChatConfirmDialog(getContext(), com.cometchat.chatuikit.R.style.CometChatConfirmDialogStyle);
         confirmDialog.setConfirmDialogIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_leave_group, null));

@@ -16,10 +16,10 @@ import com.cometchat.calls.model.RTCUser
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.chatuikit.calls.CometChatOngoingCallActivity
 import com.cometchat.chatuikit.logger.CometChatLogger
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.data.repository.Repository
-import com.cometchat.sampleapp.kotlin.fcm.ui.activity.OngoingCallActivity
 import com.cometchat.sampleapp.kotlin.fcm.utils.MyApplication
 import kotlin.system.exitProcess
 
@@ -53,7 +53,7 @@ class CometChatVoIPConnection(private val context: Context) : Connection(), Come
 
         Repository.acceptCall(call, object : CometChat.CallbackListener<Call>() {
             override fun onSuccess(call: Call) {
-                val intent = Intent(context, OngoingCallActivity::class.java)
+                val intent = Intent(context, CometChatOngoingCallActivity::class.java)
                 intent.putExtra(context.getString(R.string.app_session_id), call.sessionId)
                 intent.putExtra(context.getString(R.string.app_call_type), call.type)
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

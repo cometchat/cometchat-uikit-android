@@ -53,30 +53,41 @@ public class MessagesDataSource implements DataSource {
     private int currentlyPlayingPosition = -1;
 
     @Override
-    public List<CometChatMessageOption> getTextMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getTextTemplateOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getTextMessageOptions(Context context,
+                                                              BaseMessage baseMessage,
+                                                              Group group,
+                                                              AdditionParameter additionParameter) {
+        return _getTextTemplateOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getTextTemplateOptions(Context context, BaseMessage baseMessage, Group group) {
+    private List<CometChatMessageOption> _getTextTemplateOptions(Context context,
+                                                                 BaseMessage baseMessage,
+                                                                 Group group,
+                                                                 AdditionParameter additionParameter) {
         List<CometChatMessageOption> cometchatOptions = new ArrayList<>();
         if (baseMessage.getDeletedAt() == 0) {
             if (baseMessage.getParentMessageId() == 0) {
-                cometchatOptions.add(_getReplyInThreadOption(context));
+                if (additionParameter.getReplyInThreadOptionVisibility() == View.VISIBLE) cometchatOptions.add(_getReplyInThreadOption(context));
             }
-            cometchatOptions.add(_getShareOption(context));
-            cometchatOptions.add(_getCopyOption(context));
+            if (additionParameter.getShareMessageOptionVisibility() == View.VISIBLE) cometchatOptions.add(_getShareOption(context));
+            if (additionParameter.getCopyMessageOptionVisibility() == View.VISIBLE) cometchatOptions.add(_getCopyOption(context));
             if (_isCommon(baseMessage, group)) {
                 if (isMyMessage(baseMessage)) {
-                    cometchatOptions.add(_getEditOption(context));
-                    cometchatOptions.add(_getMessageInformation(context));
+                    if (additionParameter.getEditMessageOptionVisibility() == View.VISIBLE) {
+                        cometchatOptions.add(_getEditOption(context));
+                    }
+                    if (additionParameter.getMessageInfoOptionVisibility() == View.VISIBLE) {
+                        cometchatOptions.add(_getMessageInformation(context));
+                    }
                 }
-                cometchatOptions.add(_getDeleteOption(context));
+                if (additionParameter.getDeleteMessageOptionVisibility() == View.VISIBLE) {
+                    cometchatOptions.add(_getDeleteOption(context));
+                }
             }
             if (baseMessage.getReceiverType().equalsIgnoreCase(UIKitConstants.ReceiverType.GROUP) && !baseMessage
                 .getSender()
                 .getUid()
-                .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()))
-                cometchatOptions.add(_getMessagePrivatelyOption(context));
+                .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid())) cometchatOptions.add(_getMessagePrivatelyOption(context));
         }
         return cometchatOptions;
     }
@@ -147,39 +158,63 @@ public class MessagesDataSource implements DataSource {
     }
 
     @Override
-    public List<CometChatMessageOption> getImageMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getImageTemplateOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getImageMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               AdditionParameter additionParameter) {
+        return _getImageTemplateOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getImageTemplateOptions(Context context, BaseMessage baseMessage, Group group) {
-        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group);
-    }
-
-    @Override
-    public List<CometChatMessageOption> getVideoMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getVideoTemplateOptions(context, baseMessage, group);
-    }
-
-    private List<CometChatMessageOption> _getVideoTemplateOptions(Context context, BaseMessage baseMessage, Group group) {
-        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group);
+    private List<CometChatMessageOption> _getImageTemplateOptions(Context context,
+                                                                  BaseMessage baseMessage,
+                                                                  Group group,
+                                                                  AdditionParameter additionParameter) {
+        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group, additionParameter);
     }
 
     @Override
-    public List<CometChatMessageOption> getAudioMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getAudioTemplateOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getVideoMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               AdditionParameter additionParameter) {
+        return _getVideoTemplateOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getAudioTemplateOptions(Context context, BaseMessage baseMessage, Group group) {
-        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group);
+    private List<CometChatMessageOption> _getVideoTemplateOptions(Context context,
+                                                                  BaseMessage baseMessage,
+                                                                  Group group,
+                                                                  AdditionParameter additionParameter) {
+        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group, additionParameter);
     }
 
     @Override
-    public List<CometChatMessageOption> getFileMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getFileTemplateOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getAudioMessageOptions(Context context,
+                                                               BaseMessage baseMessage,
+                                                               Group group,
+                                                               AdditionParameter additionParameter) {
+        return _getAudioTemplateOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getFileTemplateOptions(Context context, BaseMessage baseMessage, Group group) {
-        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group);
+    private List<CometChatMessageOption> _getAudioTemplateOptions(Context context,
+                                                                  BaseMessage baseMessage,
+                                                                  Group group,
+                                                                  AdditionParameter additionParameter) {
+        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group, additionParameter);
+    }
+
+    @Override
+    public List<CometChatMessageOption> getFileMessageOptions(Context context,
+                                                              BaseMessage baseMessage,
+                                                              Group group,
+                                                              AdditionParameter additionParameter) {
+        return _getFileTemplateOptions(context, baseMessage, group, additionParameter);
+    }
+
+    private List<CometChatMessageOption> _getFileTemplateOptions(Context context,
+                                                                 BaseMessage baseMessage,
+                                                                 Group group,
+                                                                 AdditionParameter additionParameter) {
+        return ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group, additionParameter);
     }
 
     @Override
@@ -475,7 +510,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_MESSAGE)
             .setType(CometChatConstants.MESSAGE_TYPE_AUDIO)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getAudioMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getAudioMessageOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -536,7 +573,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_MESSAGE)
             .setType(CometChatConstants.MESSAGE_TYPE_VIDEO)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getVideoMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getVideoMessageOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -600,7 +639,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_MESSAGE)
             .setType(CometChatConstants.MESSAGE_TYPE_IMAGE)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getImageMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getImageMessageOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -692,7 +733,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_MESSAGE)
             .setType(CometChatConstants.MESSAGE_TYPE_FILE)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getFileMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getFileMessageOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -755,7 +798,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_MESSAGE)
             .setType(CometChatConstants.MESSAGE_TYPE_TEXT)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getTextMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getTextMessageOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -818,7 +863,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_INTERACTIVE)
             .setType(UIKitConstants.MessageType.FORM)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -925,7 +972,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_INTERACTIVE)
             .setType(UIKitConstants.MessageType.SCHEDULER)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -988,7 +1037,9 @@ public class MessagesDataSource implements DataSource {
         return new CometChatMessageTemplate()
             .setCategory(CometChatConstants.CATEGORY_INTERACTIVE)
             .setType(UIKitConstants.MessageType.CARD)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, group, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {
@@ -1062,8 +1113,11 @@ public class MessagesDataSource implements DataSource {
                                             ChatConfigurator.getDataSource().getAudioTemplate(additionParameter));
         cometchatMessageTemplateHashMap.put(UIKitConstants.MessageTemplateId.FILE,
                                             ChatConfigurator.getDataSource().getFileTemplate(additionParameter));
-        cometchatMessageTemplateHashMap.put(UIKitConstants.MessageTemplateId.GROUP_ACTION,
-                                            ChatConfigurator.getDataSource().getGroupActionsTemplate(additionParameter));
+        if (additionParameter.getGroupActionMessageVisibility() == View.VISIBLE)
+            cometchatMessageTemplateHashMap.put(UIKitConstants.MessageTemplateId.GROUP_ACTION,
+                                                ChatConfigurator
+                                                    .getDataSource()
+                                                    .getGroupActionsTemplate(additionParameter));
         cometchatMessageTemplateHashMap.put(UIKitConstants.MessageTemplateId.FORM,
                                             ChatConfigurator.getDataSource().getFormTemplate(additionParameter));
         cometchatMessageTemplateHashMap.put(UIKitConstants.MessageTemplateId.SCHEDULER,
@@ -1074,51 +1128,64 @@ public class MessagesDataSource implements DataSource {
     }
 
     @Override
-    public CometChatMessageTemplate getMessageTemplate(String category, String type) {
-        return _getMessageTemplate(category, type);
+    public CometChatMessageTemplate getMessageTemplate(String category, String type, AdditionParameter additionParameter) {
+        return _getMessageTemplate(category, type, additionParameter);
     }
 
-    private CometChatMessageTemplate _getMessageTemplate(String category, String type) {
+    private CometChatMessageTemplate _getMessageTemplate(String category, String type, AdditionParameter additionParameter) {
         getDefaultMessageTemplatesHashMap(null);
         return cometchatMessageTemplateHashMap.get(category + "_" + type);
     }
 
     @Override
-    public List<CometChatMessageOption> getMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getMessageOptions(Context context,
+                                                          BaseMessage baseMessage,
+                                                          Group group,
+                                                          AdditionParameter additionParameter) {
+        return _getMessageOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getMessageOptions(Context context, BaseMessage baseMessage, Group group) {
+    private List<CometChatMessageOption> _getMessageOptions(Context context,
+                                                            BaseMessage baseMessage,
+                                                            Group group,
+                                                            AdditionParameter additionParameter) {
         List<CometChatMessageOption> cometchatOptions = new ArrayList<>();
         if (baseMessage.getType().equalsIgnoreCase(UIKitConstants.MessageType.TEXT)) {
-            cometchatOptions.addAll(_getTextTemplateOptions(context, baseMessage, group));
+            cometchatOptions.addAll(_getTextTemplateOptions(context, baseMessage, group, additionParameter));
         } else if (baseMessage.getType().equalsIgnoreCase(UIKitConstants.MessageType.IMAGE)) {
-            cometchatOptions.addAll(_getImageTemplateOptions(context, baseMessage, group));
+            cometchatOptions.addAll(_getImageTemplateOptions(context, baseMessage, group, additionParameter));
         } else if (baseMessage.getType().equalsIgnoreCase(UIKitConstants.MessageType.VIDEO)) {
-            cometchatOptions.addAll(_getVideoTemplateOptions(context, baseMessage, group));
+            cometchatOptions.addAll(_getVideoTemplateOptions(context, baseMessage, group, additionParameter));
         } else if (baseMessage.getType().equalsIgnoreCase(UIKitConstants.MessageType.AUDIO)) {
-            cometchatOptions.addAll(_getAudioTemplateOptions(context, baseMessage, group));
+            cometchatOptions.addAll(_getAudioTemplateOptions(context, baseMessage, group, additionParameter));
         } else if (baseMessage.getType().equalsIgnoreCase(UIKitConstants.MessageType.FILE)) {
-            cometchatOptions.addAll(_getFileTemplateOptions(context, baseMessage, group));
+            cometchatOptions.addAll(_getFileTemplateOptions(context, baseMessage, group, additionParameter));
         }
         return cometchatOptions;
     }
 
     @Override
-    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap) {
-        return _getDefaultAttachmentOptions(context, user, group);
+    public List<CometChatMessageComposerAction> getAttachmentOptions(Context context,
+                                                                     User user,
+                                                                     Group group,
+                                                                     HashMap<String, String> idMap,
+                                                                     AdditionParameter additionParameter) {
+        return _getDefaultAttachmentOptions(context, user, group, additionParameter);
     }
 
-    private List<CometChatMessageComposerAction> _getDefaultAttachmentOptions(Context context, User user, Group group) {
-        return new ArrayList<>(
-            Arrays.asList(
-                _getCameraOption(context),
-                _getImageOption(context),
-                _getVideoOption(context),
-                _getAudioOption(context),
-                _getFileOption(context)
-            )
-        );
+    private List<CometChatMessageComposerAction> _getDefaultAttachmentOptions(Context context,
+                                                                              User user,
+                                                                              Group group,
+                                                                              AdditionParameter additionParameter) {
+        List<CometChatMessageComposerAction> actions = new ArrayList<>();
+        if (additionParameter != null) {
+            if (additionParameter.getCameraAttachmentOptionVisibility() == View.VISIBLE) actions.add(_getCameraOption(context));
+            if (additionParameter.getImageAttachmentOptionVisibility() == View.VISIBLE) actions.add(_getImageOption(context));
+            if (additionParameter.getVideoAttachmentOptionVisibility() == View.VISIBLE) actions.add(_getVideoOption(context));
+            if (additionParameter.getAudioAttachmentOptionVisibility() == View.VISIBLE) actions.add(_getAudioOption(context));
+            if (additionParameter.getFileAttachmentOptionVisibility() == View.VISIBLE) actions.add(_getFileOption(context));
+        }
+        return actions;
     }
 
     private CometChatMessageComposerAction _getCameraOption(Context context) {
@@ -1172,41 +1239,44 @@ public class MessagesDataSource implements DataSource {
     }
 
     @Override
-    public List<CometChatMessageOption> getCommonOptions(Context context, BaseMessage baseMessage, Group group) {
-        return _getCommonOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getCommonOptions(Context context, BaseMessage baseMessage, Group group, AdditionParameter additionParameter) {
+        return _getCommonOptions(context, baseMessage, group, additionParameter);
     }
 
-    private List<CometChatMessageOption> _getCommonOptions(Context context, BaseMessage baseMessage, Group group) {
+    private List<CometChatMessageOption> _getCommonOptions(Context context,
+                                                           BaseMessage baseMessage,
+                                                           Group group,
+                                                           AdditionParameter additionParameter) {
         List<CometChatMessageOption> messageOptions = new ArrayList<>();
         if (baseMessage.getDeletedAt() == 0) {
             if (isMyMessage(baseMessage)) {
-                messageOptions.add(_getMessageInformation(context));
+                if (additionParameter.getMessageInfoOptionVisibility() == View.VISIBLE) messageOptions.add(_getMessageInformation(context));
             }
             if (baseMessage.getParentMessageId() == 0) {
-                messageOptions.add(_getReplyInThreadOption(context));
+                if (additionParameter.getReplyInThreadOptionVisibility() == View.VISIBLE) messageOptions.add(_getReplyInThreadOption(context));
             }
             if (baseMessage instanceof TextMessage || baseMessage instanceof MediaMessage) {
-                messageOptions.add(_getShareOption(context));
+                if (additionParameter.getShareMessageOptionVisibility() == View.VISIBLE) messageOptions.add(_getShareOption(context));
             }
             if (_isCommon(baseMessage, group)) {
-                messageOptions.add(_getDeleteOption(context));
+                if (additionParameter.getDeleteMessageOptionVisibility() == View.VISIBLE) messageOptions.add(_getDeleteOption(context));
             }
             if (baseMessage.getReceiverType().equalsIgnoreCase(UIKitConstants.ReceiverType.GROUP) && !baseMessage
                 .getSender()
                 .getUid()
                 .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid())) {
-                messageOptions.add(_getMessagePrivatelyOption(context));
+                if (additionParameter.getMessagePrivatelyOptionVisibility() == View.VISIBLE) messageOptions.add(_getMessagePrivatelyOption(context));
             }
         }
         return messageOptions;
     }
 
     @Override
-    public List<String> getDefaultMessageTypes() {
-        return _getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(AdditionParameter additionParameter) {
+        return _getDefaultMessageTypes(additionParameter);
     }
 
-    private List<String> _getDefaultMessageTypes() {
+    private List<String> _getDefaultMessageTypes(AdditionParameter additionParameter) {
         return new ArrayList<>(Arrays.asList(UIKitConstants.MessageType.TEXT,
                                              UIKitConstants.MessageType.FORM,
                                              UIKitConstants.MessageType.CARD,
@@ -1214,18 +1284,18 @@ public class MessagesDataSource implements DataSource {
                                              UIKitConstants.MessageType.FILE,
                                              UIKitConstants.MessageType.IMAGE,
                                              UIKitConstants.MessageType.VIDEO,
-                                             CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER,
+                                             additionParameter.getGroupActionMessageVisibility() == View.VISIBLE ? CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER : "",
                                              UIKitConstants.MessageType.AUDIO));
     }
 
     @Override
-    public List<String> getDefaultMessageCategories() {
-        return _getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(AdditionParameter additionParameter) {
+        return _getDefaultMessageCategories(additionParameter);
     }
 
-    private List<String> _getDefaultMessageCategories() {
+    private List<String> _getDefaultMessageCategories(AdditionParameter additionParameter) {
         return new ArrayList<>(Arrays.asList(CometChatConstants.CATEGORY_MESSAGE,
-                                             CometChatConstants.CATEGORY_ACTION,
+                                             additionParameter.getGroupActionMessageVisibility() == View.VISIBLE ? CometChatConstants.CATEGORY_ACTION : "",
                                              CometChatConstants.CATEGORY_INTERACTIVE));
     }
 
@@ -1396,7 +1466,7 @@ public class MessagesDataSource implements DataSource {
     }
 
     @Override
-    public List<CometChatTextFormatter> getTextFormatters(Context context) {
+    public List<CometChatTextFormatter> getTextFormatters(Context context, AdditionParameter additionParameter) {
         return _getTextFormatters(context);
     }
 

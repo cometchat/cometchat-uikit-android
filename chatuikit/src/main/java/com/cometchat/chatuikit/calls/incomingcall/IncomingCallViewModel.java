@@ -9,7 +9,6 @@ import com.cometchat.chat.core.CometChat;
 import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chatuikit.calls.CallingExtension;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper;
-import com.cometchat.chatuikit.shared.events.CometChatCallEvents;
 
 import java.util.Objects;
 
@@ -85,13 +84,11 @@ public class IncomingCallViewModel extends ViewModel {
         CometChat.removeCallListener(LISTENER_ID);
     }
 
-    public void acceptCall(String sessionId) {
-        CometChat.acceptCall(sessionId, new CometChat.CallbackListener<Call>() {
+    public void acceptCall(Call call) {
+        CometChat.acceptCall(call.getSessionId(), new CometChat.CallbackListener<Call>() {
             @Override
             public void onSuccess(Call call) {
-                for (CometChatCallEvents events : CometChatCallEvents.callingEvents.values()) {
-                    events.ccCallAccepted(call);
-                }
+                CometChatUIKitHelper.onCallAccepted(call);
                 acceptedCall.setValue(call);
             }
 

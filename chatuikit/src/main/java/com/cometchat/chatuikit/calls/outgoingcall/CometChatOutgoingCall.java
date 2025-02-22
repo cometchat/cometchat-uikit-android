@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.ColorInt;
@@ -28,6 +29,7 @@ import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.CometchatOutgoingCallLayoutBinding;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
+import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
 import com.cometchat.chatuikit.shared.interfaces.OnClick;
 import com.cometchat.chatuikit.shared.interfaces.OnError;
@@ -53,7 +55,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
     private User user;
 
     private OnError onError;
-    private OnClick onDeclineCallClick;
+    private OnClick onEndCallClick;
     private OnBackPress onBackPress;
 
     private CometChatSoundManager soundManager;
@@ -78,6 +80,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
     private SensorManager sensorManager;
     private Sensor proximitySensor;
     private SensorEventListener proximitySensorListener;
+    private Function2<Context, Call, View> titleView, subtitleView, avatarView, endCallView;
 
     /**
      * Constructs a new CometChatOutgoingCall with the given context.
@@ -132,9 +135,9 @@ public class CometChatOutgoingCall extends MaterialCardView {
 
         binding.endCall.getButton().setOnClickListener(view -> {
             binding.endCall.getButton().setEnabled(false);
-            if (onDeclineCallClick == null) {
+            if (onEndCallClick == null) {
                 if (call != null) viewModel.rejectCall(call);
-            } else onDeclineCallClick.onClick();
+            } else onEndCallClick.onClick();
         });
         applyStyleAttributes(attrs, defStyleAttr);
     }
@@ -195,7 +198,7 @@ public class CometChatOutgoingCall extends MaterialCardView {
         if (onError == null) {
             ((Activity) getContext()).finish();
         } else {
-            onError.onError(getContext(), e);
+            onError.onError(e);
         }
     }
 
@@ -323,24 +326,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
     }
 
     /**
-     * Sets the text to be displayed on the decline button.
-     *
-     * @param text The text to be displayed on the decline button.
-     */
-    public void setDeclineButtonText(String text) {
-        if (text != null && !text.isEmpty()) binding.endCall.setButtonText(text);
-    }
-
-    /**
-     * Sets the icon for the decline button.
-     *
-     * @param icon The icon resource ID for the decline button.
-     */
-    public void setDeclineButtonIcon(Drawable icon) {
-        if (icon != null) binding.endCall.setButtonIcon(icon);
-    }
-
-    /**
      * Sets the CallSettingsBuilder for the outgoing call configuration.
      *
      * @param callSettingsBuilder The CallSettingsBuilder to set.
@@ -372,17 +357,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
     }
 
     /**
-     * Sets a back press handler to be invoked when the back button is pressed.
-     *
-     * @param onBackPress The OnBackPress handler to set.
-     */
-    public void onBackPressed(OnBackPress onBackPress) {
-        if (onBackPress != null) {
-            this.onBackPress = onBackPress;
-        }
-    }
-
-    /**
      * Gets the ViewModel associated with outgoing calls.
      *
      * @return The OutgoingViewModel instance.
@@ -392,22 +366,22 @@ public class CometChatOutgoingCall extends MaterialCardView {
     }
 
     /**
-     * Gets the OnClick callback for declining calls.
+     * Gets the OnClick callback for canceling calls.
      *
-     * @return The OnClick callback for declining calls.
+     * @return The OnClick callback for canceling calls.
      */
-    public OnClick getOnDeclineCallClick() {
-        return onDeclineCallClick;
+    public OnClick getOnEndCallClick() {
+        return onEndCallClick;
     }
 
     /**
-     * Sets a callback to be invoked when the decline call button is clicked.
+     * Sets a callback to be invoked when the cancel call button is clicked.
      *
      * @param click The OnClick callback to set.
      */
-    public void setOnDeclineCallClick(OnClick click) {
+    public void setOnEndCallClick(OnClick click) {
         if (click != null) {
-            this.onDeclineCallClick = click;
+            this.onEndCallClick = click;
         }
     }
 
@@ -565,15 +539,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
     public void setEndCallIconTint(@ColorInt int endCallIconTint) {
         this.endCallIconTint = endCallIconTint;
         binding.endCall.setButtonIconTint(endCallIconTint);
-    }    /**
-     * Plays the outgoing call sound if sound notifications are not disabled. It
-     * uses the custom sound resource if provided; otherwise, it defaults to the
-     * standard outgoing call sound.
-     */
-    private void playSound() {
-        if (!disableSoundForCall) {
-            soundManager.play(Sound.outgoingCall, customSoundForCalls);
-        }
     }
 
     /**
@@ -612,6 +577,15 @@ public class CometChatOutgoingCall extends MaterialCardView {
     public void setEndCallButtonBackgroundColor(@ColorInt int endCallButtonBackgroundColor) {
         this.endCallButtonBackgroundColor = endCallButtonBackgroundColor;
         binding.endCall.setButtonBackgroundColor(endCallButtonBackgroundColor);
+    }    /**
+     * Plays the outgoing call sound if sound notifications are not disabled. It
+     * uses the custom sound resource if provided; otherwise, it defaults to the
+     * standard outgoing call sound.
+     */
+    private void playSound() {
+        if (!disableSoundForCall) {
+            soundManager.play(Sound.outgoingCall, customSoundForCalls);
+        }
     }
 
     /**
@@ -679,6 +653,50 @@ public class CometChatOutgoingCall extends MaterialCardView {
         }
     }
 
+    public Function2<Context, Call, View> getTitleView() {
+        return titleView;
+    }
+
+    public void setTitleView(Function2<Context, Call, View> titleView) {
+        if (titleView != null) {
+            Utils.handleView(binding.titleLayout, titleView.apply(getContext(), call), true);
+            this.titleView = titleView;
+        }
+    }
+
+    public Function2<Context, Call, View> getSubtitleView() {
+        return subtitleView;
+    }
+
+    public void setSubtitleView(Function2<Context, Call, View> subtitleView) {
+        if (subtitleView != null) {
+            Utils.handleView(binding.subtitleLayout, subtitleView.apply(getContext(), call), true);
+            this.subtitleView = subtitleView;
+        }
+    }
+
+    public Function2<Context, Call, View> getAvatarView() {
+        return avatarView;
+    }
+
+    public void setAvatarView(Function2<Context, Call, View> avatarView) {
+        if (avatarView != null) {
+            Utils.handleView(binding.avatarLayout, avatarView.apply(getContext(), call), true);
+            this.avatarView = avatarView;
+        }
+    }
+
+    public Function2<Context, Call, View> getEndCallView() {
+        return endCallView;
+    }
+
+    public void setEndCallView(Function2<Context, Call, View> endCallView) {
+        if (endCallView != null) {
+            Utils.handleView(binding.endCallLayout, endCallView.apply(getContext(), call), true);
+            this.endCallView = endCallView;
+        }
+    }
+
 
 
 
@@ -691,7 +709,6 @@ public class CometChatOutgoingCall extends MaterialCardView {
         this.strokeWidth = strokeWidth;
         super.setStrokeWidth(strokeWidth);
     }
-
 
     public void startProximitySensor() {
         if (sensorManager != null && proximitySensor != null) {

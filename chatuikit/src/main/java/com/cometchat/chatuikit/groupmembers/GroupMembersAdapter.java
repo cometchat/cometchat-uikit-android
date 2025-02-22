@@ -40,9 +40,9 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final @Dimension int scopeChipStrokeWidth;
     private List<GroupMember> groupMemberList;
     private HashMap<GroupMember, Boolean> selectedGroupMembers;
-    private GroupMembersViewHolderListeners subTitleViewHolder, tailViewHolder, listItemView;
+    private GroupMembersViewHolderListeners subTitleViewHolder, tailViewHolder, listItemView, titleView, leadingView;
     private Group group;
-    private boolean disableGroupMembersPresence;
+    private boolean hideUserStatus;
     private @ColorInt int itemTitleTextColor;
     private @StyleRes int itemTitleTextAppearance;
     private @ColorInt int onlineStatusColor;
@@ -143,8 +143,8 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         notifyDataSetChanged();
     }
 
-    public void disableUsersPresence(boolean disableGroupMembersPresence) {
-        this.disableGroupMembersPresence = disableGroupMembersPresence;
+    public void hideUserStatus(boolean hide) {
+        this.hideUserStatus = hide;
         notifyDataSetChanged();
     }
 
@@ -182,8 +182,8 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public boolean isDisableGroupMembersPresence() {
-        return disableGroupMembersPresence;
+    public boolean isHideUserStatus() {
+        return hideUserStatus;
     }
 
     public int getOnlineStatusColor() {
@@ -226,7 +226,7 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public void setListItemView(GroupMembersViewHolderListeners listItemView) {
+    public void setItemView(GroupMembersViewHolderListeners listItemView) {
         if (listItemView != null) {
             this.listItemView = listItemView;
             notifyDataSetChanged();
@@ -240,7 +240,7 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public void setTailView(GroupMembersViewHolderListeners tailView) {
+    public void setTrailingView(GroupMembersViewHolderListeners tailView) {
         if (tailView != null) {
             this.tailViewHolder = tailView;
             notifyDataSetChanged();
@@ -255,9 +255,19 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.itemTitleTextAppearance = itemTitleTextAppearance;
     }
 
+    public void setTitleView(GroupMembersViewHolderListeners titleView) {
+        this.titleView = titleView;
+        notifyDataSetChanged();
+    }
+
+    public void setLeadingView(GroupMembersViewHolderListeners leadingView) {
+        this.leadingView = leadingView;
+        notifyDataSetChanged();
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CometchatGroupMemberListItemBinding binding;
-        private View customListItemView, customSubtitleView, customTailView;
+        private View customListItemView, customSubtitleView, customTailView, customLeadingView, customTitleView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -268,6 +278,15 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 binding.parentLayout.removeAllViews();
                 Utils.handleView(binding.parentLayout, customListItemView, true);
             } else {
+                if (leadingView != null) {
+                    customLeadingView = leadingView.createView(context, binding);
+                    Utils.handleView(binding.leadingView, customLeadingView, true);
+                }
+
+                if (titleView != null) {
+                    customTitleView = titleView.createView(context, binding);
+                    Utils.handleView(binding.titleView, customTitleView, true);
+                }
                 // Handle subtitle view
                 if (subTitleViewHolder != null) {
                     customSubtitleView = subTitleViewHolder.createView(context, binding);
@@ -306,23 +325,31 @@ public class GroupMembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     binding.checkboxView.setVisibility(View.GONE);
                 }
 
-                binding.memberAvatar.setAvatar(groupMember.getName(), groupMember.getAvatar());
-                binding.tvMemberTitle.setText(groupMember.getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? binding
-                    .getRoot()
-                    .getContext()
-                    .getString(R.string.cometchat_you) : groupMember.getName());
+                if (leadingView != null)
+                    leadingView.bindView(context, customLeadingView, groupMember, group, this, groupMemberList, position);
+                else {
+                    binding.memberAvatar.setAvatar(groupMember.getName(), groupMember.getAvatar());
+                    binding.memberStatusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
+                    if (groupMember.getStatus().equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE)) {
+                        if (!Utils.isBlocked(groupMember)) {
+                            binding.memberStatusIndicator.setStatusIndicator(StatusIndicator.ONLINE);
+                            binding.memberStatusIndicator.setVisibility(hideUserStatus ? View.GONE : View.VISIBLE);
+                        } else binding.memberStatusIndicator.setVisibility(View.GONE);
+                    } else {
+                        binding.memberStatusIndicator.setVisibility(View.GONE);
+                    }
 
-                binding.memberStatusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
-                if (groupMember.getStatus().equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE)) {
-                    if (!Utils.isBlocked(groupMember)) {
-                        binding.memberStatusIndicator.setStatusIndicator(StatusIndicator.ONLINE);
-                        binding.memberStatusIndicator.setVisibility(disableGroupMembersPresence ? View.GONE : View.VISIBLE);
-                    } else binding.memberStatusIndicator.setVisibility(View.GONE);
-                } else {
-                    binding.memberStatusIndicator.setVisibility(View.GONE);
+                    binding.memberAvatar.setStyle(avatarStyle);
                 }
 
-                binding.memberAvatar.setStyle(avatarStyle);
+                if (titleView == null) {
+                    binding.tvMemberTitle.setText(groupMember.getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? binding
+                        .getRoot()
+                        .getContext()
+                        .getString(R.string.cometchat_you) : groupMember.getName());
+                } else {
+                    titleView.bindView(context, customTitleView, groupMember, group, this, groupMemberList, position);
+                }
 
                 if (subTitleViewHolder != null) {
                     subTitleViewHolder.bindView(context, customSubtitleView, groupMember, group, this, groupMemberList, position);

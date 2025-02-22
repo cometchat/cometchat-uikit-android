@@ -1,32 +1,19 @@
 package com.cometchat.sampleapp.java.ui.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.cometchat.chat.core.GroupsRequest;
 import com.cometchat.chat.core.UsersRequest;
 import com.cometchat.chat.models.User;
-import com.cometchat.chatuikit.CometChatTheme;
-import com.cometchat.chatuikit.groups.CometChatGroups;
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
-import com.cometchat.chatuikit.users.CometChatUsers;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
 import com.cometchat.sampleapp.java.R;
 import com.cometchat.sampleapp.java.databinding.ActivityNewChatBinding;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
-
-import java.util.Objects;
 
 public class NewChatActivity extends AppCompatActivity {
     private ActivityNewChatBinding binding;
@@ -37,8 +24,8 @@ public class NewChatActivity extends AppCompatActivity {
         binding = ActivityNewChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.users.hideToolbar(true);
-        binding.groups.hideToolbar(true);
+        binding.users.setToolbarVisibility(View.GONE);
+        binding.groups.setToolbarVisibility(View.GONE);
         binding.users.setSeparatorVisibility(View.GONE);
         binding.groups.setSeparatorVisibility(View.GONE);
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -67,9 +54,9 @@ public class NewChatActivity extends AppCompatActivity {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getResources().getString(R.string.app_bottom_nav_groups)));
         binding.tabLayout.getTabAt(0).select();
         binding.users.setUsersRequestBuilder(new UsersRequest.UsersRequestBuilder().hideBlockedUsers(true).setLimit(30));
-        binding.users.setItemClickListener(new OnItemClickListener<User>() {
+        binding.users.setOnItemClick(new OnItemClick<User>() {
             @Override
-            public void OnItemClick(User user, int position) {
+            public void click(View view, int poUser, User user) {
                 Intent intent = new Intent(NewChatActivity.this, MessagesActivity.class);
                 intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
                 startActivity(intent);
@@ -78,14 +65,11 @@ public class NewChatActivity extends AppCompatActivity {
         });
 
         binding.groups.setGroupsRequestBuilder(new GroupsRequest.GroupsRequestBuilder().joinedOnly(true).setLimit(30));
-        binding.groups.setItemClickListener(new OnItemClickListener<com.cometchat.chat.models.Group>() {
-            @Override
-            public void OnItemClick(com.cometchat.chat.models.Group group, int position) {
-                Intent intent = new Intent(NewChatActivity.this, MessagesActivity.class);
-                intent.putExtra(getString(R.string.app_group), new Gson().toJson(group));
-                startActivity(intent);
-                finish();
-            }
+        binding.groups.setOnItemClick((view, position, group) -> {
+            Intent intent = new Intent(NewChatActivity.this, MessagesActivity.class);
+            intent.putExtra(getString(R.string.app_group), new Gson().toJson(group));
+            startActivity(intent);
+            finish();
         });
 
         binding.ivBack.setOnClickListener(v -> finish());

@@ -67,8 +67,7 @@ public class CallDetailsActivity extends AppCompatActivity {
 
         viewModel.getReceiverUser().observe(this, user -> {
             binding.messageHeader.setUser(user);
-            binding.messageHeader.disableTyping(true);
-            binding.messageHeader.disableUserPresence(true);
+            binding.messageHeader.setUserStatusVisibility(View.GONE);
             binding.messageHeader.setBackIconVisibility(View.GONE);
         });
     }
@@ -98,10 +97,12 @@ public class CallDetailsActivity extends AppCompatActivity {
     private void updateInfoView() {
         boolean isLoggedInUser = CallUtils.isLoggedInUser((CallUser) callLog.getInitiator());
         boolean isMissedOrUnanswered = callLog.getStatus().equals(CometChatCallsConstants.CALL_STATUS_UNANSWERED) || callLog.getStatus().equals(
-                CometChatCallsConstants.CALL_STATUS_MISSED);
+            CometChatCallsConstants.CALL_STATUS_MISSED);
         binding.tvInfoDate.setDateText(Utils.callLogsTimeStamp(callLog.getInitiatedAt(), null));
-        if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO) || callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_VIDEO) || callLog.getType().equals(
-                CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO)) {
+        if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO) || callLog
+            .getType()
+            .equals(CometChatCallsConstants.CALL_TYPE_VIDEO) || callLog.getType().equals(
+            CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO)) {
             if (isLoggedInUser) {
                 binding.tvInfoTitle.setText(R.string.app_call_outgoing);
                 binding.tvInfoTitle.setTextAppearance(CometChatTheme.getTextAppearanceHeading4Medium(this));

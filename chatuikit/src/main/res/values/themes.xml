@@ -147,8 +147,8 @@
         <item name="cometchatAttachmentOptionSheetStyle">@style/CometChatAttachmentOptionSheetStyle</item>
         <item name="cometchatAIOptionSheetStyle">@style/CometChatAIOptionSheetStyle</item>
         <item name="cometchatMessageOptionSheetStyle">@style/CometChatMessageOptionSheetStyle</item>
-        <item name="cometchatUsersStyle">@style/CometChatUserListStyle</item>
-        <item name="cometchatGroupsStyle">@style/CometChatGroupListStyle</item>
+        <item name="cometchatUsersStyle">@style/CometChatUsersStyle</item>
+        <item name="cometchatGroupsStyle">@style/CometChatGroupsStyle</item>
         <item name="cometchatCallLogsStyle">@style/CometChatCallLogsStyle</item>
         <item name="cometchatCallButtonsStyle">@style/CometChatCallButtonsStyle</item>
         <item name="cometchatOutgoingCallStyle">@style/CometChatOutgoingCallStyle</item>
@@ -260,8 +260,8 @@
         <item name="cometchatGroupMembersItemTitleTextAppearance">?attr/cometchatTextAppearanceHeading4Medium</item>
         <item name="cometchatGroupMembersAvatarStyle">?attr/cometchatAvatarStyle</item>
         <item name="cometchatGroupMembersStatusIndicatorStyle">?attr/cometchatStatusIndicatorStyle</item>
-        <item name="cometchatGroupMembersSearchInputStartIcon">@drawable/cometchat_ic_search</item>
-        <item name="cometchatGroupMembersSearchInputStartIconTint">?attr/cometchatIconTintSecondary</item>
+        <item name="cometchatGroupMembersSearchInputIcon">@drawable/cometchat_ic_search</item>
+        <item name="cometchatGroupMembersSearchInputStartTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatGroupMembersSearchInputEndIcon">@drawable/cometchat_ic_close</item>
         <item name="cometchatGroupMembersSearchInputEndIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatGroupMembersCheckBoxStrokeWidth">@dimen/cometchat_1dp</item>
@@ -664,7 +664,6 @@
     <style name="CometChatStatusIndicatorStyle">
         <item name="cometchatStatusIndicatorStrokeWidth">0dp</item>
         <item name="cometchatStatusIndicatorCornerRadius">@dimen/cometchat_radius_max</item>
-        <item name="cometchatStatusIndicatorBackgroundColor">?attr/cometchatSuccessColor</item>
         <item name="cometchatStatusIndicatorStrokeColor">?attr/cometchatBackgroundColor1</item>
         <item name="cometchatStatusIndicatorOnlineIcon">@drawable/cometchat_ic_online</item>
         <item name="cometchatStatusIndicatorPrivateGroupIcon">@drawable/cometchat_ic_private_group</item>
@@ -790,6 +789,25 @@
         <item name="cometchatConversationsItemSubtitleTextColor">?attr/cometchatTextColorSecondary</item>
         <item name="cometchatConversationsItemMessageTypeIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatConversationsStrokeColor">@color/cometchat_color_transparent</item>
+
+        <item name="cometchatConversationsDeleteOptionIcon">@drawable/cometchat_ic_delete</item>
+        <item name="cometchatConversationsDeleteOptionIconTint">?attr/cometchatErrorColor</item>
+        <item name="cometchatConversationsDeleteOptionTextAppearance">?attr/cometchatTextAppearanceBodyRegular</item>
+        <item name="cometchatConversationsItemBackgroundColor">?attr/cometchatBackgroundColor1</item>
+        <item name="cometchatConversationsItemSelectedBackgroundColor">?attr/cometchatBackgroundColor4</item>
+
+        <item name="cometchatConversationsCheckBoxStrokeWidth">@dimen/cometchat_1dp</item>
+        <item name="cometchatConversationsCheckBoxCornerRadius">@dimen/cometchat_radius_1</item>
+        <item name="cometchatConversationsCheckBoxStrokeColor">?attr/cometchatStrokeColorDefault</item>
+        <item name="cometchatConversationsCheckBoxBackgroundColor">?attr/cometchatBackgroundColor1</item>
+        <item name="cometchatConversationsCheckBoxSelectIcon">@drawable/cometchat_ic_check</item>
+        <item name="cometchatConversationsCheckBoxSelectIconTint">?attr/cometchatColorWhite</item>
+        <item name="cometchatConversationsCheckBoxCheckedBackgroundColor">?attr/cometchatIconTintHighlight</item>
+        <item name="cometchatConversationsDiscardSelectionIcon">@drawable/cometchat_ic_cancel</item>
+        <item name="cometchatConversationsDiscardSelectionIconTint">?attr/cometchatIconTintPrimary</item>
+        <item name="cometchatConversationsSubmitSelectionIcon">@drawable/cometchat_ic_check</item>
+        <item name="cometchatConversationsSubmitSelectionIconTint">?attr/cometchatIconTintPrimary</item>
+
     </style>
 
     <style name="CometChatDateStyle">
@@ -982,7 +1000,7 @@
         <item name="cometchatMessageOptionSheetEmojiPickerIcon">@drawable/cometchat_add_reaction</item>
     </style>
 
-    <style name="CometChatUserListStyle">
+    <style name="CometChatUsersStyle">
         <item name="cometchatUsersBackgroundColor">?attr/cometchatBackgroundColor1</item>
         <item name="cometchatUsersTitleTextColor">?attr/cometchatTextColorPrimary</item>
         <item name="cometchatUsersTitleTextAppearance">?attr/cometchatTextAppearanceHeading1Bold</item>
@@ -995,8 +1013,6 @@
         <item name="cometchatUsersDiscardSelectionIconTint">?attr/cometchatIconTintPrimary</item>
         <item name="cometchatUsersSubmitSelectionIcon">@drawable/cometchat_ic_check</item>
         <item name="cometchatUsersSubmitSelectionIconTint">?attr/cometchatIconTintPrimary</item>
-        <item name="cometchatUsersSearchInputStartIcon">@drawable/cometchat_ic_search</item>
-        <item name="cometchatUsersSearchInputStartIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatUsersSearchInputEndIcon">@drawable/cometchat_ic_cancel</item>
         <item name="cometchatUsersSearchInputEndIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatUsersSearchInputStrokeWidth">@dimen/cometchat_0dp</item>
@@ -1042,7 +1058,7 @@
         <item name="cometchatUsersSeparatorColor">?attr/cometchatStrokeColorLight</item>
     </style>
 
-    <style name="CometChatGroupListStyle">
+    <style name="CometChatGroupsStyle">
         <item name="cometchatGroupsBackgroundColor">?attr/cometchatBackgroundColor1</item>
         <item name="cometchatGroupsTitleTextColor">?attr/cometchatTextColorPrimary</item>
         <item name="cometchatGroupsTitleTextAppearance">?attr/cometchatTextAppearanceHeading1Bold</item>
@@ -1055,8 +1071,6 @@
         <item name="cometchatGroupsDiscardSelectionIconTint">?attr/cometchatIconTintPrimary</item>
         <item name="cometchatGroupsSubmitSelectionIcon">@drawable/cometchat_ic_check</item>
         <item name="cometchatGroupsSubmitSelectionIconTint">?attr/cometchatIconTintPrimary</item>
-        <item name="cometchatGroupsSearchInputStartIcon">@drawable/cometchat_ic_search</item>
-        <item name="cometchatGroupsSearchInputStartIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatGroupsSearchInputEndIcon">@drawable/cometchat_ic_cancel</item>
         <item name="cometchatGroupsSearchInputEndIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatGroupsSearchInputStrokeWidth">@dimen/cometchat_0dp</item>
@@ -1175,19 +1189,20 @@
 
     <style name="CometChatIncomingCallStyle">
         <item name="cometchatIncomingCallBackgroundColor">?attr/cometchatBackgroundColor3</item>
-        <item name="cometchatIncomingCallTitleTextAppearance">?attr/cometchatTextAppearanceHeading1Bold</item>
+        <item name="cometchatIncomingCallCornerRadius">@dimen/cometchat_12dp</item>
+        <item name="cometchatIncomingCallTitleTextAppearance">?attr/cometchatTextAppearanceHeading2Bold</item>
         <item name="cometchatIncomingCallTitleTextColor">?attr/cometchatTextColorPrimary</item>
-        <item name="cometchatIncomingCallSubtitleTextAppearance">?attr/cometchatTextAppearanceBodyRegular</item>
+        <item name="cometchatIncomingCallSubtitleTextAppearance">?attr/cometchatTextAppearanceHeading4Regular</item>
         <item name="cometchatIncomingCallSubtitleTextColor">?attr/cometchatTextColorSecondary</item>
         <item name="cometchatIncomingCallIconTint">?attr/cometchatIconTintSecondary</item>
         <item name="cometchatIncomingCallVoiceCallIcon">@drawable/cometchat_ic_call_voice</item>
         <item name="cometchatIncomingCallVideoCallIcon">@drawable/cometchat_ic_call_video</item>
-        <item name="cometchatIncomingCallRejectCallIcon">@drawable/cometchat_ic_end_call</item>
-        <item name="cometchatIncomingCallRejectCallIconTint">?attr/cometchatColorWhite</item>
-        <item name="cometchatIncomingCallRejectCallButtonBackgroundColor">?attr/cometchatErrorColor</item>
-        <item name="cometchatIncomingCallAcceptCallIcon">@drawable/cometchat_ic_accept_call</item>
-        <item name="cometchatIncomingCallAcceptCallIconTint">?attr/cometchatColorWhite</item>
-        <item name="cometchatIncomingCallAcceptCallButtonBackgroundColor">?attr/cometchatSuccessColor</item>
+        <item name="cometchatIncomingCallRejectButtonBackgroundColor">?attr/cometchatErrorColor</item>
+        <item name="cometchatIncomingCallAcceptButtonBackgroundColor">?attr/cometchatSuccessColor</item>
+        <item name="cometchatIncomingCallRejectButtonTextColor">?attr/cometchatColorWhite</item>
+        <item name="cometchatIncomingCallAcceptButtonTextColor">?attr/cometchatColorWhite</item>
+        <item name="cometchatIncomingCallRejectButtonTextAppearance">?attr/cometchatTextAppearanceButtonMedium</item>
+        <item name="cometchatIncomingCallAcceptButtonTextAppearance">?attr/cometchatTextAppearanceButtonMedium</item>
         <item name="cometchatIncomingCallAvatarStyle">?attr/cometchatAvatarStyle</item>
     </style>
 

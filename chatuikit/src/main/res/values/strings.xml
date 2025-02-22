@@ -186,4 +186,7 @@
     <string name="cometchat_meeting_initiated_by_you" translatable="true">%s have Initiated a Group Call</string>
     <string name="cometchat_meeting_initiated_by_others" translatable="true">%s has Initiated Group Call</string>
     <string name="cometchat_edited">Edited</string>
+    <string name="cometchat_incoming_call_accept">Accept</string>
+    <string name="cometchat_incoming_call_decline">Decline</string>
+    <string name="cometchat_incoming_call_type">Incoming %s Call</string>
 </resources>

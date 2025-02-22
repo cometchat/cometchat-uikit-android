@@ -42,14 +42,21 @@
 
         <activity
             android:name="com.cometchat.chatuikit.calls.CometChatCallActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout"
             android:screenOrientation="portrait"
-            android:supportsPictureInPicture="true"
-            android:configChanges=
-                "screenSize|smallestScreenSize|screenLayout"/>
+            android:supportsPictureInPicture="true" />
 
         <activity
             android:name="com.cometchat.chatuikit.extensions.collaborative.CometChatWebViewActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".calls.CometChatOngoingCallActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:supportsPictureInPicture="true" />
 
         <meta-data
             android:name="com.cometchat.chatuikit"

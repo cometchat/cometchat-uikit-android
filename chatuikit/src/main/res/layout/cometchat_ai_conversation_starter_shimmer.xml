@@ -6,20 +6,20 @@
     android:orientation="vertical">
 
     <View
-        android:layout_width="@dimen/cometchat_350dp"
-        android:layout_height="@dimen/cometchat_20dp"
-        android:background="@drawable/shimmer_gradient_rect" />
-
-    <View
         android:layout_width="@dimen/cometchat_300dp"
-        android:layout_marginTop="@dimen/cometchat_margin_2"
         android:layout_height="@dimen/cometchat_20dp"
         android:background="@drawable/shimmer_gradient_rect" />
 
     <View
-        android:layout_width="@dimen/cometchat_350dp"
-        android:layout_marginTop="@dimen/cometchat_margin_2"
+        android:layout_width="@dimen/cometchat_250dp"
         android:layout_height="@dimen/cometchat_20dp"
+        android:layout_marginTop="@dimen/cometchat_margin_2"
+        android:background="@drawable/shimmer_gradient_rect" />
+
+    <View
+        android:layout_width="@dimen/cometchat_275dp"
+        android:layout_height="@dimen/cometchat_20dp"
+        android:layout_marginTop="@dimen/cometchat_margin_2"
         android:background="@drawable/shimmer_gradient_rect" />
 
 </LinearLayout>

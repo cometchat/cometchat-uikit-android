@@ -10,7 +10,7 @@ android {
     defaultConfig {
         minSdk 24
         versionCode 27
-        versionName "5.0.0-beta3"
+        versionName "5.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
 

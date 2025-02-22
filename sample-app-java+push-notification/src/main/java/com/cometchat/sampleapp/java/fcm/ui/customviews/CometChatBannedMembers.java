@@ -68,7 +68,7 @@ public class CometChatBannedMembers extends MaterialCardView {
      * When an exception is observed, the onError callback is triggered.
      */
     Observer<CometChatException> exceptionObserver = exception -> {
-        if (onError != null) onError.onError(getContext(), exception);
+        if (onError != null) onError.onError(exception);
     };
     // Error visibility
     private boolean hideError;

@@ -79,8 +79,7 @@ class CallDetailsActivity : AppCompatActivity() {
 
         viewModel.receiverUser.observe(this) { user: User? ->
             binding.messageHeader.user = user!!
-            binding.messageHeader.disableTyping(true)
-            binding.messageHeader.disableUserPresence(true)
+            binding.messageHeader.userStatusVisibility = View.GONE
             binding.messageHeader.setBackIconVisibility(View.GONE)
         }
     }

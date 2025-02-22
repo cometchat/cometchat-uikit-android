@@ -22,12 +22,16 @@ import com.cometchat.calls.model.CallUser;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.calls.utils.CallUtils;
 import com.cometchat.chatuikit.databinding.CometchatCallLogsItemsBinding;
-import com.cometchat.chatuikit.shared.interfaces.CallLogsClickListener;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
+import com.cometchat.chatuikit.shared.interfaces.OnItemLongClick;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
+import com.cometchat.chatuikit.shared.viewholders.CallLogsViewHolderListener;
 import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,7 +57,10 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
 
     private Function2<Context, CallLog, View> subtitle, tail, customView;
 
-    private CallLogsClickListener callClickListener;
+    private OnItemClick<CallLog> itemClickListener;
+    private CometChatCallLogs.OnCallIconClick callIconClickListener;
+    private OnItemLongClick<CallLog> itemLongClickListener;
+
 
     // Call Logs Item Text Appearance and Colors
     private @StyleRes int itemTitleTextAppearance;
@@ -79,10 +86,12 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
     private @ColorInt int itemAudioCallIconTint;
     private @Nullable Drawable itemVideoCallIcon;
     private @ColorInt int itemVideoCallIconTint;
+    private CallLogsViewHolderListener subtitleView, titleView, leadingView, trailingView, listItemView;
 
     // Avatar Style and Date Style
     private @StyleRes int avatarStyle;
     private @StyleRes int dateStyle;
+    private SimpleDateFormat simpleDateFormat;
 
     /**
      * Creates a new instance of the CallLogsAdapter.
@@ -122,34 +131,7 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
     @Override
     public void onBindViewHolder(@NonNull CallLogsViewHolder holder, @SuppressLint("RecyclerView") int position) {
         CallLog callLog = callLogs.get(position);
-        View customView = getCustomView(callLog);
-
-        if (customView == null) {
-            setupAvatar(holder, callLog);
-            setupTitle(holder, callLog);
-
-            View subtitleView = getSubtitleView(callLog);
-            View tailView = getTailView(callLog);
-
-            if (subtitleView == null) {
-                setupSubtitleView(holder, callLog);
-            } else {
-                holder.binding.subtitleView.removeAllViews();
-                holder.binding.subtitleView.addView(subtitleView);
-            }
-
-            if (tailView == null) {
-                setupTailView(holder, callLog, position);
-            } else {
-                holder.binding.tailView.removeAllViews();
-                holder.binding.tailView.addView(tailView);
-            }
-        } else {
-            holder.binding.parentLayout.removeAllViews();
-            holder.binding.parentLayout.addView(customView);
-        }
-
-        setupClickListeners(holder, position, callLog);
+        holder.bindView(callLog, position);
     }
 
     @Override
@@ -195,167 +177,41 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
         holder.binding.tvTitle.setTextColor(itemTitleTextColor);
     }
 
-    /**
-     * Gets the subtitle view for the given CallLog item.
-     *
-     * @param callLog The CallLog item for which the subtitle view is to be retrieved.
-     * @return The View representing the subtitle, or null if no subtitle function
-     * is set.
-     */
-    private View getSubtitleView(CallLog callLog) {
-        if (subtitle != null) return subtitle.apply(context, callLog);
-        return null;
+    public void setSubtitleView(CallLogsViewHolderListener subtitleView) {
+        this.subtitleView = subtitleView;
+        notifyDataSetChanged();
     }
 
-    /**
-     * Gets the tail view for the given CallLog item.
-     *
-     * @param callLog The CallLog item for which the tail view is to be retrieved.
-     * @return The View representing the tail, or null if no tail function is set.
-     */
-    private View getTailView(CallLog callLog) {
-        if (tail != null) return tail.apply(context, callLog);
-        return null;
+    public void setTitleView(CallLogsViewHolderListener titleView) {
+        this.titleView = titleView;
+        notifyDataSetChanged();
     }
 
-    /**
-     * Sets up the subtitle view for the given CallLog item in the provided
-     * ViewHolder.
-     *
-     * <p>
-     * This method removes any existing views in the subtitle view and adds a new
-     * ImageView and a date view based on the details of the CallLog item.
-     *
-     * @param holder  The ViewHolder that holds the views for the CallLog item.
-     * @param callLog The CallLog item containing the call details such as type,
-     *                initiator, and status.
-     */
-    private void setupSubtitleView(CallLogsViewHolder holder, CallLog callLog) {
-        holder.binding.subtitleView.removeAllViews();
-        ImageView imageView = new ImageView(context);
-        CometChatDate cometchatDate = createCometChatDate(callLog.getInitiatedAt());
-
-        if (callLog.getInitiator() instanceof CallUser) {
-            CallUser initiator = (CallUser) callLog.getInitiator();
-            boolean isLoggedInUser = CallUtils.isLoggedInUser(initiator);
-            boolean isMissedOrUnanswered = callLog.getStatus().equals(CometChatCallsConstants.CALL_STATUS_UNANSWERED) || callLog.getStatus().equals(
-                CometChatCallsConstants.CALL_STATUS_MISSED);
-
-            if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO) || callLog
-                .getType()
-                .equals(CometChatCallsConstants.CALL_TYPE_VIDEO) || callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO)) {
-
-                if (isLoggedInUser) {
-                    setupCallIcon(holder, imageView, cometchatDate, itemOutgoingCallIcon, itemOutgoingCallIconTint);
-                } else if (isMissedOrUnanswered) {
-                    setupMissedCall(holder, imageView, cometchatDate);
-                } else {
-                    setupCallIcon(holder, imageView, cometchatDate, itemIncomingCallIcon, itemIncomingCallIconTint);
-                }
-            }
-        }
+    public void setLeadingView(CallLogsViewHolderListener leadingView) {
+        this.leadingView = leadingView;
+        notifyDataSetChanged();
     }
 
-    /**
-     * Sets up the tail view for the given CallLog item.
-     *
-     * @param holder   The ViewHolder that holds the views for the CallLog item.
-     * @param callLog  The CallLog item associated with the ViewHolder.
-     * @param position The position of the CallLog item in the list.
-     */
-    private void setupTailView(CallLogsViewHolder holder, CallLog callLog, int position) {
-        holder.binding.tailView.removeAllViews();
-        ImageView imageView = new ImageView(context);
-
-        if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO)) {
-            imageView.setBackground(itemAudioCallIcon);
-            imageView.setBackgroundTintList(ColorStateList.valueOf(itemAudioCallIconTint));
-        } else {
-            imageView.setBackground(itemVideoCallIcon);
-            imageView.setBackgroundTintList(ColorStateList.valueOf(itemVideoCallIconTint));
-        }
-
-        imageView.setOnClickListener(v -> {
-            if (callClickListener != null) {
-                callClickListener.setOnItemCallIconClickListener(context, holder, position, callLog);
-            }
-        });
-
-        holder.binding.tailView.addView(imageView);
+    public void setTrailingView(CallLogsViewHolderListener trailingView) {
+        this.trailingView = trailingView;
+        notifyDataSetChanged();
     }
 
-    /**
-     * Sets up click listeners for the parent layout of the CallLog item.
-     *
-     * @param holder   The ViewHolder that holds the views for the CallLog item.
-     * @param position The position of the CallLog item in the list.
-     * @param callLog  The CallLog item associated with the ViewHolder.
-     */
-    private void setupClickListeners(CallLogsViewHolder holder, int position, CallLog callLog) {
-        holder.binding.parentLayout.setOnClickListener(view -> {
-            if (callClickListener != null) {
-                callClickListener.setOnItemClickListener(context, holder, position, callLog);
-            }
-        });
-
-        holder.binding.parentLayout.setOnLongClickListener(view -> {
-            if (callClickListener != null) {
-                callClickListener.setOnItemLongClickListener(context, holder, position, callLog);
-            }
-            return true;
-        });
+    public void setItemView(CallLogsViewHolderListener itemView) {
+        this.listItemView = itemView;
+        notifyDataSetChanged();
     }
 
-    /**
-     * Creates a CometChatDate view using the provided timestamp.
-     *
-     * @param timestamp The timestamp of the call log to convert to a date view.
-     * @return A CometChatDate view displaying the formatted date.
-     */
-    private CometChatDate createCometChatDate(long timestamp) {
-        CometChatDate cometchatDate = new CometChatDate(context);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                                               ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        layoutParams.setMargins(context.getResources().getDimensionPixelSize(R.dimen.cometchat_margin_1), 0, 0, 0);
-        cometchatDate.setLayoutParams(layoutParams);
-        cometchatDate.setDateText(Utils.callLogsTimeStamp(timestamp, null));
-        cometchatDate.setStyle(dateStyle);
-        return cometchatDate;
+    public void setCallIconClickListener(CometChatCallLogs.OnCallIconClick callIconClickListener) {
+        this.callIconClickListener = callIconClickListener;
     }
 
-    /**
-     * Sets up the call icon in the subtitle view for the given CallLog item.
-     *
-     * @param holder        The ViewHolder that holds the views for the CallLog item.
-     * @param imageView     The ImageView to display the call icon.
-     * @param cometchatDate The CometChatDate view displaying the date.
-     * @param icon          The drawable resource for the call icon.
-     * @param iconTint      The tint color for the call icon.
-     */
-    private void setupCallIcon(CallLogsViewHolder holder, ImageView imageView, CometChatDate cometchatDate, Drawable icon, @ColorInt int iconTint) {
-        holder.binding.subtitleView.removeAllViews();
-        imageView.setBackground(icon);
-        imageView.setBackgroundTintList(ColorStateList.valueOf(iconTint));
-        holder.binding.subtitleView.addView(imageView);
-        holder.binding.subtitleView.addView(cometchatDate);
+    public void setItemClickListener(OnItemClick<CallLog> itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
-    /**
-     * Sets up the view for a missed call in the subtitle view for the given CallLog
-     * item.
-     *
-     * @param holder        The ViewHolder that holds the views for the CallLog item.
-     * @param imageView     The ImageView to display the missed call icon.
-     * @param cometchatDate The CometChatDate view displaying the date.
-     */
-    private void setupMissedCall(CallLogsViewHolder holder, @NonNull ImageView imageView, CometChatDate cometchatDate) {
-        holder.binding.subtitleView.removeAllViews();
-        imageView.setBackground(itemMissedCallIcon);
-        imageView.setBackgroundTintList(ColorStateList.valueOf(itemMissedCallIconTint));
-        holder.binding.tvTitle.setTextColor(itemMissedCallTitleColor);
-        holder.binding.subtitleView.addView(imageView);
-        holder.binding.subtitleView.addView(cometchatDate);
+    public void setItemLongClickListener(OnItemLongClick<CallLog> itemLongClickListener) {
+        this.itemLongClickListener = itemLongClickListener;
     }
 
     /**
@@ -368,61 +224,6 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
     public void setCallLogs(List<CallLog> list) {
         if (list != null) {
             this.callLogs = list;
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Sets the subtitle view function for the adapter.
-     *
-     * @param subtitle A function that returns a View for the subtitle based on the
-     *                 context and CallLog. If the function is not null, it updates the
-     *                 subtitle and notifies the adapter.
-     */
-    public void setSubtitleView(Function2<Context, CallLog, View> subtitle) {
-        if (subtitle != null) {
-            this.subtitle = subtitle;
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Sets the tail view function for the adapter.
-     *
-     * @param tailView A function that returns a View for the tail based on the context
-     *                 and CallLog. If the function is not null, it updates the tail and
-     *                 notifies the adapter.
-     */
-    public void setTailView(Function2<Context, CallLog, View> tailView) {
-        if (tailView != null) {
-            this.tail = tailView;
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Sets the custom view function for the adapter.
-     *
-     * @param customView A function that returns a View based on the context and CallLog.
-     *                   If the function is not null, it updates the customView and
-     *                   notifies the adapter.
-     */
-    public void setCustomView(Function2<Context, CallLog, View> customView) {
-        if (customView != null) {
-            this.customView = customView;
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Sets the click listener for CallLog items.
-     *
-     * @param callClickListener The listener to handle click events on CallLog items. If the
-     *                          listener is not null, it updates the callClickListener.
-     */
-    public void setCometChatCallLogClickListener(CallLogsClickListener callClickListener) {
-        if (callClickListener != null) {
-            this.callClickListener = callClickListener;
             notifyDataSetChanged();
         }
     }
@@ -759,24 +560,235 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.CallLo
         notifyDataSetChanged();
     }
 
+    public void setDateFormat(SimpleDateFormat simpleDateFormat) {
+        this.simpleDateFormat = simpleDateFormat;
+        notifyDataSetChanged();
+    }
+
     /**
      * ViewHolder for the CallLogsAdapter, holding the view references for a single
      * CallLog item. This class extends RecyclerView.ViewHolder and is used to
      * efficiently display each item in the list.
      */
-    public static class CallLogsViewHolder extends RecyclerView.ViewHolder {
+    public class CallLogsViewHolder extends RecyclerView.ViewHolder {
         private final CometchatCallLogsItemsBinding binding;
+        private View customItemView, customTitleView, customSubtitleView, customLeadingView, customTrailingView;
 
         /**
          * Constructor for the CallLogsViewHolder.
          *
-         * @param itemView The view for a single item in the RecyclerView. It binds the view
-         *                 to the corresponding layout defined in the binding class.
+         * @param item The view for a single item in the RecyclerView. It binds the view
+         *             to the corresponding layout defined in the binding class.
          */
-        public CallLogsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            binding = CometchatCallLogsItemsBinding.bind(itemView);
+        public CallLogsViewHolder(@NonNull View item) {
+            super(item);
+            binding = CometchatCallLogsItemsBinding.bind(item);
+            if (listItemView != null) {
+                customItemView = listItemView.createView(context, binding);
+                Utils.handleView(binding.parentView, customItemView, true);
+            } else {
+                if (leadingView != null) {
+                    customLeadingView = leadingView.createView(context, binding);
+                    Utils.handleView(binding.avatarContainer, customLeadingView, true);
+                }
+
+                if (titleView != null) {
+                    customTitleView = titleView.createView(context, binding);
+                    Utils.handleView(binding.titleContainer, customTitleView, true);
+                }
+                if (subtitleView != null) {
+                    customSubtitleView = subtitleView.createView(context, binding);
+                    Utils.handleView(binding.subtitleContainer, customSubtitleView, true);
+                }
+                if (trailingView != null) {
+                    customTrailingView = trailingView.createView(context, binding);
+                    Utils.handleView(binding.tailView, customTrailingView, true);
+                }
+            }
+
         }
+
+        public void bindView(CallLog callLog, int position) {
+
+            View customView = getCustomView(callLog);
+
+            if (listItemView == null) {
+                if (leadingView != null) {
+                    leadingView.bindView(context, customLeadingView, callLog, this, callLogs, position);
+                } else {
+                    setupAvatar(this, callLog);
+                }
+
+                if (titleView == null) {
+                    setupTitle(this, callLog);
+                } else {
+                    titleView.bindView(context, customTitleView, callLog, this, callLogs, position);
+                }
+
+                if (subtitleView == null) {
+                    setupSubtitleView(this, callLog);
+                } else {
+                    subtitleView.bindView(context, customSubtitleView, callLog, this, callLogs, position);
+                }
+
+                if (trailingView == null) {
+                    setupTailView(this, callLog, position);
+                } else {
+                    trailingView.bindView(context, customTrailingView, callLog, this, callLogs, position);
+                }
+            } else {
+                listItemView.bindView(context, customItemView, callLog, this, callLogs, position);
+                binding.parentView.addView(customView);
+            }
+
+            setupClickListeners(this, position, callLog);
+        }
+
+        /**
+         * Sets up the subtitle view for the given CallLog item in the provided
+         * ViewHolder.
+         *
+         * <p>
+         * This method removes any existing views in the subtitle view and adds a new
+         * ImageView and a date view based on the details of the CallLog item.
+         *
+         * @param holder  The ViewHolder that holds the views for the CallLog item.
+         * @param callLog The CallLog item containing the call details such as type,
+         *                initiator, and status.
+         */
+        private void setupSubtitleView(CallLogsViewHolder holder, CallLog callLog) {
+            holder.binding.subtitleView.removeAllViews();
+            ImageView imageView = new ImageView(context);
+            CometChatDate cometchatDate = createCometChatDate(callLog.getInitiatedAt());
+
+            if (callLog.getInitiator() instanceof CallUser) {
+                CallUser initiator = (CallUser) callLog.getInitiator();
+                boolean isLoggedInUser = CallUtils.isLoggedInUser(initiator);
+                boolean isMissedOrUnanswered = callLog.getStatus().equals(CometChatCallsConstants.CALL_STATUS_UNANSWERED) || callLog
+                    .getStatus()
+                    .equals(CometChatCallsConstants.CALL_STATUS_MISSED);
+
+                if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO) || callLog
+                    .getType()
+                    .equals(CometChatCallsConstants.CALL_TYPE_VIDEO) || callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO)) {
+
+                    if (isLoggedInUser) {
+                        setupCallIcon(holder, imageView, cometchatDate, itemOutgoingCallIcon, itemOutgoingCallIconTint);
+                    } else if (isMissedOrUnanswered) {
+                        setupMissedCall(holder, imageView, cometchatDate);
+                    } else {
+                        setupCallIcon(holder, imageView, cometchatDate, itemIncomingCallIcon, itemIncomingCallIconTint);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Sets up the tail view for the given CallLog item.
+         *
+         * @param holder   The ViewHolder that holds the views for the CallLog item.
+         * @param callLog  The CallLog item associated with the ViewHolder.
+         * @param position The position of the CallLog item in the list.
+         */
+        private void setupTailView(CallLogsViewHolder holder, CallLog callLog, int position) {
+            holder.binding.tailView.removeAllViews();
+            ImageView imageView = new ImageView(context);
+
+            if (callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO)) {
+                imageView.setBackground(itemAudioCallIcon);
+                imageView.setBackgroundTintList(ColorStateList.valueOf(itemAudioCallIconTint));
+            } else {
+                imageView.setBackground(itemVideoCallIcon);
+                imageView.setBackgroundTintList(ColorStateList.valueOf(itemVideoCallIconTint));
+            }
+
+            imageView.setOnClickListener(v -> {
+                if (callIconClickListener != null) {
+                    callIconClickListener.onCallIconClick(imageView, holder, position, callLog);
+                }
+            });
+
+            holder.binding.tailView.addView(imageView);
+        }
+
+        /**
+         * Sets up click listeners for the parent layout of the CallLog item.
+         *
+         * @param holder   The ViewHolder that holds the views for the CallLog item.
+         * @param position The position of the CallLog item in the list.
+         * @param callLog  The CallLog item associated with the ViewHolder.
+         */
+        private void setupClickListeners(CallLogsViewHolder holder, int position, CallLog callLog) {
+            holder.binding.parentView.setOnClickListener(view -> {
+                if (itemClickListener != null) {
+                    itemClickListener.click(holder.itemView, position, callLog);
+                }
+            });
+
+            holder.binding.parentView.setOnLongClickListener(view -> {
+                if (itemLongClickListener != null) {
+                    itemLongClickListener.longClick(holder.itemView, position, callLog);
+                }
+                return true;
+            });
+        }
+
+        /**
+         * Creates a CometChatDate view using the provided timestamp.
+         *
+         * @param timestamp The timestamp of the call log to convert to a date view.
+         * @return A CometChatDate view displaying the formatted date.
+         */
+        private CometChatDate createCometChatDate(long timestamp) {
+            CometChatDate cometchatDate = new CometChatDate(context);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(context.getResources().getDimensionPixelSize(R.dimen.cometchat_margin_1), 0, 0, 0);
+            cometchatDate.setLayoutParams(layoutParams);
+            if (simpleDateFormat != null) cometchatDate.setDateText(simpleDateFormat.format(new Date(timestamp * 1000)));
+            else cometchatDate.setDateText(Utils.callLogsTimeStamp(timestamp, null));
+            cometchatDate.setStyle(dateStyle);
+            return cometchatDate;
+        }
+
+        /**
+         * Sets up the call icon in the subtitle view for the given CallLog item.
+         *
+         * @param holder        The ViewHolder that holds the views for the CallLog item.
+         * @param imageView     The ImageView to display the call icon.
+         * @param cometchatDate The CometChatDate view displaying the date.
+         * @param icon          The drawable resource for the call icon.
+         * @param iconTint      The tint color for the call icon.
+         */
+        private void setupCallIcon(CallLogsViewHolder holder,
+                                   ImageView imageView,
+                                   CometChatDate cometchatDate,
+                                   Drawable icon,
+                                   @ColorInt int iconTint) {
+            holder.binding.subtitleView.removeAllViews();
+            imageView.setBackground(icon);
+            imageView.setBackgroundTintList(ColorStateList.valueOf(iconTint));
+            holder.binding.subtitleView.addView(imageView);
+            holder.binding.subtitleView.addView(cometchatDate);
+        }
+
+        /**
+         * Sets up the view for a missed call in the subtitle view for the given CallLog
+         * item.
+         *
+         * @param holder        The ViewHolder that holds the views for the CallLog item.
+         * @param imageView     The ImageView to display the missed call icon.
+         * @param cometchatDate The CometChatDate view displaying the date.
+         */
+        private void setupMissedCall(CallLogsViewHolder holder, @NonNull ImageView imageView, CometChatDate cometchatDate) {
+            holder.binding.subtitleView.removeAllViews();
+            imageView.setBackground(itemMissedCallIcon);
+            imageView.setBackgroundTintList(ColorStateList.valueOf(itemMissedCallIconTint));
+            holder.binding.tvTitle.setTextColor(itemMissedCallTitleColor);
+            holder.binding.subtitleView.addView(imageView);
+            holder.binding.subtitleView.addView(cometchatDate);
+        }
+
 
         public CometchatCallLogsItemsBinding getBinding() {
             return binding;

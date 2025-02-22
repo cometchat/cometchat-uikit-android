@@ -49,12 +49,15 @@ public class ThreadMessageActivity extends AppCompatActivity {
 
         // Calculate 25% of the screen height
         int requiredHeight = (int) (screenHeight * 0.35);
-        binding.threadHeader.setMaxHeightLimit(requiredHeight);
+        binding.threadHeader.setMaxHeight(requiredHeight);
     }
 
     private void setParentMessage(BaseMessage parentMessage) {
         if (UIKitConstants.ReceiverType.USER.equalsIgnoreCase(parentMessage.getReceiverType())) {
-            user = parentMessage.getSender().getUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? (User) parentMessage.getReceiver() : parentMessage.getSender();
+            user = parentMessage
+                .getSender()
+                .getUid()
+                .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? (User) parentMessage.getReceiver() : parentMessage.getSender();
         } else if (UIKitConstants.ReceiverType.GROUP.equalsIgnoreCase(parentMessage.getReceiverType())) {
             group = (Group) parentMessage.getReceiver();
         }

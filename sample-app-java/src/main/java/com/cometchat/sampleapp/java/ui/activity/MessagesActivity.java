@@ -14,7 +14,6 @@ import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
-import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.keyboard_utils.KeyBoardUtils;
 import com.cometchat.sampleapp.java.R;
@@ -37,13 +36,6 @@ public class MessagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMessagesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        /*
-         * MessagesRequest.MessagesRequestBuilder messagesRequestBuilder = new
-         * MessagesRequest.MessagesRequestBuilder()
-         * .setCategories(Arrays.asList("message", "call", "action", "interactive"));
-         * binding.messageList.setMessagesRequestBuilder(messagesRequestBuilder);
-         */
 
         // Create an instance of the MessagesViewModel
         viewModel = new ViewModelProvider.NewInstanceFactory().create(MessagesViewModel.class);
@@ -188,7 +180,7 @@ public class MessagesActivity extends AppCompatActivity {
         }
 
         // Set up back button behavior
-        binding.messageHeader.onBackButtonPressed(() -> {
+        binding.messageHeader.setOnBackButtonPressed(() -> {
             Utils.hideKeyBoard(this, binding.getRoot());
             finish();
         });
@@ -198,9 +190,9 @@ public class MessagesActivity extends AppCompatActivity {
      * Configures the overflow menu for additional actions.
      */
     private void setOverFlowMenu() {
-        binding.messageHeader.setTailView((context, user, group) -> {
+        binding.messageHeader.setAuxiliaryButtonView((context, user, group) -> {
             LinearLayout linearLayout = new LinearLayout(context);
-            View view = ChatConfigurator.getDataSource().getAuxiliaryHeaderMenu(context, user, group, new AdditionParameter());
+            View view = ChatConfigurator.getDataSource().getAuxiliaryHeaderMenu(context, user, group, binding.messageHeader.getAdditionParameter());
 
             OverflowMenuLayoutBinding overflowMenuLayoutBinding = OverflowMenuLayoutBinding.inflate(getLayoutInflater());
             overflowMenuLayoutBinding.ivMenu.setImageResource(R.drawable.ic_info);

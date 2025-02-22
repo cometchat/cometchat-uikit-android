@@ -67,7 +67,7 @@ class FCMService : FirebaseMessagingService() {
                 } else if ("call".equals(type, ignoreCase = true)) {
                     val sessionId = message.data["sessionId"]
                     val callAction = message.data["callAction"]
-                    if (MyApplication.isAppInForeground && MyApplication.getTempCall() != null &&
+                    if (MyApplication.isAppInForeground() && MyApplication.getTempCall() != null &&
                         (MyApplication
                             .getTempCall()
                             ?.sessionId.equals(sessionId)
@@ -161,7 +161,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun voipIncomingCall(callData: FCMCallDto) {
-        if (MyApplication.isAppInForeground) {
+        if (MyApplication.isAppInForeground()) {
             CometChatLogger.e(TAG, "Call ignored as app is in the foreground.")
             return
         }

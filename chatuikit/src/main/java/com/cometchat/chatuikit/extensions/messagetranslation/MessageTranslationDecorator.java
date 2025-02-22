@@ -1,6 +1,7 @@
 package com.cometchat.chatuikit.extensions.messagetranslation;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,11 +18,11 @@ import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper;
 import com.cometchat.chatuikit.shared.constants.MessageStatus;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.events.CometChatMessageEvents;
 import com.cometchat.chatuikit.shared.formatters.FormatterUtils;
 import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
 import com.cometchat.chatuikit.shared.framework.DataSource;
 import com.cometchat.chatuikit.shared.framework.DataSourceDecorator;
+import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.models.CometChatMessageOption;
 
 import org.json.JSONArray;
@@ -39,22 +40,24 @@ public class MessageTranslationDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<CometChatMessageOption> getTextMessageOptions(Context context, BaseMessage baseMessage, Group group) {
-        List<CometChatMessageOption> optionList = super.getTextMessageOptions(context, baseMessage, group);
+    public List<CometChatMessageOption> getTextMessageOptions(Context context,
+                                                              BaseMessage baseMessage,
+                                                              Group group,
+                                                              AdditionParameter additionParameter) {
+        List<CometChatMessageOption> optionList = super.getTextMessageOptions(context, baseMessage, group, additionParameter);
         if (baseMessage != null && baseMessage.getDeletedAt() == 0) {
-            optionList.add(new CometChatMessageOption("MessageTranslationDecorator", context.getString(R.string.cometchat_translate), R.drawable.cometchat_ic_translate, () -> {
-                translateMessage(context, baseMessage);
-            }));
+            if (additionParameter.getTranslateMessageOptionVisibility() == View.VISIBLE) optionList.add(new CometChatMessageOption(
+                "MessageTranslationDecorator",
+                context.getString(R.string.cometchat_translate),
+                R.drawable.cometchat_ic_translate,
+                () -> {
+                    translateMessage(context, baseMessage, additionParameter);
+                }));
         }
         return optionList;
     }
 
-    @Override
-    public String getId() {
-        return MessageTranslationDecorator.class.getSimpleName();
-    }
-
-    private void translateMessage(@NonNull Context context, BaseMessage baseMessage) {
+    private void translateMessage(@NonNull Context context, BaseMessage baseMessage, AdditionParameter additionParameter) {
         try {
             String localeLanguage = Locale.getDefault().getLanguage();
             JSONObject body = new JSONObject();
@@ -62,7 +65,13 @@ public class MessageTranslationDecorator extends DataSourceDecorator {
             languages.put(localeLanguage);
             body.put("msgId", baseMessage.getId());
             body.put("languages", languages);
-            body.put("text", FormatterUtils.getFormattedText(context, baseMessage, UIKitConstants.FormattingType.MESSAGE_COMPOSER, UIKitConstants.MessageBubbleAlignment.LEFT, ((TextMessage) baseMessage).getText(), ChatConfigurator.getDataSource().getTextFormatters(context)));
+            body.put("text",
+                     FormatterUtils.getFormattedText(context,
+                                                     baseMessage,
+                                                     UIKitConstants.FormattingType.MESSAGE_COMPOSER,
+                                                     UIKitConstants.MessageBubbleAlignment.LEFT,
+                                                     ((TextMessage) baseMessage).getText(),
+                                                     ChatConfigurator.getDataSource().getTextFormatters(context, additionParameter)));
             CometChat.callExtension("message-translation", "POST", "/v2/translate", body, new CometChat.CallbackListener<JSONObject>() {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
@@ -105,5 +114,10 @@ public class MessageTranslationDecorator extends DataSourceDecorator {
     public void showError(Context context, String message) {
         String errorMessage = message;
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public String getId() {
+        return MessageTranslationDecorator.class.getSimpleName();
     }
 }

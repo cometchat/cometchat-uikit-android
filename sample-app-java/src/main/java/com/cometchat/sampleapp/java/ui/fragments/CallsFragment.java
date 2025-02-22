@@ -23,7 +23,8 @@ import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.calls.CometChatCallActivity;
 import com.cometchat.chatuikit.calls.calllogs.CallLogsAdapter;
-import com.cometchat.chatuikit.shared.interfaces.CallLogsClickListener;
+import com.cometchat.chatuikit.calls.calllogs.CometChatCallLogs;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
 import com.cometchat.sampleapp.java.databinding.FragmentCallsBinding;
 import com.cometchat.sampleapp.java.ui.activity.CallDetailsActivity;
 import com.cometchat.sampleapp.java.utils.AppUtils;
@@ -42,6 +43,11 @@ public class CallsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -50,11 +56,6 @@ public class CallsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCallsBinding.inflate(inflater, container, false);
         return binding.getRoot();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class CallsFragment extends Fragment {
         if (enableAutoRefresh) {
             enableAutoRefresh = false;
             isCallActive = false;
-            binding.callLog.refreshCallLogs();
+//            binding.callLog.refreshCallLogs();
         }
     }
 
@@ -89,43 +90,30 @@ public class CallsFragment extends Fragment {
         viewModel.onError().observe(getViewLifecycleOwner(), onError());
     }
 
-    private Observer<Call> onCallStart() {
-        return call -> {
-            CometChatCallActivity.launchOutgoingCallScreen(requireContext(), call, null);
-        };
-    }
-
-    private Observer<CometChatException> onError() {
-        return e -> {
-            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        };
-    }
-
     private void initClickListeners() {
-        binding.callLog.setClickListener(new CallLogsClickListener() {
+        binding.callLog.setOnItemClick(new OnItemClick<CallLog>() {
             @Override
-            public void setOnItemClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
-                Intent intent = new Intent(context, CallDetailsActivity.class);
+            public void click(View view, int position, CallLog callLog) {
+                Intent intent = new Intent(getContext(), CallDetailsActivity.class);
                 intent.putExtra("callLog", new Gson().toJson(callLog));
                 intent.putExtra("initiator", new Gson().toJson(callLog.getInitiator()));
                 intent.putExtra("receiver", new Gson().toJson(callLog.getReceiver()));
                 startActivity(intent);
             }
+        });
 
+        binding.callLog.setOnCallIconClickListener(new CometChatCallLogs.OnCallIconClick() {
             @Override
-            public void setOnItemLongClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {}
-
-            @Override
-            public void setOnItemCallIconClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
+            public void onCallIconClick(View view, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
                 if (!isCallActive) {
                     isCallActive = true;
                     holder.getBinding().tailView.removeAllViews();
                     holder.getBinding().tailView.addView(
-                            AppUtils.getProgressBar(
-                                    requireContext(),
-                                    requireContext().getResources().getDimensionPixelSize(com.cometchat.chatuikit.R.dimen.cometchat_30dp),
-                                    CometChatTheme.getTextColorPrimary(requireContext())
-                            )
+                        AppUtils.getProgressBar(
+                            requireContext(),
+                            requireContext().getResources().getDimensionPixelSize(com.cometchat.chatuikit.R.dimen.cometchat_30dp),
+                            CometChatTheme.getTextColorPrimary(requireContext())
+                        )
                     );
                     CometChat.CallbackListener<Void> listener = new CometChat.CallbackListener<Void>() {
                         @Override
@@ -146,5 +134,18 @@ public class CallsFragment extends Fragment {
                 }
             }
         });
+
+    }
+
+    private Observer<Call> onCallStart() {
+        return call -> {
+            CometChatCallActivity.launchOutgoingCallScreen(requireContext(), call, null);
+        };
+    }
+
+    private Observer<CometChatException> onError() {
+        return e -> {
+            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        };
     }
 }

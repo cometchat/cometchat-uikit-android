@@ -67,8 +67,7 @@ public class CallDetailsActivity extends AppCompatActivity {
 
         viewModel.getReceiverUser().observe(this, user -> {
             binding.messageHeader.setUser(user);
-            binding.messageHeader.disableTyping(true);
-            binding.messageHeader.disableUserPresence(true);
+            binding.messageHeader.setUserStatusVisibility(View.GONE);
             binding.messageHeader.setBackIconVisibility(View.GONE);
         });
     }

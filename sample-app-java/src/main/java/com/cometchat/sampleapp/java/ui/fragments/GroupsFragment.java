@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.cometchat.chat.models.Group;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.sampleapp.java.R;
 import com.cometchat.sampleapp.java.databinding.CreateGroupLayoutBinding;
 import com.cometchat.sampleapp.java.databinding.FragmentGroupsBinding;
@@ -61,18 +60,15 @@ public class GroupsFragment extends Fragment {
         viewModel.getError().observe(getViewLifecycleOwner(), this::setErrorMessage);
         viewModel.getDialogState().observe(getViewLifecycleOwner(), this::setDialogState);
 
-        binding.group.setItemClickListener(new OnItemClickListener<Group>() {
-            @Override
-            public void OnItemClick(Group group, int position) {
-                // Handle group item click based on group join status
-                if (group.isJoined()) {
-                    openGroupChat(group);
-                } else {
-                    if (group.getGroupType().equalsIgnoreCase(UIKitConstants.GroupType.PUBLIC)) {
-                        viewModel.joinPasswordGroup(group, "");
-                    } else if (group.getGroupType().equalsIgnoreCase(UIKitConstants.GroupType.PASSWORD)) {
-                        openJoinPasswordGroupDialog(group);
-                    }
+        binding.group.setOnItemClick((view1, position, group) -> {
+            // Handle group item click based on group join status
+            if (group.isJoined()) {
+                openGroupChat(group);
+            } else {
+                if (group.getGroupType().equalsIgnoreCase(UIKitConstants.GroupType.PUBLIC)) {
+                    viewModel.joinPasswordGroup(group, "");
+                } else if (group.getGroupType().equalsIgnoreCase(UIKitConstants.GroupType.PASSWORD)) {
+                    openJoinPasswordGroupDialog(group);
                 }
             }
         });

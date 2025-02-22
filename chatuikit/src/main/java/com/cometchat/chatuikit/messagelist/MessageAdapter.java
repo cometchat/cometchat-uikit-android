@@ -23,12 +23,9 @@ import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.extensions.ExtensionConstants;
-import com.cometchat.chatuikit.extensions.reaction.CometChatReaction;
 import com.cometchat.chatuikit.logger.CometChatLogger;
-import com.cometchat.chatuikit.reactionlist.interfaces.CometChatUIKitReactionActionEvents;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.interfaces.Function1;
 import com.cometchat.chatuikit.shared.models.CometChatMessageOption;
 import com.cometchat.chatuikit.shared.models.CometChatMessageTemplate;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
@@ -40,6 +37,10 @@ import com.cometchat.chatuikit.shared.views.date.CometChatDate;
 import com.cometchat.chatuikit.shared.views.date.Pattern;
 import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.reaction.CometChatReaction;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnAddMoreReactionsClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionLongClick;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final int layoutDirection;
     // Reaction Handling
     private final HashMap<Integer, CometChatMessageTemplate> viewTypeTemplateHashMap;
+    private OnAddMoreReactionsClick onAddMoreReactionsClick;
+    private OnReactionClick onReactionClick;
+    private OnReactionLongClick onReactionLongClick;
     private List<BaseMessage> baseMessageList;
     // Interaction and Configuration
     private CometChatMessageList.ThreadReplyClick threadReplyClick;
@@ -69,8 +73,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean showAvatar = false;
     private boolean showLeftBubbleUserAvatar = false;
     private boolean showLeftBubbleGroupAvatar = true;
-    private Function1<BaseMessage, String> datePattern;
-    private Function1<BaseMessage, String> dateSeparatorPattern;
+    private SimpleDateFormat timeFormat;
+    private SimpleDateFormat dateSeparatorFormat;
     private UIKitConstants.TimeStampAlignment timeStampAlignment = UIKitConstants.TimeStampAlignment.BOTTOM;
     // Message Template and Style Configuration
     private HashMap<String, CometChatMessageTemplate> messageTemplateHashMap;
@@ -81,7 +85,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Group group;
     private int leftBubbleMarginTop = -1, leftBubbleMarginBottom = -1, leftBubbleMarginStart = -1, leftBubbleMarginEnd = -1; // Margins for left bubble
     private int rightBubbleMarginTop = -1, rightBubbleMarginBottom = -1, rightBubbleMarginStart = -1, rightBubbleMarginEnd = -1; // Margins for right bubble
-    private CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents;
     private int reactionChipSize = 0;
     private int plusReactionChipSize = 0;
     private boolean disableReactions;
@@ -463,6 +466,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private @ColorInt int outgoingMeetCallBubbleSenderNameTextColor;
     private @StyleRes int outgoingMeetCallBubbleSenderNameTextAppearance;
     private @StyleRes int incomingMeetCallBubbleSenderNameTextAppearance;
+    private boolean hideGroupActionMessage;
 
     /**
      * Constructor for the MessageAdapter class.
@@ -479,7 +483,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.onMessageLongClick = onMessageLongClick;
         this.viewTypeTemplateHashMap = new HashMap<>();
         this.messageViewTypeHashMap = new HashMap<>();
-        this.datePattern = (baseMessage -> new SimpleDateFormat("h:mm a", Locale.US).format(new java.util.Date(baseMessage.getSentAt() * 1000)));
+        this.timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
         // Get the size of the reaction chips
         reactionChipSize = getTheSizeOfReactionChip("😂", 1);
@@ -627,7 +631,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         // Determine message alignment/type
         if (baseMessage.getCategory().equals(CometChatConstants.CATEGORY_ACTION) ||
             baseMessage.getCategory().equals(CometChatConstants.CATEGORY_CALL)) {
-            type = CENTER_MESSAGE;
+            if (baseMessage.getCategory().equals(CometChatConstants.CATEGORY_ACTION)) {
+                if (hideGroupActionMessage) {
+                    type = IGNORE_MESSAGE;
+                } else {
+                    type = CENTER_MESSAGE;
+                }
+            } else {
+                type = CENTER_MESSAGE;
+            }
         } else {
             if (!UIKitConstants.MessageListAlignment.LEFT_ALIGNED.equals(listAlignment)) {
                 if (baseMessage.getSender() != null && CometChatUIKit.getLoggedInUser() != null && baseMessage
@@ -705,19 +717,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                            context.getResources().getDimensionPixelSize(R.dimen.cometchat_padding_1));
 
             // Check if a custom date separator pattern is available
-            if (getDateSeparatorPattern(baseMessage) == null) {
-                // If the sent timestamp is valid, set the date; otherwise, show an updating
-                // message
-                if (baseMessage.getSentAt() > 0) {
-                    var1.txtMessageDate.setDate(baseMessage.getSentAt(), Pattern.DAY_DATE);
-                } else {
-                    var1.txtMessageDate.setDateText(context.getString(R.string.cometchat_updating));
-                }
+            // If the sent timestamp is valid, set the date; otherwise, show an updating
+            // message
+            if (baseMessage.getSentAt() > 0) {
+                var1.txtMessageDate.setDateFormat(dateSeparatorFormat);
+                var1.txtMessageDate.setDate(baseMessage.getSentAt(), Pattern.DAY_DATE);
             } else {
-                // Set a custom date string based on the provided separator pattern
-                var1.txtMessageDate.setCustomDateString(getDateSeparatorPattern(baseMessage));
+                var1.txtMessageDate.setDateText(context.getString(R.string.cometchat_updating));
             }
-
             // Apply the style to the date text view
             var1.txtMessageDate.setStyle(dateSeparatorStyle);
         }
@@ -736,7 +743,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * or null if no pattern is defined.
      */
     public String getDateSeparatorPattern(BaseMessage baseMessage) {
-        if (dateSeparatorPattern != null) return dateSeparatorPattern.apply(baseMessage);
+        if (dateSeparatorFormat != null) return dateSeparatorFormat.format(baseMessage.getSentAt() * 1000);
         return null;
     }
 
@@ -955,7 +962,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingTextBubbleSenderNameTextColor,
                                        incomingTextBubbleSenderNameTextAppearance,
@@ -963,7 +970,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingTextBubbleReceiptStyle,
                                            incomingTextBubbleDateStyle);
@@ -986,7 +993,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingTextBubbleSenderNameTextColor,
                                        outgoingTextBubbleSenderNameTextAppearance,
@@ -994,7 +1001,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingTextBubbleReceiptStyle,
                                            outgoingTextBubbleDateStyle);
@@ -1020,7 +1027,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingImageBubbleSenderNameTextColor,
                                        incomingImageBubbleSenderNameTextAppearance,
@@ -1028,7 +1035,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingImageBubbleReceiptStyle,
                                            incomingImageBubbleDateStyle);
@@ -1051,7 +1058,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingImageBubbleSenderNameTextColor,
                                        outgoingImageBubbleSenderNameTextAppearance,
@@ -1059,7 +1066,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingImageBubbleReceiptStyle,
                                            outgoingImageBubbleDateStyle);
@@ -1085,7 +1092,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingVideoBubbleSenderNameTextColor,
                                        incomingVideoBubbleSenderNameTextAppearance,
@@ -1093,7 +1100,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingVideoBubbleReceiptStyle,
                                            incomingVideoBubbleDateStyle);
@@ -1116,7 +1123,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingVideoBubbleSenderNameTextColor,
                                        outgoingVideoBubbleSenderNameTextAppearance,
@@ -1124,7 +1131,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingVideoBubbleReceiptStyle,
                                            outgoingVideoBubbleDateStyle);
@@ -1150,7 +1157,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingAudioBubbleSenderNameTextColor,
                                        incomingAudioBubbleSenderNameTextAppearance,
@@ -1158,7 +1165,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingAudioBubbleReceiptStyle,
                                            incomingAudioBubbleDateStyle);
@@ -1181,7 +1188,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingAudioBubbleSenderNameTextColor,
                                        outgoingAudioBubbleSenderNameTextAppearance,
@@ -1189,7 +1196,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingAudioBubbleReceiptStyle,
                                            outgoingAudioBubbleDateStyle);
@@ -1215,7 +1222,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingFileBubbleSenderNameTextColor,
                                        incomingFileBubbleSenderNameTextAppearance,
@@ -1223,7 +1230,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingFileBubbleReceiptStyle,
                                            incomingFileBubbleDateStyle);
@@ -1246,7 +1253,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingFileBubbleSenderNameTextColor,
                                        outgoingFileBubbleSenderNameTextAppearance,
@@ -1254,7 +1261,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingFileBubbleReceiptStyle,
                                            outgoingFileBubbleDateStyle);
@@ -1280,7 +1287,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingFormBubbleSenderNameTextColor,
                                        incomingFormBubbleSenderNameTextAppearance,
@@ -1288,7 +1295,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingFormBubbleReceiptStyle,
                                            incomingFormBubbleDateStyle);
@@ -1311,7 +1318,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingFormBubbleSenderNameTextColor,
                                        outgoingFormBubbleSenderNameTextAppearance,
@@ -1319,7 +1326,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingFormBubbleReceiptStyle,
                                            outgoingFormBubbleDateStyle);
@@ -1345,7 +1352,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingSchedulerBubbleSenderNameTextColor,
                                        incomingSchedulerBubbleSenderNameTextAppearance,
@@ -1353,7 +1360,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingSchedulerBubbleReceiptStyle,
                                            incomingSchedulerBubbleDateStyle);
@@ -1376,7 +1383,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingSchedulerBubbleSenderNameTextColor,
                                        outgoingSchedulerBubbleSenderNameTextAppearance,
@@ -1384,7 +1391,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingSchedulerBubbleReceiptStyle,
                                            outgoingSchedulerBubbleDateStyle);
@@ -1410,7 +1417,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingPollBubbleSenderNameTextColor,
                                        incomingSchedulerBubbleSenderNameTextAppearance,
@@ -1418,7 +1425,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingPollBubbleReceiptStyle,
                                            incomingPollBubbleDateStyle);
@@ -1441,7 +1448,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingPollBubbleSenderNameTextColor,
                                        outgoingSchedulerBubbleSenderNameTextAppearance,
@@ -1449,7 +1456,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingPollBubbleReceiptStyle,
                                            outgoingPollBubbleDateStyle);
@@ -1475,7 +1482,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingStickerBubbleSenderNameTextColor,
                                        incomingSchedulerBubbleSenderNameTextAppearance,
@@ -1483,7 +1490,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingStickerBubbleReceiptStyle,
                                            incomingStickerBubbleDateStyle);
@@ -1506,7 +1513,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingStickerBubbleSenderNameTextColor,
                                        outgoingSchedulerBubbleSenderNameTextAppearance,
@@ -1514,7 +1521,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingStickerBubbleReceiptStyle,
                                            outgoingStickerBubbleDateStyle);
@@ -1540,7 +1547,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingCollaborativeBubbleSenderNameTextColor,
                                        incomingSchedulerBubbleSenderNameTextAppearance,
@@ -1548,7 +1555,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            incomingCollaborativeBubbleReceiptStyle,
                                            incomingCollaborativeBubbleDateStyle);
@@ -1571,7 +1578,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingCollaborativeBubbleSenderNameTextColor,
                                        outgoingSchedulerBubbleSenderNameTextAppearance,
@@ -1579,7 +1586,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindStatusInfoView(statusInfoView,
                                            showReadReceipt,
                                            MessageReceiptUtils.MessageReceipt(message),
-                                           getDatePattern(message),
+                                           getTimePattern(message),
                                            timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                            outgoingCollaborativeBubbleReceiptStyle,
                                            outgoingCollaborativeBubbleDateStyle);
@@ -1605,7 +1612,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        incomingMeetCallBubbleSenderNameTextColor,
                                        incomingMeetCallBubbleSenderNameTextAppearance,
@@ -1629,7 +1636,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         bindHeaderView(headerView,
                                        !hideName,
                                        message.getSender().getName(),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                        outgoingMeetCallBubbleSenderNameTextColor,
                                        outgoingMeetCallBubbleSenderNameTextAppearance,
@@ -1653,7 +1660,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     bindHeaderView(headerView,
                                    !hideName,
                                    message.getSender().getName(),
-                                   getDatePattern(message),
+                                   getTimePattern(message),
                                    timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                    isIncomingMessage ? incomingMessageBubbleSenderNameTextColor : outgoingMessageBubbleSenderNameTextColor,
                                    isIncomingMessage ? incomingMessageBubbleSenderNameTextAppearance : outgoingMessageBubbleSenderNameTextAppearance,
@@ -1661,7 +1668,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     bindStatusInfoView(statusInfoView,
                                        showReadReceipt,
                                        MessageReceiptUtils.MessageReceipt(message),
-                                       getDatePattern(message),
+                                       getTimePattern(message),
                                        timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                        isIncomingMessage ? incomingMessageBubbleReceiptStyle : outgoingMessageBubbleReceiptStyle,
                                        isIncomingMessage ? incomingMessageBubbleDateStyle : outgoingMessageBubbleDateStyle);
@@ -1690,7 +1697,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 bindHeaderView(headerView,
                                !hideName,
                                message.getSender().getName(),
-                               getDatePattern(message),
+                               getTimePattern(message),
                                timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                incomingDeleteBubbleSenderNameTextColor,
                                incomingDeleteBubbleSenderNameTextAppearance,
@@ -1698,7 +1705,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 bindStatusInfoView(statusInfoView,
                                    showReadReceipt,
                                    MessageReceiptUtils.MessageReceipt(message),
-                                   getDatePattern(message),
+                                   getTimePattern(message),
                                    timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                    0,
                                    incomingDeleteBubbleDateStyle);
@@ -1714,7 +1721,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 bindHeaderView(headerView,
                                !hideName,
                                message.getSender().getName(),
-                               getDatePattern(message),
+                               getTimePattern(message),
                                timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.TOP),
                                outgoingDeleteBubbleSenderNameTextColor,
                                outgoingDeleteBubbleSenderNameTextAppearance,
@@ -1722,7 +1729,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 bindStatusInfoView(statusInfoView,
                                    showReadReceipt,
                                    MessageReceiptUtils.MessageReceipt(message),
-                                   getDatePattern(message),
+                                   getTimePattern(message),
                                    timeStampAlignment.equals(UIKitConstants.TimeStampAlignment.BOTTOM),
                                    0,
                                    outgoingDeleteBubbleDateStyle);
@@ -1792,19 +1799,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    /**
-     * Retrieves the date pattern formatted for a given message. This method returns
-     * a formatted string representing the date associated with the provided
-     * {@link BaseMessage}. The date is formatted according to the pattern specified
-     * by the datePattern function. If no pattern is defined, an empty string is
-     * returned.
-     *
-     * @param baseMessage The {@link BaseMessage} for which the date pattern is requested.
-     * @return A formatted string representing the date for the message, or an empty
-     * string if no pattern is defined.
-     */
-    public String getDatePattern(BaseMessage baseMessage) {
-        if (datePattern != null) return datePattern.apply(baseMessage);
+    public String getTimePattern(BaseMessage baseMessage) {
+        if (timeFormat != null) return timeFormat.format(baseMessage.getSentAt() * 1000);
         return "";
     }
 
@@ -1916,20 +1912,21 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *
      * @param disableReadReceipt {@code true} to hide the read receipt, {@code false} to show it.
      */
-    public void hideReceipt(boolean disableReadReceipt) {
+    public void hideReceipts(boolean disableReadReceipt) {
         this.disableReadReceipt = disableReadReceipt;
         notifyDataSetChanged();
     }
 
-    /**
-     * Sets the reaction events for the message list. This method registers a
-     * reaction action event listener to handle reactions in the message list.
-     *
-     * @param cometchatUIKitReactionActionEvents The {@link CometChatUIKitReactionActionEvents} to handle
-     *                                           reactions.
-     */
-    public void setReactionsEvents(CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents) {
-        this.cometchatUIKitReactionActionEvents = cometchatUIKitReactionActionEvents;
+    public void setOnAddMoreReactionsClick(OnAddMoreReactionsClick onAddMoreReactionsClick) {
+        this.onAddMoreReactionsClick = onAddMoreReactionsClick;
+    }
+
+    public void setOnReactionClick(OnReactionClick onReactionClick) {
+        this.onReactionClick = onReactionClick;
+    }
+
+    public void setOnReactionLongClick(OnReactionLongClick onReactionLongClick) {
+        this.onReactionLongClick = onReactionLongClick;
     }
 
     /**
@@ -6261,23 +6258,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *
      * @return the date pattern function
      */
-    public Function1<BaseMessage, String> getDatePattern() {
-        return datePattern;
+    public SimpleDateFormat getTimeFormat() {
+        return timeFormat;
     }
 
-    /**
-     * Sets a custom date pattern for displaying message timestamps. This method
-     * allows a custom date pattern to be defined for formatting message timestamps.
-     * The date pattern is specified as a function that takes a {@link BaseMessage}
-     * and returns a formatted date string. When the date pattern is updated, the
-     * message list will refresh to apply the new format.
-     *
-     * @param datePattern A function that defines how to format the date for each message.
-     *                    If null, the method will not change the date pattern.
-     */
-    public void setDatePattern(Function1<BaseMessage, String> datePattern) {
-        if (datePattern != null) {
-            this.datePattern = datePattern;
+    public void setTimeFormat(SimpleDateFormat timeFormat) {
+        if (timeFormat != null) {
+            this.timeFormat = timeFormat;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setDateFormat(SimpleDateFormat dateFormat) {
+        if (dateFormat != null) {
+            this.dateSeparatorFormat = dateFormat;
             notifyDataSetChanged();
         }
     }
@@ -6287,26 +6281,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *
      * @return the date separator pattern function
      */
-    public Function1<BaseMessage, String> getDateSeparatorPattern() {
-        return dateSeparatorPattern;
-    }
-
-    /**
-     * Sets a custom pattern for separating message dates. This method allows the
-     * definition of a custom pattern for formatting the separator that
-     * distinguishes dates in the message list. The date separator pattern is
-     * specified as a function that takes a {@link BaseMessage} and returns a
-     * formatted string for the date separator. When the pattern is updated, the
-     * message list will refresh to apply the new separator format.
-     *
-     * @param dateSeparatorPattern A function that defines how to format the date separator for
-     *                             messages. If null, the method will not change the pattern.
-     */
-    public void setDateSeparatorPattern(Function1<BaseMessage, String> dateSeparatorPattern) {
-        if (dateSeparatorPattern != null) {
-            this.dateSeparatorPattern = dateSeparatorPattern;
-            notifyDataSetChanged();
-        }
+    public SimpleDateFormat getDateSeparatorFormat() {
+        return dateSeparatorFormat;
     }
 
     /**
@@ -6530,22 +6506,33 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * display all the reactions for the message, and then adjusts the width of the
      * content view to accommodate all the reactions.
      *
-     * @param footerView             The footer view for the message.
-     * @param contentView            The content view for the message.
-     * @param cometchatMessageBubble The CometChatMessageBubble instance for the message.
-     * @param baseMessage            The BaseMessage instance for the message.
-     * @param reactionStyle          The style resource for the reactions.
-     * @param reactionEvents         The CometChatUIKitReactionActionEvents instance for the reactions.
+     * @param footerView              The footer view for the message.
+     * @param contentView             The content view for the message.
+     * @param cometchatMessageBubble  The CometChatMessageBubble instance for the message.
+     * @param baseMessage             The BaseMessage instance for the message.
+     * @param reactionStyle           The style resource for the reactions.
+     * @param onReactionClick         The listener for reaction clicks.
+     * @param onReactionLongClick     The listener for reaction long clicks.
+     * @param onAddMoreReactionsClick The listener for add more reactions clicks.
      */
     private void adjustFooterAndContentView(View footerView,
                                             View contentView,
                                             CometChatMessageBubble cometchatMessageBubble,
                                             BaseMessage baseMessage,
                                             @StyleRes int reactionStyle,
-                                            CometChatUIKitReactionActionEvents reactionEvents) {
+                                            OnReactionClick onReactionClick,
+                                            OnReactionLongClick onReactionLongClick,
+                                            OnAddMoreReactionsClick onAddMoreReactionsClick
+    ) {
         if (footerView != null) {
             int reactionLimit = 4;
-            MessageBubbleUtils.bindReactionsView(footerView, baseMessage, reactionLimit, reactionStyle, reactionEvents);
+            MessageBubbleUtils.bindReactionsView(footerView,
+                                                 baseMessage,
+                                                 reactionLimit,
+                                                 reactionStyle,
+                                                 onReactionClick,
+                                                 onReactionLongClick,
+                                                 onAddMoreReactionsClick);
             if (contentView != null) {
                 contentView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -6572,6 +6559,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             cometchatMessageBubble.setFooterView(null);
         }
+    }
+
+    public void hideGroupActionMessage(boolean hideGroupActionMessage) {
+        this.hideGroupActionMessage = hideGroupActionMessage;
+        notifyDataSetChanged();
     }
 
     /**
@@ -6703,7 +6695,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bindBubble(BaseMessage baseMessage, int position) {
             boolean hideName = isHideName(baseMessage, alignment);
             boolean showReadReceipt = (layoutDirection != View.LAYOUT_DIRECTION_RTL) && !disableReadReceipt && !alignment.equals(UIKitConstants.MessageBubbleAlignment.LEFT) && baseMessage.getDeletedAt() == 0;
-            String time = getDatePattern(baseMessage); // Format message time
+            String time = getTimePattern(baseMessage); // Format message time
 
             if (template != null) {
                 if (template.getBubbleView() != null) {
@@ -6768,7 +6760,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                    cometchatMessageBubble,
                                                    baseMessage,
                                                    isIncoming ? incomingMessageBubbleReactionStyle : outgoingMessageBubbleReactionStyle,
-                                                   cometchatUIKitReactionActionEvents);
+                                                   onReactionClick,
+                                                   onReactionLongClick,
+                                                   onAddMoreReactionsClick);
                     }
 
                     // Handle thread view visibility for replies
@@ -6928,7 +6922,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bindBubble(BaseMessage baseMessage, int position) {
             boolean hideName = true;
             boolean showReadReceipt = (layoutDirection != View.LAYOUT_DIRECTION_RTL) && !disableReadReceipt && !alignment.equals(UIKitConstants.MessageBubbleAlignment.LEFT) && baseMessage.getDeletedAt() == 0;
-            String time = getDatePattern(baseMessage); // Format message time
+            String time = getTimePattern(baseMessage); // Format message time
 
             if (template != null) {
                 if (template.getBubbleView() != null) {
@@ -6993,7 +6987,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                    cometchatMessageBubble,
                                                    baseMessage,
                                                    isIncoming ? incomingMessageBubbleReactionStyle : outgoingMessageBubbleReactionStyle,
-                                                   cometchatUIKitReactionActionEvents);
+                                                   onReactionClick,
+                                                   onReactionLongClick,
+                                                   onAddMoreReactionsClick);
                     }
 
                     // Handle thread view visibility for replies
@@ -7120,7 +7116,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
          * @param position    The position of the message in the list.
          */
         public void bindBubble(BaseMessage baseMessage, int position) {
-            String time = getDatePattern(baseMessage); // Format message time
+            String time = getTimePattern(baseMessage); // Format message time
 
             if (template != null) {
                 if (template.getBubbleView() != null) {

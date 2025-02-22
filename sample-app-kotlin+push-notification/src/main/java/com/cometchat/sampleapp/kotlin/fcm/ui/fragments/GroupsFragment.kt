@@ -13,9 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.cometchat.chat.models.Group
 import com.cometchat.chatuikit.shared.constants.UIKitConstants
 import com.cometchat.chatuikit.shared.constants.UIKitConstants.DialogState
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick
 import com.cometchat.chatuikit.shared.resources.utils.AnimationUtils
 import com.cometchat.chatuikit.shared.resources.utils.Utils
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.databinding.CreateGroupLayoutBinding
 import com.cometchat.sampleapp.kotlin.fcm.databinding.FragmentGroupsBinding
@@ -70,8 +70,8 @@ class GroupsFragment : Fragment() {
             viewLifecycleOwner
         ) { status: DialogState -> this.setDialogState(status) }
 
-        binding.group.setItemClickListener(object : OnItemClickListener<Group>() {
-            override fun OnItemClick(group: Group, position: Int) {
+        binding.group.setOnItemClick(object : OnItemClick<Group> {
+            override fun click(view: View, position: Int, group: Group) {
                 if (group.isJoined) {
                     openGroupChat(group)
                 } else {

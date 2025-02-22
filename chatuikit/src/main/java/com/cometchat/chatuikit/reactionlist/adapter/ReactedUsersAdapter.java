@@ -16,6 +16,7 @@ import com.cometchat.chat.models.BaseMessage;
 import com.cometchat.chat.models.Reaction;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.ItemUserBinding;
+import com.cometchat.chatuikit.reactionlist.OnReactionListItemClick;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 
@@ -31,34 +32,17 @@ import java.util.List;
  */
 public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapter.ReactedUsersViewHolder> {
     private static final String TAG = ReactedUsersAdapter.class.getSimpleName();
-
-
-    /**
-     * Interface for handling item click events in the ReactedUsersAdapter.
-     */
-    public interface ReactedUsersAdapterEventListener {
-        /**
-         * Called when an item in the list is clicked.
-         *
-         * @param baseMessage  The base message associated with the reaction.
-         * @param reactionList The list of reactions.
-         * @param position     The position of the clicked item.
-         */
-        void itemClicked(BaseMessage baseMessage, List<Reaction> reactionList, int position);
-    }
-
     private final Context context;
     private BaseMessage baseMessage;
     private List<Reaction> reactedUsersList = new ArrayList<>();
     private ReactedUsersAdapter.ReactedUsersAdapterEventListener reactedUsersAdapterEventListener;
-
+    private OnReactionListItemClick onReactionListItemClick;
     private @StyleRes int avatarStyle;
     private @StyleRes int titleTextAppearance;
     private @ColorInt int titleTextColor;
     private @StyleRes int subTitleTextAppearance;
     private @ColorInt int subTitleTextColor;
     private @StyleRes int tailViewTextAppearance;
-
     /**
      * Constructor for ReactedUsersAdapter.
      *
@@ -68,12 +52,20 @@ public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapte
         this.context = context;
     }
 
+    @NonNull
+    @Override
+    public ReactedUsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemUserBinding binding = ItemUserBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ReactedUsersViewHolder(binding.getRoot());
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ReactedUsersViewHolder holder, int position) {
         final int currentPosition = position;
 
         holder.binding.avatar.setStyle(getAvatarStyle());
-        holder.binding.avatar.setAvatar(reactedUsersList.get(currentPosition).getReactedBy().getName(), reactedUsersList.get(currentPosition).getReactedBy().getAvatar());
+        holder.binding.avatar.setAvatar(reactedUsersList.get(currentPosition).getReactedBy().getName(),
+                                        reactedUsersList.get(currentPosition).getReactedBy().getAvatar());
 
         if (reactedUsersList.get(currentPosition).getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) {
             holder.binding.tvTitle.setText(context.getString(R.string.cometchat_you));
@@ -102,37 +94,14 @@ public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapte
             if (reactedUsersAdapterEventListener != null) {
                 reactedUsersAdapterEventListener.itemClicked(baseMessage, reactedUsersList, currentPosition);
             }
+            if (onReactionListItemClick != null)
+                onReactionListItemClick.onItemClick(reactedUsersList.get(currentPosition), baseMessage);
         });
     }
 
     @Override
     public int getItemCount() {
         return reactedUsersList.size();
-    }
-
-    @NonNull
-    @Override
-    public ReactedUsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemUserBinding binding = ItemUserBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ReactedUsersViewHolder(binding.getRoot());
-    }
-
-    /**
-     * Gets the base message associated with the reactions.
-     *
-     * @return The base message.
-     */
-    public BaseMessage getBaseMessage() {
-        return baseMessage;
-    }
-
-    /**
-     * Sets the base message associated with the reactions.
-     *
-     * @param baseMessage The base message to set.
-     */
-    public void setBaseMessage(BaseMessage baseMessage) {
-        this.baseMessage = baseMessage;
     }
 
     /**
@@ -244,6 +213,24 @@ public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapte
     }
 
     /**
+     * Gets the base message associated with the reactions.
+     *
+     * @return The base message.
+     */
+    public BaseMessage getBaseMessage() {
+        return baseMessage;
+    }
+
+    /**
+     * Sets the base message associated with the reactions.
+     *
+     * @param baseMessage The base message to set.
+     */
+    public void setBaseMessage(BaseMessage baseMessage) {
+        this.baseMessage = baseMessage;
+    }
+
+    /**
      * Gets the event listener for the ReactedUsersAdapter.
      *
      * @return The event listener for the ReactedUsersAdapter.
@@ -259,6 +246,24 @@ public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapte
      */
     public void setReactedUsersAdapterEventListener(ReactedUsersAdapterEventListener reactedUsersAdapterEventListener) {
         this.reactedUsersAdapterEventListener = reactedUsersAdapterEventListener;
+    }
+
+    /**
+     * Gets the item click listener for the ReactedUsersAdapter.
+     *
+     * @return The item click listener for the ReactedUsersAdapter.
+     */
+    public OnReactionListItemClick getOnReactionListItemClick() {
+        return onReactionListItemClick;
+    }
+
+    /**
+     * Sets the item click listener for the ReactedUsersAdapter.
+     *
+     * @param onReactionListItemClick The item click listener to set.
+     */
+    public void setOnReactionListItemClick(OnReactionListItemClick onReactionListItemClick) {
+        this.onReactionListItemClick = onReactionListItemClick;
     }
 
     /**
@@ -279,6 +284,20 @@ public class ReactedUsersAdapter extends RecyclerView.Adapter<ReactedUsersAdapte
     public void setReactedUsersList(List<Reaction> reactedUsersList) {
         this.reactedUsersList = reactedUsersList;
         notifyDataSetChanged();
+    }
+
+    /**
+     * Interface for handling item click events in the ReactedUsersAdapter.
+     */
+    public interface ReactedUsersAdapterEventListener {
+        /**
+         * Called when an item in the list is clicked.
+         *
+         * @param baseMessage  The base message associated with the reaction.
+         * @param reactionList The list of reactions.
+         * @param position     The position of the clicked item.
+         */
+        void itemClicked(BaseMessage baseMessage, List<Reaction> reactionList, int position);
     }
 
     /**

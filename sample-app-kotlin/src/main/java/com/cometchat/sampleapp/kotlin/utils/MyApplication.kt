@@ -3,14 +3,11 @@ package com.cometchat.sampleapp.kotlin.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import android.content.Intent
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.PopupWindow
-import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
@@ -18,18 +15,16 @@ import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.CometChatTheme
 import com.cometchat.chatuikit.calls.CallingExtension
 import com.cometchat.chatuikit.calls.CometChatCallActivity
+import com.cometchat.chatuikit.calls.incomingcall.CometChatIncomingCall
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper
+import com.cometchat.chatuikit.shared.events.CometChatCallEvents
+import com.cometchat.chatuikit.shared.interfaces.OnError
 import com.cometchat.chatuikit.shared.resources.soundmanager.CometChatSoundManager
 import com.cometchat.chatuikit.shared.resources.soundmanager.Sound
 import com.cometchat.chatuikit.shared.resources.utils.Utils
-import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.data.repository.Repository
-import com.cometchat.sampleapp.kotlin.databinding.CustomCallNotificationBinding
-import com.cometchat.sampleapp.kotlin.ui.activity.OngoingCallActivity
-import com.cometchat.sampleapp.kotlin.viewmodels.SplashViewModel
 import com.google.android.material.snackbar.Snackbar
-import java.util.Locale
 
 /**
  * This is a custom Application class for managing call notifications and
@@ -132,6 +127,16 @@ class MyApplication : Application() {
                 dismissTopSnackBar()
             }
         })
+
+        CometChatCallEvents.addListener(LISTENER_ID, object : CometChatCallEvents() {
+            override fun ccCallAccepted(call: Call) {
+                dismissTopSnackBar()
+            }
+
+            override fun ccCallRejected(call: Call) {
+                dismissTopSnackBar()
+            }
+        })
     }
 
     /**
@@ -145,24 +150,12 @@ class MyApplication : Application() {
         if (currentActivity == null && call == null) return
         tempCall = call // Get the root view of the current activity
         val rootView: View = currentActivity!!.findViewById(android.R.id.content)
-        val customView = View.inflate(currentActivity, R.layout.custom_call_notification, null)
-        val binding = CustomCallNotificationBinding.bind(customView)
-        val callUser = call!!.callInitiator as User
-        binding.callerName.text = callUser.name
-        binding.callType.text = String.format(Locale.US, getString(R.string.app_incoming_s_call), call.type)
-        binding.callerAvatar.setAvatar(callUser.name, callUser.avatar)
-        binding.callTypeIcon.setImageResource(if (call.type == CometChatConstants.CALL_TYPE_AUDIO) com.cometchat.chatuikit.R.drawable.cometchat_ic_call_voice else com.cometchat.chatuikit.R.drawable.cometchat_ic_call_video)
 
-        binding.rejectButton.setOnClickListener {
-            rejectCall(
-                call
-            )
-        }
-        binding.acceptButton.setOnClickListener {
-            acceptCall(
-                call
-            )
-        }
+
+        val cometChatIncomingCall = CometChatIncomingCall(currentActivity)
+        cometChatIncomingCall.call = call!!
+        cometChatIncomingCall.onError = OnError { cometchatException: CometChatException? -> dismissTopSnackBar() }
+
 
         snackBar = Snackbar.make(rootView, " ", Snackbar.LENGTH_INDEFINITE)
         val layout: Snackbar.SnackbarLayout = snackBar?.view as Snackbar.SnackbarLayout
@@ -173,7 +166,8 @@ class MyApplication : Application() {
             currentActivity!!.resources.getColor(android.R.color.transparent, null)
         )
 
-        layout.addView(binding.root, 0)
+        layout.addView(cometChatIncomingCall, 0)
+
         for (popupWindow in popupWindows) {
             if (popupWindow.isShowing) popupWindow.dismiss()
         }
@@ -236,54 +230,6 @@ class MyApplication : Application() {
                 }
             })
         }.start()
-    }
-
-    /**
-     * Rejects an incoming call and dismisses the notification.
-     *
-     * @param call The call object representing the call to be rejected.
-     */
-    private fun rejectCall(call: Call) {
-        Repository.rejectCall(call, object : CometChat.CallbackListener<Call>() {
-            override fun onSuccess(call: Call) {
-                dismissTopSnackBar()
-            }
-
-            override fun onError(e: CometChatException) {
-                dismissTopSnackBar()
-            }
-        })
-    }
-
-    /**
-     * Accepts an incoming call and starts the ongoing call activity.
-     *
-     * @param call The call object representing the call to be accepted.
-     */
-    private fun acceptCall(call: Call) {
-        Repository.acceptCall(call, object : CometChat.CallbackListener<Call>() {
-            override fun onSuccess(call: Call) {
-                startOngoingCallActivity(call)
-            }
-
-            override fun onError(e: CometChatException) {
-                dismissTopSnackBar()
-            }
-        })
-    }
-
-    /**
-     * Starts the OngoingCallActivity to manage an accepted call.
-     *
-     * @param call The call object representing the accepted call.
-     */
-    private fun startOngoingCallActivity(call: Call) {
-        dismissTopSnackBar()
-        val intent = Intent(this, OngoingCallActivity::class.java)
-        intent.putExtra(getString(R.string.app_session_id), call.sessionId)
-        intent.putExtra(getString(R.string.app_call_type), call.type)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
     }
 
     /**

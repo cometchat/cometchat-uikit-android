@@ -81,13 +81,6 @@
             android:name=".ui.activity.CallDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.OngoingCallActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:supportsPictureInPicture="true" />
-        <activity
             android:name=".ui.activity.UserDetailsActivity"
             android:exported="false" />
 

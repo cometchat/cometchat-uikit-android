@@ -133,8 +133,8 @@ public class CallingExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<String> getDefaultMessageTypes() {
-        List<String> messageTypes = super.getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(AdditionParameter additionParameter) {
+        List<String> messageTypes = super.getDefaultMessageTypes(additionParameter);
         messageTypes.add(CometChatConstants.CALL_TYPE_AUDIO);
         messageTypes.add(CometChatConstants.CALL_TYPE_VIDEO);
         messageTypes.add(UIKitConstants.MessageType.MEETING);
@@ -142,8 +142,8 @@ public class CallingExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<String> getDefaultMessageCategories() {
-        List<String> categories = super.getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(AdditionParameter additionParameter) {
+        List<String> categories = super.getDefaultMessageCategories(additionParameter);
         categories.add(UIKitConstants.MessageCategory.CALL);
         categories.add(UIKitConstants.MessageCategory.CUSTOM);
         return categories;
@@ -198,10 +198,14 @@ public class CallingExtensionDecorator extends DataSourceDecorator {
         LinearLayout layout = new LinearLayout(context);
         View presentView = super.getAuxiliaryHeaderMenu(context, user, group, additionParameter);
         CometChatCallButtons cometchatCallButtons = new CometChatCallButtons(context);
-        cometchatCallButtons.hideButtonText(true);
+        cometchatCallButtons.setButtonTextVisibility(View.GONE);
         cometchatCallButtons.setUser(user);
         cometchatCallButtons.setGroup(group);
-        if (additionParameter != null) cometchatCallButtons.setStyle(additionParameter.getCallButtonStyle());
+        if (additionParameter != null) {
+            cometchatCallButtons.setStyle(additionParameter.getCallButtonStyle());
+            cometchatCallButtons.setVideoCallButtonVisibility(additionParameter.getVideoCallButtonVisibility());
+            cometchatCallButtons.setVoiceCallButtonVisibility(additionParameter.getVoiceCallButtonVisibility());
+        }
         cometchatCallButtons.setOutgoingCallConfiguration(outgoingCallConfiguration);
         layout.addView(cometchatCallButtons);
         if (presentView != null) {
@@ -223,7 +227,9 @@ public class CallingExtensionDecorator extends DataSourceDecorator {
         return new CometChatMessageTemplate()
             .setCategory(UIKitConstants.MessageCategory.CUSTOM)
             .setType(UIKitConstants.MessageType.MEETING)
-            .setOptions((context, baseMessage, group) -> ChatConfigurator.getDataSource().getImageMessageOptions(context, baseMessage, group))
+            .setOptions((context, baseMessage, group) -> ChatConfigurator
+                .getDataSource()
+                .getImageMessageOptions(context, baseMessage, group, additionParameter))
             .setStatusInfoView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {

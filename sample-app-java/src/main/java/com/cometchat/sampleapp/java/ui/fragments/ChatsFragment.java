@@ -17,10 +17,10 @@ import androidx.fragment.app.Fragment;
 import com.cometchat.chat.constants.CometChatConstants;
 import com.cometchat.chat.core.CometChat;
 import com.cometchat.chat.exceptions.CometChatException;
-import com.cometchat.chat.models.Conversation;
 import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.conversations.CometChatConversations;
+import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar;
 import com.cometchat.sampleapp.java.BuildConfig;
@@ -74,23 +74,19 @@ public class ChatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Set up item click listener for the conversations view
-        binding.cometchatConversations.setOnItemClick(new CometChatConversations.OnItemClick() {
-            @Override
-            public void click(View view, int position, Conversation conversation) {
-                if (conversation.getConversationType().equals(CometChatConstants.CONVERSATION_TYPE_GROUP)) {
-                    Group group = (Group) conversation.getConversationWith();
-                    Intent intent = new Intent(getContext(), MessagesActivity.class);
-                    intent.putExtra(getString(R.string.app_group), new Gson().toJson(group));
-                    startActivity(intent);
-                } else {
-                    User user = (User) conversation.getConversationWith();
-                    Intent intent = new Intent(getContext(), MessagesActivity.class);
-                    intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
-                    startActivity(intent);
-                }
+        binding.cometchatConversations.setOnItemClick((view1, position, conversation) -> {
+            if (conversation.getConversationType().equals(CometChatConstants.CONVERSATION_TYPE_GROUP)) {
+                Group group = (Group) conversation.getConversationWith();
+                Intent intent = new Intent(getContext(), MessagesActivity.class);
+                intent.putExtra(getString(R.string.app_group), new Gson().toJson(group));
+                startActivity(intent);
+            } else {
+                User user = (User) conversation.getConversationWith();
+                Intent intent = new Intent(getContext(), MessagesActivity.class);
+                intent.putExtra(getString(R.string.app_user), new Gson().toJson(user));
+                startActivity(intent);
             }
         });
-
         // Set the overflow menu (Logout button) in the Conversations view
         binding.cometchatConversations.setOverflowMenu(getLogoutView());
 
@@ -120,7 +116,7 @@ public class ChatsFragment extends Fragment {
             layoutParams.setLayoutDirection(Gravity.CENTER_VERTICAL);
             cometchatAvatar.setLayoutParams(layoutParams);
             cometchatAvatar.setOnClickListener(v -> {
-                showCustomMenu(binding.cometchatConversations.getBinding().toolbarLayout);
+                showCustomMenu(binding.cometchatConversations.getBinding().toolbar);
             });
             return cometchatAvatar;
         }

@@ -167,9 +167,16 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_retry"
             android:layout_width="@dimen/cometchat_120dp"
-            android:layout_height="@dimen/cometchat_40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cometchat_margin_5"
-            android:text="@string/cometchat_retry" />
+            android:backgroundTint="?attr/cometchatPrimaryColor"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/cometchat_padding_2"
+            android:text="@string/cometchat_retry"
+            android:textAllCaps="false"
+            android:textColor="?attr/cometchatColorWhite"
+            app:cornerRadius="@dimen/cometchat_radius_2" />
 
     </LinearLayout>
 

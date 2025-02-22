@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
@@ -33,14 +34,13 @@ public class CometChatStatusIndicator extends MaterialCardView {
     private @Dimension float statusIndicatorStrokeWidth;
     private @ColorInt int statusIndicatorStrokeColor;
     private @Dimension float statusIndicatorCornerRadius;
-    private @ColorInt int statusIndicatorBackgroundColor;
-    private Drawable statusIndicatorBackgroundImage;
     @Nullable
     private Drawable statusIndicatorOnlineIcon;
     private Drawable statusIndicatorPrivateGroupIcon;
     private Drawable statusIndicatorProtectedGroupIcon;
 
     private StatusIndicator statusIndicator = StatusIndicator.ONLINE;
+    private ImageView imageView;
 
     /**
      * Constructs a new CometChatStatusIndicator with the given context.
@@ -86,6 +86,8 @@ public class CometChatStatusIndicator extends MaterialCardView {
      */
     private void inflateAndInitializeView(AttributeSet attrs, int defStyleAttr) {
         Utils.initMaterialCard(this);
+        imageView = new ImageView(getContext());
+        addView(imageView);
         applyStyleAttributes(attrs, defStyleAttr);
     }
 
@@ -116,13 +118,10 @@ public class CometChatStatusIndicator extends MaterialCardView {
             // Extract attributes or apply default values
             statusIndicatorStrokeColor = typedArray.getColor(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorStrokeColor,
                                                              CometChatTheme.getBackgroundColor1(getContext()));
-            statusIndicatorBackgroundColor = typedArray.getColor(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorBackgroundColor,
-                                                                 CometChatTheme.getSuccessColor(getContext()));
             statusIndicatorStrokeWidth = typedArray.getDimension(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorStrokeWidth,
                                                                  statusIndicatorStrokeWidth);
             statusIndicatorCornerRadius = typedArray.getDimension(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorCornerRadius,
                                                                   statusIndicatorCornerRadius);
-            statusIndicatorBackgroundImage = typedArray.getDrawable(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorBackgroundImage);
             statusIndicatorOnlineIcon = typedArray.getDrawable(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorOnlineIcon);
             statusIndicatorPrivateGroupIcon = typedArray.getDrawable(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorPrivateGroupIcon);
             statusIndicatorProtectedGroupIcon = typedArray.getDrawable(R.styleable.CometChatStatusIndicator_cometchatStatusIndicatorProtectedGroupIcon);
@@ -138,10 +137,8 @@ public class CometChatStatusIndicator extends MaterialCardView {
      */
     private void applyDefault() {
         setStatusIndicatorStrokeColor(statusIndicatorStrokeColor);
-        setStatusIndicatorBackgroundColor(statusIndicatorBackgroundColor);
         setStatusIndicatorStrokeWidth(statusIndicatorStrokeWidth);
         setStatusIndicatorCornerRadius(statusIndicatorCornerRadius);
-        setStatusIndicatorBackgroundImage(statusIndicatorBackgroundImage);
         setStatusIndicatorOnlineIcon(statusIndicatorOnlineIcon);
         setStatusIndicatorPrivateGroupIcon(statusIndicatorPrivateGroupIcon);
         setStatusIndicatorProtectedGroupIcon(statusIndicatorProtectedGroupIcon);
@@ -159,6 +156,17 @@ public class CometChatStatusIndicator extends MaterialCardView {
         } else {
             setVisibility(VISIBLE);
             setStatusIndicatorBackgroundImage(drawable);
+        }
+    }
+
+    /**
+     * Sets the background image of the status indicator.
+     *
+     * @param image The drawable resource ID of the background image.
+     */
+    public void setStatusIndicatorBackgroundImage(Drawable image) {
+        if (image != null) {
+            imageView.setImageDrawable(image);
         }
     }
 
@@ -233,43 +241,12 @@ public class CometChatStatusIndicator extends MaterialCardView {
     }
 
     /**
-     * Gets the background color of the status indicator.
-     *
-     * @return The color of the background.
-     */
-    public @ColorInt int getStatusIndicatorBackgroundColor() {
-        return statusIndicatorBackgroundColor;
-    }
-
-    /**
      * Sets the background color of the status indicator.
      *
      * @param color The color to set for the background.
      */
     public void setStatusIndicatorBackgroundColor(@ColorInt int color) {
-        statusIndicatorBackgroundColor = color;
         setCardBackgroundColor(color);
-    }
-
-    /**
-     * Gets the background image of the status indicator.
-     *
-     * @return The drawable resource ID of the background image.
-     */
-    public Drawable getStatusIndicatorBackgroundImage() {
-        return statusIndicatorBackgroundImage;
-    }
-
-    /**
-     * Sets the background image of the status indicator.
-     *
-     * @param image The drawable resource ID of the background image.
-     */
-    public void setStatusIndicatorBackgroundImage(Drawable image) {
-        statusIndicatorBackgroundImage = image;
-        if (image != null) {
-            setBackgroundDrawable(image);
-        }
     }
 
     /**

@@ -45,16 +45,6 @@ public class CometChatOngoingCall extends MaterialCardView implements DefaultLif
         init(context);
     }
 
-    public CometChatOngoingCall(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public CometChatOngoingCall(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
-
     private void init(Context context) {
         Utils.initMaterialCard(this);
         binding = CometchatOngoingCallScreenBinding.inflate(LayoutInflater.from(getContext()), this, true);
@@ -80,14 +70,20 @@ public class CometChatOngoingCall extends MaterialCardView implements DefaultLif
         }));
     }
 
-    public void showError(CometChatException exception) {
-        if (onError != null) {
-            onError.onError(getContext(), exception);
+    public void setCallSettingsBuilder(CometChatCalls.CallSettingsBuilder callSettingsBuilder) {
+        if (callSettingsBuilder != null) {
+            viewModel.setCallSettingsBuilder(callSettingsBuilder);
         }
     }
 
     public void endCall(Boolean call) {
         ((Activity) getContext()).finish();
+    }
+
+    public void showError(CometChatException exception) {
+        if (onError != null) {
+            onError.onError(exception);
+        }
     }
 
     public void hideProgressBar(Boolean hideProgressBar) {
@@ -99,6 +95,16 @@ public class CometChatOngoingCall extends MaterialCardView implements DefaultLif
             binding.progressBar.setVisibility(VISIBLE);
             binding.callView.setVisibility(GONE);
         }
+    }
+
+    public CometChatOngoingCall(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public CometChatOngoingCall(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
     }
 
     public void setCallWorkFlow(UIKitConstants.CallWorkFlow callWorkFlow) {
@@ -114,12 +120,6 @@ public class CometChatOngoingCall extends MaterialCardView implements DefaultLif
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
         viewModel.setSessionId(sessionId);
-    }
-
-    public void setCallSettingsBuilder(CometChatCalls.CallSettingsBuilder callSettingsBuilder) {
-        if (callSettingsBuilder != null) {
-            viewModel.setCallSettingsBuilder(callSettingsBuilder);
-        }
     }
 
     /**
@@ -147,18 +147,18 @@ public class CometChatOngoingCall extends MaterialCardView implements DefaultLif
     }
 
     @Override
+    public void onDestroy(LifecycleOwner owner) {
+        if (getContext() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getContext()).getLifecycle().removeObserver(this);
+        }
+    }
+
+    @Override
     public void onStop(LifecycleOwner owner) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (((AppCompatActivity) getContext()).isInPictureInPictureMode()) {
                 handlePiPExit();
             }
-        }
-    }
-
-    @Override
-    public void onDestroy(LifecycleOwner owner) {
-        if (getContext() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getContext()).getLifecycle().removeObserver(this);
         }
     }
 

@@ -23,7 +23,8 @@ import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.calls.CometChatCallActivity;
 import com.cometchat.chatuikit.calls.calllogs.CallLogsAdapter;
-import com.cometchat.chatuikit.shared.interfaces.CallLogsClickListener;
+import com.cometchat.chatuikit.calls.calllogs.CometChatCallLogs;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
 import com.cometchat.sampleapp.java.fcm.databinding.FragmentCallsBinding;
 import com.cometchat.sampleapp.java.fcm.ui.activity.CallDetailsActivity;
 import com.cometchat.sampleapp.java.fcm.utils.AppUtils;
@@ -73,7 +74,6 @@ public class CallsFragment extends Fragment {
         if (enableAutoRefresh) {
             enableAutoRefresh = false;
             isCallActive = false;
-            binding.callLog.refreshCallLogs();
         }
     }
 
@@ -90,21 +90,20 @@ public class CallsFragment extends Fragment {
     }
 
     private void initClickListeners() {
-        binding.callLog.setClickListener(new CallLogsClickListener() {
+        binding.callLog.setOnItemClick(new OnItemClick<CallLog>() {
             @Override
-            public void setOnItemClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
-                Intent intent = new Intent(context, CallDetailsActivity.class);
+            public void click(View view, int position, CallLog callLog) {
+                Intent intent = new Intent(getContext(), CallDetailsActivity.class);
                 intent.putExtra("callLog", new Gson().toJson(callLog));
                 intent.putExtra("initiator", new Gson().toJson(callLog.getInitiator()));
                 intent.putExtra("receiver", new Gson().toJson(callLog.getReceiver()));
                 startActivity(intent);
             }
+        });
 
+        binding.callLog.setOnCallIconClickListener(new CometChatCallLogs.OnCallIconClick() {
             @Override
-            public void setOnItemLongClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {}
-
-            @Override
-            public void setOnItemCallIconClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
+            public void onCallIconClick(View view, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
                 if (!isCallActive) {
                     isCallActive = true;
                     holder.getBinding().tailView.removeAllViews();
@@ -134,6 +133,7 @@ public class CallsFragment extends Fragment {
                 }
             }
         });
+
     }
 
     private Observer<Call> onCallStart() {

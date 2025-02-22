@@ -6,9 +6,9 @@
     android:viewportHeight="16">
 
     <path
-        android:fillColor="#09C26F"
+        android:fillColor="?attr/cometchatSuccessColor"
         android:pathData="M8,8m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0"
         android:strokeWidth="2"
-        android:strokeColor="#ffffff" />
+        android:strokeColor="?attr/cometchatNeutralColor100" />
 
 </vector>

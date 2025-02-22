@@ -32,15 +32,18 @@
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-
-            android:layout_width="@dimen/cometchat_40dp"
-            android:layout_height="@dimen/cometchat_40dp"
-            android:layout_centerVertical="true">
+            android:id="@+id/leading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
                 android:id="@+id/member_avatar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="@dimen/cometchat_40dp"
+                android:layout_height="@dimen/cometchat_40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.cometchat.chatuikit.shared.views.statusindicator.CometChatStatusIndicator
                 android:id="@+id/member_status_indicator"
@@ -70,14 +73,22 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_member_title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/title_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                tools:text="@tools:sample/full_names" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_member_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="@tools:sample/full_names" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/subtitle_view"

@@ -22,7 +22,6 @@ import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.extensions.ExtensionConstants;
 import com.cometchat.chatuikit.extensions.Extensions;
-import com.cometchat.chatuikit.extensions.reaction.ExtensionResponseListener;
 import com.cometchat.chatuikit.extensions.sticker.bubble.CometChatStickerBubble;
 import com.cometchat.chatuikit.extensions.sticker.keyboard.CometChatStickerKeyboard;
 import com.cometchat.chatuikit.extensions.sticker.keyboard.StickerKeyboardConfiguration;
@@ -41,6 +40,7 @@ import com.cometchat.chatuikit.shared.utils.MessageBubbleUtils;
 import com.cometchat.chatuikit.shared.viewholders.MessagesViewHolderListener;
 import com.cometchat.chatuikit.shared.views.deletebubble.CometChatDeleteBubble;
 import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
+import com.cometchat.chatuikit.shared.views.reaction.ExtensionResponseListener;
 
 import org.json.JSONObject;
 
@@ -74,16 +74,20 @@ public class StickerExtensionDecorator extends DataSourceDecorator {
 
     @Override
     public View getAuxiliaryOption(Context context, User user, Group group, HashMap<String, String> id, AdditionParameter additionParameter) {
-        LinearLayout layout = new LinearLayout(context);
-        View view = super.getAuxiliaryOption(context, user, group, id, additionParameter);
-        Utils.handleView(layout, view, false);
-        layout.addView(getStickerIcon(context, id, user, group, additionParameter));
-        return layout;
+        if (additionParameter != null && additionParameter.getStickersButtonVisibility() == View.VISIBLE) {
+            LinearLayout layout = new LinearLayout(context);
+            View view = super.getAuxiliaryOption(context, user, group, id, additionParameter);
+            Utils.handleView(layout, view, false);
+            layout.addView(getStickerIcon(context, id, user, group, additionParameter));
+            return layout;
+        } else {
+            return super.getAuxiliaryOption(context, user, group, id, additionParameter);
+        }
     }
 
     @Override
-    public List<String> getDefaultMessageTypes() {
-        List<String> types = super.getDefaultMessageTypes();
+    public List<String> getDefaultMessageTypes(AdditionParameter additionParameter) {
+        List<String> types = super.getDefaultMessageTypes(additionParameter);
         if (!types.contains(stickerTypeConstant)) {
             types.add(stickerTypeConstant);
         }
@@ -91,8 +95,8 @@ public class StickerExtensionDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public List<String> getDefaultMessageCategories() {
-        List<String> categories = super.getDefaultMessageCategories();
+    public List<String> getDefaultMessageCategories(AdditionParameter additionParameter) {
+        List<String> categories = super.getDefaultMessageCategories(additionParameter);
         if (!categories.contains(UIKitConstants.MessageCategory.CUSTOM))
             categories.add(UIKitConstants.MessageCategory.CUSTOM);
         return categories;
@@ -269,7 +273,9 @@ public class StickerExtensionDecorator extends DataSourceDecorator {
         return new CometChatMessageTemplate()
             .setCategory(UIKitConstants.MessageCategory.CUSTOM)
             .setType(stickerTypeConstant)
-            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator.getDataSource().getCommonOptions(context, baseMessage, isLeftAlign))
+            .setOptions((context, baseMessage, isLeftAlign) -> ChatConfigurator
+                .getDataSource()
+                .getCommonOptions(context, baseMessage, isLeftAlign, additionParameter))
             .setContentView(new MessagesViewHolderListener() {
                 @Override
                 public View createView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment) {

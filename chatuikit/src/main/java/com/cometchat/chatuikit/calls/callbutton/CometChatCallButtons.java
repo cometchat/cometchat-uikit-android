@@ -7,22 +7,21 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Space;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
 import com.cometchat.calls.core.CometChatCalls;
 import com.cometchat.chat.constants.CometChatConstants;
 import com.cometchat.chat.core.Call;
-import com.cometchat.chat.core.CometChat;
 import com.cometchat.chat.models.BaseMessage;
 import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.calls.CallingExtension;
 import com.cometchat.chatuikit.calls.CometChatCallActivity;
 import com.cometchat.chatuikit.calls.outgoingcall.OutgoingCallConfiguration;
 import com.cometchat.chatuikit.shared.interfaces.Function3;
@@ -54,11 +53,16 @@ public class CometChatCallButtons extends MaterialCardView {
     private @ColorInt int voiceCallTextColor, videoCallTextColor;
     private @StyleRes int voiceCallTextAppearance, videoCallTextAppearance;
     private @ColorInt int voiceCallBackgroundColor, videoCallBackgroundColor;
+    private @Dimension int voiceCallCornerRadius, videoCallCornerRadius;
+    private @Dimension int voiceCallIconSize, videoCallIconSize;
+    private @Dimension int voiceCallStrokeWidth, videoCallStrokeWidth;
+    private @ColorInt int voiceCallStrokeColor, videoCallStrokeColor;
+    private @Dimension int voiceCallButtonPadding, videoCallButtonPadding;
 
     // Event handlers for voice and video call button clicks
     private OnClick onVideoCallClick, onVoiceCallClick;
 
-    // User and group data for the call
+    // User and group data for the
     private User user;
     private Group group;
 
@@ -72,6 +76,9 @@ public class CometChatCallButtons extends MaterialCardView {
     private OutgoingCallConfiguration outgoingCallConfiguration;
     private Function3<User, Group, Boolean, CometChatCalls.CallSettingsBuilder> callSettingsBuilderCallback;
     private CometChatCalls.CallSettingsBuilder callSettingsBuilder;
+    private int videoCallButtonVisibility = VISIBLE;
+    private int voiceCallButtonVisibility = VISIBLE;
+    private Space space;
 
     /**
      * Constructor to create CometChatCallButtons with just a Context.
@@ -135,6 +142,8 @@ public class CometChatCallButtons extends MaterialCardView {
         voiceCall = view.findViewById(R.id.voice_call);
         videoCall = view.findViewById(R.id.video_call);
 
+        space = view.findViewById(R.id.space);
+
         // Set layout parameters for the buttons
         params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.weight = 1;
@@ -174,6 +183,56 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Callback method when a call is initiated. Configures the outgoing call
+     * settings and launches the outgoing call screen.
+     *
+     * @param call The Call object that represents the call being initiated.
+     */
+    private void callInitiated(Call call) {
+        // Ensure the outgoing call configuration is properly set up
+        if (outgoingCallConfiguration == null) {
+            outgoingCallConfiguration = new OutgoingCallConfiguration().setCallSettingsBuilder(callSettingsBuilder);
+        } else {
+            if (outgoingCallConfiguration.getCallSettingBuilder() == null) {
+                outgoingCallConfiguration.setCallSettingsBuilder(callSettingsBuilder);
+            }
+        }
+        // Launch the outgoing call screen with the configured settings
+        CometChatCallActivity.launchOutgoingCallScreen(context, call, outgoingCallConfiguration);
+    }
+
+    /**
+     * Starts a direct call (such as a conference call) using the provided
+     * BaseMessage. Launches the conference call screen with the current context and
+     * call settings.
+     *
+     * @param baseMessage The message object containing the call data needed to initiate the
+     *                    call.
+     */
+    private void startDirectCall(BaseMessage baseMessage) {
+        CometChatCallActivity.launchConferenceCallScreen(context, baseMessage, callSettingsBuilder);
+    }
+
+    /**
+     * Invokes the call settings builder callback to retrieve the
+     * CallSettingsBuilder. It checks if the callback is set and whether there is a
+     * user or group. Based on the call type (audio or video), it creates the
+     * appropriate call settings.
+     *
+     * @param isAudio A boolean flag indicating whether the call is audio (true) or
+     *                video (false).
+     */
+    private void invokeCallSettingsBuilderCallback(boolean isAudio) {
+        if (callSettingsBuilderCallback != null) {
+            // Ensure either a user or group is available
+            if (user != null || group != null) {
+                // Apply the callback to generate the call settings
+                this.callSettingsBuilder = callSettingsBuilderCallback.apply(user, group, isAudio);
+            }
+        }
+    }
+
+    /**
      * Applies style attributes based on the XML layout or theme.
      *
      * @param attrs        The attribute set containing customization.
@@ -209,68 +268,41 @@ public class CometChatCallButtons extends MaterialCardView {
 
             setVoiceCallBackgroundColor(typedArray.getColor(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallBackgroundColor, 0));
             setVideoCallBackgroundColor(typedArray.getColor(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallBackgroundColor, 0));
+
+            setVoiceCallCornerRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallCornerRadius,
+                                                                      0));
+            setVideoCallCornerRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallCornerRadius,
+                                                                      0));
+
+            setVoiceCallIconSize(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallIconSize, 0));
+            setVideoCallIconSize(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallIconSize, 0));
+
+            setVoiceCallStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallStrokeWidth, 0));
+            setVideoCallStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallStrokeWidth, 0));
+
+            setVoiceCallStrokeColor(typedArray.getColor(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallStrokeColor, 0));
+            setVideoCallStrokeColor(typedArray.getColor(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallStrokeColor, 0));
+
+            setVoiceCallButtonPadding(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVoiceCallButtonPadding,
+                                                                       0));
+            setVideoCallButtonPadding(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsVideoCallButtonPadding,
+                                                                       0));
+            setMarginBetweenButtons(typedArray.getDimensionPixelSize(R.styleable.CometChatCallButtons_cometchatCallButtonsMarginBetween,
+                                                                     getContext().getResources().getDimensionPixelSize(R.dimen.cometchat_16dp)));
         } finally {
             typedArray.recycle();
         }
     }
 
     /**
-     * Sets the style of the text bubble from a specific style resource.
-     *
-     * @param style The resource ID of the style to apply.
-     */
-    public void setStyle(@StyleRes int style) {
-        if (style != 0) {
-            this.style = style;
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatCallButtons);
-            extractAttributesAndApplyDefaults(typedArray);
-        }
-    }
-
-    /**
      * Sets the margins for the voice and video call buttons.
      *
-     * @param marginLeft   The margin on the left side of the button (in pixels).
-     * @param marginTop    The margin on the top side of the button (in pixels).
-     * @param marginRight  The margin on the right side of the button (in pixels).
-     * @param marginBottom The margin on the bottom side of the button (in pixels).
+     * @param margin The margin in between of the button in dp.
      */
-    public void setButtonMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
-        params.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-        // Apply the updated layout parameters to both call buttons
-        videoCall.setLayoutParams(params);
-        voiceCall.setLayoutParams(params);
-    }
-
-    /**
-     * Starts a direct call (such as a conference call) using the provided
-     * BaseMessage. Launches the conference call screen with the current context and
-     * call settings.
-     *
-     * @param baseMessage The message object containing the call data needed to initiate the
-     *                    call.
-     */
-    private void startDirectCall(BaseMessage baseMessage) {
-        CometChatCallActivity.launchConferenceCallScreen(context, baseMessage, callSettingsBuilder);
-    }
-
-    /**
-     * Callback method when a call is initiated. Configures the outgoing call
-     * settings and launches the outgoing call screen.
-     *
-     * @param call The Call object that represents the call being initiated.
-     */
-    private void callInitiated(Call call) {
-        // Ensure the outgoing call configuration is properly set up
-        if (outgoingCallConfiguration == null) {
-            outgoingCallConfiguration = new OutgoingCallConfiguration().setCallSettingsBuilder(callSettingsBuilder);
-        } else {
-            if (outgoingCallConfiguration.getCallSettingBuilder() == null) {
-                outgoingCallConfiguration.setCallSettingsBuilder(callSettingsBuilder);
-            }
-        }
-        // Launch the outgoing call screen with the configured settings
-        CometChatCallActivity.launchOutgoingCallScreen(context, call, outgoingCallConfiguration);
+    public void setMarginBetweenButtons(@Dimension int margin) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) space.getLayoutParams();
+        params.width = margin;
+        space.setLayoutParams(params);
     }
 
     /**
@@ -310,24 +342,6 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
-     * Hides or shows the voice call button.
-     *
-     * @param hide True to hide the voice call button, false to show it.
-     */
-    public void hideVoiceCall(boolean hide) {
-        voiceCall.setVisibility(hide ? GONE : VISIBLE);
-    }
-
-    /**
-     * Hides or shows the video call button.
-     *
-     * @param hide True to hide the video call button, false to show it.
-     */
-    public void hideVideoCall(boolean hide) {
-        videoCall.setVisibility(hide ? GONE : VISIBLE);
-    }
-
-    /**
      * Sets the user associated with the call buttons.
      *
      * @param user The User object representing the user associated with the buttons.
@@ -335,8 +349,8 @@ public class CometChatCallButtons extends MaterialCardView {
     public void setUser(User user) {
         if (user != null) {
             this.user = user;
-            hideVoiceCall(false);
-            hideVideoCall(false);
+            setVoiceCallButtonVisibility(voiceCallButtonVisibility);
+            setVideoCallButtonVisibility(videoCallButtonVisibility);
             callButtonsViewModel.setUser(user);
         }
     }
@@ -352,112 +366,6 @@ public class CometChatCallButtons extends MaterialCardView {
             this.group = group;
             callButtonsViewModel.setGroup(group);
         }
-    }
-
-    /**
-     * Sets the background color of the voice call button and applies it.
-     *
-     * @param voiceCallBackgroundColor The color to set as the background of the voice call button.
-     */
-    public void setVoiceCallBackgroundColor(@ColorInt int voiceCallBackgroundColor) {
-        this.voiceCallBackgroundColor = voiceCallBackgroundColor;
-        // Apply the background color to the voice call button
-        voiceCall.setButtonBackgroundColor(voiceCallBackgroundColor);
-    }
-
-    /**
-     * Sets the background color of the video call button and applies it.
-     *
-     * @param videoCallBackgroundColor The color to set as the background of the video call button.
-     */
-    public void setVideoCallBackgroundColor(@ColorInt int videoCallBackgroundColor) {
-        this.videoCallBackgroundColor = videoCallBackgroundColor;
-        // Apply the background color to the video call button
-        videoCall.setButtonBackgroundColor(videoCallBackgroundColor);
-    }
-
-    /**
-     * Sets the icon for the voice call button.
-     *
-     * @param voiceCallIcon The resource ID of the drawable representing the icon for the
-     *                      voice call button.
-     */
-    public void setVoiceCallIcon(Drawable voiceCallIcon) {
-        this.voiceCallIcon = voiceCallIcon;
-        voiceCall.setButtonIcon(voiceCallIcon);
-        voiceCall.hideButtonBackground(true);
-    }
-
-    /**
-     * Sets the icon for the video call button.
-     *
-     * @param videoCallIcon The resource ID of the drawable representing the icon for the
-     *                      video call button.
-     */
-    public void setVideoCallIcon(Drawable videoCallIcon) {
-        this.videoCallIcon = videoCallIcon;
-        videoCall.setButtonIcon(videoCallIcon);
-        videoCall.hideButtonBackground(true);
-    }
-
-    /**
-     * Sets the tint color for the voice call button icon.
-     *
-     * @param voiceCallIconTint The color resource ID for the voice call button icon tint.
-     */
-    public void setVoiceCallIconTint(@ColorInt int voiceCallIconTint) {
-        this.voiceCallIconTint = voiceCallIconTint;
-        voiceCall.setButtonIconTint(voiceCallIconTint);
-    }
-
-    /**
-     * Sets the tint color for the video call button icon.
-     *
-     * @param videoCallIconTint The color resource ID for the video call button icon tint.
-     */
-    public void setVideoCallIconTint(@ColorInt int videoCallIconTint) {
-        this.videoCallIconTint = videoCallIconTint;
-        videoCall.setButtonIconTint(videoCallIconTint);
-    }
-
-    /**
-     * Sets the text color for the voice call button.
-     *
-     * @param voiceCallTextColor The color resource ID for the voice call button text.
-     */
-    public void setVoiceCallTextColor(@ColorInt int voiceCallTextColor) {
-        this.voiceCallTextColor = voiceCallTextColor;
-        voiceCall.setButtonTextColor(voiceCallTextColor);
-    }
-
-    /**
-     * Sets the text color for the video call button.
-     *
-     * @param videoCallTextColor The color resource ID for the video call button text.
-     */
-    public void setVideoCallTextColor(@ColorInt int videoCallTextColor) {
-        this.videoCallTextColor = videoCallTextColor;
-        videoCall.setButtonTextColor(videoCallTextColor);
-    }
-
-    /**
-     * Sets the text appearance for the voice call button.
-     *
-     * @param voiceCallTextAppearance The style resource ID for the voice call button text appearance.
-     */
-    public void setVoiceCallTextAppearance(@StyleRes int voiceCallTextAppearance) {
-        this.voiceCallTextAppearance = voiceCallTextAppearance;
-        voiceCall.setButtonTextAppearance(voiceCallTextAppearance);
-    }
-
-    /**
-     * Sets the text appearance for the video call button.
-     *
-     * @param videoCallTextAppearance The style resource ID for the video call button text appearance.
-     */
-    public void setVideoCallTextAppearance(@StyleRes int videoCallTextAppearance) {
-        this.videoCallTextAppearance = videoCallTextAppearance;
-        videoCall.setButtonTextAppearance(videoCallTextAppearance);
     }
 
     /**
@@ -487,41 +395,21 @@ public class CometChatCallButtons extends MaterialCardView {
     /**
      * Hides or shows the text on the call buttons.
      *
-     * @param hide True to hide the text on the buttons, false to show it.
+     * @param visibility True to hide the text on the buttons, false to show it.
      */
-    public void hideButtonText(boolean hide) {
-        voiceCall.hideButtonText(hide);
-        videoCall.hideButtonText(hide);
+    public void setButtonTextVisibility(int visibility) {
+        voiceCall.hideButtonText(visibility != VISIBLE);
+        videoCall.hideButtonText(visibility != VISIBLE);
     }
 
     /**
      * Hides or shows the icon on the call buttons.
      *
-     * @param hide True to hide the icon on the buttons, false to show it.
+     * @param visibility True to hide the icon on the buttons, false to show it.
      */
-    public void hideButtonIcon(boolean hide) {
-        videoCall.hideButtonIcon(hide);
-        voiceCall.hideButtonIcon(hide);
-    }
-
-    /**
-     * Sets the click listener for the video call button.
-     *
-     * @param onVideoCallClick The OnClick listener to be invoked when the video call button is
-     *                         clicked.
-     */
-    public void setOnVideoCallClick(OnClick onVideoCallClick) {
-        if (onVideoCallClick != null) this.onVideoCallClick = onVideoCallClick;
-    }
-
-    /**
-     * Sets the click listener for the voice call button.
-     *
-     * @param onVoiceCallClick The OnClick listener to be invoked when the voice call button is
-     *                         clicked.
-     */
-    public void setOnVoiceCallClick(OnClick onVoiceCallClick) {
-        if (onVoiceCallClick != null) this.onVoiceCallClick = onVoiceCallClick;
+    public void setButtonIconVisibility(int visibility) {
+        videoCall.hideButtonIcon(visibility != VISIBLE);
+        voiceCall.hideButtonIcon(visibility != VISIBLE);
     }
 
     /**
@@ -535,25 +423,6 @@ public class CometChatCallButtons extends MaterialCardView {
     public void setCallSettingsBuilder(Function3<User, Group, Boolean, CometChatCalls.CallSettingsBuilder> callSettingsBuilder) {
         if (callSettingsBuilder != null) {
             this.callSettingsBuilderCallback = callSettingsBuilder;
-        }
-    }
-
-    /**
-     * Invokes the call settings builder callback to retrieve the
-     * CallSettingsBuilder. It checks if the callback is set and whether there is a
-     * user or group. Based on the call type (audio or video), it creates the
-     * appropriate call settings.
-     *
-     * @param isAudio A boolean flag indicating whether the call is audio (true) or
-     *                video (false).
-     */
-    private void invokeCallSettingsBuilderCallback(boolean isAudio) {
-        if (callSettingsBuilderCallback != null) {
-            // Ensure either a user or group is available
-            if (user != null || group != null) {
-                // Apply the callback to generate the call settings
-                this.callSettingsBuilder = callSettingsBuilderCallback.apply(user, group, isAudio);
-            }
         }
     }
 
@@ -585,12 +454,260 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the style of the text bubble from a specific style resource.
+     *
+     * @param style The resource ID of the style to apply.
+     */
+    public void setStyle(@StyleRes int style) {
+        if (style != 0) {
+            this.style = style;
+            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatCallButtons);
+            extractAttributesAndApplyDefaults(typedArray);
+        }
+    }
+
+    /**
+     * Retrieves the corner radius of the voice call button.
+     *
+     * @return An integer representing the corner radius of the voice call button.
+     */
+    public int getVoiceCallCornerRadius() {
+        return voiceCallCornerRadius;
+    }
+
+    /**
+     * Sets the corner radius of the voice call button.
+     *
+     * @param voiceCallCornerRadius An integer representing the corner radius in pixels.
+     */
+    public void setVoiceCallCornerRadius(@Dimension int voiceCallCornerRadius) {
+        this.voiceCallCornerRadius = voiceCallCornerRadius;
+        voiceCall.setRadius(voiceCallCornerRadius);
+    }
+
+    /**
+     * Retrieves the corner radius of the video call button.
+     *
+     * @return An integer representing the corner radius of the video call button.
+     */
+    public int getVideoCallCornerRadius() {
+        return videoCallCornerRadius;
+    }
+
+    /**
+     * Sets the corner radius of the video call button.
+     *
+     * @param videoCallCornerRadius An integer representing the corner radius in pixels.
+     */
+    public void setVideoCallCornerRadius(@Dimension int videoCallCornerRadius) {
+        this.videoCallCornerRadius = videoCallCornerRadius;
+        videoCall.setRadius(videoCallCornerRadius);
+    }
+
+    /**
+     * Retrieves the icon size of the voice call button.
+     *
+     * @return An integer representing the size of the voice call button icon in pixels.
+     */
+    public int getVoiceCallIconSize() {
+        return voiceCallIconSize;
+    }
+
+    /**
+     * Sets the icon size of the voice call button.
+     *
+     * @param voiceCallIconSize An integer representing the icon size in pixels.
+     */
+    public void setVoiceCallIconSize(@Dimension int voiceCallIconSize) {
+        this.voiceCallIconSize = voiceCallIconSize;
+        voiceCall.setButtonSize(voiceCallIconSize, voiceCallIconSize);
+    }
+
+    /**
+     * Retrieves the icon size of the video call button.
+     *
+     * @return An integer representing the size of the video call button icon in pixels.
+     */
+    public int getVideoCallIconSize() {
+        return videoCallIconSize;
+    }
+
+    /**
+     * Sets the icon size of the video call button.
+     *
+     * @param videoCallIconSize An integer representing the icon size in pixels.
+     */
+    public void setVideoCallIconSize(@Dimension int videoCallIconSize) {
+        this.videoCallIconSize = videoCallIconSize;
+        videoCall.setButtonSize(videoCallIconSize, videoCallIconSize);
+    }
+
+    /**
+     * Retrieves the stroke width of the voice call button.
+     *
+     * @return An integer representing the stroke width of the voice call button in pixels.
+     */
+    public int getVoiceCallStrokeWidth() {
+        return voiceCallStrokeWidth;
+    }
+
+    /**
+     * Sets the stroke width of the voice call button.
+     *
+     * @param voiceCallStrokeWidth An integer representing the stroke width in pixels.
+     */
+    public void setVoiceCallStrokeWidth(@Dimension int voiceCallStrokeWidth) {
+        this.voiceCallStrokeWidth = voiceCallStrokeWidth;
+        voiceCall.setStrokeWidth(voiceCallStrokeWidth);
+    }
+
+    /**
+     * Retrieves the stroke width of the video call button.
+     *
+     * @return An integer representing the stroke width of the video call button in pixels.
+     */
+    public int getVideoCallStrokeWidth() {
+        return videoCallStrokeWidth;
+    }
+
+    /**
+     * Sets the stroke width of the video call button.
+     *
+     * @param videoCallStrokeWidth An integer representing the stroke width in pixels.
+     */
+    public void setVideoCallStrokeWidth(@Dimension int videoCallStrokeWidth) {
+        this.videoCallStrokeWidth = videoCallStrokeWidth;
+        videoCall.setStrokeWidth(videoCallStrokeWidth);
+    }
+
+    /**
+     * Retrieves the stroke color of the voice call button.
+     *
+     * @return An integer representing the stroke color of the voice call button.
+     */
+    public int getVoiceCallStrokeColor() {
+        return voiceCallStrokeColor;
+    }
+
+    /**
+     * Sets the stroke color of the voice call button.
+     *
+     * @param voiceCallStrokeColor An integer representing the stroke color.
+     */
+    public void setVoiceCallStrokeColor(@Dimension int voiceCallStrokeColor) {
+        this.voiceCallStrokeColor = voiceCallStrokeColor;
+        voiceCall.setStrokeColor(voiceCallStrokeColor);
+    }
+
+    /**
+     * Retrieves the stroke color of the video call button.
+     *
+     * @return An integer representing the stroke color of the video call button.
+     */
+    public int getVideoCallStrokeColor() {
+        return videoCallStrokeColor;
+    }
+
+    /**
+     * Sets the stroke color of the video call button.
+     *
+     * @param videoCallStrokeColor An integer representing the stroke color.
+     */
+    public void setVideoCallStrokeColor(@Dimension int videoCallStrokeColor) {
+        this.videoCallStrokeColor = videoCallStrokeColor;
+        videoCall.setStrokeColor(videoCallStrokeColor);
+    }
+
+    /**
+     * Retrieves the padding of the voice call button.
+     *
+     * @return An integer representing the padding of the voice call button in pixels.
+     */
+    public int getVoiceCallButtonPadding() {
+        return voiceCallButtonPadding;
+    }
+
+    /**
+     * Sets the padding of the voice call button.
+     *
+     * @param voiceCallButtonPadding An integer representing the padding in pixels.
+     */
+    public void setVoiceCallButtonPadding(@Dimension int voiceCallButtonPadding) {
+        this.voiceCallButtonPadding = voiceCallButtonPadding;
+        voiceCall.setButtonPadding(voiceCallButtonPadding);
+    }
+
+    /**
+     * Retrieves the padding of the video call button.
+     *
+     * @return An integer representing the padding of the video call button in pixels.
+     */
+    public int getVideoCallButtonPadding() {
+        return videoCallButtonPadding;
+    }
+
+    /**
+     * Sets the padding of the video call button.
+     *
+     * @param videoCallButtonPadding An integer representing the padding in pixels.
+     */
+    public void setVideoCallButtonPadding(@Dimension int videoCallButtonPadding) {
+        this.videoCallButtonPadding = videoCallButtonPadding;
+        videoCall.setButtonPadding(videoCallButtonPadding);
+    }
+
+    /**
+     * Retrieves the callback for handling video call button clicks.
+     *
+     * @return An instance of {@link OnClick} that is triggered when the video call button is clicked.
+     */
+    public OnClick getOnVideoCallClick() {
+        return onVideoCallClick;
+    }
+
+    /**
+     * Sets the click listener for the video call button.
+     *
+     * @param onVideoCallClick The OnClick listener to be invoked when the video call button is
+     *                         clicked.
+     */
+    public void setOnVideoCallClick(OnClick onVideoCallClick) {
+        if (onVideoCallClick != null) this.onVideoCallClick = onVideoCallClick;
+    }
+
+    public OnClick getOnVoiceCallClick() {
+        return onVoiceCallClick;
+    }
+
+    /**
+     * Sets the click listener for the voice call button.
+     *
+     * @param onVoiceCallClick The OnClick listener to be invoked when the voice call button is
+     *                         clicked.
+     */
+    public void setOnVoiceCallClick(OnClick onVoiceCallClick) {
+        if (onVoiceCallClick != null) this.onVoiceCallClick = onVoiceCallClick;
+    }
+
+    /**
      * Retrieves the drawable icon for the voice call button.
      *
      * @return The Drawable instance representing the voice call icon.
      */
     public Drawable getVoiceCallIcon() {
         return voiceCallIcon;
+    }
+
+    /**
+     * Sets the icon for the voice call button.
+     *
+     * @param voiceCallIcon The resource ID of the drawable representing the icon for the
+     *                      voice call button.
+     */
+    public void setVoiceCallIcon(Drawable voiceCallIcon) {
+        this.voiceCallIcon = voiceCallIcon;
+        voiceCall.setButtonIcon(voiceCallIcon);
+        voiceCall.hideButtonBackground(true);
     }
 
     /**
@@ -603,12 +720,34 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the icon for the video call button.
+     *
+     * @param videoCallIcon The resource ID of the drawable representing the icon for the
+     *                      video call button.
+     */
+    public void setVideoCallIcon(Drawable videoCallIcon) {
+        this.videoCallIcon = videoCallIcon;
+        videoCall.setButtonIcon(videoCallIcon);
+        videoCall.hideButtonBackground(true);
+    }
+
+    /**
      * Retrieves the tint color for the voice call icon.
      *
      * @return The tint color as an int.
      */
     public @ColorInt int getVoiceCallIconTint() {
         return voiceCallIconTint;
+    }
+
+    /**
+     * Sets the tint color for the voice call button icon.
+     *
+     * @param voiceCallIconTint The color resource ID for the voice call button icon tint.
+     */
+    public void setVoiceCallIconTint(@ColorInt int voiceCallIconTint) {
+        this.voiceCallIconTint = voiceCallIconTint;
+        voiceCall.setButtonIconTint(voiceCallIconTint);
     }
 
     /**
@@ -621,12 +760,32 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the tint color for the video call button icon.
+     *
+     * @param videoCallIconTint The color resource ID for the video call button icon tint.
+     */
+    public void setVideoCallIconTint(@ColorInt int videoCallIconTint) {
+        this.videoCallIconTint = videoCallIconTint;
+        videoCall.setButtonIconTint(videoCallIconTint);
+    }
+
+    /**
      * Retrieves the text color for the voice call button.
      *
      * @return The text color as an int.
      */
     public @ColorInt int getVoiceCallTextColor() {
         return voiceCallTextColor;
+    }
+
+    /**
+     * Sets the text color for the voice call button.
+     *
+     * @param voiceCallTextColor The color resource ID for the voice call button text.
+     */
+    public void setVoiceCallTextColor(@ColorInt int voiceCallTextColor) {
+        this.voiceCallTextColor = voiceCallTextColor;
+        voiceCall.setButtonTextColor(voiceCallTextColor);
     }
 
     /**
@@ -639,12 +798,32 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the text color for the video call button.
+     *
+     * @param videoCallTextColor The color resource ID for the video call button text.
+     */
+    public void setVideoCallTextColor(@ColorInt int videoCallTextColor) {
+        this.videoCallTextColor = videoCallTextColor;
+        videoCall.setButtonTextColor(videoCallTextColor);
+    }
+
+    /**
      * Retrieves the text appearance resource identifier for the voice call button.
      *
      * @return The text appearance resource identifier as an int.
      */
     public @StyleRes int getVoiceCallTextAppearance() {
         return voiceCallTextAppearance;
+    }
+
+    /**
+     * Sets the text appearance for the voice call button.
+     *
+     * @param voiceCallTextAppearance The style resource ID for the voice call button text appearance.
+     */
+    public void setVoiceCallTextAppearance(@StyleRes int voiceCallTextAppearance) {
+        this.voiceCallTextAppearance = voiceCallTextAppearance;
+        voiceCall.setButtonTextAppearance(voiceCallTextAppearance);
     }
 
     /**
@@ -657,6 +836,16 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the text appearance for the video call button.
+     *
+     * @param videoCallTextAppearance The style resource ID for the video call button text appearance.
+     */
+    public void setVideoCallTextAppearance(@StyleRes int videoCallTextAppearance) {
+        this.videoCallTextAppearance = videoCallTextAppearance;
+        videoCall.setButtonTextAppearance(videoCallTextAppearance);
+    }
+
+    /**
      * Retrieves the background color for the voice call button.
      *
      * @return The background color as an int.
@@ -666,12 +855,78 @@ public class CometChatCallButtons extends MaterialCardView {
     }
 
     /**
+     * Sets the background color of the voice call button and applies it.
+     *
+     * @param voiceCallBackgroundColor The color to set as the background of the voice call button.
+     */
+    public void setVoiceCallBackgroundColor(@ColorInt int voiceCallBackgroundColor) {
+        this.voiceCallBackgroundColor = voiceCallBackgroundColor;
+        // Apply the background color to the voice call button
+        voiceCall.setCardBackgroundColor(voiceCallBackgroundColor);
+    }
+
+    /**
      * Retrieves the background color for the video call button.
      *
      * @return The background color as an int.
      */
     public @ColorInt int getVideoCallBackgroundColor() {
         return videoCallBackgroundColor;
+    }
+
+    /**
+     * Sets the background color of the video call button and applies it.
+     *
+     * @param videoCallBackgroundColor The color to set as the background of the video call button.
+     */
+    public void setVideoCallBackgroundColor(@ColorInt int videoCallBackgroundColor) {
+        this.videoCallBackgroundColor = videoCallBackgroundColor;
+        // Apply the background color to the video call button
+        videoCall.setCardBackgroundColor(videoCallBackgroundColor);
+    }
+
+    /**
+     * Retrieves the visibility status of the video call button.
+     *
+     * @return An integer representing the visibility of the video call button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getVideoCallButtonVisibility() {
+        return videoCallButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the video call button.
+     *
+     * @param videoCallButtonVisibility An integer representing the visibility status of the video call button.
+     *                                  Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                                  or {@code View.GONE}.
+     */
+    public void setVideoCallButtonVisibility(int videoCallButtonVisibility) {
+        this.videoCallButtonVisibility = videoCallButtonVisibility;
+        videoCall.setVisibility(videoCallButtonVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the voice call button.
+     *
+     * @return An integer representing the visibility of the voice call button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getVoiceCallButtonVisibility() {
+        return voiceCallButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the voice call button.
+     *
+     * @param voiceCallButtonVisibility An integer representing the visibility status of the voice call button.
+     *                                  Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                                  or {@code View.GONE}.
+     */
+    public void setVoiceCallButtonVisibility(int voiceCallButtonVisibility) {
+        this.voiceCallButtonVisibility = voiceCallButtonVisibility;
+        voiceCall.setVisibility(voiceCallButtonVisibility);
     }
 
     /**
@@ -686,4 +941,5 @@ public class CometChatCallButtons extends MaterialCardView {
          */
         void onClick(User user, Group group);
     }
+
 }

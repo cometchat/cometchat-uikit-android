@@ -25,12 +25,9 @@ import com.cometchat.chat.models.BaseMessage;
 import com.cometchat.chat.models.CustomMessage;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.calls.incomingcall.CometChatIncomingCall;
-import com.cometchat.chatuikit.calls.incomingcall.IncomingCallConfiguration;
 import com.cometchat.chatuikit.calls.outgoingcall.CometChatOutgoingCall;
 import com.cometchat.chatuikit.calls.outgoingcall.OutgoingCallConfiguration;
 import com.cometchat.chatuikit.logger.CometChatLogger;
-import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 
@@ -46,7 +43,6 @@ public class CometChatCallActivity extends AppCompatActivity {
     private static Call call;
     private static User user;
     private static OutgoingCallConfiguration outgoingCallConfiguration;
-    private static IncomingCallConfiguration incomingCallConfiguration;
     private static CometChatCalls.CallSettingsBuilder onGoingCallSettingsBuilder;
     private static String callingType;
 
@@ -67,29 +63,6 @@ public class CometChatCallActivity extends AppCompatActivity {
         Intent intent = new Intent(context, CometChatCallActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
-    }
-
-    public static void launchIncomingCallScreen(
-        @Nonnull Context context, @Nonnull Call mCall, @Nullable IncomingCallConfiguration incomingCallConfiguration_
-    ) {
-        if (mCall.getCallInitiator() instanceof User) {
-            User callInitiator = (User) mCall.getCallInitiator();
-            if (CometChatUIKit.getLoggedInUser().getUid().equalsIgnoreCase(callInitiator.getUid())) return;
-        }
-
-        if (CometChat.getActiveCall() == null && CallingExtension.getActiveCall() == null) {
-            callingType = INCOMING_CALL;
-            incomingCallConfiguration = incomingCallConfiguration_;
-            call = mCall;
-            baseMessage = null;
-            if (mCall.getReceiverType() != null && mCall.getReceiverType().equals(UIKitConstants.ReceiverType.USER) && mCall.getSender() != null) {
-                user = mCall.getSender();
-            }
-            startActivity(context);
-            CallingExtension.setActiveCall(mCall);
-        } else {
-            rejectCall(mCall.getSessionId());
-        }
     }
 
     private static void rejectCall(String sessionId) {
@@ -138,7 +111,6 @@ public class CometChatCallActivity extends AppCompatActivity {
             call = callActivityViewModel.getCall();
             user = callActivityViewModel.getUser();
             outgoingCallConfiguration = callActivityViewModel.getOutgoingCallConfiguration();
-            incomingCallConfiguration = callActivityViewModel.getIncomingCallConfiguration();
             callingType = callActivityViewModel.getCallingType();
             onGoingCallSettingsBuilder = callActivityViewModel.getOnGoingCallSettingsBuilder();
         } else {
@@ -147,7 +119,6 @@ public class CometChatCallActivity extends AppCompatActivity {
             callActivityViewModel.setCall(call);
             callActivityViewModel.setBaseMessage(baseMessage);
             callActivityViewModel.setOutgoingCallConfiguration(outgoingCallConfiguration);
-            callActivityViewModel.setIncomingCallConfiguration(incomingCallConfiguration);
             callActivityViewModel.setOnGoingCallSettingsBuilder(onGoingCallSettingsBuilder);
         }
         if (OUTGOING_CALL.equals(callingType) || DIRECT_CALL.equals(callingType)) {
@@ -155,8 +126,8 @@ public class CometChatCallActivity extends AppCompatActivity {
             cometchatOutgoingCall.setLayoutParams(layoutParams);
             if (OUTGOING_CALL.equals(callingType)) {
                 if (outgoingCallConfiguration != null) {
-                    cometchatOutgoingCall.setDeclineButtonIcon(outgoingCallConfiguration.getDeclineButtonIcon());
-                    cometchatOutgoingCall.setOnDeclineCallClick(outgoingCallConfiguration.getOnDeclineButtonClick());
+                    cometchatOutgoingCall.setEndCallIcon(outgoingCallConfiguration.getDeclineButtonIcon());
+                    cometchatOutgoingCall.setOnEndCallClick(outgoingCallConfiguration.getOnDeclineButtonClick());
                     cometchatOutgoingCall.setStyle(outgoingCallConfiguration.getOutgoingCallStyle());
                     cometchatOutgoingCall.disableSoundForCall(outgoingCallConfiguration.isDisableSoundForCalls());
                     cometchatOutgoingCall.setCustomSoundForCalls(outgoingCallConfiguration.getCustomSoundForCalls());
@@ -183,9 +154,6 @@ public class CometChatCallActivity extends AppCompatActivity {
                 }
             }
             callScreen.addView(cometchatOutgoingCall);
-        } else if (INCOMING_CALL.equals(callingType)) {
-            CometChatIncomingCall cometchatIncomingCall = getCometChatIncomingCall(layoutParams);
-            callScreen.addView(cometchatIncomingCall);
         }
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -193,23 +161,6 @@ public class CometChatCallActivity extends AppCompatActivity {
                 startPictureInPictureMode();
             }
         });
-    }
-
-    @NonNull
-    private CometChatIncomingCall getCometChatIncomingCall(LinearLayout.LayoutParams layoutParams) {
-        CometChatIncomingCall cometchatIncomingCall = new CometChatIncomingCall(this);
-        cometchatIncomingCall.setLayoutParams(layoutParams);
-        if (incomingCallConfiguration != null) {
-            cometchatIncomingCall.setOnDeclineCallClick(incomingCallConfiguration.getOnDeclineButtonClick());
-            cometchatIncomingCall.setOnAcceptCallClick(incomingCallConfiguration.getOnAcceptButtonClick());
-            cometchatIncomingCall.setStyle(incomingCallConfiguration.getIncomingCallStyle());
-            cometchatIncomingCall.disableSoundForCall(incomingCallConfiguration.isDisableSoundForCalls());
-            cometchatIncomingCall.setCustomSoundForCalls(incomingCallConfiguration.getCustomSoundForCalls());
-            cometchatIncomingCall.setOnError(incomingCallConfiguration.getOnError());
-            cometchatIncomingCall.setCallSettingsBuilder(incomingCallConfiguration.getCallSettingsBuilder());
-        }
-        cometchatIncomingCall.setCall(call);
-        return cometchatIncomingCall;
     }
 
     private void startPictureInPictureMode() {
@@ -250,7 +201,6 @@ public class CometChatCallActivity extends AppCompatActivity {
         call = null;
         callingType = null;
         user = null;
-        incomingCallConfiguration = null;
         onGoingCallSettingsBuilder = null;
         outgoingCallConfiguration = null;
     }

@@ -16,7 +16,9 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.conversations.CometChatConversations
+import com.cometchat.chatuikit.logger.CometChatLogger
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick
 import com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
 import com.cometchat.sampleapp.kotlin.BuildConfig
 import com.cometchat.sampleapp.kotlin.R
@@ -60,7 +62,7 @@ class ChatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState) // Set up item click listener for the conversations view
-        binding.cometchatConversations.onItemClick = CometChatConversations.OnItemClick { view, position, conversation ->
+        binding.cometchatConversations.onItemClick = OnItemClick { view, position, conversation ->
             if (conversation.conversationType == CometChatConstants.CONVERSATION_TYPE_GROUP) {
                 val group = conversation.conversationWith as Group
                 val intent = Intent(context, MessagesActivity::class.java)
@@ -74,7 +76,6 @@ class ChatsFragment : Fragment() {
             }
         } // Set the overflow menu (Logout button) in the Conversations view
         binding.cometchatConversations.setOverflowMenu(logoutView)
-
     }
 
     private val logoutView: View?
@@ -100,7 +101,7 @@ class ChatsFragment : Fragment() {
                 cometchatAvatar.setLayoutParams(layoutParams)
                 cometchatAvatar.setOnClickListener { v: View ->
                     showCustomMenu(
-                        binding.cometchatConversations.binding.toolbarLayout
+                        binding.cometchatConversations.binding.toolbar
                     )
                 }
                 return cometchatAvatar

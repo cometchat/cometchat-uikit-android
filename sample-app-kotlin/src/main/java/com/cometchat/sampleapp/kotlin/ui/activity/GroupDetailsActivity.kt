@@ -14,14 +14,12 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
-import com.cometchat.chat.models.User
 import com.cometchat.chatuikit.CometChatTheme
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit
 import com.cometchat.chatuikit.shared.constants.UIKitConstants
 import com.cometchat.chatuikit.shared.constants.UIKitConstants.DialogState
 import com.cometchat.chatuikit.shared.resources.utils.Utils
 import com.cometchat.chatuikit.shared.resources.utils.custom_dialog.CometChatConfirmDialog
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.data.enums.GroupAction
 import com.cometchat.sampleapp.kotlin.databinding.ActivityGroupDetailsBinding
@@ -31,7 +29,6 @@ import com.cometchat.sampleapp.kotlin.databinding.GroupMembersLayoutBinding
 import com.cometchat.sampleapp.kotlin.databinding.TransferOwnershipLayoutBinding
 import com.cometchat.sampleapp.kotlin.viewmodels.GroupDetailsViewModel
 import com.google.gson.Gson
-import java.util.Locale
 
 class GroupDetailsActivity : AppCompatActivity() {
     private lateinit var group: Group
@@ -304,22 +301,11 @@ class GroupDetailsActivity : AppCompatActivity() {
 
         addMembersLayoutBinding.addMembers.setTitleText(getString(com.cometchat.chatuikit.R.string.cometchat_add_members))
         addMembersLayoutBinding.addMembers.setSelectionMode(UIKitConstants.SelectionMode.MULTIPLE)
-        addMembersLayoutBinding.addMembers.hideSubmitSelectionIcon(true)
-        addMembersLayoutBinding.addMembers.hideDiscardSelectionIcon(true)
-        addMembersLayoutBinding.addMembers.hideSelectionCount(true)
-        addMembersLayoutBinding.addMembers.hideTitle(false)
-        addMembersLayoutBinding.addMembers.hideBackIcon(false)
-        addMembersLayoutBinding.addMembers.setItemClickListener(object : OnItemClickListener<User>() {
-            override fun OnItemClick(
-                user: User, position: Int
-            ) {
-                val count =
-                    if (addMembersLayoutBinding.addMembers.selectedUsers.isNotEmpty()) addMembersLayoutBinding.addMembers.selectedUsers.size.toString() + " " + getString(
-                        R.string.app_members
-                    ) else " " + getString(R.string.app_member)
-                addMembersLayoutBinding.tvAddMembers.text = String.format(Locale.US, "%s %s", getString(R.string.app_add), count)
-            }
-        })
+        addMembersLayoutBinding.addMembers.setSubmitSelectionIconVisibility(View.GONE)
+        addMembersLayoutBinding.addMembers.setOnItemClick { view, position, user ->
+            addMembersLayoutBinding.addMembers.selectUser(user, UIKitConstants.SelectionMode.MULTIPLE)
+        }
+
 
         addMembersLayoutBinding.addMembersBtn.setOnClickListener {
             viewModel.addMembersToGroup(
@@ -339,7 +325,7 @@ class GroupDetailsActivity : AppCompatActivity() {
             )
         )
         dialog.show()
-        addMembersLayoutBinding.addMembers.addOnBackPressListener { dialog.dismiss() }
+        addMembersLayoutBinding.addMembers.setOnBackPressListener { dialog.dismiss() }
     }
 
     private fun showTransferOwnership() {

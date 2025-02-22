@@ -26,8 +26,6 @@ import com.cometchat.chat.models.MediaMessage;
 import com.cometchat.chat.models.TextMessage;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.extensions.reaction.CometChatMessageReaction;
-import com.cometchat.chatuikit.reactionlist.interfaces.CometChatUIKitReactionActionEvents;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.formatters.FormatterUtils;
 import com.cometchat.chatuikit.shared.models.AdditionParameter;
@@ -48,6 +46,10 @@ import com.cometchat.chatuikit.shared.views.imagebubble.CometChatImageBubble;
 import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.messagereceipt.CometChatMessageReceipt;
 import com.cometchat.chatuikit.shared.views.messagereceipt.Receipt;
+import com.cometchat.chatuikit.shared.views.reaction.CometChatMessageReaction;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnAddMoreReactionsClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionLongClick;
 import com.cometchat.chatuikit.shared.views.schedulerbubble.CometChatSchedulerBubble;
 import com.cometchat.chatuikit.shared.views.textbubble.CometChatTextBubble;
 import com.cometchat.chatuikit.shared.views.videobubble.CometChatVideoBubble;
@@ -146,10 +148,15 @@ public class MessageBubbleUtils {
                                          BaseMessage baseMessage,
                                          int reactionLimit,
                                          @StyleRes int reactionStyle,
-                                         CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents) {
+                                         OnReactionClick onReactionClick,
+                                         OnReactionLongClick onReactionLongClick,
+                                         OnAddMoreReactionsClick onAddMoreReactionsClick
+    ) {
         CometChatMessageReaction messageReaction = footerView.findViewById(R.id.cometchat_reaction_view);
         messageReaction.setStyle(reactionStyle);
-        messageReaction.setReactionsEventListener(cometchatUIKitReactionActionEvents);
+        messageReaction.setOnReactionClick(onReactionClick);
+        messageReaction.setOnReactionLongClick(onReactionLongClick);
+        messageReaction.setOnAddMoreReactionsClick(onAddMoreReactionsClick);
         messageReaction.bindReactionsToMessage(baseMessage, reactionLimit);
     }
 

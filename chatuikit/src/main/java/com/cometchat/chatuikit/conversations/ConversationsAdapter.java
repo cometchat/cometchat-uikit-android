@@ -2,11 +2,14 @@ package com.cometchat.chatuikit.conversations;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
@@ -24,7 +27,6 @@ import com.cometchat.chatuikit.databinding.CometchatConversationsListItemsBindin
 import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.formatters.CometChatTextFormatter;
-import com.cometchat.chatuikit.shared.interfaces.Function1;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.utils.ConversationTailView;
 import com.cometchat.chatuikit.shared.utils.ConversationsUtils;
@@ -32,6 +34,7 @@ import com.cometchat.chatuikit.shared.utils.SubtitleView;
 import com.cometchat.chatuikit.shared.viewholders.ConversationsViewHolderListener;
 import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,20 +44,16 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = ConversationsAdapter.class.getSimpleName();
-
     private final Context context;
-
-    private boolean isTyping = false;
-    private boolean disableTyping = false;
-    private boolean disableReadReceipt = false;
-    private boolean disableUsersPresence = false;
+    private boolean hideReceipts = false;
+    private boolean hideUserStatus = false;
+    private boolean hideGroupType = false;
     private List<CometChatTextFormatter> formatters;
     private List<Conversation> conversationsList;
-    private Function1<Conversation, String> datePattern;
+    private SimpleDateFormat dateFormat;
     private HashMap<Conversation, Boolean> selectedConversation;
     private HashMap<Conversation, TypingIndicator> typingIndicatorHashMap;
-    private ConversationsViewHolderListener subtitleViewHolder, tailViewHolder, listItemViewHolder;
-
+    private ConversationsViewHolderListener titleView, leadingView, subtitleViewHolder, trailingViewHolder, itemViewHolder;
     private @ColorInt int conversationsEmptyStateTitleTextColor;
     private @ColorInt int conversationsEmptyStateSubtitleTextColor;
     private @ColorInt int conversationsErrorStateTitleTextColor;
@@ -62,7 +61,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private @ColorInt int conversationsItemTitleTextColor;
     private @ColorInt int conversationsItemSubtitleTextColor;
     private @ColorInt int conversationsItemMessageTypeIconTint;
-
     private @StyleRes int conversationsEmptyStateTextTitleAppearance;
     private @StyleRes int conversationsEmptyStateTextSubtitleAppearance;
     private @StyleRes int conversationsErrorStateTextTitleAppearance;
@@ -75,6 +73,17 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private @StyleRes int conversationsBadgeStyle;
     private @StyleRes int conversationsReceiptStyle;
     private @StyleRes int conversationsTypingIndicatorStyle;
+    private @ColorInt int itemSelectedBackgroundColor;
+    private @ColorInt int itemBackgroundColor;
+    private int checkBoxStrokeWidth;
+    private int checkBoxCornerRadius;
+    private @ColorInt int checkBoxStrokeColor;
+    private @ColorInt int checkBoxBackgroundColor;
+    private @ColorInt int checkBoxCheckedBackgroundColor;
+    private Drawable checkBoxSelectIcon;
+    private @ColorInt int checkBoxSelectIconTint;
+    private boolean isSelectionEnabled = false;
+
 
     /**
      * Constructor for ConversationsAdapter. Initializes the adapter with the
@@ -281,10 +290,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      *
      * @param listItemView the listener to handle the conversation item view.
      */
-    public void setListItemView(ConversationsViewHolderListener listItemView) {
-        isTyping = false;
+    public void setItemView(ConversationsViewHolderListener listItemView) {
         if (listItemView != null) {
-            this.listItemViewHolder = listItemView;
+            this.itemViewHolder = listItemView;
             notifyDataSetChanged();
         }
     }
@@ -295,7 +303,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @param subtitleViewHolder the listener to handle the subtitle view.
      */
     public void setSubtitleView(@Nullable ConversationsViewHolderListener subtitleViewHolder) {
-        isTyping = false;
         if (subtitleViewHolder != null) {
             this.subtitleViewHolder = subtitleViewHolder;
             notifyDataSetChanged();
@@ -307,10 +314,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      *
      * @param tailViewHolder the listener to handle the tail view.
      */
-    public void setTailView(ConversationsViewHolderListener tailViewHolder) {
-        isTyping = false;
+    public void setTrailingView(ConversationsViewHolderListener tailViewHolder) {
         if (tailViewHolder != null) {
-            this.tailViewHolder = tailViewHolder;
+            this.trailingViewHolder = tailViewHolder;
             notifyDataSetChanged();
         }
     }
@@ -327,10 +333,31 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      * Enables or disables the presence of users in the conversation list and
      * refreshes the adapter.
      *
-     * @param disableUsersPresence true to disable users' presence, false otherwise.
+     * @param hideUserStatus true to disable users' presence, false otherwise.
      */
-    public void setDisableUsersPresence(boolean disableUsersPresence) {
-        this.disableUsersPresence = disableUsersPresence;
+    public void hideUserStatus(boolean hideUserStatus) {
+        this.hideUserStatus = hideUserStatus;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Enables or disables the group type icon in the conversation list and refreshes
+     * the adapter.
+     *
+     * @param hide true to disable the group type icon, false otherwise.
+     */
+    public void hideGroupType(boolean hide) {
+        this.hideGroupType = hide;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Enables or disables selection and refreshes the view.
+     *
+     * @param selectionEnabled true to enable selection, false to disable
+     */
+    public void setSelectionEnabled(boolean selectionEnabled) {
+        isSelectionEnabled = selectionEnabled;
         notifyDataSetChanged();
     }
 
@@ -340,33 +367,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      *
      * @param hideReceipt true to hide the read receipt, false otherwise.
      */
-    public void disableReadReceipt(boolean hideReceipt) {
-        this.disableReadReceipt = hideReceipt;
+    public void hideReceipts(boolean hideReceipt) {
+        this.hideReceipts = hideReceipt;
         notifyDataSetChanged();
-    }
-
-    /**
-     * Disables or hides the typing indicator in the conversation list and refreshes
-     * the adapter.
-     *
-     * @param disableTyping true to disable the typing indicator, false otherwise.
-     */
-    public void disableTyping(boolean disableTyping) {
-        this.disableTyping = disableTyping;
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Retrieves the custom date pattern for a specific conversation.
-     *
-     * @param conversation the conversation for which the date pattern is applied.
-     * @return the custom date pattern or null if none is set.
-     */
-    private String getDatePattern(Conversation conversation) {
-        if (datePattern != null) {
-            return datePattern.apply(conversation);
-        }
-        return null;
     }
 
     /**
@@ -398,15 +401,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     /**
-     * Checks if the typing indicator is currently active.
-     *
-     * @return true if typing is active, false otherwise.
-     */
-    public boolean isTyping() {
-        return isTyping;
-    }
-
-    /**
      * Retrieves the typing indicators hash map.
      *
      * @return the hash map containing typing indicators.
@@ -421,7 +415,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @return true if users' presence is disabled, false otherwise.
      */
     public boolean disableUsersPresence() {
-        return disableUsersPresence;
+        return hideUserStatus;
     }
 
     /**
@@ -429,18 +423,10 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
      *
      * @return true if read receipt is disabled, false otherwise.
      */
-    public boolean disableReadReceipt() {
-        return disableReadReceipt;
+    public boolean hideReceipts() {
+        return hideReceipts;
     }
 
-    /**
-     * Checks if the typing indicator is disabled in the conversation list.
-     *
-     * @return true if typing indicator is disabled, false otherwise.
-     */
-    public boolean disableTyping() {
-        return disableTyping;
-    }
 
     /**
      * Retrieves the hash map of selected conversations.
@@ -451,23 +437,15 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         return selectedConversation;
     }
 
-    /**
-     * Gets the date pattern function that maps a conversation to a string.
-     *
-     * @return A function that provides the date pattern for a conversation.
-     */
-    public Function1<Conversation, String> getDatePattern() {
-        return datePattern;
-    }
 
     /**
      * Sets a custom date pattern for conversations and refreshes the adapter.
      *
-     * @param datePattern a function that returns a custom date pattern for a conversation.
+     * @param dateFormat a function that returns a custom date pattern for a conversation.
      */
-    public void setDatePattern(Function1<Conversation, String> datePattern) {
-        if (datePattern != null) {
-            this.datePattern = datePattern;
+    public void setDateFormat(SimpleDateFormat dateFormat) {
+        if (dateFormat != null) {
+            this.dateFormat = dateFormat;
             notifyDataSetChanged();
         }
     }
@@ -483,6 +461,42 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
             this.formatters = textFormatters;
             notifyDataSetChanged();
         }
+    }
+
+    public void setItemSelectedBackgroundColor(@ColorInt int itemSelectedBackgroundColor) {
+        this.itemSelectedBackgroundColor = itemSelectedBackgroundColor;
+    }
+
+    public void setItemBackgroundColor(@ColorInt int itemBackgroundColor) {
+        this.itemBackgroundColor = itemBackgroundColor;
+    }
+
+    public void setCheckBoxStrokeWidth(@Dimension int checkBoxStrokeWidth) {
+        this.checkBoxStrokeWidth = checkBoxStrokeWidth;
+    }
+
+    public void setCheckBoxCornerRadius(@Dimension int checkBoxCornerRadius) {
+        this.checkBoxCornerRadius = checkBoxCornerRadius;
+    }
+
+    public void setCheckBoxStrokeColor(@ColorInt int checkBoxStrokeColor) {
+        this.checkBoxStrokeColor = checkBoxStrokeColor;
+    }
+
+    public void setCheckBoxBackgroundColor(@ColorInt int checkBoxBackgroundColor) {
+        this.checkBoxBackgroundColor = checkBoxBackgroundColor;
+    }
+
+    public void setCheckBoxCheckedBackgroundColor(@ColorInt int checkBoxCheckedBackgroundColor) {
+        this.checkBoxCheckedBackgroundColor = checkBoxCheckedBackgroundColor;
+    }
+
+    public void setCheckBoxSelectIcon(Drawable checkBoxSelectIcon) {
+        this.checkBoxSelectIcon = checkBoxSelectIcon;
+    }
+
+    public void setCheckBoxSelectIconTint(@ColorInt int checkBoxSelectIconTint) {
+        this.checkBoxSelectIconTint = checkBoxSelectIconTint;
     }
 
     /**
@@ -855,6 +869,16 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged();
     }
 
+    public void setTitleView(ConversationsViewHolderListener titleView) {
+        this.titleView = titleView;
+        notifyDataSetChanged();
+    }
+
+    public void setLeadingView(ConversationsViewHolderListener leadingView) {
+        this.leadingView = leadingView;
+        notifyDataSetChanged();
+    }
+
     /**
      * ViewHolder class for binding and displaying conversation items in a
      * RecyclerView.
@@ -867,7 +891,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         // Custom or default views for subtitle and tail.
         private SubtitleView subtitleView;
         private ConversationTailView tailView;
-        private View customView, customSubtitleView, customTailView;
+        private View customView, customLeadingView, customTitleView, customSubtitleView, customTailView;
 
         /**
          * Constructor for ConversationsViewHolder. Initializes the custom views or
@@ -880,12 +904,20 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
             binding = CometchatConversationsListItemsBinding.bind(itemView);
 
             // If a custom view holder is provided, use the custom view.
-            if (listItemViewHolder != null) {
-                customView = listItemViewHolder.createView(context, binding);
+            if (itemViewHolder != null) {
+                customView = itemViewHolder.createView(context, binding);
                 binding.parentLayout.removeAllViews();
                 binding.parentLayout.addView(customView);
             } else {
                 // Handle subtitle view
+                if (leadingView != null) {
+                    customLeadingView = leadingView.createView(context, binding);
+                    Utils.handleView(binding.conversationLeadingView, customLeadingView, true);
+                }
+                if (titleView != null) {
+                    customTitleView = titleView.createView(context, binding);
+                    Utils.handleView(binding.conversationsTitleView, customTitleView, true);
+                }
                 if (subtitleViewHolder != null) {
                     customSubtitleView = subtitleViewHolder.createView(context, binding);
                     Utils.handleView(binding.subtitleView, customSubtitleView, true);
@@ -895,8 +927,8 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
 
                 // Handle tail view
-                if (tailViewHolder != null) {
-                    customTailView = tailViewHolder.createView(context, binding);
+                if (trailingViewHolder != null) {
+                    customTailView = trailingViewHolder.createView(context, binding);
                     Utils.handleView(binding.tailView, customTailView, true);
                 } else {
                     tailView = ConversationsUtils.getConversationTailViewContainer(context);
@@ -920,28 +952,60 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
             binding.conversationsStatusAndTypeIndicator.setStyle(conversationsStatusIndicatorStyle);
 
             // If a custom view holder is provided, bind the custom view.
-            if (listItemViewHolder != null) {
-                listItemViewHolder.bindView(context, customView, conversation, this, conversationsList, position);
+            if (itemViewHolder != null) {
+                itemViewHolder.bindView(context, customView, conversation, this, conversationsList, position);
             } else {
                 // Set conversation avatar and title
                 String name = ConversationsUtils.getConversationTitle(conversation);
-                binding.conversationsAvatar.setAvatar(name, ConversationsUtils.getConversationAvatar(conversation));
-                binding.tvConversationsTitle.setText(name);
-                binding.tvConversationsTitle.setTextAppearance(conversationsItemTitleTextAppearance);
+                if (titleView != null) {
+                    titleView.bindView(context, customTitleView, conversation, this, conversationsList, position);
+                } else {
 
-                if (conversationsItemTitleTextColor != 0) {
-                    binding.tvConversationsTitle.setTextColor(conversationsItemTitleTextColor);
+                    binding.tvConversationsTitle.setText(name);
+                    binding.tvConversationsTitle.setTextAppearance(conversationsItemTitleTextAppearance);
+
+                    if (conversationsItemTitleTextColor != 0) {
+                        binding.tvConversationsTitle.setTextColor(conversationsItemTitleTextColor);
+                    }
                 }
 
-                // Handle user presence or group type icon based on conversation type
-                if (UIKitConstants.ConversationType.USERS.equalsIgnoreCase(conversation.getConversationType())) {
-                    handleUserPresence(conversation);
-                } else if (UIKitConstants.ConversationType.GROUPS.equalsIgnoreCase(conversation.getConversationType())) {
-                    handleGroupType(conversation);
+                if (leadingView != null) {
+                    leadingView.bindView(context, customLeadingView, conversation, this, conversationsList, position);
+                } else {
+                    binding.conversationsAvatar.setAvatar(name, ConversationsUtils.getConversationAvatar(conversation));
+                    // Handle user presence or group type icon based on conversation type
+                    if (UIKitConstants.ConversationType.USERS.equalsIgnoreCase(conversation.getConversationType())) {
+                        handleUserPresence(conversation);
+                    } else if (UIKitConstants.ConversationType.GROUPS.equalsIgnoreCase(conversation.getConversationType())) {
+                        handleGroupType(conversation);
+                    }
                 }
 
-                // Handle selection mode
-                handleSelectionMode(conversation);
+                if (isSelectionEnabled) {
+                    Utils.initMaterialCard(binding.checkboxView);
+                    binding.ivCheckbox.setImageDrawable(checkBoxSelectIcon);
+                    binding.ivCheckbox.setImageTintList(ColorStateList.valueOf(checkBoxSelectIconTint));
+                    binding.checkboxView.setStrokeWidth(checkBoxStrokeWidth);
+                    binding.checkboxView.setStrokeColor(ColorStateList.valueOf(checkBoxStrokeColor));
+                    binding.checkboxView.setRadius(checkBoxCornerRadius);
+
+                    if (!selectedConversation.isEmpty() && selectedConversation.containsKey(conversation)) {
+                        binding.ivCheckbox.setVisibility(View.VISIBLE);
+                        binding.checkboxView.setStrokeWidth(0);
+                        binding.parentLayout.setBackgroundColor(itemSelectedBackgroundColor);
+                        binding.checkboxView.setCardBackgroundColor(checkBoxCheckedBackgroundColor);
+                    } else {
+                        binding.ivCheckbox.setVisibility(View.GONE);
+                        binding.checkboxView.setStrokeWidth(checkBoxStrokeWidth);
+                        binding.parentLayout.setBackgroundColor(itemBackgroundColor);
+                        binding.checkboxView.setCardBackgroundColor(checkBoxBackgroundColor);
+                    }
+                    binding.checkboxView.setVisibility(View.VISIBLE);
+                } else {
+                    binding.checkboxView.setStrokeWidth(checkBoxStrokeWidth);
+                    binding.parentLayout.setBackgroundColor(itemBackgroundColor);
+                    binding.checkboxView.setVisibility(View.GONE);
+                }
 
                 // Bind subtitle view
                 if (subtitleViewHolder != null) {
@@ -952,8 +1016,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                         subtitleView,
                         conversation,
                         typingIndicatorHashMap,
-                        disableTyping,
-                        disableReadReceipt,
+                        hideReceipts,
                         formatters,
                         conversationsItemSubtitleTextAppearance,
                         conversationsItemSubtitleTextColor,
@@ -964,12 +1027,12 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
 
                 // Bind tail view
-                if (tailViewHolder != null) {
-                    tailViewHolder.bindView(context, customTailView, conversation, this, conversationsList, position);
+                if (trailingViewHolder != null) {
+                    trailingViewHolder.bindView(context, customTailView, conversation, this, conversationsList, position);
                 } else {
                     ConversationsUtils.bindConversationTailView(
                         tailView,
-                        getDatePattern(conversation),
+                        dateFormat,
                         conversation,
                         conversationsBadgeStyle,
                         conversationsDateStyle
@@ -990,7 +1053,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         private void handleUserPresence(Conversation conversation) {
             if (((User) conversation.getConversationWith()).getStatus().equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE)) {
                 if (!Utils.isBlocked(((User) conversation.getConversationWith()))) {
-                    binding.conversationsStatusAndTypeIndicator.setStatusIndicator(disableUsersPresence ? StatusIndicator.OFFLINE : StatusIndicator.ONLINE);
+                    binding.conversationsStatusAndTypeIndicator.setStatusIndicator(hideUserStatus ? StatusIndicator.OFFLINE : StatusIndicator.ONLINE);
                 } else {
                     binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
                 }
@@ -1006,12 +1069,14 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
          * @param conversation The conversation object containing the group information.
          */
         private void handleGroupType(Conversation conversation) {
-            if (((Group) conversation.getConversationWith()).getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
-                binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
-            } else if (((Group) conversation.getConversationWith()).getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
-                binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
-            } else {
-                binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PUBLIC_GROUP);
+            if (!hideGroupType) {
+                if (((Group) conversation.getConversationWith()).getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
+                    binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
+                } else if (((Group) conversation.getConversationWith()).getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
+                    binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
+                } else {
+                    binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.PUBLIC_GROUP);
+                }
             }
         }
 

@@ -34,6 +34,7 @@ public class CometChatMessageInput extends MaterialCardView {
     private @ColorInt int messageInputTextColor;
     private @ColorInt int messageInputSeparatorColor;
     private @ColorInt int messageInputPlaceHolderTextColor;
+    private int auxiliaryButtonVisibility;
 
     /**
      * Constructs a new instance of CometChatMessageInput.
@@ -353,6 +354,16 @@ public class CometChatMessageInput extends MaterialCardView {
      */
     public void setSeparatorVisibility(int visibility) {
         binding.divider.setVisibility(visibility);
+    }
+
+    /**
+     * Sets the visibility of the auxiliary button view.
+     *
+     * @param visibility The visibility to set for the auxiliary button view.
+     */
+    public void setAuxiliaryButtonVisibility(int visibility) {
+        this.auxiliaryButtonVisibility = visibility;
+        binding.auxiliaryView.setVisibility(visibility);
     }
 
     /**

@@ -79,8 +79,7 @@ class CallDetailsActivity : AppCompatActivity() {
 
         viewModel.receiverUser.observe(this) { user: User? ->
             binding.messageHeader.user = user!!
-            binding.messageHeader.disableTyping(true)
-            binding.messageHeader.disableUserPresence(true)
+            binding.messageHeader.userStatusVisibility = View.GONE
             binding.messageHeader.setBackIconVisibility(View.GONE)
         }
     }
@@ -122,7 +121,8 @@ class CallDetailsActivity : AppCompatActivity() {
 
     private fun updateInfoView() {
         val isLoggedInUser = CallUtils.isLoggedInUser(callLog.initiator as CallUser)
-        val isMissedOrUnanswered = callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED || callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED
+        val isMissedOrUnanswered =
+            callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED || callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED
         binding.tvInfoDate.dateText = Utils.callLogsTimeStamp(
             callLog.initiatedAt, null
         )

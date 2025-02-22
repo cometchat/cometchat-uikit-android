@@ -13,38 +13,71 @@
         android:paddingStart="@dimen/cometchat_margin_5"
         android:paddingEnd="@dimen/cometchat_margin_5">
 
-        <TextView
-            android:id="@+id/title_text"
+        <LinearLayout
+            android:id="@+id/title_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/cometchat_80dp"
-            android:textAlignment="center" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/subtitle_text"
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cometchat_80dp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/subtitle_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title_text"
-            android:layout_margin="@dimen/cometchat_margin_2"
-            android:text="@string/cometchat_calling"
-            android:textAlignment="center" />
+            android:layout_below="@id/title_layout">
 
-        <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/cometchat_120dp"
-            android:layout_height="@dimen/cometchat_120dp"
-            android:layout_below="@id/subtitle_text"
+            <TextView
+                android:id="@+id/subtitle_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/cometchat_margin_2"
+                android:text="@string/cometchat_calling"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/avatar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/subtitle_layout"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/cometchat_margin_10"
-            app:cardCornerRadius="@dimen/cometchat_100dp" />
+            android:orientation="vertical">
 
-        <com.cometchat.chatuikit.shared.views.button.CometChatButton
-            android:id="@+id/end_call"
-            android:layout_width="wrap_content"
+            <com.cometchat.chatuikit.shared.views.avatar.CometChatAvatar
+                android:id="@+id/avatar"
+                android:layout_width="@dimen/cometchat_120dp"
+                android:layout_height="@dimen/cometchat_120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/cometchat_margin_10"
+                app:cardCornerRadius="@dimen/cometchat_100dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/end_call_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/cometchat_80dp" />
+            android:orientation="vertical">
+
+            <com.cometchat.chatuikit.shared.views.button.CometChatButton
+                android:id="@+id/end_call"
+                android:layout_width="@dimen/cometchat_50dp"
+                android:layout_height="@dimen/cometchat_50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/cometchat_80dp" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

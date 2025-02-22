@@ -55,7 +55,7 @@ class ThreadMessageActivity : AppCompatActivity() {
 
         // Calculate 25% of the screen height
         val requiredHeight = (screenHeight * 0.35).toInt()
-        binding!!.threadHeader.setMaxHeightLimit(requiredHeight)
+        binding!!.threadHeader.setMaxHeight(requiredHeight)
     }
 
     private fun setParentMessage(parentMessage: BaseMessage) {

@@ -39,6 +39,7 @@ import com.cometchat.chatuikit.shared.views.date.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,14 +93,14 @@ public class ConversationsUtils {
     }
 
     public static void bindConversationTailView(ConversationTailView conversationTailView,
-                                                String datePattern,
+                                                SimpleDateFormat dateFormat,
                                                 Conversation conversation,
                                                 @StyleRes int badgeStyle,
                                                 @StyleRes int dateStyle) {
         conversationTailView.getBadge().setCount(conversation.getUnreadMessageCount());
         conversationTailView.getBadge().setVisibility(conversation.getUnreadMessageCount() != 0 ? View.VISIBLE : View.GONE);
+        conversationTailView.getDate().setDateFormat(dateFormat);
         conversationTailView.getDate().setDate(conversation.getUpdatedAt(), Pattern.DAY_DATE_TIME);
-        conversationTailView.getDate().setCustomDateString(datePattern);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                                                                                LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.END;
@@ -120,7 +121,6 @@ public class ConversationsUtils {
                                         SubtitleView subtitleView,
                                         Conversation conversation,
                                         HashMap<Conversation, TypingIndicator> typingIndicatorHashMap,
-                                        boolean disableTyping,
                                         boolean disableReadReceipt,
                                         List<CometChatTextFormatter> formatters,
                                         @StyleRes int conversationsItemSubtitleTextAppearance,
@@ -129,35 +129,33 @@ public class ConversationsUtils {
                                         @StyleRes int conversationsReceiptStyle,
                                         @StyleRes int conversationsTypingIndicatorStyle) {
         // Handle Typing Indicator
-        if (!disableTyping) {
-            if (!typingIndicatorHashMap.isEmpty() && typingIndicatorHashMap.containsKey(conversation)) {
-                TypingIndicator typingIndicator = typingIndicatorHashMap.get(conversation);
-                if (typingIndicator != null) {
-                    try (TypedArray typedArray = context
-                        .getTheme()
-                        .obtainStyledAttributes(conversationsTypingIndicatorStyle, R.styleable.CometChatTypingIndicator)) {
-                        subtitleView.setTypingIndicatorTextAppearance(typedArray.getResourceId(R.styleable.CometChatTypingIndicator_cometchatTypingIndicatorTextAppearance,
-                                                                                               0));
-                        subtitleView.setTypingIndicatorTextColor(typedArray.getColor(R.styleable.CometChatTypingIndicator_cometchatTypingIndicatorTextColor,
-                                                                                     0));
-                    }
-                    if (typingIndicator.getReceiverType().equalsIgnoreCase(CometChatConstants.RECEIVER_TYPE_USER)) {
-                        subtitleView.setTypingIndicatorText(context.getString(R.string.cometchat_typing));
-                    } else {
-                        subtitleView.setTypingIndicatorText(typingIndicator
-                                                                .getSender()
-                                                                .getName() + " " + context.getString(R.string.cometchat_is_typing));
-                    }
-                    subtitleView.showTypingIndicator(true);
-                    subtitleView.showSubtitleViewContainer(false);
-                } else {
-                    subtitleView.showTypingIndicator(false);
-                    subtitleView.showSubtitleViewContainer(true);
+        if (!typingIndicatorHashMap.isEmpty() && typingIndicatorHashMap.containsKey(conversation)) {
+            TypingIndicator typingIndicator = typingIndicatorHashMap.get(conversation);
+            if (typingIndicator != null) {
+                try (TypedArray typedArray = context
+                    .getTheme()
+                    .obtainStyledAttributes(conversationsTypingIndicatorStyle, R.styleable.CometChatTypingIndicator)) {
+                    subtitleView.setTypingIndicatorTextAppearance(typedArray.getResourceId(R.styleable.CometChatTypingIndicator_cometchatTypingIndicatorTextAppearance,
+                                                                                           0));
+                    subtitleView.setTypingIndicatorTextColor(typedArray.getColor(R.styleable.CometChatTypingIndicator_cometchatTypingIndicatorTextColor,
+                                                                                 0));
                 }
+                if (typingIndicator.getReceiverType().equalsIgnoreCase(CometChatConstants.RECEIVER_TYPE_USER)) {
+                    subtitleView.setTypingIndicatorText(context.getString(R.string.cometchat_typing));
+                } else {
+                    subtitleView.setTypingIndicatorText(typingIndicator
+                                                            .getSender()
+                                                            .getName() + " " + context.getString(R.string.cometchat_is_typing));
+                }
+                subtitleView.showTypingIndicator(true);
+                subtitleView.showSubtitleViewContainer(false);
             } else {
                 subtitleView.showTypingIndicator(false);
                 subtitleView.showSubtitleViewContainer(true);
             }
+        } else {
+            subtitleView.showTypingIndicator(false);
+            subtitleView.showSubtitleViewContainer(true);
         }
         // Sets the message receipt icons
         subtitleView.getCometChatMessageReceipt().setStyle(conversationsReceiptStyle);
@@ -388,8 +386,7 @@ public class ConversationsUtils {
 
     public static String checkProfanityMessageAndDataMasking(Context context, TextMessage textMessage) {
         String text = Extensions.checkProfanityMessage(context, textMessage);
-        if (text.equalsIgnoreCase(textMessage.getText()))
-            text = Extensions.checkDataMasking(context, textMessage);
+        if (text.equalsIgnoreCase(textMessage.getText())) text = Extensions.checkDataMasking(context, textMessage);
         return text;
     }
 
@@ -497,29 +494,7 @@ public class ConversationsUtils {
     }
 
     private enum MessageType {
-        DEFAULT,
-        PHOTO,
-        VIDEO,
-        AUDIO,
-        INCOMING_VOICE_CALL,
-        OUTGOING_VOICE_CALL,
-        INCOMING_VIDEO_CALL,
-        OUTGOING_VIDEO_CALL,
-        MISSED_VIDEO_CALL,
-        MISSED_VOICE_CALL,
-        EMOJI,
-        STICKER,
-        GIF,
-        LINK,
-        POLL,
-        LOCATION,
-        THREAD,
-        DOCUMENT,
-        COLLABORATIVE_DOCUMENT,
-        COLLABORATIVE_WHITEBOARD,
-        MEETING,
-        DELETED_MESSAGE,
-        NOT_SUPPORTED
+        DEFAULT, PHOTO, VIDEO, AUDIO, INCOMING_VOICE_CALL, OUTGOING_VOICE_CALL, INCOMING_VIDEO_CALL, OUTGOING_VIDEO_CALL, MISSED_VIDEO_CALL, MISSED_VOICE_CALL, EMOJI, STICKER, GIF, LINK, POLL, LOCATION, THREAD, DOCUMENT, COLLABORATIVE_DOCUMENT, COLLABORATIVE_WHITEBOARD, MEETING, DELETED_MESSAGE, NOT_SUPPORTED
     }
 
     private static class LastMessageData {

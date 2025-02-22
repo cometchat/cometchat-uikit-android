@@ -107,6 +107,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/cometchat_margin_3"
+            android:ellipsize="end"
+            android:maxLines="3"
             android:text="@string/app_new_group"
             android:textAlignment="center"
             android:textAppearance="?attr/cometchatTextAppearanceHeading2Medium"

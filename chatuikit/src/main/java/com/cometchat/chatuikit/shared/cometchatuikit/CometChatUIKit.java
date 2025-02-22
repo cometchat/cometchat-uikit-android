@@ -22,7 +22,6 @@ import com.cometchat.chatuikit.ai.AIExtensionDataSource;
 import com.cometchat.chatuikit.ai.DefaultAIFeature;
 import com.cometchat.chatuikit.calls.CallingExtension;
 import com.cometchat.chatuikit.extensions.DefaultExtensions;
-import com.cometchat.chatuikit.extensions.reaction.emojikeyboard.EmojiKeyboardUtils;
 import com.cometchat.chatuikit.shared.constants.MessageStatus;
 import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
 import com.cometchat.chatuikit.shared.framework.DataSource;
@@ -34,6 +33,7 @@ import com.cometchat.chatuikit.shared.models.interactivemessage.SchedulerMessage
 import com.cometchat.chatuikit.shared.resources.localise.CometChatLocalize;
 import com.cometchat.chatuikit.shared.resources.localise.Language;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
+import com.cometchat.chatuikit.shared.views.reaction.emojikeyboard.EmojiKeyboardUtils;
 
 import java.util.List;
 

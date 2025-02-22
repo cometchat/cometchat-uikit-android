@@ -23,17 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public class CometChatSearchBox extends MaterialCardView {
     private static final String TAG = CometChatSearchBox.class.getSimpleName();
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({SearchState.Filter, SearchState.Clear, SearchState.TextChange})
-    public @interface SearchState {
-        String Filter = "filter";
-        String Clear = "clear";
-        String TextChange = "textchange";
-    }
-
     private CometchatSearchBoxBinding binding;
-
     private @StyleRes int searchInputTextAppearance;
     private @ColorInt int searchInputTextColor;
     private @StyleRes int searchInputPlaceHolderTextAppearance;
@@ -42,7 +32,6 @@ public class CometChatSearchBox extends MaterialCardView {
     private Drawable searchInputEndIcon;
     private @ColorInt int searchInputStartIconTint;
     private @ColorInt int searchInputEndIconTint;
-
     private OnSearch eventListener;
 
     public CometChatSearchBox(@NonNull Context context) {
@@ -91,10 +80,30 @@ public class CometChatSearchBox extends MaterialCardView {
             @Override
             public void afterTextChanged(Editable s) {
                 if (eventListener != null) {
+                    if (s.toString().isEmpty()) {
+                        setSearchInputEndIconVisibility(GONE);
+                    } else {
+                        setSearchInputEndIconVisibility(VISIBLE);
+                    }
                     eventListener.onSearch(SearchState.TextChange, s.toString());
                 }
             }
         });
+
+        binding.ivClear.setOnClickListener(view -> {
+            binding.etSearch.setText("");
+            if (eventListener != null) {
+                eventListener.onSearch(SearchState.Clear, "");
+            }
+        });
+    }
+
+    public void setSearchInputEndIconVisibility(int visibility) {
+        binding.ivClear.setVisibility(visibility);
+    }
+
+    public void setSearchInputText(String text) {
+        binding.etSearch.setText(text);
     }
 
     public @StyleRes int getSearchInputTextAppearance() {
@@ -147,7 +156,7 @@ public class CometChatSearchBox extends MaterialCardView {
 
     public void setSearchInputStartIconTint(@ColorInt int searchInputStartIconTint) {
         this.searchInputStartIconTint = searchInputStartIconTint;
-        binding.ivSearch.setImageTintList(ColorStateList.valueOf(searchInputEndIconTint));
+        binding.ivSearch.setBackgroundTintList(ColorStateList.valueOf(searchInputStartIconTint));
     }
 
     public Drawable getSearchInputEndIcon() {
@@ -165,7 +174,7 @@ public class CometChatSearchBox extends MaterialCardView {
 
     public void setSearchInputEndIconTint(@ColorInt int searchInputEndIconTint) {
         this.searchInputEndIconTint = searchInputEndIconTint;
-        binding.ivClear.setImageTintList(ColorStateList.valueOf(searchInputEndIconTint));
+        binding.ivClear.setBackgroundTintList(ColorStateList.valueOf(searchInputEndIconTint));
     }
 
     /**
@@ -190,11 +199,19 @@ public class CometChatSearchBox extends MaterialCardView {
         }
     }
 
-    public interface OnSearch {
-        void onSearch(@SearchState String state, String text);
-    }
-
     public CometchatSearchBoxBinding getBinding() {
         return binding;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({SearchState.Filter, SearchState.Clear, SearchState.TextChange})
+    public @interface SearchState {
+        String Filter = "filter";
+        String Clear = "clear";
+        String TextChange = "textchange";
+    }
+
+    public interface OnSearch {
+        void onSearch(@SearchState String state, String text);
     }
 }

@@ -25,6 +25,7 @@ import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.interfaces.Function3;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
+import com.cometchat.chatuikit.shared.interfaces.OnError;
 import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.views.statusindicator.StatusIndicator;
@@ -40,38 +41,39 @@ import java.util.Map;
 public class CometChatMessageHeader extends MaterialCardView {
     private static final String TAG = CometChatMessageHeader.class.getSimpleName();
     private CometchatMessageHeaderBinding binding;
-
-    private boolean disableTyping;
-    private boolean disableUserPresence;
-
     private User user;
     private Group group;
     private View backButtonView;
     private OnBackPress onBackPress;
-
     private MessageHeaderViewModel messageHeaderViewModel;
-    private Function3<Context, User, Group, View> customSubtitle;
-    private Function3<Context, User, Group, View> tailView;
+    private Function3<Context, User, Group, View> subtitleView;
+    private Function3<Context, User, Group, View> trailingView;
+    private Function3<Context, User, Group, View> auxiliaryButtonView;
+    private Function3<Context, User, Group, View> titleView;
+    private Function3<Context, User, Group, View> leadingView;
+    private Function3<Context, User, Group, View> itemView;
     private Function2<Context, User, String> customLastSeenText;
-
     private @ColorInt int titleTextColor;
     private @ColorInt int subtitleTextColor;
     private @ColorInt int backIconTint;
     private @ColorInt int backgroundColor;
     private @ColorInt int strokeColor;
-
     private @Dimension int cornerRadius;
     private @Dimension int strokeWidth;
-
     private @StyleRes int titleTextAppearance;
     private @StyleRes int subtitleTextAppearance;
     private @StyleRes int avatarStyle;
     private @StyleRes int statusIndicatorStyle;
     private @StyleRes int typingIndicatorStyle;
     private @StyleRes int callButtonsStyle;
-
     private Drawable backIcon;
     private AdditionParameter additionParameter;
+    private OnError onError;
+    private int backButtonVisibility = GONE;
+    private int userStatusVisibility = VISIBLE;
+    private int groupStatusVisibility = VISIBLE;
+    private int videoCallButtonVisibility = VISIBLE;
+    private int voiceCallButtonVisibility = VISIBLE;
 
     /**
      * Constructs a new CometChatMessageHeader with a given context.
@@ -139,6 +141,9 @@ public class CometChatMessageHeader extends MaterialCardView {
         messageHeaderViewModel.getUserPresenceStatus().observe((AppCompatActivity) getContext(), this::showUserStatusAndLastSeen);
         messageHeaderViewModel.getUpdatedGroup().observe((AppCompatActivity) getContext(), this::setGroup);
         messageHeaderViewModel.getUpdatedUser().observe((AppCompatActivity) getContext(), this::setUser);
+        messageHeaderViewModel.getException().observe((AppCompatActivity) getContext(), e -> {
+            if (onError != null) onError.onError(e);
+        });
         messageHeaderViewModel.getTyping().observe((AppCompatActivity) getContext(), this::setTypingIndicator);
         configureBackIcon();
     }
@@ -167,64 +172,29 @@ public class CometChatMessageHeader extends MaterialCardView {
     }
 
     /**
-     * Updates the user status and last seen time based on the provided User object.
-     * If a custom last seen text function is set, it will be used to generate the
-     * last seen text. Otherwise, the default last seen text will be displayed. If
-     * user presence notifications are disabled, the subtitle will be hidden. If the
-     * user is online, the subtitle will display "Online".
-     *
-     * @param mUser The User object containing the status and last seen time.
-     */
-    private void showUserStatusAndLastSeen(@NonNull User mUser) {
-        if (customSubtitle == null) {
-            if (disableUserPresence) {
-                binding.tvMessageHeaderSubtitle.setVisibility(GONE);
-            } else {
-                if (mUser.getStatus().equals(CometChatConstants.USER_STATUS_ONLINE)) {
-                    binding.tvMessageHeaderSubtitle.setText(getResources().getString(R.string.cometchat_online));
-                } else {
-                    if (customLastSeenText != null) {
-                        binding.tvMessageHeaderSubtitle.setText(customLastSeenText.apply(getContext(), mUser));
-                    } else {
-                        if (mUser.getLastActiveAt() == 0) {
-                            binding.tvMessageHeaderSubtitle.setText(getContext().getString(R.string.cometchat_offline));
-                        } else {
-                            String lastSeen = Utils.getLastSeenTime(getContext(), mUser.getLastActiveAt());
-                            binding.tvMessageHeaderSubtitle.setText(lastSeen);
-                            binding.tvMessageHeaderSubtitle.setSelected(true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Updates the typing indicator based on the provided typing status.
      *
      * @param typingHashMap A map containing typing indicators and their corresponding status
      *                      (true for typing, false for not typing).
      */
     private void setTypingIndicator(@NonNull HashMap<TypingIndicator, Boolean> typingHashMap) {
-        if (customSubtitle == null) {
-            if (!disableTyping) {
-                if (!typingHashMap.isEmpty()) {
-                    for (Map.Entry<TypingIndicator, Boolean> map : typingHashMap.entrySet()) {
-                        boolean isTyping = map.getValue();
-                        TypingIndicator typingIndicator = map.getKey();
-                        if (isTyping) {
-                            binding.tvMessageHeaderSubtitle.setVisibility(GONE);
-                            binding.tvMessageHeaderTypingIndicator.setVisibility(VISIBLE);
-                            String typingMessage = typingIndicator
-                                .getReceiverType()
-                                .equals(CometChatConstants.RECEIVER_TYPE_USER) ? getContext().getString(R.string.cometchat_typing) : typingIndicator
-                                .getSender()
-                                .getName() + " " + getContext().getString(R.string.cometchat_is_typing);
-                            binding.tvMessageHeaderTypingIndicator.setText(typingMessage);
-                        } else {
-                            binding.tvMessageHeaderSubtitle.setVisibility(VISIBLE);
-                            binding.tvMessageHeaderTypingIndicator.setVisibility(GONE);
-                        }
+        if (subtitleView == null) {
+            if (!typingHashMap.isEmpty()) {
+                for (Map.Entry<TypingIndicator, Boolean> map : typingHashMap.entrySet()) {
+                    boolean isTyping = map.getValue();
+                    TypingIndicator typingIndicator = map.getKey();
+                    if (isTyping) {
+                        binding.tvMessageHeaderSubtitle.setVisibility(GONE);
+                        binding.tvMessageHeaderTypingIndicator.setVisibility(VISIBLE);
+                        String typingMessage = typingIndicator
+                            .getReceiverType()
+                            .equals(CometChatConstants.RECEIVER_TYPE_USER) ? getContext().getString(R.string.cometchat_typing) : typingIndicator
+                            .getSender()
+                            .getName() + " " + getContext().getString(R.string.cometchat_is_typing);
+                        binding.tvMessageHeaderTypingIndicator.setText(typingMessage);
+                    } else {
+                        binding.tvMessageHeaderSubtitle.setVisibility(VISIBLE);
+                        binding.tvMessageHeaderTypingIndicator.setVisibility(GONE);
                     }
                 }
             }
@@ -243,6 +213,62 @@ public class CometChatMessageHeader extends MaterialCardView {
                 ((Activity) getContext()).onBackPressed();
             }
         });
+    }
+
+    /**
+     * Updates the header data for the UI based on the provided Group object.
+     *
+     * @param group The Group object containing information to be displayed in the
+     *              header.
+     */
+    private void setHeaderData(Group group) {
+        binding.messageHeaderAvatarView.setAvatar(group.getName(), group.getIcon());
+        binding.tvMessageHeaderName.setText(group.getName());
+        if (subtitleView == null) {
+            setMembersCount(group.getMembersCount());
+            if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
+                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
+            } else if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
+                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
+            } else {
+                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.OFFLINE);
+            }
+        }
+    }
+
+    /**
+     * Updates the header data for the UI based on the provided User object.
+     *
+     * @param user The User object containing information to be displayed in the
+     *             header.
+     */
+    private void setHeaderData(User user) {
+        binding.messageHeaderAvatarView.setAvatar(user.getName(), user.getAvatar());
+        binding.tvMessageHeaderName.setText(user.getName());
+        if (subtitleView == null) {
+            if (!Utils.isBlocked(user)) {
+                binding.messageHeaderStatusIndicatorView.setVisibility(userStatusVisibility);
+                binding.tvMessageHeaderSubtitle.setVisibility(VISIBLE);
+                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.OFFLINE);
+                showUserStatusAndLastSeen(user);
+            } else {
+                binding.messageHeaderStatusIndicatorView.setVisibility(GONE);
+                binding.tvMessageHeaderSubtitle.setVisibility(GONE);
+            }
+        }
+    }
+
+    /**
+     * Sets the style for the CometChatMessageHeader view by applying a style
+     * resource.
+     *
+     * @param style The style resource to apply.
+     */
+    public void setStyle(@StyleRes int style) {
+        if (style != 0) {
+            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatMessageHeader);
+            extractAttributesAndApplyDefaults(typedArray);
+        }
     }
 
     /**
@@ -277,49 +303,6 @@ public class CometChatMessageHeader extends MaterialCardView {
     }
 
     /**
-     * Updates the header data for the UI based on the provided Group object.
-     *
-     * @param group The Group object containing information to be displayed in the
-     *              header.
-     */
-    private void setHeaderData(Group group) {
-        binding.messageHeaderAvatarView.setAvatar(group.getName(), group.getIcon());
-        binding.tvMessageHeaderName.setText(group.getName());
-        if (customSubtitle == null) {
-            setMembersCount(group.getMembersCount());
-            if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
-                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
-            } else if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
-                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
-            } else {
-                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.OFFLINE);
-            }
-        }
-    }
-
-    /**
-     * Updates the header data for the UI based on the provided User object.
-     *
-     * @param user The User object containing information to be displayed in the
-     *             header.
-     */
-    private void setHeaderData(User user) {
-        binding.messageHeaderAvatarView.setAvatar(user.getName(), user.getAvatar());
-        binding.tvMessageHeaderName.setText(user.getName());
-        if (customSubtitle == null) {
-            if (!Utils.isBlocked(user)) {
-                binding.messageHeaderStatusIndicatorView.setVisibility(disableUserPresence ? GONE : VISIBLE);
-                binding.tvMessageHeaderSubtitle.setVisibility(VISIBLE);
-                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.OFFLINE);
-                showUserStatusAndLastSeen(user);
-            } else {
-                binding.messageHeaderStatusIndicatorView.setVisibility(GONE);
-                binding.tvMessageHeaderSubtitle.setVisibility(GONE);
-            }
-        }
-    }
-
-    /**
      * Applies the extracted or default values to the avatar's views.
      */
     private void applyDefault() {
@@ -339,19 +322,6 @@ public class CometChatMessageHeader extends MaterialCardView {
         setBackButtonView(backIcon);
     }
 
-    /**
-     * Sets the style for the CometChatMessageHeader view by applying a style
-     * resource.
-     *
-     * @param style The style resource to apply.
-     */
-    public void setStyle(@StyleRes int style) {
-        if (style != 0) {
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatMessageHeader);
-            extractAttributesAndApplyDefaults(typedArray);
-        }
-    }
-
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -364,10 +334,14 @@ public class CometChatMessageHeader extends MaterialCardView {
      * @param onBackPressed A callback that will be invoked when the back button is pressed.
      *                      If null, the default back button behavior will be used.
      */
-    public void onBackButtonPressed(OnBackPress onBackPressed) {
+    public void setOnBackButtonPressed(OnBackPress onBackPressed) {
         if (onBackPressed != null) {
             this.onBackPress = onBackPressed;
         }
+    }
+
+    public void setOnError(OnError onError) {
+        this.onError = onError;
     }
 
     /**
@@ -636,39 +610,41 @@ public class CometChatMessageHeader extends MaterialCardView {
     }
 
     /**
-     * Checks whether typing notifications are disabled.
-     *
-     * @return True if typing notifications are disabled, otherwise false.
-     */
-    public boolean isDisableTyping() {
-        return disableTyping;
-    }
-
-    /**
-     * Sets whether typing notifications should be disabled.
-     *
-     * @param disableTyping True to disable typing notifications, false to enable them.
-     */
-    public void disableTyping(boolean disableTyping) {
-        this.disableTyping = disableTyping;
-    }
-
-    /**
      * Checks whether user presence notifications are disabled.
      *
      * @return True if user presence notifications are disabled, otherwise false.
      */
-    public boolean isUserPresenceDisable() {
-        return disableUserPresence;
+    public int getUserStatusVisibility() {
+        return userStatusVisibility;
     }
 
     /**
      * Sets whether user presence notifications should be disabled.
      *
-     * @param disableUserPresence True to disable user presence notifications, false to enable them.
+     * @param visibility GONE to disable user presence notifications, VISIBLE to enable them.
      */
-    public void disableUserPresence(boolean disableUserPresence) {
-        this.disableUserPresence = disableUserPresence;
+    public void setUserStatusVisibility(int visibility) {
+        this.userStatusVisibility = visibility;
+        binding.messageHeaderStatusIndicatorView.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the group status.
+     *
+     * @return groupStatusVisibility
+     */
+    public int getGroupStatusVisibility() {
+        return groupStatusVisibility;
+    }
+
+    /**
+     * Sets whether group status should be disabled.
+     *
+     * @param visibility GONE to disable group status, VISIBLE to enable them.
+     */
+    public void setGroupStatusVisibility(int visibility) {
+        this.groupStatusVisibility = visibility;
+        binding.messageHeaderStatusIndicatorView.setVisibility(visibility);
     }
 
     /**
@@ -689,12 +665,8 @@ public class CometChatMessageHeader extends MaterialCardView {
         this.user = user;
         this.group = null;
         messageHeaderViewModel.setUser(user);
-        if (tailView == null) {
-            Utils.handleView(binding.messageHeaderTailView,
-                             ChatConfigurator.getDataSource().getAuxiliaryHeaderMenu(getContext(), user, group, additionParameter),
-                             true);
-        }
         setHeaderData(user);
+        invokeViewCallbacks();
     }
 
     /**
@@ -715,14 +687,21 @@ public class CometChatMessageHeader extends MaterialCardView {
         this.group = group;
         this.user = null;
         messageHeaderViewModel.setGroup(group);
-        if (tailView == null) {
-            Utils.handleView(binding.messageHeaderTailView,
-                             ChatConfigurator.getDataSource().getAuxiliaryHeaderMenu(getContext(), user, group, additionParameter),
-                             true);
-        } else {
-            Utils.handleView(binding.messageHeaderTailView, tailView.apply(getContext(), user, group), true);
-        }
         setHeaderData(group);
+        invokeViewCallbacks();
+    }
+
+    public void invokeViewCallbacks() {
+        if (itemView == null) {
+            setLeadingView(leadingView);
+            setTitleView(titleView);
+            setSubtitleView(subtitleView);
+            setAuxiliaryButtonView(auxiliaryButtonView);
+            setTrailingView(trailingView);
+        } else {
+            setItemView(itemView);
+        }
+
     }
 
     /**
@@ -778,8 +757,8 @@ public class CometChatMessageHeader extends MaterialCardView {
      *
      * @return The Function3 that generates the custom subtitle view.
      */
-    public Function3<Context, User, Group, View> getSubtitle() {
-        return customSubtitle;
+    public Function3<Context, User, Group, View> getSubtitleView() {
+        return subtitleView;
     }
 
     /**
@@ -788,9 +767,12 @@ public class CometChatMessageHeader extends MaterialCardView {
      * @param subtitle The Function3 that generates the custom subtitle view (must not be
      *                 null).
      */
-    public void setSubtitle(@NonNull Function3<Context, User, Group, View> subtitle) {
-        this.customSubtitle = subtitle;
-        Utils.handleView(binding.messageHeaderSubtitleLayout, subtitle.apply(getContext(), user, group), true);
+    public void setSubtitleView(Function3<Context, User, Group, View> subtitle) {
+        if (subtitle != null) {
+            this.subtitleView = subtitle;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.messageHeaderSubtitleLayout, subtitle.apply(getContext(), user, group), true);
+        }
     }
 
     /**
@@ -798,20 +780,139 @@ public class CometChatMessageHeader extends MaterialCardView {
      *
      * @return The Function3 that generates the custom tail view.
      */
-    public Function3<Context, User, Group, View> getTailView() {
-        return tailView;
+    public Function3<Context, User, Group, View> getTrailingView() {
+        return trailingView;
     }
 
     /**
      * Sets the custom tail view function and updates the tail view layout.
      *
-     * @param tailView The Function3 that generates the custom tail view (must not be
-     *                 null).
+     * @param trailingView The Function3 that generates the custom tail view (must not be
+     *                     null).
      */
-    public void setTailView(@NonNull Function3<Context, User, Group, View> tailView) {
-        this.tailView = tailView;
-        Utils.handleView(binding.messageHeaderTailView, tailView.apply(getContext(), user, group), true);
+    public void setTrailingView(Function3<Context, User, Group, View> trailingView) {
+        if (trailingView != null) {
+            this.trailingView = trailingView;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.messageHeaderTailView, trailingView.apply(getContext(), user, group), true);
+        }
     }
+
+    /**
+     * Retrieves the function responsible for creating the auxiliary button view.
+     *
+     * @return A {@link Function3} that takes a {@link Context}, {@link User}, and {@link Group}
+     * as input and returns a {@link View}.
+     */
+    public Function3<Context, User, Group, View> getAuxiliaryButtonView() {
+        return auxiliaryButtonView;
+    }
+
+    /**
+     * Sets the function responsible for creating the auxiliary button view.
+     * If the provided function is not null, it applies the function and updates the view.
+     * Otherwise, it uses the default auxiliary header menu provided by {@link ChatConfigurator}.
+     *
+     * @param auxiliaryButtonView A {@link Function3} that takes a {@link Context}, {@link User},
+     *                            and {@link Group} as input and returns a {@link View}.
+     */
+    public void setAuxiliaryButtonView(Function3<Context, User, Group, View> auxiliaryButtonView) {
+        if (auxiliaryButtonView != null) {
+            this.auxiliaryButtonView = auxiliaryButtonView;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.messageHeaderAuxiliaryView, auxiliaryButtonView.apply(getContext(), user, group), true);
+        } else {
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.messageHeaderAuxiliaryView,
+                                 ChatConfigurator.getDataSource().getAuxiliaryHeaderMenu(getContext(), user, group, additionParameter),
+                                 true);
+        }
+    }
+
+    /**
+     * Retrieves the function responsible for creating the title view.
+     *
+     * @return A {@link Function3} that takes a {@link Context}, {@link User}, and {@link Group}
+     * as input and returns a {@link View}.
+     */
+    public Function3<Context, User, Group, View> getTitleView() {
+        return titleView;
+    }
+
+    /**
+     * Sets the function responsible for creating the title view.
+     * If the provided function is not null, it applies the function and updates the view.
+     *
+     * @param titleView A {@link Function3} that takes a {@link Context}, {@link User},
+     *                  and {@link Group} as input and returns a {@link View}.
+     */
+    public void setTitleView(Function3<Context, User, Group, View> titleView) {
+        if (titleView != null) {
+            this.titleView = titleView;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.titleView, titleView.apply(getContext(), user, group), true);
+        }
+    }
+
+    /**
+     * Retrieves the function responsible for creating the leading view.
+     *
+     * @return A {@link Function3} that takes a {@link Context}, {@link User}, and {@link Group}
+     * as input and returns a {@link View}.
+     */
+    public Function3<Context, User, Group, View> getLeadingView() {
+        return leadingView;
+    }
+
+    /**
+     * Sets the function responsible for creating the leading view.
+     * If the provided function is not null, it applies the function and updates the view.
+     *
+     * @param leadingView A {@link Function3} that takes a {@link Context}, {@link User},
+     *                    and {@link Group} as input and returns a {@link View}.
+     */
+    public void setLeadingView(Function3<Context, User, Group, View> leadingView) {
+        if (leadingView != null) {
+            this.leadingView = leadingView;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.messageHeaderAvatarLayout, leadingView.apply(getContext(), user, group), true);
+        }
+    }
+
+    /**
+     * Retrieves the function responsible for creating the item view.
+     *
+     * @return A {@link Function3} that takes a {@link Context}, {@link User}, and {@link Group}
+     * as input and returns a {@link View}.
+     */
+    public Function3<Context, User, Group, View> getItemView() {
+        return itemView;
+    }
+
+    /**
+     * Sets the function responsible for creating the item view.
+     * If the provided function is not null, it applies the function and updates the view.
+     *
+     * @param itemView A {@link Function3} that takes a {@link Context}, {@link User},
+     *                 and {@link Group} as input and returns a {@link View}.
+     */
+    public void setItemView(Function3<Context, User, Group, View> itemView) {
+        if (itemView != null) {
+            this.itemView = itemView;
+            if (isRequiredObjectPresent())
+                Utils.handleView(binding.parentLayout, itemView.apply(getContext(), user, group), true);
+        }
+    }
+
+    /**
+     * Checks if the required objects ({@link User} or {@link Group}) are present.
+     *
+     * @return {@code true} if either the user or group is not null, otherwise {@code false}.
+     */
+    private boolean isRequiredObjectPresent() {
+        return user != null || group != null;
+    }
+
 
     /**
      * Retrieves the custom last seen text function.
@@ -835,6 +936,39 @@ public class CometChatMessageHeader extends MaterialCardView {
     }
 
     /**
+     * Updates the user status and last seen time based on the provided User object.
+     * If a custom last seen text function is set, it will be used to generate the
+     * last seen text. Otherwise, the default last seen text will be displayed. If
+     * user presence notifications are disabled, the subtitle will be hidden. If the
+     * user is online, the subtitle will display "Online".
+     *
+     * @param mUser The User object containing the status and last seen time.
+     */
+    private void showUserStatusAndLastSeen(@NonNull User mUser) {
+        if (subtitleView == null) {
+            if (userStatusVisibility == GONE) {
+                binding.tvMessageHeaderSubtitle.setVisibility(GONE);
+            } else {
+                if (mUser.getStatus().equals(CometChatConstants.USER_STATUS_ONLINE)) {
+                    binding.tvMessageHeaderSubtitle.setText(getResources().getString(R.string.cometchat_online));
+                } else {
+                    if (customLastSeenText != null) {
+                        binding.tvMessageHeaderSubtitle.setText(customLastSeenText.apply(getContext(), mUser));
+                    } else {
+                        if (mUser.getLastActiveAt() == 0) {
+                            binding.tvMessageHeaderSubtitle.setText(getContext().getString(R.string.cometchat_offline));
+                        } else {
+                            String lastSeen = Utils.getLastSeenTime(getContext(), mUser.getLastActiveAt());
+                            binding.tvMessageHeaderSubtitle.setText(lastSeen);
+                            binding.tvMessageHeaderSubtitle.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Retrieves the configured addition parameter object.
      *
      * @return the AdditionParameter.
@@ -843,7 +977,72 @@ public class CometChatMessageHeader extends MaterialCardView {
         return additionParameter;
     }
 
+    /**
+     * Sets the visibility of the back icon.
+     * Updates the visibility of the back button in the message header.
+     *
+     * @param visibility An integer representing the visibility status of the back icon.
+     *                   Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                   or {@code View.GONE}.
+     */
     public void setBackIconVisibility(int visibility) {
+        this.backButtonVisibility = visibility;
         binding.ivMessageHeaderBack.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the back button.
+     *
+     * @return An integer representing the visibility of the back button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getBackButtonVisibility() {
+        return backButtonVisibility;
+    }
+
+    /**
+     * Retrieves the visibility status of the video call button.
+     *
+     * @return An integer representing the visibility of the video call button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getVideoCallButtonVisibility() {
+        return videoCallButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the video call button.
+     * Also updates the visibility in the {@code additionParameter} instance.
+     *
+     * @param visibility An integer representing the visibility status of the video call button.
+     *                   Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                   or {@code View.GONE}.
+     */
+    public void setVideoCallButtonVisibility(int visibility) {
+        this.videoCallButtonVisibility = visibility;
+        additionParameter.setVideoCallButtonVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the voice call button.
+     *
+     * @return An integer representing the visibility of the voice call button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getVoiceCallButtonVisibility() {
+        return voiceCallButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the voice call button.
+     * Also updates the visibility in the {@code additionParameter} instance.
+     *
+     * @param visibility An integer representing the visibility status of the voice call button.
+     *                   Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                   or {@code View.GONE}.
+     */
+    public void setVoiceCallButtonVisibility(int visibility) {
+        this.voiceCallButtonVisibility = visibility;
+        additionParameter.setVoiceCallButtonVisibility(visibility);
     }
 }

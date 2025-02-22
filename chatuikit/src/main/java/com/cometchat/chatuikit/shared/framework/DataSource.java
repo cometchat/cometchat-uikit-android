@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +45,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the text message.
      */
-    List<CometChatMessageOption> getTextMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getTextMessageOptions(Context context,
+                                                       BaseMessage baseMessage,
+                                                       Group group,
+                                                       @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of message options for an image message.
@@ -55,7 +59,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the image message.
      */
-    List<CometChatMessageOption> getImageMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getImageMessageOptions(Context context,
+                                                        BaseMessage baseMessage,
+                                                        Group group,
+                                                        @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of message options for a video message.
@@ -66,7 +73,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the video message.
      */
-    List<CometChatMessageOption> getVideoMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getVideoMessageOptions(Context context,
+                                                        BaseMessage baseMessage,
+                                                        Group group,
+                                                        @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of message options for an audio message.
@@ -77,7 +87,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the audio message.
      */
-    List<CometChatMessageOption> getAudioMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getAudioMessageOptions(Context context,
+                                                        BaseMessage baseMessage,
+                                                        Group group,
+                                                        @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of message options for a file message.
@@ -88,7 +101,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the file message.
      */
-    List<CometChatMessageOption> getFileMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getFileMessageOptions(Context context,
+                                                       BaseMessage baseMessage,
+                                                       Group group,
+                                                       @NonNull AdditionParameter additionParameter);
 
     View getBottomView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -99,7 +115,7 @@ public interface DataSource {
                         RecyclerView.ViewHolder holder,
                         List<BaseMessage> messageList,
                         int position,
-                        AdditionParameter additionParameter);
+                        @NonNull AdditionParameter additionParameter);
 
     View getTextBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -111,7 +127,7 @@ public interface DataSource {
                                    RecyclerView.ViewHolder holder,
                                    List<BaseMessage> messageList,
                                    int position,
-                                   AdditionParameter additionParameter);
+                                   @NonNull AdditionParameter additionParameter);
 
     View getFormBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -123,7 +139,7 @@ public interface DataSource {
                                    RecyclerView.ViewHolder holder,
                                    List<BaseMessage> messageList,
                                    int position,
-                                   AdditionParameter additionParameter);
+                                   @NonNull AdditionParameter additionParameter);
 
     View getSchedulerBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -135,7 +151,7 @@ public interface DataSource {
                                         RecyclerView.ViewHolder holder,
                                         List<BaseMessage> messageList,
                                         int position,
-                                        AdditionParameter additionParameter);
+                                        @NonNull AdditionParameter additionParameter);
 
     View getCardBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -147,7 +163,7 @@ public interface DataSource {
                                    RecyclerView.ViewHolder holder,
                                    List<BaseMessage> messageList,
                                    int position,
-                                   AdditionParameter additionParameter);
+                                   @NonNull AdditionParameter additionParameter);
 
     View getImageBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -160,7 +176,7 @@ public interface DataSource {
                                     RecyclerView.ViewHolder holder,
                                     List<BaseMessage> messageList,
                                     int position,
-                                    AdditionParameter additionParameter);
+                                    @NonNull AdditionParameter additionParameter);
 
     View getVideoBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -173,7 +189,7 @@ public interface DataSource {
                                     RecyclerView.ViewHolder holder,
                                     List<BaseMessage> messageList,
                                     int position,
-                                    AdditionParameter additionParameter);
+                                    @NonNull AdditionParameter additionParameter);
 
     View getFileBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -185,7 +201,7 @@ public interface DataSource {
                                    RecyclerView.ViewHolder holder,
                                    List<BaseMessage> messageList,
                                    int position,
-                                   AdditionParameter additionParameter);
+                                   @NonNull AdditionParameter additionParameter);
 
     View getAudioBubbleContentView(Context context, CometChatMessageBubble messageBubble, UIKitConstants.MessageBubbleAlignment alignment);
 
@@ -197,27 +213,27 @@ public interface DataSource {
                                     RecyclerView.ViewHolder holder,
                                     List<BaseMessage> messageList,
                                     int position,
-                                    AdditionParameter additionParameter);
+                                    @NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getAudioTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getAudioTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getVideoTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getVideoTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getImageTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getImageTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getGroupActionsTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getGroupActionsTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getFileTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getFileTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getTextTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getTextTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getFormTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getFormTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getSchedulerTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getSchedulerTemplate(@NonNull AdditionParameter additionParameter);
 
-    CometChatMessageTemplate getCardTemplate(AdditionParameter additionParameter);
+    CometChatMessageTemplate getCardTemplate(@NonNull AdditionParameter additionParameter);
 
-    List<CometChatMessageTemplate> getMessageTemplates(AdditionParameter additionParameter);
+    List<CometChatMessageTemplate> getMessageTemplates(@NonNull AdditionParameter additionParameter);
 
     /**
      * Returns the message template for the specified category and type.
@@ -227,7 +243,7 @@ public interface DataSource {
      * @return The CometChatMessageTemplate object representing the specified
      * message template.
      */
-    CometChatMessageTemplate getMessageTemplate(String category, String type);
+    CometChatMessageTemplate getMessageTemplate(String category, String type, @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of message options for a message.
@@ -238,7 +254,10 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the available
      * options for the message.
      */
-    List<CometChatMessageOption> getMessageOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getMessageOptions(Context context,
+                                                   BaseMessage baseMessage,
+                                                   Group group,
+                                                   @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of attachment options for the message composer.
@@ -250,7 +269,11 @@ public interface DataSource {
      * @return A list of CometChatMessageComposerAction objects representing the
      * available attachment options.
      */
-    List<CometChatMessageComposerAction> getAttachmentOptions(Context context, User user, Group group, HashMap<String, String> idMap);
+    List<CometChatMessageComposerAction> getAttachmentOptions(Context context,
+                                                              User user,
+                                                              Group group,
+                                                              HashMap<String, String> idMap,
+                                                              @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of AI options for the message composer.
@@ -267,7 +290,7 @@ public interface DataSource {
                                                       Group group,
                                                       HashMap<String, String> idMap,
                                                       AIOptionsStyle aiOptionsStyle,
-                                                      AdditionParameter additionParameter);
+                                                      @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns the auxiliary option view for the message composer.
@@ -278,7 +301,7 @@ public interface DataSource {
      * @param id      The ID of the auxiliary option.
      * @return The auxiliary option view.
      */
-    View getAuxiliaryOption(Context context, User user, Group group, HashMap<String, String> id, AdditionParameter additionParameter);
+    View getAuxiliaryOption(Context context, User user, Group group, HashMap<String, String> id, @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of common options for the message.
@@ -289,23 +312,26 @@ public interface DataSource {
      * @return A list of CometChatMessageOption objects representing the common
      * options for the message.
      */
-    List<CometChatMessageOption> getCommonOptions(Context context, BaseMessage baseMessage, Group group);
+    List<CometChatMessageOption> getCommonOptions(Context context,
+                                                  BaseMessage baseMessage,
+                                                  Group group,
+                                                  @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of default message types.
      *
      * @return A list of default message types.
      */
-    List<String> getDefaultMessageTypes();
+    List<String> getDefaultMessageTypes(@NonNull AdditionParameter additionParameter);
 
     /**
      * Returns a list of default message categories.
      *
      * @return A list of default message categories.
      */
-    List<String> getDefaultMessageCategories();
+    List<String> getDefaultMessageCategories(@NonNull AdditionParameter additionParameter);
 
-    SpannableString getLastConversationMessage(Context context, Conversation conversation, AdditionParameter additionParameter);
+    SpannableString getLastConversationMessage(Context context, Conversation conversation, @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns the auxiliary header menu view for the user or group.
@@ -315,9 +341,9 @@ public interface DataSource {
      * @param group   The group object associated with the header menu.
      * @return The auxiliary header menu view.
      */
-    View getAuxiliaryHeaderMenu(Context context, User user, Group group, AdditionParameter additionParameter);
+    View getAuxiliaryHeaderMenu(Context context, User user, Group group, @NonNull AdditionParameter additionParameter);
 
-    List<CometChatTextFormatter> getTextFormatters(Context context);
+    List<CometChatTextFormatter> getTextFormatters(Context context, @NonNull AdditionParameter additionParameter);
 
     /**
      * Returns the ID of the data source.

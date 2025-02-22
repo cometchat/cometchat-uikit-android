@@ -5,8 +5,6 @@
         <attr name="cometchatStatusIndicatorStrokeWidth" format="dimension" />
         <attr name="cometchatStatusIndicatorStrokeColor" format="color" />
         <attr name="cometchatStatusIndicatorCornerRadius" format="dimension" />
-        <attr name="cometchatStatusIndicatorBackgroundColor" format="color" />
-        <attr name="cometchatStatusIndicatorBackgroundImage" format="reference" />
         <attr name="cometchatStatusIndicatorOnlineIcon" format="reference" />
         <attr name="cometchatStatusIndicatorPrivateGroupIcon" format="reference" />
         <attr name="cometchatStatusIndicatorProtectedGroupIcon" format="reference" />

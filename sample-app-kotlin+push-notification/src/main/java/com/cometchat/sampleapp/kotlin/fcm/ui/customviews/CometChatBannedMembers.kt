@@ -469,7 +469,7 @@ class CometChatBannedMembers @JvmOverloads constructor(
      * When an exception is observed, the onError callback is triggered.
      */
     var exceptionObserver: Observer<CometChatException> = Observer { exception: CometChatException? ->
-        if (onError != null) onError!!.onError(getContext(), exception)
+        if (onError != null) onError!!.onError(exception)
     }
     /**
      * Constructor for creating a CometChatGroupMembers instance.

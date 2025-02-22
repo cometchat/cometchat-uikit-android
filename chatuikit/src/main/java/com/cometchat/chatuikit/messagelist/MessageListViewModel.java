@@ -49,6 +49,8 @@ import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MessageListViewModel extends ViewModel {
     private static final String TAG = MessageListViewModel.class.getSimpleName();
@@ -69,6 +71,11 @@ public class MessageListViewModel extends ViewModel {
     private final MutableLiveData<Boolean> mutableIsInProgress;
     private final MutableLiveData<Void> notifyUpdate;
     private final Void unused = null;
+    private final MutableLiveData<List<String>> mutableSmartReplies;
+    private final MutableLiveData<List<String>> mutableConversationStarterReplies;
+    private final MutableLiveData<Boolean> removeConversationStarter;
+    private final MutableLiveData<UIKitConstants.States> smartReplayUIState;
+    private final MutableLiveData<UIKitConstants.States> conversationStarterUIState;
     public boolean firstFetch = true;
     public Void aVoid;
     public HashMap<String, String> idMap;
@@ -83,6 +90,7 @@ public class MessageListViewModel extends ViewModel {
     public MutableLiveData<BaseMessage> processMessageData;
     public Handler handler = new Handler(Looper.getMainLooper());
     public HashMap<String, CometChatMessageTemplate> messageTemplateHashMap;
+    private int smartRepliesDelayDuration;
     private MessagesRequest.MessagesRequestBuilder messagesRequestBuilder = null;
     private MessagesRequest messagesRequest;
     private boolean hasMore = true;
@@ -97,6 +105,10 @@ public class MessageListViewModel extends ViewModel {
     private int parentMessageId = -1;
     private String conversationId;
     private boolean disableReactions;
+    private List<String> smartRepliesKeywords;
+    private Timer smartReplyDelayTimer;
+    private boolean enableConversationStarter = false;
+    private boolean enableSmartReplies = false;
 
     public MessageListViewModel() {
         mutableMessageList = new MutableLiveData<>();
@@ -121,10 +133,18 @@ public class MessageListViewModel extends ViewModel {
         showTopPanel = new MutableLiveData<>();
         showBottomPanel = new MutableLiveData<>();
         idMap = new HashMap<>();
+        smartReplyDelayTimer = new Timer();
         actionMessageTypes = new ArrayList<>();
         messageTemplateHashMap = new HashMap<>();
         actionMessageTypes.add(CometChatConstants.CATEGORY_MESSAGE);
         actionCategories = new ArrayList<>();
+        smartRepliesKeywords = new ArrayList<>();
+        mutableSmartReplies = new MutableLiveData<>();
+        mutableConversationStarterReplies = new MutableLiveData<>();
+        removeConversationStarter = new MutableLiveData<>();
+        smartRepliesDelayDuration = 10000;
+        smartReplayUIState = new MutableLiveData<>();
+        conversationStarterUIState = new MutableLiveData<>();
         actionCategories.add(CometChatConstants.CATEGORY_ACTION);
         LISTENERS_TAG = System.currentTimeMillis() + "";
     }
@@ -133,8 +153,28 @@ public class MessageListViewModel extends ViewModel {
         return processMessageData;
     }
 
+    public MutableLiveData<Boolean> getRemoveConversationStarter() {
+        return removeConversationStarter;
+    }
+
+    public MutableLiveData<UIKitConstants.States> getSmartRepliesUIState() {
+        return smartReplayUIState;
+    }
+
+    public MutableLiveData<UIKitConstants.States> getConversationStarterUIState() {
+        return conversationStarterUIState;
+    }
+
     public MutableLiveData<List<BaseMessage>> getMutableMessageList() {
         return mutableMessageList;
+    }
+
+    public MutableLiveData<List<String>> getMutableSmartReplies() {
+        return mutableSmartReplies;
+    }
+
+    public MutableLiveData<List<String>> getMutableConversationStarterReplies() {
+        return mutableConversationStarterReplies;
     }
 
     public MutableLiveData<Integer> messagesRangeChanged() {
@@ -219,8 +259,7 @@ public class MessageListViewModel extends ViewModel {
     }
 
     public void setIdMap() {
-        if (parentMessageId > 0)
-            idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
+        if (parentMessageId > 0) idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
         if (user != null) {
             idMap.put(UIKitConstants.MapId.RECEIVER_ID, user.getUid());
             idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.USER);
@@ -266,6 +305,44 @@ public class MessageListViewModel extends ViewModel {
             if (parentMessageId > -1) messagesRequestBuilder.setParentMessageId(parentMessageId);
         }
         messagesRequest = messagesRequestBuilder.setUID(id).build();
+    }
+
+    private void fetchConversationStarter() {
+        if (enableConversationStarter && parentMessageId == -1)
+            conversationStarterUIState.postValue(UIKitConstants.States.LOADING);
+        CometChat.getConversationStarter(
+            user != null ? user.getUid() : group != null ? group.getGuid() : "",
+            user != null ? UIKitConstants.ReceiverType.USER : group != null ? UIKitConstants.ReceiverType.GROUP : "",
+            null,
+            new CometChat.CallbackListener<List<String>>() {
+                @Override
+                public void onSuccess(List<String> list) {
+                    mutableConversationStarterReplies.setValue(list);
+                }
+
+                @Override
+                public void onError(CometChatException e) {
+                    CometChatLogger.e(TAG, e.toString());
+                    conversationStarterUIState.setValue(UIKitConstants.States.ERROR);
+                    cometchatException.setValue(e);
+                }
+            });
+    }
+
+    public void setSmartReplyKeywords(List<String> keywords) {
+        if (keywords != null) this.smartRepliesKeywords = keywords;
+    }
+
+    public void setSmartRepliesDelay(int delay) {
+        this.smartRepliesDelayDuration = delay;
+    }
+
+    public void setEnableConversationStarter(boolean enable) {
+        this.enableConversationStarter = enable;
+    }
+
+    public void setEnableSmartReplies(boolean enable) {
+        this.enableSmartReplies = enable;
     }
 
     public void setMessagesTypesAndCategories(List<String> messagesTypes, List<String> messagesCategories) {
@@ -329,8 +406,7 @@ public class MessageListViewModel extends ViewModel {
             public void ccMessageSent(BaseMessage message, int status) {
                 if (status == MessageStatus.IN_PROGRESS) {
                     if (isThreadedMessageForTheCurrentChat(message)) addMessage(message);
-                } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR)
-                    updateOptimisticMessage(message);
+                } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR) updateOptimisticMessage(message);
             }
 
             @Override
@@ -347,6 +423,7 @@ public class MessageListViewModel extends ViewModel {
             @Override
             public void onTextMessageReceived(TextMessage message) {
                 onMessageReceived(message);
+                fetchSmartRepliesWithDelay(message);
             }
 
             @Override
@@ -466,18 +543,14 @@ public class MessageListViewModel extends ViewModel {
         CometChatUIEvents.addListener(LISTENERS_TAG, new CometChatUIEvents() {
             @Override
             public void showPanel(HashMap<String, String> id, UIKitConstants.CustomUIPosition alignment, Function1<Context, View> view) {
-                if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM.equals(alignment) && idMap.equals(id))
-                    showBottomPanel.setValue(view);
-                else if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_TOP.equals(alignment) && idMap.equals(id))
-                    showTopPanel.setValue(view);
+                if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM.equals(alignment) && idMap.equals(id)) showBottomPanel.setValue(view);
+                else if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_TOP.equals(alignment) && idMap.equals(id)) showTopPanel.setValue(view);
             }
 
             @Override
             public void hidePanel(HashMap<String, String> id, UIKitConstants.CustomUIPosition alignment) {
-                if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM.equals(alignment) && idMap.equals(id))
-                    closeBottomPanel.setValue(aVoid);
-                else if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_TOP.equals(alignment) && idMap.equals(id))
-                    closeTopPanel.setValue(aVoid);
+                if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_BOTTOM.equals(alignment) && idMap.equals(id)) closeBottomPanel.setValue(aVoid);
+                else if (UIKitConstants.CustomUIPosition.MESSAGE_LIST_TOP.equals(alignment) && idMap.equals(id)) closeTopPanel.setValue(aVoid);
             }
         });
         if (isCallingAdded()) {
@@ -506,8 +579,7 @@ public class MessageListViewModel extends ViewModel {
                 public void ccMessageSent(BaseMessage message, int status) {
                     if (status == MessageStatus.IN_PROGRESS) {
                         if (isThreadedMessageForTheCurrentChat(message)) addMessage(message);
-                    } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR)
-                        updateOptimisticMessage(message);
+                    } else if (status == MessageStatus.SUCCESS || status == MessageStatus.ERROR) updateOptimisticMessage(message);
                 }
             });
 
@@ -623,10 +695,8 @@ public class MessageListViewModel extends ViewModel {
                 .setMessageId(messageArrayList.get(messageArrayList.size() - 1).getId())
                 .setTypes(actionMessageTypes)
                 .setCategories(actionCategories);
-            if (user != null)
-                actionMessagesRequest = actionRequestBuilder.setUID(user.getUid()).build();
-            else if (group != null)
-                actionMessagesRequest = actionRequestBuilder.setGUID(group.getGuid()).build();
+            if (user != null) actionMessagesRequest = actionRequestBuilder.setUID(user.getUid()).build();
+            else if (group != null) actionMessagesRequest = actionRequestBuilder.setGUID(group.getGuid()).build();
             if (actionMessagesRequest != null) {
                 actionMessagesRequest.fetchNext(new CometChat.CallbackListener<List<BaseMessage>>() {
                     @Override
@@ -676,6 +746,7 @@ public class MessageListViewModel extends ViewModel {
     }
 
     public void setMessage(BaseMessage message) {
+        removeConversationStarter.setValue(Boolean.TRUE);
         if (isThreadedMessageForTheCurrentChat(message)) addMessage(message);
         else updateReplyCount(message.getParentMessageId());
     }
@@ -707,8 +778,7 @@ public class MessageListViewModel extends ViewModel {
 
     public HashMap<String, String> getIdMap() {
         HashMap<String, String> idMap = new HashMap<>();
-        if (parentMessageId > 0)
-            idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
+        if (parentMessageId > 0) idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(parentMessageId));
         if (user != null) {
             idMap.put(UIKitConstants.MapId.RECEIVER_ID, user.getUid());
             idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, UIKitConstants.ReceiverType.USER);
@@ -746,18 +816,14 @@ public class MessageListViewModel extends ViewModel {
         if (messageReceipt.getReceivertype().equals(CometChatConstants.RECEIVER_TYPE_USER)) {
             if (messageReceipt.getReceivertype().equals(CometChatConstants.RECEIVER_TYPE_USER)) {
                 if (messageReceipt.getSender().getUid().equals(id)) {
-                    if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_DELIVERED))
-                        setDeliveryReceipts(messageReceipt);
-                    else if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_READ))
-                        setReadReceipts(messageReceipt);
+                    if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_DELIVERED)) setDeliveryReceipts(messageReceipt);
+                    else if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_READ)) setReadReceipts(messageReceipt);
                 }
             }
         } else if (messageReceipt.getReceivertype().equals(CometChatConstants.RECEIVER_TYPE_GROUP)) {
             if (messageReceipt.getReceiverId().equals(id)) {
-                if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL))
-                    setDeliveryReceipts(messageReceipt);
-                else if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_READ_BY_ALL))
-                    setReadReceipts(messageReceipt);
+                if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL)) setDeliveryReceipts(messageReceipt);
+                else if (messageReceipt.getReceiptType().equals(MessageReceipt.RECEIPT_TYPE_READ_BY_ALL)) setReadReceipts(messageReceipt);
             }
         }
     }
@@ -863,6 +929,13 @@ public class MessageListViewModel extends ViewModel {
                                                                              unreadCount);
                                     addConnectionListener();
                                     firstFetch = false;
+                                    if (messageList.isEmpty()) {
+                                        fetchConversationStarter();
+                                    } else {
+                                        if (messageList.get(messageList.size() - 1) instanceof TextMessage)
+                                            fetchSmartRepliesWithDelay((TextMessage) messageList.get(messageList.size() - 1));
+                                    }
+
                                 }
                                 mutableHasMore.setValue(hasMore);
                                 mutableIsInProgress.setValue(false);
@@ -882,6 +955,78 @@ public class MessageListViewModel extends ViewModel {
                 });
             }
         }
+    }
+
+    public void fetchSmartRepliesWithDelay(TextMessage textMessage) {
+        if (isMessageForCurrentChat(textMessage) && !textMessage
+            .getSender()
+            .getUid()
+            .equals(CometChatUIKit.getLoggedInUser().getUid()) && parentMessageId == -1) {
+            if (enableSmartReplies) {
+                smartReplyDelayTimer.cancel();
+                smartReplyDelayTimer = new Timer();
+                smartReplyDelayTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        fetchSmartRepliesWithKeywordsCheck(textMessage);
+                    }
+                }, smartRepliesDelayDuration);
+            }
+        }
+    }
+
+    private boolean isMessageForCurrentChat(BaseMessage baseMessage) {
+        return ((id != null && !id.isEmpty()) && ((baseMessage
+            .getReceiverType()
+            .equals(CometChatConstants.RECEIVER_TYPE_USER) && (id.equalsIgnoreCase(
+            baseMessage.getSender().getUid()) || id.equalsIgnoreCase(baseMessage.getReceiverUid()) && baseMessage
+            .getSender()
+            .getUid()
+            .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()))) || (baseMessage
+            .getReceiverType()
+            .equals(CometChatConstants.RECEIVER_TYPE_GROUP) && (id.equalsIgnoreCase(baseMessage.getReceiverUid())))));
+    }
+
+    public void fetchSmartRepliesWithKeywordsCheck(TextMessage textMessage) {
+        if (textMessage != null) {
+            if (!smartRepliesKeywords.isEmpty()) {
+                boolean isKeyPresent = false;
+                String text = textMessage.getText();
+                if (text != null && !text.isEmpty()) {
+                    for (String keyword : smartRepliesKeywords) {
+                        if (text.toLowerCase().contains(keyword.toLowerCase())) {
+                            isKeyPresent = true;
+                            break;
+                        }
+                    }
+                    if (!isKeyPresent) {
+                        return;
+                    }
+                }
+            }
+            fetchSmartReplies();
+        }
+    }
+
+    public void fetchSmartReplies() {
+        smartReplayUIState.postValue(UIKitConstants.States.LOADING);
+        CometChat.getSmartReplies(
+            user != null ? user.getUid() : group != null ? group.getGuid() : "",
+            user != null ? UIKitConstants.ReceiverType.USER : group != null ? UIKitConstants.ReceiverType.GROUP : "",
+            null,
+            new CometChat.CallbackListener<HashMap<String, String>>() {
+                @Override
+                public void onSuccess(HashMap<String, String> list) {
+                    mutableSmartReplies.setValue(new ArrayList<>(list.values()));
+                }
+
+                @Override
+                public void onError(CometChatException e) {
+                    CometChatLogger.e(TAG, e.getMessage());
+                    smartReplayUIState.setValue(UIKitConstants.States.ERROR);
+                    cometchatException.setValue(e);
+                }
+            });
     }
 
     public void processMessageList(List<BaseMessage> messageList) {
@@ -906,14 +1051,11 @@ public class MessageListViewModel extends ViewModel {
     public void markLastMessageAsRead(BaseMessage lastMessage) {
         boolean markAsRead = false;
         if (lastMessage != null) {
-            if (lastMessage.getReadAt() == 0 && lastMessage.getParentMessageId() == 0)
-                markAsRead = true;
-            else if (parentMessageId > -1 && parentMessageId == lastMessage.getParentMessageId() && lastMessage.getReadAt() == 0)
-                markAsRead = true;
+            if (lastMessage.getReadAt() == 0 && lastMessage.getParentMessageId() == 0) markAsRead = true;
+            else if (parentMessageId > -1 && parentMessageId == lastMessage.getParentMessageId() && lastMessage.getReadAt() == 0) markAsRead = true;
 
             if (markAsRead && !disableReceipt) {
-                if (lastMessage.getSender().getUid().equals(CometChatUIKit.getLoggedInUser().getUid()))
-                    return;
+                if (lastMessage.getSender().getUid().equals(CometChatUIKit.getLoggedInUser().getUid())) return;
                 markMessageAsRead(lastMessage);
             }
         }
@@ -954,8 +1096,7 @@ public class MessageListViewModel extends ViewModel {
         if (message != null && message.getSender() != null && CometChatUIKit.getLoggedInUser() != null && !message
             .getSender()
             .getUid()
-            .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) && !disableReceipt)
-            CometChat.markAsDelivered(message);
+            .equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) && !disableReceipt) CometChat.markAsDelivered(message);
     }
 
     public void removeMessage(@Nullable BaseMessage message) {
@@ -969,6 +1110,7 @@ public class MessageListViewModel extends ViewModel {
 
     public void addMessage(BaseMessage message) {
         if (message != null) {
+            removeConversationStarter.setValue(Boolean.TRUE);
             if (messageArrayList.isEmpty()) addList(messageArrayList);
             messageArrayList.add(message);
             addMessage.setValue(message);

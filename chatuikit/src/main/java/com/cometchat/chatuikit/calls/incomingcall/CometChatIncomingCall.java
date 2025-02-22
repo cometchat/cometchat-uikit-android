@@ -1,5 +1,7 @@
 package com.cometchat.chatuikit.calls.incomingcall;
 
+import static androidx.core.content.ContextCompat.getString;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -7,10 +9,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
+import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +26,8 @@ import com.cometchat.chat.core.Call;
 import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.databinding.CometchatIncomingCallLayoutBinding;
-import com.cometchat.chatuikit.shared.constants.UIKitConstants;
+import com.cometchat.chatuikit.calls.CometChatOngoingCallActivity;
+import com.cometchat.chatuikit.databinding.CometchatIncomingCallComponentBinding;
 import com.cometchat.chatuikit.shared.interfaces.OnClick;
 import com.cometchat.chatuikit.shared.interfaces.OnError;
 import com.cometchat.chatuikit.shared.resources.soundmanager.CometChatSoundManager;
@@ -31,36 +35,21 @@ import com.cometchat.chatuikit.shared.resources.soundmanager.Sound;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.google.android.material.card.MaterialCardView;
 
-/**
- * CometChatIncomingCall is a custom view that represents the UI for an incoming
- * call.
- *
- * <p>
- * It extends the MaterialCardView class and provides methods for setting
- * call-related properties and styles.
- */
+import java.util.Locale;
+
 public class CometChatIncomingCall extends MaterialCardView {
-    private static final String TAG = CometChatIncomingCall.class.getSimpleName();
-
-    // Binding and ViewModel references
-    private CometchatIncomingCallLayoutBinding binding;
-    private IncomingCallViewModel viewModel;
     private Call call;
-    private User user;
-
-    // Callbacks
-    private OnError onError;
-    private OnClick onDeclineCallClick, onAcceptCallClick;
-
-    // Sound configuration
-    private CometChatSoundManager soundManager;
-    private @RawRes int customSoundForCalls;
-    private boolean disableSoundForCall;
-
-    // Call settings builder
     private CometChatCalls.CallSettingsBuilder callSettingsBuilder;
+    private CometChatSoundManager soundManager;
+    private IncomingCallViewModel viewModel;
+    private OnError onError;
+    private @StyleRes int style;
+    private OnClick onAcceptClick, onRejectClick;
+    private boolean disableSoundForCalls;
+    private @RawRes int customSoundForCalls;
+    private View itemView, leadingView, titleView, subtitleView, trailingView;
+    private CometchatIncomingCallComponentBinding binding;
 
-    // UI Appearance Properties
     private @ColorInt int titleTextColor;
     private @ColorInt int subtitleTextColor;
     private @StyleRes int titleTextAppearance;
@@ -69,104 +58,55 @@ public class CometChatIncomingCall extends MaterialCardView {
     private Drawable voiceCallIcon;
     private Drawable videoCallIcon;
     private @StyleRes int avatarStyle;
-
-    // Reject Call Button Properties
-    private Drawable rejectCallIcon;
-    private @ColorInt int rejectCallIconTint;
     private @ColorInt int rejectCallButtonBackgroundColor;
-
-    // Accept Call Button Properties
-    private Drawable acceptCallIcon;
-    private @ColorInt int acceptCallIconTint;
     private @ColorInt int acceptCallButtonBackgroundColor;
-
-    // Background and Style Properties
     private @ColorInt int backgroundColor;
     private @Dimension int cornerRadius;
     private @Dimension int strokeWidth;
     private @ColorInt int strokeColor;
-    private @StyleRes int style;
+    private @ColorInt int acceptButtonTextColor;
+    private @ColorInt int rejectButtonTextColor;
+    private @StyleRes int acceptButtonTextAppearance;
+    private @StyleRes int rejectButtonTextAppearance;
 
-    /**
-     * Constructs a new CometChatIncomingCall with the given context.
-     *
-     * @param context The context in which the view is created.
-     */
     public CometChatIncomingCall(Context context) {
         this(context, null);
     }
 
-    /**
-     * Constructs a new CometChatIncomingCall with the given context and attribute
-     * set.
-     *
-     * @param context The context in which the view is created.
-     * @param attrs   The attribute set for the view.
-     */
     public CometChatIncomingCall(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.cometchatIncomingCallStyle);
     }
 
-    /**
-     * Constructs a new CometChatIncomingCall with the given context, attribute set,
-     * and default style.
-     *
-     * @param context      The context in which the view is created.
-     * @param attrs        The attribute set for the view.
-     * @param defStyleAttr The default style resource.
-     */
     public CometChatIncomingCall(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        inflateAndInitializeView(context, attrs, defStyleAttr);
+        init(attrs, defStyleAttr);
     }
 
-    /**
-     * Initializes the incoming call layout and binds view elements. Sets up
-     * ViewModel observers for call accept and reject actions, and error handling.
-     *
-     * @param context      the Context in which the view is running
-     * @param attrs        the attribute set containing custom attributes
-     * @param defStyleAttr the default style to apply to this view
-     */
-    private void inflateAndInitializeView(Context context, AttributeSet attrs, int defStyleAttr) {
-        // Keep screen on during the call
-        ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    private void init(AttributeSet attrs, int defStyleAttr) {
+        binding = CometchatIncomingCallComponentBinding.inflate(LayoutInflater.from(getContext()), this, true);
+        ((Activity) getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Utils.initMaterialCard(this);
-
-        // Inflate binding for layout
-        binding = CometchatIncomingCallLayoutBinding.inflate(LayoutInflater.from(getContext()), this, true);
-
-        // Sound manager setup
-        soundManager = new CometChatSoundManager(context);
-
+        soundManager = new CometChatSoundManager(getContext());
         // Initialize ViewModel and observe call state
         viewModel = new ViewModelProvider.NewInstanceFactory().create(IncomingCallViewModel.class);
-        viewModel.getAcceptedCall().observe((AppCompatActivity) context, this::acceptedCall);
-        viewModel.getRejectCall().observe((AppCompatActivity) context, this::rejectedCall);
-        viewModel.getException().observe((AppCompatActivity) context, this::showError);
+        viewModel.getAcceptedCall().observe((AppCompatActivity) getContext(), this::acceptedCall);
+        viewModel.getRejectCall().observe((AppCompatActivity) getContext(), this::rejectedCall);
+        viewModel.getException().observe((AppCompatActivity) getContext(), this::throwError);
 
-        // End call button setup
-        binding.endCall.getButton().setOnClickListener(view -> {
-            binding.endCall.getButton().setEnabled(false);
-            if (onDeclineCallClick == null) {
-                viewModel.rejectCall(call);
-            } else {
-                onDeclineCallClick.onClick();
-            }
+        binding.acceptButton.setOnClickListener(v -> {
+            if (onAcceptClick != null) {
+                onAcceptClick.onClick();
+            } else viewModel.acceptCall(call);
         });
 
-        // Accept call button setup
-        binding.acceptCall.getButton().setOnClickListener(view -> {
-            binding.acceptCall.getButton().setEnabled(false);
-            if (onAcceptCallClick == null) {
-                viewModel.acceptCall(call.getSessionId());
-            } else {
-                onAcceptCallClick.onClick();
-            }
+        binding.declineButton.setOnClickListener(v -> {
+            if (onRejectClick != null) {
+                onRejectClick.onClick();
+            } else viewModel.rejectCall(call);
         });
-
         // Apply style attributes to customize the view
         applyStyleAttributes(attrs, defStyleAttr);
+
     }
 
     /**
@@ -174,30 +114,22 @@ public class CometChatIncomingCall extends MaterialCardView {
      *
      * @param call the call object representing the accepted call.
      */
-    public void acceptedCall(Call call) {
-        launchOnGoingScreen(call);
+    private void acceptedCall(Call call) {
+        CometChatOngoingCallActivity.launchOngoingCallActivity(getContext(), call.getSessionId(), call.getType(), callSettingsBuilder);
     }
 
     /**
-     * Ends the current call and finishes the activity.
+     * Handles rejection of the call.
      *
-     * @param call the call object representing the rejected call.
+     * @param call
      */
-    public void rejectedCall(Call call) {
-        ((Activity) getContext()).finish();
+    private void rejectedCall(Call call) {
+        pauseSound();
     }
 
-    /**
-     * Displays an error message when an exception occurs. If {@code onError} is not
-     * set, it will close the activity.
-     *
-     * @param e the exception to be displayed or handled.
-     */
-    private void showError(CometChatException e) {
-        if (onError == null) {
-            ((Activity) getContext()).finish();
-        } else {
-            onError.onError(getContext(), e);
+    private void throwError(CometChatException e) {
+        if (onError != null) {
+            onError.onError(e);
         }
     }
 
@@ -214,16 +146,10 @@ public class CometChatIncomingCall extends MaterialCardView {
         extractAttributesAndApplyDefaults(typedArray);
     }
 
-    public void launchOnGoingScreen(Call call) {
-        binding.incomingCallLayout.setVisibility(GONE);
-        binding.ongoingCall.setCallWorkFlow(call
-                                                .getReceiverType()
-                                                .equalsIgnoreCase(UIKitConstants.ReceiverType.GROUP) ? UIKitConstants.CallWorkFlow.MEETING : UIKitConstants.CallWorkFlow.DEFAULT);
-        binding.ongoingCall.setSessionId(call.getSessionId());
-        binding.ongoingCall.setCallType(call.getType());
-        binding.ongoingCall.setCallSettingsBuilder(callSettingsBuilder);
-        binding.ongoingCall.startCall();
-        binding.ongoingCall.setVisibility(VISIBLE);
+    /**
+     * Pauses the call sound.
+     */
+    public void pauseSound() {
         soundManager.pauseSilently();
     }
 
@@ -242,22 +168,22 @@ public class CometChatIncomingCall extends MaterialCardView {
             setIconTint(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallIconTint, 0));
             setVoiceCallIcon(typedArray.getDrawable(R.styleable.CometChatIncomingCall_cometchatIncomingCallVoiceCallIcon));
             setVideoCallIcon(typedArray.getDrawable(R.styleable.CometChatIncomingCall_cometchatIncomingCallVideoCallIcon));
-            setAcceptCallIcon(typedArray.getDrawable(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptCallIcon));
-            setAcceptCallIconTint(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptCallIconTint, 0));
-            setAcceptCallButtonBackgroundColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptCallButtonBackgroundColor,
-                                                                   0
-            ));
-
-            setRejectCallIcon(typedArray.getDrawable(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectCallIcon));
-            setRejectCallIconTint(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectCallIconTint, 0));
-            setRejectCallButtonBackgroundColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectCallButtonBackgroundColor,
-                                                                   0
-            ));
+            setAcceptCallButtonBackgroundColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptButtonBackgroundColor,
+                                                                   0));
+            setRejectCallButtonBackgroundColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectButtonBackgroundColor,
+                                                                   0));
             setBackgroundColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallBackgroundColor, 0));
             setCornerRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatIncomingCall_cometchatIncomingCallCornerRadius, 0));
             setStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatIncomingCall_cometchatIncomingCallStrokeWidth, 0));
             setStrokeColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallStrokeColor, 0));
             setAvatarStyle(typedArray.getResourceId(R.styleable.CometChatIncomingCall_cometchatIncomingCallAvatarStyle, 0));
+            setAcceptButtonTextColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptButtonTextColor, 0));
+            setRejectButtonTextColor(typedArray.getColor(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectButtonTextColor, 0));
+            setAcceptButtonTextAppearance(typedArray.getResourceId(R.styleable.CometChatIncomingCall_cometchatIncomingCallAcceptButtonTextAppearance,
+                                                                   0));
+            setRejectButtonTextAppearance(typedArray.getResourceId(R.styleable.CometChatIncomingCall_cometchatIncomingCallRejectButtonTextAppearance,
+                                                                   0));
+
         } finally {
             typedArray.recycle();
         }
@@ -271,7 +197,7 @@ public class CometChatIncomingCall extends MaterialCardView {
     @Override
     public void setStrokeColor(@ColorInt int strokeColor) {
         this.strokeColor = strokeColor;
-        super.setStrokeColor(strokeColor);
+        binding.incomingCallComponent.setStrokeColor(strokeColor);
     }
 
     /**
@@ -285,58 +211,83 @@ public class CometChatIncomingCall extends MaterialCardView {
     }
 
     /**
-     * Sets the call associated with the incoming call view.
+     * disable sound for incoming calls
      *
-     * @param call The Call object representing the incoming call.
+     * @param disableSoundForCalls
      */
-    public void setCall(Call call) {
-        if (call != null) {
-            this.call = call;
-            setUser(call.getSender());
-            binding.callTypeIcon.setImageDrawable(call.getType().equals(CometChatConstants.CALL_TYPE_AUDIO) ? voiceCallIcon : videoCallIcon);
-            binding.subtitleText.setText(getResources().getString(R.string.cometchat_incoming) + " " + call.getType() + " " + getResources().getString(
-                R.string.cometchat_call));
-        }
+    public void disableSoundForCalls(boolean disableSoundForCalls) {
+        this.disableSoundForCalls = disableSoundForCalls;
+    }
+
+    public int getAcceptButtonTextColor() {
+        return acceptButtonTextColor;
     }
 
     /**
-     * Sets the user associated with the incoming call.
+     * Retrieves the text color for the accept call button.
      *
-     * @param user The User object representing the user making the incoming call.
+     * @return the color of the accept call button text.
      */
-    public void setUser(User user) {
-        if (user != null) {
-            this.user = user;
-            binding.titleText.setText(user.getName());
-            binding.avatar.setAvatar(user.getName(), user.getAvatar());
-        }
+    public void setAcceptButtonTextColor(@ColorInt int acceptButtonTextColor) {
+        this.acceptButtonTextColor = acceptButtonTextColor;
+        binding.acceptButton.setTextColor(acceptButtonTextColor);
     }
 
     /**
-     * Enables or disables sound for incoming calls.
+     * Retrieves the text color for the reject call button.
      *
-     * @param disableSoundForCall {@code true} to disable sound, {@code false} otherwise.
+     * @return the color of the reject call button text.
      */
-    public void disableSoundForCall(boolean disableSoundForCall) {
-        this.disableSoundForCall = disableSoundForCall;
+    public int getRejectButtonTextColor() {
+        return rejectButtonTextColor;
     }
 
     /**
-     * Removes listeners and pauses the call sound when the view is detached from
-     * the window.
+     * Retrieves the text color for the reject call button.
+     *
+     * @return the color of the reject call button text.
      */
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        viewModel.removeListeners();
-        pauseSound();
+    public void setRejectButtonTextColor(@ColorInt int rejectButtonTextColor) {
+        this.rejectButtonTextColor = rejectButtonTextColor;
+        binding.declineButton.setTextColor(rejectButtonTextColor);
     }
 
     /**
-     * Pauses the call sound.
+     * Retrieves the text appearance style resource for the accept call button.
+     *
+     * @return the resource ID of the accept call button text appearance.
      */
-    public void pauseSound() {
-        soundManager.pauseSilently();
+    public int getAcceptButtonTextAppearance() {
+        return acceptButtonTextAppearance;
+    }
+
+    /**
+     * Sets the text appearance style for the accept call button text view.
+     *
+     * @param acceptButtonTextAppearance the resource ID of the text appearance style.
+     */
+    public void setAcceptButtonTextAppearance(@StyleRes int acceptButtonTextAppearance) {
+        this.acceptButtonTextAppearance = acceptButtonTextAppearance;
+        binding.acceptButton.setTextAppearance(acceptButtonTextAppearance);
+    }
+
+    /**
+     * Retrieves the text appearance style resource for the reject call button.
+     *
+     * @return the resource ID of the reject call button text appearance.
+     */
+    public int getRejectButtonTextAppearance() {
+        return rejectButtonTextAppearance;
+    }
+
+    /**
+     * Sets the text appearance style for the reject call button text view.
+     *
+     * @param rejectButtonTextAppearance the resource ID of the text appearance style.
+     */
+    public void setRejectButtonTextAppearance(@StyleRes int rejectButtonTextAppearance) {
+        this.rejectButtonTextAppearance = rejectButtonTextAppearance;
+        binding.declineButton.setTextAppearance(rejectButtonTextAppearance);
     }
 
     /**
@@ -358,118 +309,51 @@ public class CometChatIncomingCall extends MaterialCardView {
     }
 
     /**
-     * Sets a custom error handling callback.
+     * Sets the {@code OnError} callback for handling errors.
      *
-     * @param onError the {@code OnError} callback to execute when an error occurs.
+     * @param onError the {@code OnError} instance to set.
      */
     public void setOnError(OnError onError) {
-        if (onError != null) this.onError = onError;
+        this.onError = onError;
+    }
+
+    public Call getCall() {
+        return call;
     }
 
     /**
-     * Retrieves the {@code OnClick} callback for the decline call button action.
+     * Sets the call object for this component.
      *
-     * @return the {@code OnClick} instance for decline call.
+     * @param call the call object to set.
      */
-    public OnClick getOnDeclineCallClick() {
-        return onDeclineCallClick;
+    public void setCall(@NonNull Call call) {
+        this.call = call;
+        setCallerInfo();
+        binding.callTypeIcon.setImageDrawable(call.getType().equals(CometChatConstants.CALL_TYPE_AUDIO) ? voiceCallIcon : videoCallIcon);
+        binding.callType.setText(String.format(Locale.getDefault(), getString(getContext(), R.string.cometchat_incoming_call_type), call.getType()));
     }
 
-    /**
-     * Sets a custom action for when the decline call button is clicked.
-     *
-     * @param click the {@code OnClick} action to execute on decline call button
-     *              click.
-     */
-    public void setOnDeclineCallClick(OnClick click) {
-        if (click != null) this.onDeclineCallClick = click;
+    private void setCallerInfo() {
+        User callUser = (User) call.getCallInitiator();
+        binding.callerName.setText(callUser.getName());
+        binding.callType.setText(String.format(Locale.getDefault(), getContext().getString(R.string.cometchat_incoming_call_type), call.getType()));
+        binding.callerAvatar.setAvatar(callUser.getName(), callUser.getAvatar());
+        binding.callTypeIcon.setImageResource(call
+                                                  .getType()
+                                                  .equals(CometChatConstants.CALL_TYPE_AUDIO) ? com.cometchat.chatuikit.R.drawable.cometchat_ic_call_voice : com.cometchat.chatuikit.R.drawable.cometchat_ic_call_video);
     }
 
-    /**
-     * Retrieves the {@code OnClick} callback for the accept call button action.
-     *
-     * @return the {@code OnClick} instance for accept call.
-     */
-    public OnClick getOnAcceptCallClick() {
-        return onAcceptCallClick;
-    }    /**
-     * Sets the stroke width for this component.
-     *
-     * @param strokeWidth the width in pixels to set for the stroke.
-     */
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
-    }
-
-    /**
-     * Sets a custom action for when the accept call button is clicked.
-     *
-     * @param click the {@code OnClick} action to execute on accept call button click.
-     */
-    public void setOnAcceptCallClick(OnClick click) {
-        if (click != null) this.onAcceptCallClick = click;
-    }
-
-    /**
-     * Retrieves the sound manager for handling call sounds.
-     *
-     * @return the {@code CometChatSoundManager} instance.
-     */
-    public CometChatSoundManager getSoundManager() {
-        return soundManager;
-    }
-
-    /**
-     * Gets the resource ID of the custom sound for calls.
-     *
-     * @return the resource ID of the custom call sound.
-     */
-    public int getCustomSoundForCalls() {
-        return customSoundForCalls;
-    }
-
-    /**
-     * Sets a custom sound resource for incoming calls.
-     *
-     * @param customSoundForCalls the resource ID of the custom sound.
-     */
-    public void setCustomSoundForCalls(@RawRes int customSoundForCalls) {
-        if (customSoundForCalls != 0) this.customSoundForCalls = customSoundForCalls;
-    }
-
-    /**
-     * Indicates whether sound is disabled for incoming calls.
-     *
-     * @return {@code true} if sound is disabled, {@code false} otherwise.
-     */
-    public boolean isDisableSoundForCall() {
-        return disableSoundForCall;
-    }
-
-    /**
-     * Retrieves the call settings builder used for configuring call settings.
-     *
-     * @return the {@code CallSettingsBuilder} instance.
-     */
     public CometChatCalls.CallSettingsBuilder getCallSettingsBuilder() {
         return callSettingsBuilder;
-    }    /**
-     * Plays the incoming call sound if sound is not disabled.
-     */
-    public void playSound() {
-        if (!disableSoundForCall) soundManager.play(Sound.incomingCall, customSoundForCalls);
     }
 
     /**
-     * Sets the call settings builder to configure ongoing call settings.
+     * Sets the call settings builder for this component.
      *
-     * @param callSettingsBuilder the call settings builder for custom call configurations.
+     * @param callSettingsBuilder the call settings builder to set.
      */
     public void setCallSettingsBuilder(CometChatCalls.CallSettingsBuilder callSettingsBuilder) {
-        if (callSettingsBuilder != null) {
-            this.callSettingsBuilder = callSettingsBuilder;
-        }
+        this.callSettingsBuilder = callSettingsBuilder;
     }
 
     /**
@@ -488,7 +372,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setTitleTextColor(@ColorInt int titleTextColor) {
         this.titleTextColor = titleTextColor;
-        binding.titleText.setTextColor(titleTextColor);
+        binding.callerName.setTextColor(titleTextColor);
     }
 
     /**
@@ -507,7 +391,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setSubtitleTextColor(@ColorInt int color) {
         this.subtitleTextColor = color;
-        binding.subtitleText.setTextColor(color);
+        binding.callType.setTextColor(color);
     }
 
     /**
@@ -526,7 +410,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setTitleTextAppearance(@StyleRes int titleTextAppearance) {
         this.titleTextAppearance = titleTextAppearance;
-        binding.titleText.setTextAppearance(titleTextAppearance);
+        binding.callerName.setTextAppearance(titleTextAppearance);
     }
 
     /**
@@ -545,7 +429,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setSubtitleTextAppearance(@StyleRes int appearance) {
         this.subtitleTextAppearance = appearance;
-        binding.subtitleText.setTextAppearance(appearance);
+        binding.callType.setTextAppearance(appearance);
     }
 
     /**
@@ -555,14 +439,6 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public int getIconTint() {
         return iconTint;
-    }    /**
-     * Adds listeners when the view is attached to the window.
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        viewModel.addListeners();
-        if (user != null) playSound();
     }
 
     /**
@@ -609,6 +485,14 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setVideoCallIcon(Drawable videoCallIcon) {
         this.videoCallIcon = videoCallIcon;
+    }    /**
+     * Sets the stroke width for this component.
+     *
+     * @param strokeWidth the width in pixels to set for the stroke.
+     */
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        binding.incomingCallComponent.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -627,45 +511,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setAvatarStyle(@StyleRes int avatarStyle) {
         this.avatarStyle = avatarStyle;
-        binding.avatar.setStyle(avatarStyle);
-    }
-
-    /**
-     * Retrieves the drawable icon for the reject call button.
-     *
-     * @return the {@code Drawable} for the reject call icon.
-     */
-    public Drawable getRejectCallIcon() {
-        return rejectCallIcon;
-    }
-
-    /**
-     * Sets the icon for the reject call button.
-     *
-     * @param rejectCallIcon the drawable to set as the reject call icon.
-     */
-    public void setRejectCallIcon(Drawable rejectCallIcon) {
-        this.rejectCallIcon = rejectCallIcon;
-        binding.endCall.setButtonIcon(rejectCallIcon);
-    }
-
-    /**
-     * Retrieves the tint color for the reject call icon.
-     *
-     * @return the tint color for the reject call icon.
-     */
-    public int getRejectCallIconTint() {
-        return rejectCallIconTint;
-    }
-
-    /**
-     * Sets the tint color for the reject call button icon.
-     *
-     * @param rejectCallIconTint the color to set as the reject call icon tint.
-     */
-    public void setRejectCallIconTint(@ColorInt int rejectCallIconTint) {
-        this.rejectCallIconTint = rejectCallIconTint;
-        binding.endCall.setButtonIconTint(rejectCallIconTint);
+        binding.callerAvatar.setStyle(avatarStyle);
     }
 
     /**
@@ -684,45 +530,14 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setRejectCallButtonBackgroundColor(@ColorInt int rejectCallButtonBackgroundColor) {
         this.rejectCallButtonBackgroundColor = rejectCallButtonBackgroundColor;
-        binding.endCall.setButtonBackgroundColor(rejectCallButtonBackgroundColor);
+        binding.declineButton.setBackgroundColor(rejectCallButtonBackgroundColor);
     }
 
-    /**
-     * Retrieves the drawable icon for the accept call button.
-     *
-     * @return the {@code Drawable} for the accept call icon.
-     */
-    public Drawable getAcceptCallIcon() {
-        return acceptCallIcon;
-    }
-
-    /**
-     * Sets the icon for the accept call button.
-     *
-     * @param acceptCallIcon the drawable to set as the accept call icon.
-     */
-    public void setAcceptCallIcon(Drawable acceptCallIcon) {
-        this.acceptCallIcon = acceptCallIcon;
-        binding.acceptCall.setButtonIcon(acceptCallIcon);
-    }
-
-    /**
-     * Retrieves the tint color for the accept call icon.
-     *
-     * @return the tint color for the accept call icon.
-     */
-    public int getAcceptCallIconTint() {
-        return acceptCallIconTint;
-    }
-
-    /**
-     * Sets the tint color for the accept call button icon.
-     *
-     * @param acceptCallIconTint the color to set as the accept call icon tint.
-     */
-    public void setAcceptCallIconTint(@ColorInt int acceptCallIconTint) {
-        this.acceptCallIconTint = acceptCallIconTint;
-        binding.acceptCall.setButtonIconTint(acceptCallIconTint);
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        viewModel.removeListeners();
+        pauseSound();
     }
 
     /**
@@ -741,7 +556,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setAcceptCallButtonBackgroundColor(@ColorInt int acceptCallButtonBackgroundColor) {
         this.acceptCallButtonBackgroundColor = acceptCallButtonBackgroundColor;
-        binding.acceptCall.setButtonBackgroundColor(acceptCallButtonBackgroundColor);
+        binding.acceptButton.setBackgroundColor(acceptCallButtonBackgroundColor);
     }
 
     /**
@@ -761,7 +576,7 @@ public class CometChatIncomingCall extends MaterialCardView {
     @Override
     public void setBackgroundColor(@ColorInt int backgroundColor) {
         this.backgroundColor = backgroundColor;
-        super.setCardBackgroundColor(backgroundColor);
+        binding.incomingCallComponent.setCardBackgroundColor(backgroundColor);
     }
 
     /**
@@ -780,7 +595,7 @@ public class CometChatIncomingCall extends MaterialCardView {
      */
     public void setCornerRadius(@Dimension int cornerRadius) {
         this.cornerRadius = cornerRadius;
-        super.setRadius(cornerRadius);
+        binding.incomingCallComponent.setRadius(cornerRadius);
     }
 
     /**
@@ -805,8 +620,176 @@ public class CometChatIncomingCall extends MaterialCardView {
         }
     }
 
+    /**
+     * Retrieves the onAcceptClick listener.
+     *
+     * @return the onAcceptClick listener.
+     */
+    public OnClick getOnAcceptClick() {
+        return onAcceptClick;
+    }
 
+    /**
+     * set onAcceptClick listener to override default functionality when accept button is click
+     *
+     * @param onAcceptClick
+     */
+    public void setOnAcceptClick(OnClick onAcceptClick) {
+        this.onAcceptClick = onAcceptClick;
+    }
 
+    /**
+     * Retrieves the onRejectClick listener.
+     *
+     * @return the onRejectClick listener.
+     */
+    public OnClick getOnRejectClick() {
+        return onRejectClick;
+    }
+
+    /**
+     * set onRejectClick listener to override default functionality when reject button is click
+     *
+     * @param onRejectClick
+     */
+    public void setOnRejectClick(OnClick onRejectClick) {
+        this.onRejectClick = onRejectClick;
+    }
+
+    /**
+     * Retrieves the disable sound for incoming calls flag.
+     *
+     * @return boolean value indicating whether sound is disabled for incoming calls.
+     */
+    public boolean isDisableSoundForCalls() {
+        return disableSoundForCalls;
+    }
+
+    /**
+     * Retrieves the stroke width for the call card border.
+     *
+     * @return the width of the stroke in pixels.
+     */
+    public int getCustomSoundForCalls() {
+        return customSoundForCalls;
+    }
+
+    /**
+     * set custom sound for incoming calls
+     *
+     * @param customSoundForCalls
+     */
+    public void setCustomSoundForCalls(@RawRes int customSoundForCalls) {
+        this.customSoundForCalls = customSoundForCalls;
+    }
+
+    /**
+     * Retrieves the stroke color for the call card border.
+     *
+     * @return the color of the stroke.
+     */
+    public View getItemView() {
+        return itemView;
+    }
+
+    /**
+     * Sets the item view for this component.
+     *
+     * @param itemView the view to set as the item view.
+     */
+    public void setItemView(View itemView) {
+        this.itemView = itemView;
+        Utils.handleView(binding.itemView, itemView, true);
+    }
+
+    /**
+     * Retrieves the leading view for this component.
+     *
+     * @return the leading view.
+     */
+    public View getLeadingView() {
+        return leadingView;
+    }
+
+    /**
+     * Sets the leading view for this component.
+     *
+     * @param leadingView the view to set as the leading view.
+     */
+    public void setLeadingView(View leadingView) {
+        this.leadingView = leadingView;
+        Utils.handleView(binding.leadingView, leadingView, true);
+    }
+
+    /**
+     * Retrieves the title view for this component.
+     *
+     * @return the title view.
+     */
+    public View getTitleView() {
+        return titleView;
+    }
+
+    /**
+     * Sets the title view for this component.
+     *
+     * @param titleView the view to set as the title view.
+     */
+    public void setTitleView(View titleView) {
+        this.titleView = titleView;
+        Utils.handleView(binding.titleContainer, titleView, true);
+    }
+
+    /**
+     * Retrieves the subtitle view for this component.
+     *
+     * @return the subtitle view.
+     */
+    public View getSubtitleView() {
+        return subtitleView;
+    }
+
+    /**
+     * Sets the subtitle view for this component.
+     *
+     * @param subtitleView the view to set as the subtitle view.
+     */
+    public void setSubtitleView(View subtitleView) {
+        this.subtitleView = subtitleView;
+        Utils.handleView(binding.subtitleContainer, subtitleView, true);
+    }    /**
+     * Plays the incoming call sound if sound is not disabled.
+     */
+    public void playSound() {
+        if (!disableSoundForCalls) soundManager.play(Sound.incomingCall, customSoundForCalls);
+    }
+
+    /**
+     * Retrieves the trailing view for this component.
+     *
+     * @return the trailing view.
+     */
+    public View getTrailingView() {
+        return trailingView;
+    }
+
+    /**
+     * Sets the trailing view for this component.
+     *
+     * @param trailingView the view to set as the trailing view.
+     */
+    public void setTrailingView(View trailingView) {
+        this.trailingView = trailingView;
+        Utils.handleView(binding.trailingView, trailingView, true);
+    }
+
+    public CometchatIncomingCallComponentBinding getBinding() {
+        return binding;
+    }
+
+    public void setBinding(CometchatIncomingCallComponentBinding binding) {
+        this.binding = binding;
+    }
 
 
 
@@ -815,12 +798,22 @@ public class CometChatIncomingCall extends MaterialCardView {
     /**
      * Retrieves the stroke width for the call card border.
      *
-     * @return the stroke width of the card border.
+     * @return the width of the stroke in pixels.
      */
     @Override
     public int getStrokeWidth() {
         return strokeWidth;
     }
 
+
+    /**
+     * Adds listeners when the view is attached to the window.
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        viewModel.addListeners();
+        if (call != null) playSound();
+    }
 
 }

@@ -33,34 +33,37 @@ import java.util.List;
  */
 public class MessageHeaderViewModel extends ViewModel {
     private static final String TAG = MessageHeaderViewModel.class.getSimpleName();
-
-
-    private String LISTENERS_TAG;
     public User user;
     public Group group;
     public String id;
     public MutableLiveData<Integer> memberCount;
     public MutableLiveData<HashMap<TypingIndicator, Boolean>> typing;
+    public MutableLiveData<CometChatException> exception;
     public MutableLiveData<User> userPresenceStatus;
     public HashMap<TypingIndicator, Boolean> typingIndicatorHashMap;
-    public MutableLiveData<Group> updateGroup;
-    public MutableLiveData<User> updateUser;
-
-    private Handler handler = new Handler();
     private final Runnable updateTypingRunnable = new Runnable() {
         @Override
         public void run() {
             typing.setValue(typingIndicatorHashMap);
         }
     };
+    public MutableLiveData<Group> updateGroup;
+    public MutableLiveData<User> updateUser;
+    private String LISTENERS_TAG;
+    private Handler handler = new Handler();
 
     public MessageHeaderViewModel() {
         memberCount = new MutableLiveData<>();
+        exception = new MutableLiveData<>();
         typing = new MutableLiveData<>();
         userPresenceStatus = new MutableLiveData<>();
         updateGroup = new MutableLiveData<>();
         updateUser = new MutableLiveData<>();
         typingIndicatorHashMap = new HashMap<>();
+    }
+
+    public MutableLiveData<CometChatException> getException() {
+        return exception;
     }
 
     /**
@@ -121,15 +124,6 @@ public class MessageHeaderViewModel extends ViewModel {
     }
 
     /**
-     * Gets the current group.
-     *
-     * @return The current {@link Group} object.
-     */
-    public Group getGroup() {
-        return group;
-    }
-
-    /**
      * Sets the current user and clears the group reference.
      *
      * @param user The {@link User} to set. If null, the user reference will not be
@@ -141,6 +135,15 @@ public class MessageHeaderViewModel extends ViewModel {
             this.group = null;
             this.id = user.getUid();
         }
+    }
+
+    /**
+     * Gets the current group.
+     *
+     * @return The current {@link Group} object.
+     */
+    public Group getGroup() {
+        return group;
     }
 
     /**
@@ -166,7 +169,7 @@ public class MessageHeaderViewModel extends ViewModel {
                 super.onGroupMemberJoined(action, joinedUser, joinedGroup);
                 if (joinedGroup.getGuid().equals(id)) {
                     group.setMembersCount(joinedGroup.getMembersCount());
-                    if(joinedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
+                    if (joinedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
                         group.setHasJoined(true);
                     }
                     updateGroup.setValue(group);
@@ -177,7 +180,7 @@ public class MessageHeaderViewModel extends ViewModel {
             public void onGroupMemberLeft(Action action, User leftUser, Group leftGroup) {
                 if (leftGroup.getGuid().equals(id)) {
                     group.setMembersCount(leftGroup.getMembersCount());
-                    if(leftUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
+                    if (leftUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
                         group.setHasJoined(false);
                     }
                     updateGroup.setValue(group);
@@ -188,7 +191,7 @@ public class MessageHeaderViewModel extends ViewModel {
             public void onGroupMemberKicked(Action action, User kickedUser, User kickedBy, Group kickedFrom) {
                 if (kickedFrom.getGuid().equals(id)) {
                     group.setMembersCount(kickedFrom.getMembersCount());
-                    if(kickedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
+                    if (kickedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
                         group.setHasJoined(false);
                     }
                     updateGroup.setValue(group);
@@ -199,7 +202,7 @@ public class MessageHeaderViewModel extends ViewModel {
             public void onGroupMemberBanned(Action action, User bannedUser, User bannedBy, Group bannedFrom) {
                 if (bannedFrom.getGuid().equals(id)) {
                     group.setMembersCount(bannedFrom.getMembersCount());
-                    if(bannedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
+                    if (bannedUser.getUid().equals(CometChat.getLoggedInUser().getUid())) {
                         group.setHasJoined(false);
                     }
                     updateGroup.setValue(group);
@@ -210,7 +213,7 @@ public class MessageHeaderViewModel extends ViewModel {
             public void onMemberAddedToGroup(Action action, User addedBy, User userAdded, Group addedTo) {
                 if (addedTo.getGuid().equals(id)) {
                     group.setMembersCount(addedTo.getMembersCount());
-                    if(userAdded.getUid().equals(CometChat.getLoggedInUser().getUid())) {
+                    if (userAdded.getUid().equals(CometChat.getLoggedInUser().getUid())) {
                         group.setHasJoined(true);
                     }
                     updateGroup.setValue(group);
@@ -263,6 +266,11 @@ public class MessageHeaderViewModel extends ViewModel {
 
         CometChatGroupEvents.addGroupListener(LISTENERS_TAG, new CometChatGroupEvents() {
             @Override
+            public void ccGroupMemberAdded(List<Action> actionMessages, List<User> usersAdded, Group userAddedIn, User addedBy) {
+                if (userAddedIn != null) updateGroup.setValue(userAddedIn);
+            }
+
+            @Override
             public void ccGroupMemberKicked(Action actionMessage, User kickedUser, User kickedBy, Group kickedFrom) {
                 if (kickedFrom != null) updateGroup.setValue(kickedFrom);
             }
@@ -275,11 +283,6 @@ public class MessageHeaderViewModel extends ViewModel {
             @Override
             public void ccOwnershipChanged(Group group, GroupMember newOwner) {
                 if (group != null) updateGroup.setValue(group);
-            }
-
-            @Override
-            public void ccGroupMemberAdded(List<Action> actionMessages, List<User> usersAdded, Group userAddedIn, User addedBy) {
-                if (userAddedIn != null) updateGroup.setValue(userAddedIn);
             }
         });
 
@@ -308,76 +311,6 @@ public class MessageHeaderViewModel extends ViewModel {
     }
 
     /**
-     * Refreshes the message header by checking if a user or group is present. If a
-     * user is available, it refreshes the user's details; otherwise, it refreshes
-     * the group's details.
-     */
-    public void refreshMessageHeader() {
-        if (user != null) {
-            refreshUser(user.getUid());
-        } else if (group != null) {
-            refreshGroup(group.getGuid());
-        }
-    }
-
-    /**
-     * Refreshes the details of the specified group.
-     *
-     * @param guid The unique identifier of the group to be refreshed.
-     */
-    public void refreshGroup(String guid) {
-        if (guid != null) {
-            CometChat.getGroup(guid, new CometChat.CallbackListener<Group>() {
-                @Override
-                public void onSuccess(Group group) {
-                    setGroup(group);
-                    updateGroup.setValue(group);
-                }
-
-                @Override
-                public void onError(CometChatException e) {
-                    CometChatLogger.e(TAG, e.toString());
-                }
-            });
-        }
-    }
-
-    /**
-     * Refreshes the details of the specified user.
-     *
-     * @param uid The unique identifier of the user to be refreshed.
-     */
-    public void refreshUser(String uid) {
-        if (uid != null) {
-            CometChat.getUser(uid, new CometChat.CallbackListener<User>() {
-                @Override
-                public void onSuccess(User user) {
-                    setUser(user);
-                    updateUser.setValue(user);
-                }
-
-                @Override
-                public void onError(CometChatException e) {
-                    CometChatLogger.e(TAG, e.toString());
-                }
-            });
-        }
-    }
-
-    /**
-     * Removes all listeners associated with the current ViewModel. This includes
-     * user, group, and connection listeners to prevent memory leaks.
-     */
-    public void removeListeners() {
-        CometChat.removeUserListener(LISTENERS_TAG);
-        CometChat.removeGroupListener(LISTENERS_TAG);
-        CometChatMessageEvents.removeListener(LISTENERS_TAG);
-        CometChatGroupEvents.removeListener(LISTENERS_TAG);
-        CometChat.removeConnectionListener(LISTENERS_TAG);
-        CometChatUserEvents.removeListener(LISTENERS_TAG);
-    }
-
-    /**
      * Sets the typing indicator for a user or group.
      *
      * @param typingIndicator The typing indicator object representing the typing state.
@@ -392,6 +325,19 @@ public class MessageHeaderViewModel extends ViewModel {
             if (id != null && id.equalsIgnoreCase(typingIndicator.getReceiverId())) {
                 sendTypingEvent(typingIndicator, show);
             }
+        }
+    }
+
+    /**
+     * Refreshes the message header by checking if a user or group is present. If a
+     * user is available, it refreshes the user's details; otherwise, it refreshes
+     * the group's details.
+     */
+    public void refreshMessageHeader() {
+        if (user != null) {
+            refreshUser(user.getUid());
+        } else if (group != null) {
+            refreshGroup(group.getGuid());
         }
     }
 
@@ -412,5 +358,64 @@ public class MessageHeaderViewModel extends ViewModel {
             handler = new Handler();
             handler.postDelayed(updateTypingRunnable, UIKitUtilityConstants.TYPING_INDICATOR_DEBOUNCER);
         }
+    }
+
+    /**
+     * Refreshes the details of the specified user.
+     *
+     * @param uid The unique identifier of the user to be refreshed.
+     */
+    public void refreshUser(String uid) {
+        if (uid != null) {
+            CometChat.getUser(uid, new CometChat.CallbackListener<User>() {
+                @Override
+                public void onSuccess(User user) {
+                    setUser(user);
+                    updateUser.setValue(user);
+                }
+
+                @Override
+                public void onError(CometChatException e) {
+                    exception.setValue(e);
+                    CometChatLogger.e(TAG, e.toString());
+                }
+            });
+        }
+    }
+
+    /**
+     * Refreshes the details of the specified group.
+     *
+     * @param guid The unique identifier of the group to be refreshed.
+     */
+    public void refreshGroup(String guid) {
+        if (guid != null) {
+            CometChat.getGroup(guid, new CometChat.CallbackListener<Group>() {
+                @Override
+                public void onSuccess(Group group) {
+                    setGroup(group);
+                    updateGroup.setValue(group);
+                }
+
+                @Override
+                public void onError(CometChatException e) {
+                    exception.setValue(e);
+                    CometChatLogger.e(TAG, e.toString());
+                }
+            });
+        }
+    }
+
+    /**
+     * Removes all listeners associated with the current ViewModel. This includes
+     * user, group, and connection listeners to prevent memory leaks.
+     */
+    public void removeListeners() {
+        CometChat.removeUserListener(LISTENERS_TAG);
+        CometChat.removeGroupListener(LISTENERS_TAG);
+        CometChatMessageEvents.removeListener(LISTENERS_TAG);
+        CometChatGroupEvents.removeListener(LISTENERS_TAG);
+        CometChat.removeConnectionListener(LISTENERS_TAG);
+        CometChatUserEvents.removeListener(LISTENERS_TAG);
     }
 }

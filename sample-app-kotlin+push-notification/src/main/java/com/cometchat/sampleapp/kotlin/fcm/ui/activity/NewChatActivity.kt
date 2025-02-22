@@ -7,8 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cometchat.chat.core.GroupsRequest.GroupsRequestBuilder
 import com.cometchat.chat.core.UsersRequest.UsersRequestBuilder
 import com.cometchat.chat.models.Group
-import com.cometchat.chat.models.User
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick
 import com.cometchat.sampleapp.kotlin.fcm.R
 import com.cometchat.sampleapp.kotlin.fcm.databinding.ActivityNewChatBinding
 import com.google.android.material.tabs.TabLayout
@@ -25,8 +24,8 @@ class NewChatActivity : AppCompatActivity() {
         )
         setContentView(binding!!.root)
 
-        binding!!.users.hideToolbar(true)
-        binding!!.groups.hideToolbar(true)
+        binding!!.users.toolbarVisibility = View.GONE
+        binding!!.groups.toolbarVisibility = View.GONE
         binding!!.users.separatorVisibility = View.GONE
         binding!!.groups.separatorVisibility = View.GONE
         binding!!.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
@@ -65,27 +64,24 @@ class NewChatActivity : AppCompatActivity() {
                 .hideBlockedUsers(true)
                 .setLimit(30)
         )
-        binding!!.users.setItemClickListener(object : OnItemClickListener<User?>() {
-            override fun OnItemClick(
-                user: User?,
-                position: Int
-            ) {
-                val intent = Intent(this@NewChatActivity, MessagesActivity::class.java)
-                intent.putExtra(getString(R.string.app_user), Gson().toJson(user))
-                startActivity(intent)
-                finish()
-            }
-        })
+        binding!!.users.setOnItemClick { view, position, user ->
+            val intent = Intent(this@NewChatActivity, MessagesActivity::class.java)
+            intent.putExtra(getString(R.string.app_user), Gson().toJson(user))
+            startActivity(intent)
+            finish()
+        }
 
         binding!!.groups.setGroupsRequestBuilder(
             GroupsRequestBuilder()
                 .joinedOnly(true)
                 .setLimit(30)
         )
-        binding!!.groups.setItemClickListener(object : OnItemClickListener<Group?>() {
-            override fun OnItemClick(
-                group: Group?,
-                position: Int
+        binding!!.groups.setOnItemClick(object : OnItemClick<Group?> {
+            override fun click(
+                view: View?,
+                position: Int,
+                group: Group?
+
             ) {
                 val intent = Intent(this@NewChatActivity, MessagesActivity::class.java)
                 intent.putExtra(getString(R.string.app_group), Gson().toJson(group))

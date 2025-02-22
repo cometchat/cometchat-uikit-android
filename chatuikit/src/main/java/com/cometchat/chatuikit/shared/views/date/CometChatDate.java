@@ -19,6 +19,7 @@ import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.CometchatDateBinding;
 import com.cometchat.chatuikit.shared.interfaces.Function1;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -35,14 +36,17 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class CometChatDate extends LinearLayout {
     private static final String TAG = CometChatDate.class.getSimpleName();
-
-
+    private String datePattern = "dd MMM yyyy";
+    private String dayPattern = "EEE";
+    private String timePattern = "h:mm a";
     private CometchatDateBinding binding;
     private String dateText;
     private long timestamp;
     private Pattern pattern;
     private Function1<Long, String> customPattern;
-
+    private SimpleDateFormat simpleDateFormat;
+    private SimpleDateFormat simpleDayFormat;
+    private SimpleDateFormat simpleTimeFormat;
     private @StyleRes int dateTextAppearance;
     private @ColorInt int dateTextColor;
     private @ColorInt int strokeColor;
@@ -105,6 +109,9 @@ public class CometChatDate extends LinearLayout {
      * Sets the default values for the CometChatDate.
      */
     private void setDefaultValues() {
+        simpleDateFormat = new SimpleDateFormat(datePattern, Locale.getDefault());
+        simpleDayFormat = new SimpleDateFormat(dayPattern, Locale.getDefault());
+        simpleTimeFormat = new SimpleDateFormat(timePattern, Locale.getDefault());
         dateTextColor = CometChatTheme.getTextColorSecondary(getContext());
         setTransparentBackground(true);
     }
@@ -404,7 +411,7 @@ public class CometChatDate extends LinearLayout {
      * @return The formatted time string.
      */
     private String getTime(long timestamp) {
-        return DateFormat.format("h:mm a", new java.util.Date(timestamp * 1000)).toString();
+        return simpleTimeFormat.format(new java.util.Date(timestamp * 1000));
     }
 
     /**
@@ -426,7 +433,7 @@ public class CometChatDate extends LinearLayout {
         } else if ((now.get(Calendar.DAY_OF_YEAR) - 1) == timeToCheck.get(Calendar.DAY_OF_YEAR)) {
             return getContext().getString(R.string.cometchat_yesterday);
         } else {
-            return DateFormat.format("dd MMM yyyy", timeToCheck).toString();
+            return simpleDateFormat.format(new java.util.Date(timestamp * 1000));
         }
     }
 
@@ -440,8 +447,8 @@ public class CometChatDate extends LinearLayout {
      * @return A string representing the date and/or time.
      */
     private String getDayDateTime(long timestamp) {
-        String lastMessageDate = DateFormat.format("dd MMM yyyy", new java.util.Date(timestamp * 1000)).toString();
-        String lastMessageWeek = DateFormat.format("EEE", new java.util.Date(timestamp * 1000)).toString();
+        String lastMessageDate = simpleDateFormat.format(new java.util.Date(timestamp * 1000));
+        String lastMessageWeek = simpleDayFormat.format(new java.util.Date(timestamp * 1000));
         Calendar now = Calendar.getInstance();
         Calendar timeToCheck = Calendar.getInstance(Locale.ENGLISH);
         timeToCheck.setTimeInMillis(timestamp * 1000L);
@@ -487,6 +494,69 @@ public class CometChatDate extends LinearLayout {
         if (customPattern != null) {
             this.customPattern = customPattern;
             setDate(timestamp, pattern);
+        }
+    }
+
+    public SimpleDateFormat getTimeFormat() {
+        return simpleTimeFormat;
+    }
+
+    public void setTimeFormat(SimpleDateFormat timeFormat) {
+        if (timeFormat != null) {
+            this.simpleTimeFormat = timeFormat;
+        }
+    }
+
+    public SimpleDateFormat getDateFormat() {
+        return simpleDateFormat;
+    }
+
+    public void setDateFormat(SimpleDateFormat dateFormat) {
+        if (dateFormat != null) {
+            this.simpleDateFormat = dateFormat;
+        }
+    }
+
+    public SimpleDateFormat getDayFormat() {
+        return simpleDayFormat;
+    }
+
+    public void setDayFormat(SimpleDateFormat dayFormat) {
+        if (dayFormat != null) {
+            this.simpleDayFormat = dayFormat;
+        }
+    }
+
+    public String getDatePattern() {
+        return datePattern;
+    }
+
+    public void setDatePattern(String pattern) {
+        if (pattern != null && !pattern.isEmpty()) {
+            this.datePattern = pattern;
+            this.simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        }
+    }
+
+    public String getDayPattern() {
+        return dayPattern;
+    }
+
+    public void setDayPattern(String pattern) {
+        if (pattern != null && !pattern.isEmpty()) {
+            this.dayPattern = pattern;
+            this.simpleDayFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        }
+    }
+
+    public String getTimePattern() {
+        return timePattern;
+    }
+
+    public void setTimePattern(String pattern) {
+        if (pattern != null && !pattern.isEmpty()) {
+            this.timePattern = pattern;
+            this.simpleTimeFormat = new SimpleDateFormat(pattern, Locale.getDefault());
         }
     }
 

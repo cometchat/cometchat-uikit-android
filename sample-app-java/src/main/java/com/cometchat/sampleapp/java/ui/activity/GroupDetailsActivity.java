@@ -17,13 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.cometchat.chat.models.Group;
 import com.cometchat.chat.models.GroupMember;
-import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.custom_dialog.CometChatConfirmDialog;
-import com.cometchat.chatuikit.shared.resources.utils.itemclicklistener.OnItemClickListener;
 import com.cometchat.sampleapp.java.R;
 import com.cometchat.sampleapp.java.data.enums.GroupAction;
 import com.cometchat.sampleapp.java.databinding.ActivityGroupDetailsBinding;
@@ -33,8 +31,6 @@ import com.cometchat.sampleapp.java.databinding.GroupMembersLayoutBinding;
 import com.cometchat.sampleapp.java.databinding.TransferOwnershipLayoutBinding;
 import com.cometchat.sampleapp.java.viewmodels.GroupDetailsViewModel;
 import com.google.gson.Gson;
-
-import java.util.Locale;
 
 public class GroupDetailsActivity extends AppCompatActivity {
     private Group group;
@@ -263,21 +259,9 @@ public class GroupDetailsActivity extends AppCompatActivity {
 
         addMembersLayoutBinding.addMembers.setTitleText(getString(com.cometchat.chatuikit.R.string.cometchat_add_members));
         addMembersLayoutBinding.addMembers.setSelectionMode(UIKitConstants.SelectionMode.MULTIPLE);
-        addMembersLayoutBinding.addMembers.hideSubmitSelectionIcon(true);
-        addMembersLayoutBinding.addMembers.hideDiscardSelectionIcon(true);
-        addMembersLayoutBinding.addMembers.hideSelectionCount(true);
-        addMembersLayoutBinding.addMembers.hideTitle(false);
-        addMembersLayoutBinding.addMembers.hideBackIcon(false);
-        addMembersLayoutBinding.addMembers.setItemClickListener(new OnItemClickListener<User>() {
-            @Override
-            public void OnItemClick(User var, int position) {
-                String count = !addMembersLayoutBinding.addMembers.getSelectedUsers().isEmpty() ? addMembersLayoutBinding.addMembers
-                    .getSelectedUsers()
-                    .size() + " " + getString(
-                    R.string.app_members) : " " + getString(R.string.app_member);
-                addMembersLayoutBinding.tvAddMembers.setText(String.format(Locale.US, "%s %s", getString(R.string.app_add), count));
-            }
-        });
+        addMembersLayoutBinding.addMembers.setSubmitSelectionIconVisibility(View.GONE);
+        addMembersLayoutBinding.addMembers.setOnItemClick((view, poUser, user) -> addMembersLayoutBinding.addMembers.selectUser(user,
+                                                                                                                                UIKitConstants.SelectionMode.MULTIPLE));
         addMembersLayoutBinding.addMembersBtn.setOnClickListener(view -> viewModel.addMembersToGroup(addMembersLayoutBinding.addMembers.getSelectedUsers()));
 
         alertDialog = new AlertDialog.Builder(this, androidx.appcompat.R.style.AlertDialog_AppCompat);
@@ -286,7 +270,7 @@ public class GroupDetailsActivity extends AppCompatActivity {
         dialog = alertDialog.create();
         Utils.setDialogStatusBarColor(dialog, CometChatTheme.getBackgroundColor1(this));
         dialog.show();
-        addMembersLayoutBinding.addMembers.addOnBackPressListener(() -> dialog.dismiss());
+        addMembersLayoutBinding.addMembers.setOnBackPressListener(() -> dialog.dismiss());
     }
 
     private void showTransferOwnership() {

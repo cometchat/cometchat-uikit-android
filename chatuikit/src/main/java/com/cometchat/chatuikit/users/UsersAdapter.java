@@ -35,7 +35,7 @@ import java.util.List;
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> implements StickyHeaderAdapter<UsersAdapter.StickyViewHolder> {
     private final Context context;
 
-    private boolean disableUsersPresence;
+    private boolean hideUserStatus;
     private boolean isSelectionEnabled;
 
     private @StyleRes int avatarStyle;
@@ -63,6 +63,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     private UsersViewHolderListener tailView;
     private UsersViewHolderListener subtitleView;
     private UsersViewHolderListener listItemView;
+    private UsersViewHolderListener titleView;
+    private UsersViewHolderListener leadingView;
 
     /**
      * Constructs a UsersAdapter with the given context.
@@ -431,16 +433,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     /**
-     * Sets whether to disable user presence and refreshes the view.
-     *
-     * @param disableUsersPresence true to disable user presence, false to enable
-     */
-    public void setDisableUsersPresence(boolean disableUsersPresence) {
-        this.disableUsersPresence = disableUsersPresence;
-        notifyDataSetChanged();
-    }
-
-    /**
      * Returns the checkbox select icon drawable.
      *
      * @return the checkbox select icon drawable
@@ -544,7 +536,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
      *
      * @param listItemView the listener for the list item view
      */
-    public void setListItemView(UsersViewHolderListener listItemView) {
+    public void setItemView(UsersViewHolderListener listItemView) {
         if (listItemView != null) {
             this.listItemView = listItemView;
             notifyDataSetChanged();
@@ -568,11 +560,26 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
      *
      * @param tailView the listener for the tail view
      */
-    public void setTailView(UsersViewHolderListener tailView) {
+    public void setTrailingView(UsersViewHolderListener tailView) {
         if (tailView != null) {
             this.tailView = tailView;
             notifyDataSetChanged();
         }
+    }
+
+    public void hideUserStatus(boolean hide) {
+        this.hideUserStatus = hide;
+        notifyDataSetChanged();
+    }
+
+    public void setTitleView(UsersViewHolderListener titleView) {
+        this.titleView = titleView;
+        notifyDataSetChanged();
+    }
+
+    public void setLeadingView(UsersViewHolderListener leadingView) {
+        this.leadingView = leadingView;
+        notifyDataSetChanged();
     }
 
     /**
@@ -592,7 +599,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
      */
     public class UserViewHolder extends RecyclerView.ViewHolder {
         CometchatListBaseItemsBinding binding;
-        private View customListItemView, customSubtitleView, customTailView;
+        private View customListItemView, customSubtitleView, customTailView, customTitleView, customleadingView;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -602,6 +609,16 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 customListItemView = listItemView.createView(context, binding);
                 Utils.handleView(binding.parentView, customListItemView, true);
             } else {
+                if (leadingView != null) {
+                    customleadingView = leadingView.createView(context, binding);
+                    Utils.handleView(binding.avatarContainer, customleadingView, true);
+                }
+
+                if (titleView != null) {
+                    customTitleView = titleView.createView(context, binding);
+                    Utils.handleView(binding.titleContainer, customTitleView, true);
+                }
+
                 if (subtitleView != null) {
                     customSubtitleView = subtitleView.createView(context, binding);
                     Utils.handleView(binding.subtitleContainer, customSubtitleView, true);
@@ -623,21 +640,27 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             if (listItemView != null) {
                 listItemView.bindView(context, customListItemView, user, this, userList, position);
             } else {
-                binding.avatar.setAvatar(user.getName(), user.getAvatar());
-                binding.avatar.setStyle(avatarStyle);
-
-                binding.tvTitle.setText(user.getName());
-                binding.tvTitle.setTextAppearance(itemTitleTextAppearance);
-                binding.tvTitle.setTextColor(itemTitleTextColor);
-
-                if (Utils.isBlocked(user)) {
-                    binding.statusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
+                if (leadingView != null) {
+                    leadingView.bindView(context, customleadingView, user, this, userList, position);
                 } else {
-                    binding.statusIndicator.setStatusIndicator(user
-                                                                   .getStatus()
-                                                                   .equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE) && !disableUsersPresence ? StatusIndicator.ONLINE : StatusIndicator.OFFLINE);
+                    binding.avatar.setAvatar(user.getName(), user.getAvatar());
+                    binding.avatar.setStyle(avatarStyle);
+                    if (Utils.isBlocked(user)) {
+                        binding.statusIndicator.setStatusIndicator(StatusIndicator.OFFLINE);
+                    } else {
+                        binding.statusIndicator.setStatusIndicator(user
+                                                                       .getStatus()
+                                                                       .equalsIgnoreCase(CometChatConstants.USER_STATUS_ONLINE) && !hideUserStatus ? StatusIndicator.ONLINE : StatusIndicator.OFFLINE);
+                    }
                 }
-
+                if (titleView != null) {
+                    titleView.bindView(context, customTitleView, user, this, userList, position);
+                } else {
+                    binding.tvTitle.setText(user.getName());
+                    binding.tvTitle.setTextAppearance(itemTitleTextAppearance);
+                    binding.tvTitle.setTextColor(itemTitleTextColor);
+                }
+                
                 if (isSelectionEnabled) {
                     Utils.initMaterialCard(binding.checkboxView);
                     binding.ivCheckbox.setImageDrawable(checkBoxSelectIcon);

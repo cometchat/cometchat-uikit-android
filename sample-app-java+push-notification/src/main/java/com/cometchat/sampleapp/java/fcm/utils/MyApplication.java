@@ -3,7 +3,6 @@ package com.cometchat.sampleapp.java.fcm.utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 
-import com.cometchat.chat.constants.CometChatConstants;
 import com.cometchat.chat.core.Call;
 import com.cometchat.chat.core.CometChat;
 import com.cometchat.chat.exceptions.CometChatException;
@@ -20,22 +18,20 @@ import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.CometChatTheme;
 import com.cometchat.chatuikit.calls.CallingExtension;
 import com.cometchat.chatuikit.calls.CometChatCallActivity;
+import com.cometchat.chatuikit.calls.incomingcall.CometChatIncomingCall;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper;
+import com.cometchat.chatuikit.shared.events.CometChatCallEvents;
 import com.cometchat.chatuikit.shared.resources.soundmanager.CometChatSoundManager;
 import com.cometchat.chatuikit.shared.resources.soundmanager.Sound;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
-import com.cometchat.sampleapp.java.fcm.R;
 import com.cometchat.sampleapp.java.fcm.data.repository.Repository;
-import com.cometchat.sampleapp.java.fcm.databinding.CustomCallNotificationBinding;
-import com.cometchat.sampleapp.java.fcm.ui.activity.OngoingCallActivity;
 import com.cometchat.sampleapp.java.fcm.viewmodels.SplashViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
@@ -209,6 +205,18 @@ public class MyApplication extends Application {
                 dismissTopSnackBar();
             }
         });
+
+        CometChatCallEvents.addListener(LISTENER_ID, new CometChatCallEvents() {
+            @Override
+            public void ccCallAccepted(Call call) {
+                dismissTopSnackBar();
+            }
+
+            @Override
+            public void ccCallRejected(Call call) {
+                dismissTopSnackBar();
+            }
+        });
     }
 
     /**
@@ -223,18 +231,10 @@ public class MyApplication extends Application {
         if (currentActivity != null && call != null) {
             tempCall = call;
             View rootView = currentActivity.findViewById(android.R.id.content);
-            View customView = View.inflate(currentActivity, R.layout.custom_call_notification, null);
-            CustomCallNotificationBinding binding = CustomCallNotificationBinding.bind(customView);
 
-            User callUser = (User) call.getCallInitiator();
-            binding.callerName.setText(callUser.getName());
-            binding.callType.setText(String.format(Locale.US, getString(R.string.app_incoming_s_call), call.getType()));
-            binding.callerAvatar.setAvatar(callUser.getName(), callUser.getAvatar());
-            binding.callTypeIcon.setImageResource(call.getType()
-                                                      .equals(CometChatConstants.CALL_TYPE_AUDIO) ? com.cometchat.chatuikit.R.drawable.cometchat_ic_call_voice : com.cometchat.chatuikit.R.drawable.cometchat_ic_call_video);
-
-            binding.rejectButton.setOnClickListener(view -> rejectCall(call));
-            binding.acceptButton.setOnClickListener(view -> acceptCall(call));
+            CometChatIncomingCall cometChatIncomingCall = new CometChatIncomingCall(currentActivity);
+            cometChatIncomingCall.setCall(call);
+            cometChatIncomingCall.setOnError((cometchatException) -> dismissTopSnackBar());
 
             snackbar = Snackbar.make(rootView, " ", Snackbar.LENGTH_INDEFINITE);
             Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
@@ -243,7 +243,7 @@ public class MyApplication extends Application {
             layout.setLayoutParams(params);
             layout.setBackgroundColor(currentActivity.getResources().getColor(android.R.color.transparent, null));
 
-            layout.addView(binding.getRoot(), 0);
+            layout.addView(cometChatIncomingCall, 0);
 
             for (PopupWindow popupWindow : popupWindows) {
                 if (popupWindow.isShowing())
@@ -252,20 +252,6 @@ public class MyApplication extends Application {
             popupWindows.clear();
 
             snackbar.show();
-        }
-    }
-
-    /**
-     * Dismisses the current top SnackBar if it's being shown and resets any related
-     * call state.
-     */
-    public void dismissTopSnackBar() {
-        if (snackbar != null && snackbar.isShown()) {
-            snackbar.dismiss();
-            snackbar = null;
-            tempCall = null;
-            CallingExtension.setActiveCall(null);
-            pauseSound();
         }
     }
 
@@ -316,62 +302,17 @@ public class MyApplication extends Application {
     }
 
     /**
-     * Rejects an incoming call and dismisses the notification.
-     *
-     * @param call The call object representing the call to be rejected.
+     * Dismisses the current top SnackBar if it's being shown and resets any related
+     * call state.
      */
-    public void rejectCall(Call call) {
-        Repository.rejectCall(call, new CometChat.CallbackListener<Call>() {
-            @Override
-            public void onSuccess(Call call) {
-                dismissTopSnackBar();
-            }
-
-            @Override
-            public void onError(CometChatException e) {
-                dismissTopSnackBar();
-            }
-        });
-    }
-
-    /**
-     * Accepts an incoming call and starts the ongoing call activity.
-     *
-     * @param call The call object representing the call to be accepted.
-     */
-    public void acceptCall(Call call) {
-        Repository.acceptCall(call, new CometChat.CallbackListener<Call>() {
-            @Override
-            public void onSuccess(Call call) {
-                startOngoingCallActivity(call);
-            }
-
-            @Override
-            public void onError(CometChatException e) {
-                dismissTopSnackBar();
-            }
-        });
-    }
-
-    /**
-     * Starts the OngoingCallActivity to manage an accepted call.
-     *
-     * @param call The call object representing the accepted call.
-     */
-    private void startOngoingCallActivity(Call call) {
-        dismissTopSnackBar();
-        Intent intent = new Intent(this, OngoingCallActivity.class);
-        intent.putExtra(getString(R.string.app_session_id), call.getSessionId());
-        intent.putExtra(getString(R.string.app_call_type), call.getType());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    /**
-     * Plays the sound for an incoming call notification.
-     */
-    public void playSound() {
-        soundManager.play(Sound.incomingCall);
+    public void dismissTopSnackBar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+            snackbar = null;
+            tempCall = null;
+            CallingExtension.setActiveCall(null);
+            pauseSound();
+        }
     }
 
     /**
@@ -379,5 +320,12 @@ public class MyApplication extends Application {
      */
     public void pauseSound() {
         soundManager.pauseSilently();
+    }
+
+    /**
+     * Plays the sound for an incoming call notification.
+     */
+    public void playSound() {
+        soundManager.play(Sound.incomingCall);
     }
 }

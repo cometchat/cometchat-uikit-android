@@ -27,15 +27,22 @@ import com.cometchat.calls.model.CallLog;
 import com.cometchat.chatuikit.R;
 import com.cometchat.chatuikit.databinding.CometchatCallLogsBinding;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
-import com.cometchat.chatuikit.shared.interfaces.CallLogsClickListener;
 import com.cometchat.chatuikit.shared.interfaces.Function2;
 import com.cometchat.chatuikit.shared.interfaces.OnBackPress;
 import com.cometchat.chatuikit.shared.interfaces.OnCallError;
+import com.cometchat.chatuikit.shared.interfaces.OnEmpty;
+import com.cometchat.chatuikit.shared.interfaces.OnItemClick;
+import com.cometchat.chatuikit.shared.interfaces.OnItemLongClick;
+import com.cometchat.chatuikit.shared.interfaces.OnLoad;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
+import com.cometchat.chatuikit.shared.viewholders.CallLogsViewHolderListener;
+import com.cometchat.chatuikit.shared.views.popupmenu.CometChatPopupMenu;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerAdapter;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerUtils;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -110,12 +117,9 @@ public class CometChatCallLogs extends MaterialCardView {
     private @StyleRes int avatarStyle;
     private @StyleRes int dateStyle;
     private @ColorInt int separatorColor;
-
-    private String errorStateTitle;
-    private String errorStateSubtitle;
-    private String emptyStateTitle;
-    private String emptyStateSubtitle;
-    private boolean showShimmer = true;
+    private OnItemClick<CallLog> onItemClick;
+    private OnItemLongClick<CallLog> onItemLongClick;
+    private OnCallIconClick onCallIconClickListener;
 
     private CallLogsViewModel callLogsViewModel;
     private CallLogsAdapter callLogsAdapter;
@@ -138,11 +142,6 @@ public class CometChatCallLogs extends MaterialCardView {
             callLogsAdapter.notifyItemRemoved(integer);
         }
     };
-    /**
-     * Observer that listens for updates in the list of call logs and sets the data
-     * in the adapter.
-     */
-    Observer<List<CallLog>> listObserver = callList -> callLogsAdapter.setCallLogs(callList);
     private LinearLayoutManager layoutManager;
     /**
      * Observer that listens for new data and inserts the new item at the top of the
@@ -167,10 +166,45 @@ public class CometChatCallLogs extends MaterialCardView {
             scrollToTop();
         }
     };
-    private boolean hideError;
     private View customLoadingView;
     private View customErrorView;
     private View customEmptyView;
+    private @LayoutRes int loadingViewId;
+    private @LayoutRes int errorViewId;
+    private @LayoutRes int emptyViewId;
+    private OnCallError onError;
+    /**
+     * Observer for handling exceptions. If an error occurs, the OnCallError
+     * listener is triggered to handle the exception.
+     */
+    @NonNull
+    Observer<CometChatException> exceptionObserver = exception -> {
+        if (onError != null) {
+            onError.onError(getContext(), exception);
+        }
+    };
+    private Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> addOptions;
+    private Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> options;
+    private CometChatPopupMenu cometchatPopUpMenu;
+    private OnLoad<CallLog> onLoad;
+    /**
+     * Observer that listens for updates in the list of call logs and sets the data
+     * in the adapter.
+     */
+    Observer<List<CallLog>> listObserver = new Observer<List<CallLog>>() {
+        @Override
+        public void onChanged(List<CallLog> callLogs) {
+            if (onLoad != null) onLoad.onLoad(callLogs);
+            callLogsAdapter.setCallLogs(callLogs);
+        }
+    };
+    private OnEmpty onEmpty;
+    private OnBackPress onBackPress;
+    private int toolbarVisibility = VISIBLE;
+    private int backIconVisibility = GONE;
+    private int emptyStateVisibility = VISIBLE;
+    private int loadingStateVisibility = VISIBLE;
+    private int errorStateVisibility = View.VISIBLE;
     /**
      * Observer for handling different UI states (loading, loaded, error, empty). It
      * hides all states initially and then shows the appropriate view based on the
@@ -182,14 +216,13 @@ public class CometChatCallLogs extends MaterialCardView {
         switch (states) {
             case LOADING:
                 // Display loading state
-                if (customLoadingView != null) {
-                    Utils.handleView(binding.customLayout, customLoadingView, true);
-                } else {
-                    if (showShimmer) {
-                        setShimmerVisibility(View.VISIBLE);
-                        showShimmer = false;
+                if (loadingStateVisibility == VISIBLE) {
+                    if (customLoadingView != null) {
+                        Utils.handleView(binding.customLayout, customLoadingView, true);
+                    } else {
+                        setLoadingStateVisibility(View.VISIBLE);
                     }
-                }
+                } else setLoadingStateVisibility(GONE);
                 break;
 
             case LOADED:
@@ -200,39 +233,30 @@ public class CometChatCallLogs extends MaterialCardView {
 
             case ERROR:
                 // Display error state if present
-                if (customErrorView != null) {
-                    Utils.handleView(binding.errorStateView, customErrorView, true);
-                } else if (!hideError) {
-                    setErrorStateVisibility(View.VISIBLE);
-                }
+                if (errorStateVisibility == View.VISIBLE) {
+                    if (customErrorView != null) {
+                        Utils.handleView(binding.errorStateView, customErrorView, true);
+                    } else {
+                        setErrorStateVisibility(View.VISIBLE);
+                    }
+                } else setErrorStateVisibility(View.GONE);
                 break;
 
             case EMPTY:
                 // Display empty state if no data
-                if (customEmptyView != null) {
-                    Utils.handleView(binding.emptyStateView, customEmptyView, true);
-                } else {
-                    setEmptyStateVisibility(View.VISIBLE);
-                }
+                if (onEmpty != null) onEmpty.onEmpty();
+                if (emptyStateVisibility == VISIBLE) {
+                    if (customEmptyView != null) {
+                        Utils.handleView(binding.emptyStateView, customEmptyView, true);
+                    } else {
+                        setEmptyStateVisibility(View.VISIBLE);
+                    }
+                } else setEmptyStateVisibility(View.GONE);
                 break;
         }
     };
-    private OnCallError onError;
-    /**
-     * Observer for handling exceptions. If an error occurs, the OnCallError
-     * listener is triggered to handle the exception.
-     */
-    @NonNull
-    Observer<CometChatException> exceptionObserver = exception -> {
-        if (onError != null) {
-            onError.onError(getContext(), exception);
-        }
-    };    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        callLogsViewModel.fetchCalls();
-    }
-    private OnBackPress onBackPress;
+    private int separatorVisibility = VISIBLE;
+    private int titleVisibility = VISIBLE;
 
     /**
      * Constructs a new CometChatCallLogs instance using the specified context.
@@ -357,39 +381,10 @@ public class CometChatCallLogs extends MaterialCardView {
      * Initializes the click events for this view.
      */
     private void initClickEvents() {
-        callLogsAdapter.setCometChatCallLogClickListener(new CallLogsClickListener() {
-            @Override
-            public void setOnItemClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
-            }
-
-            @Override
-            public void setOnItemLongClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
-            }
-
-            @Override
-            public void setOnItemCallIconClickListener(Context context, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog) {
-                /*if (callLog.getReceiverType().equals(CometChatConstants.RECEIVER_TYPE_USER)) {
-                    String callType = callLog.getType().equals(CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO) ? CometChatCallsConstants.CALL_TYPE_VIDEO : callLog.getType();
-                    String receiverId = null;
-                    if (callLog.getInitiator() != null) {
-                        if (CallUtils.isLoggedInUser((CallUser) callLog.getInitiator())) {
-                            if (callLog.getReceiver() != null)
-                                receiverId = ((CallUser) callLog.getReceiver()).getUid();
-                        } else {
-                            receiverId = ((CallUser) callLog.getInitiator()).getUid();
-                        }
-                    }
-                    callLogsViewModel.startCall(receiverId, callType);
-                }*/
-            }
-        });
-
-        binding.toolbarBackIcon.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onBackPress != null) {
-                    onBackPress.onBack();
-                }
+        cometchatPopUpMenu = new CometChatPopupMenu(getContext(), 0);
+        binding.toolbarBackIcon.setOnClickListener(v -> {
+            if (onBackPress != null) {
+                onBackPress.onBack();
             }
         });
 
@@ -397,6 +392,13 @@ public class CometChatCallLogs extends MaterialCardView {
             @Override
             public void onClick(View v) {
                 callLogsViewModel.fetchCalls();
+            }
+        });
+
+        setOnItemLongClick(new OnItemLongClick<CallLog>() {
+            @Override
+            public void longClick(View view, int position, CallLog callLog) {
+                preparePopupMenu(view, callLog);
             }
         });
     }
@@ -422,8 +424,7 @@ public class CometChatCallLogs extends MaterialCardView {
             emptyStateTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatCallLogs_cometchatCallLogsEmptyStateTitleTextAppearance, 0);
             emptyStateTitleTextColor = typedArray.getColor(R.styleable.CometChatCallLogs_cometchatCallLogsEmptyStateTitleTextColor, 0);
             emptyStateSubtitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatCallLogs_cometchatCallLogsEmptyStateSubtitleTextAppearance,
-                                                                        0
-            );
+                                                                        0);
             emptyStateSubtitleTextColor = typedArray.getColor(R.styleable.CometChatCallLogs_cometchatCallLogsEmptyStateSubtitleTextColor, 0);
             errorTitleTextAppearance = typedArray.getResourceId(R.styleable.CometChatCallLogs_cometchatCallLogsErrorTitleTextAppearance, 0);
             errorTitleTextColor = typedArray.getColor(R.styleable.CometChatCallLogs_cometchatCallLogsErrorTitleTextColor, 0);
@@ -453,6 +454,41 @@ public class CometChatCallLogs extends MaterialCardView {
         } finally {
             typedArray.recycle();
         }
+    }
+
+    /**
+     * Prepares and displays a popup menu for the given callLog.
+     *
+     * <p>
+     * This method retrieves the menu items based on the provided callLog.
+     * If the {@link #options} function is set, it generates a list of menu
+     * items and sets up a click listener to handle user interactions with the menu
+     * options. If a menu item has a defined click action, that action is executed;
+     * otherwise, the method handles default click events.
+     *
+     * @param callLog The {@link CallLog} for whom the popup menu is being prepared.
+     */
+    private void preparePopupMenu(View view, CallLog callLog) {
+        List<CometChatPopupMenu.MenuItem> optionsArrayList = new ArrayList<>();
+        if (options != null) {
+            optionsArrayList.addAll(options.apply(getContext(), callLog));
+        } else {
+            if (addOptions != null) optionsArrayList.addAll(addOptions.apply(getContext(), callLog));
+        }
+        cometchatPopUpMenu.setMenuItems(optionsArrayList);
+        cometchatPopUpMenu.setOnMenuItemClickListener((id, name) -> {
+            for (CometChatPopupMenu.MenuItem item : optionsArrayList) {
+                if (id.equalsIgnoreCase(item.getId())) {
+                    if (item.getOnClick() != null) {
+                        item.getOnClick().onClick();
+                    }
+                    break;
+                }
+            }
+            cometchatPopUpMenu.dismiss();
+        });
+
+        cometchatPopUpMenu.show(view);
     }
 
     /**
@@ -494,14 +530,6 @@ public class CometChatCallLogs extends MaterialCardView {
         setAvatarStyle(avatarStyle);
         setDateStyle(dateStyle);
         setSeparatorColor(separatorColor);
-    }    /**
-     * Sets the stroke width.
-     *
-     * @param strokeWidth The stroke width for the call logs.
-     */
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeColor);
     }
 
     /**
@@ -512,13 +540,6 @@ public class CometChatCallLogs extends MaterialCardView {
     public void setStrokeColor(@ColorInt int strokeColor) {
         this.strokeColor = strokeColor;
         super.setStrokeColor(strokeColor);
-    }    /**
-     * Returns the stroke width.
-     *
-     * @return The stroke width of the call logs.
-     */
-    public @Dimension int getStrokeWidth() {
-        return strokeWidth;
     }
 
     /**
@@ -528,6 +549,10 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public ColorStateList getStrokeColorStateList() {
         return ColorStateList.valueOf(strokeColor);
+    }
+
+    public void setDateFormat(SimpleDateFormat simpleDateFormat) {
+        callLogsAdapter.setDateFormat(simpleDateFormat);
     }
 
     @Override
@@ -602,6 +627,10 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public @Nullable Drawable getBackIcon() {
         return backIcon;
+    }    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        callLogsViewModel.fetchCalls();
     }
 
     /**
@@ -689,7 +718,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setEmptyStateTitleTextAppearance(@StyleRes int emptyStateTitleTextAppearance) {
         this.emptyStateTitleTextAppearance = emptyStateTitleTextAppearance;
-        binding.tvErrorStateTitle.setTextAppearance(emptyStateTitleTextAppearance);
+        binding.tvEmptyStateTitle.setTextAppearance(emptyStateTitleTextAppearance);
     }
 
     /**
@@ -748,7 +777,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setEmptyStateSubtitleTextColor(@ColorInt int emptyStateSubtitleTextColor) {
         this.emptyStateSubtitleTextColor = emptyStateSubtitleTextColor;
-        binding.tvErrorStateSubtitle.setTextColor(emptyStateSubtitleTextColor);
+        binding.tvEmptyStateSubtitle.setTextColor(emptyStateSubtitleTextColor);
     }
 
     /**
@@ -767,7 +796,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setErrorTitleTextAppearance(@StyleRes int errorTitleTextAppearance) {
         this.errorTitleTextAppearance = errorTitleTextAppearance;
-        binding.tvEmptyStateTitle.setTextAppearance(errorTitleTextAppearance);
+        binding.tvErrorStateTitle.setTextAppearance(errorTitleTextAppearance);
     }
 
     /**
@@ -786,7 +815,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setErrorTitleTextColor(@ColorInt int errorTitleTextColor) {
         this.errorTitleTextColor = errorTitleTextColor;
-        binding.tvEmptyStateTitle.setTextColor(errorTitleTextColor);
+        binding.tvErrorStateTitle.setTextColor(errorTitleTextColor);
     }
 
     /**
@@ -806,7 +835,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setErrorSubtitleTextAppearance(@StyleRes int errorSubtitleTextAppearance) {
         this.errorSubtitleTextAppearance = errorSubtitleTextAppearance;
-        binding.tvEmptyStateSubtitle.setTextAppearance(errorSubtitleTextAppearance);
+        binding.tvErrorStateSubtitle.setTextAppearance(errorSubtitleTextAppearance);
     }
 
     /**
@@ -825,7 +854,7 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     public void setErrorSubtitleTextColor(@ColorInt int errorSubtitleTextColor) {
         this.errorSubtitleTextColor = errorSubtitleTextColor;
-        binding.tvEmptyStateSubtitle.setTextColor(errorSubtitleTextColor);
+        binding.tvErrorStateSubtitle.setTextColor(errorSubtitleTextColor);
     }
 
     /**
@@ -983,6 +1012,14 @@ public class CometChatCallLogs extends MaterialCardView {
 
     public @ColorInt int getItemMissedCallTitleColor() {
         return itemMissedCallTitleColor;
+    }    /**
+     * Sets the stroke width.
+     *
+     * @param strokeWidth The stroke width for the call logs.
+     */
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeColor);
     }
 
     public void setItemMissedCallTitleColor(@ColorInt int itemMissedCallTitleColor) {
@@ -1143,19 +1180,8 @@ public class CometChatCallLogs extends MaterialCardView {
         callLogsAdapter.setDateStyle(dateStyle);
     }
 
-    /**
-     * Sets a custom view to display when the call log is empty.
-     *
-     * @param id The resource ID of the layout to be used as the empty state view.
-     */
-    public void setEmptyStateView(@LayoutRes int id) {
-        if (id != 0) {
-            try {
-                customEmptyView = View.inflate(getContext(), id, null);
-            } catch (Exception e) {
-                customEmptyView = null;
-            }
-        }
+    public int getErrorView() {
+        return errorViewId;
     }
 
     /**
@@ -1163,14 +1189,39 @@ public class CometChatCallLogs extends MaterialCardView {
      *
      * @param id The resource ID of the layout to be used as the error state view.
      */
-    public void setErrorStateView(@LayoutRes int id) {
+    public void setErrorView(@LayoutRes int id) {
         if (id != 0) {
             try {
+                this.errorViewId = id;
                 customErrorView = View.inflate(getContext(), id, null);
             } catch (Exception e) {
                 customErrorView = null;
             }
         }
+    }
+
+    public int getEmptyView() {
+        return emptyViewId;
+    }
+
+    /**
+     * Sets a custom view to display when the call log is empty.
+     *
+     * @param id The resource ID of the layout to be used as the empty state view.
+     */
+    public void setEmptyView(@LayoutRes int id) {
+        if (id != 0) {
+            try {
+                this.emptyViewId = id;
+                customEmptyView = View.inflate(getContext(), id, null);
+            } catch (Exception e) {
+                customEmptyView = null;
+            }
+        }
+    }
+
+    public int getLoadingView() {
+        return loadingViewId;
     }
 
     /**
@@ -1179,9 +1230,10 @@ public class CometChatCallLogs extends MaterialCardView {
      * @param id The resource ID of the layout to be used as the loading state
      *           view.
      */
-    public void setLoadingStateView(@LayoutRes int id) {
+    public void setLoadingView(@LayoutRes int id) {
         if (id != 0) {
             try {
+                this.loadingViewId = id;
                 customLoadingView = View.inflate(getContext(), id, null);
             } catch (Exception e) {
                 customLoadingView = null;
@@ -1189,34 +1241,31 @@ public class CometChatCallLogs extends MaterialCardView {
         }
     }
 
-    /**
-     * Sets the custom view for the subtitle of each call log item.
-     *
-     * @param subtitle A function that provides the subtitle view based on the context
-     *                 and call log.
-     */
-    public void setSubtitleView(Function2<Context, CallLog, View> subtitle) {
-        callLogsAdapter.setSubtitleView(subtitle);
+    public void setSubtitleView(CallLogsViewHolderListener subtitleView) {
+        callLogsAdapter.setSubtitleView(subtitleView);
     }
 
-    /**
-     * Sets a custom tail view for each call log item.
+    public void setTitleView(CallLogsViewHolderListener titleView) {
+        callLogsAdapter.setTitleView(titleView);
+    }    /**
+     * Returns the stroke width.
      *
-     * @param tail A function that provides the tail view based on the context and
-     *             call log.
+     * @return The stroke width of the call logs.
      */
-    public void setTail(Function2<Context, CallLog, View> tail) {
-        callLogsAdapter.setTailView(tail);
+    public @Dimension int getStrokeWidth() {
+        return strokeWidth;
     }
 
-    /**
-     * Sets the custom layout for the entire call log item.
-     *
-     * @param listItemView A function that provides the item view based on the context and
-     *                     call log.
-     */
-    public void setListItemView(Function2<Context, CallLog, View> listItemView) {
-        callLogsAdapter.setCustomView(listItemView);
+    public void setLeadingView(CallLogsViewHolderListener leadingView) {
+        callLogsAdapter.setLeadingView(leadingView);
+    }
+
+    public void setTrailingView(CallLogsViewHolderListener trailingView) {
+        callLogsAdapter.setTrailingView(trailingView);
+    }
+
+    public void setItemView(CallLogsViewHolderListener itemView) {
+        callLogsAdapter.setItemView(itemView);
     }
 
     /**
@@ -1243,8 +1292,8 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     private void hideAllStates() {
         setRecyclerViewVisibility(View.GONE);
-        setEmptyStateVisibility(View.GONE);
-        setErrorStateVisibility(View.GONE);
+        binding.emptyStateView.setVisibility(GONE);
+        binding.errorStateView.setVisibility(GONE);
         setShimmerVisibility(View.GONE);
         setCustomLoaderVisibility(View.GONE);
     }
@@ -1256,24 +1305,6 @@ public class CometChatCallLogs extends MaterialCardView {
      */
     private void setRecyclerViewVisibility(int visibility) {
         binding.recyclerviewList.setVisibility(visibility);
-    }
-
-    /**
-     * Sets the visibility of the empty state view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setEmptyStateVisibility(int visibility) {
-        binding.emptyStateView.setVisibility(visibility);
-    }
-
-    /**
-     * Sets the visibility of the error state view.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    private void setErrorStateVisibility(int visibility) {
-        binding.errorStateView.setVisibility(visibility);
     }
 
     /**
@@ -1304,14 +1335,6 @@ public class CometChatCallLogs extends MaterialCardView {
     }
 
     /**
-     * Retry logic to fetch the call logs and show the shimmer effect while loading.
-     */
-    private void retry() {
-        showShimmer = true;
-        callLogsViewModel.fetchCalls();
-    }
-
-    /**
      * Scrolls the recycler view to the top if the first visible item is within the
      * first five positions.
      */
@@ -1319,15 +1342,6 @@ public class CometChatCallLogs extends MaterialCardView {
         if (layoutManager.findFirstVisibleItemPosition() < 5) {
             layoutManager.scrollToPosition(0);
         }
-    }
-
-    /**
-     * Sets a listener for click events on the call logs.
-     *
-     * @param click Listener to handle call log click events.
-     */
-    public void setClickListener(CallLogsClickListener click) {
-        callLogsAdapter.setCometChatCallLogClickListener(click);
     }
 
     /**
@@ -1348,6 +1362,32 @@ public class CometChatCallLogs extends MaterialCardView {
         this.onError = onError;
     }
 
+    public OnEmpty getOnEmpty() {
+        return onEmpty;
+    }
+
+    /**
+     * Sets a callback for handling the empty state of the call logs.
+     *
+     * @param onEmpty
+     */
+    public void setOnEmpty(OnEmpty onEmpty) {
+        this.onEmpty = onEmpty;
+    }
+
+    public OnLoad<CallLog> getOnLoad() {
+        return onLoad;
+    }
+
+    /**
+     * Returns the current OnLoad listener.
+     *
+     * @return The OnLoad listener.
+     */
+    public void setOnLoad(OnLoad<CallLog> onLoad) {
+        this.onLoad = onLoad;
+    }
+
     /**
      * Returns the current OnBackPress listener.
      *
@@ -1362,35 +1402,35 @@ public class CometChatCallLogs extends MaterialCardView {
      *
      * @param onBackPress Listener to handle back press events.
      */
-    public void setOnBackPress(OnBackPress onBackPress) {
+    public void setOnBackPressListener(OnBackPress onBackPress) {
         this.onBackPress = onBackPress;
     }
 
-    /**
-     * Sets the visibility of the back icon in the toolbar.
-     *
-     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
-     */
-    public void setBackIconVisibility(int visibility) {
-        binding.toolbarBackIcon.setVisibility(visibility);
+    public OnItemClick<CallLog> getOnItemClick() {
+        return onItemClick;
     }
 
-    /**
-     * Configures whether to hide the error state in the UI.
-     *
-     * @param hideError True to hide the error state, false to show it.
-     */
-    public void hideError(boolean hideError) {
-        this.hideError = hideError;
+    public void setOnItemClick(OnItemClick<CallLog> onItemClickListener) {
+        this.onItemClick = onItemClickListener;
+        callLogsAdapter.setItemClickListener(onItemClickListener);
     }
 
-    /**
-     * Hides or shows the toolbar based on the provided boolean value.
-     *
-     * @param hideToolbar True to hide the toolbar, false to show it.
-     */
-    public void hideToolbar(boolean hideToolbar) {
-        binding.toolbarLayout.setVisibility(hideToolbar ? View.GONE : View.VISIBLE);
+    public OnItemLongClick<CallLog> getOnItemLongClick() {
+        return onItemLongClick;
+    }
+
+    public void setOnItemLongClick(OnItemLongClick<CallLog> onItemLongClick) {
+        this.onItemLongClick = onItemLongClick;
+        callLogsAdapter.setItemLongClickListener(onItemLongClick);
+    }
+
+    public OnCallIconClick getOnCallIconClickListener() {
+        return onCallIconClickListener;
+    }
+
+    public void setOnCallIconClickListener(OnCallIconClick onCallIconClickListener) {
+        this.onCallIconClickListener = onCallIconClickListener;
+        callLogsAdapter.setCallIconClickListener(onCallIconClickListener);
     }
 
     /**
@@ -1413,82 +1453,6 @@ public class CometChatCallLogs extends MaterialCardView {
     }
 
     /**
-     * Gets the title of the error state.
-     *
-     * @return The error state title.
-     */
-    public String getErrorStateTitle() {
-        return errorStateTitle;
-    }
-
-    /**
-     * Sets the title for the error state in the UI.
-     *
-     * @param errorStateTitle The title to display for the error state.
-     */
-    public void setErrorStateTitle(String errorStateTitle) {
-        this.errorStateTitle = errorStateTitle;
-        binding.tvErrorStateTitle.setText(errorStateTitle);
-    }
-
-    /**
-     * Gets the subtitle of the error state.
-     *
-     * @return The error state subtitle.
-     */
-    public String getErrorStateSubtitle() {
-        return errorStateSubtitle;
-    }
-
-    /**
-     * Sets the subtitle for the error state in the UI.
-     *
-     * @param errorStateSubtitle The subtitle to display for the error state.
-     */
-    public void setErrorStateSubtitle(String errorStateSubtitle) {
-        this.errorStateSubtitle = errorStateSubtitle;
-        binding.tvErrorStateSubtitle.setText(errorStateSubtitle);
-    }
-
-    /**
-     * Gets the title of the empty state.
-     *
-     * @return The empty state title.
-     */
-    public String getEmptyStateTitle() {
-        return emptyStateTitle;
-    }
-
-    /**
-     * Sets the title for the empty state in the UI.
-     *
-     * @param emptyStateTitle The title to display for the empty state.
-     */
-    public void setEmptyStateTitle(String emptyStateTitle) {
-        this.emptyStateTitle = emptyStateTitle;
-        binding.tvEmptyStateTitle.setText(emptyStateTitle);
-    }
-
-    /**
-     * Gets the subtitle of the empty state.
-     *
-     * @return The empty state subtitle.
-     */
-    public String getEmptyStateSubtitle() {
-        return emptyStateSubtitle;
-    }
-
-    /**
-     * Sets the subtitle for the empty state in the UI.
-     *
-     * @param emptyStateSubtitle The subtitle to display for the empty state.
-     */
-    public void setEmptyStateSubtitle(String emptyStateSubtitle) {
-        this.emptyStateSubtitle = emptyStateSubtitle;
-        binding.tvEmptyStateSubtitle.setText(emptyStateSubtitle);
-    }
-
-    /**
      * Gets the binding object for CometChatCallLogs.
      *
      * @return The CometChatCallLogsBinding instance.
@@ -1496,6 +1460,212 @@ public class CometChatCallLogs extends MaterialCardView {
     public CometchatCallLogsBinding getBinding() {
         return binding;
     }
+
+    /**
+     * Retrieves the visibility status of the toolbar.
+     *
+     * @return An integer representing the visibility of the toolbar.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getToolbarVisibility() {
+        return toolbarVisibility;
+    }
+
+    /**
+     * Sets the visibility of the toolbar layout.
+     * Updates the toolbar layout's visibility based on the provided value.
+     *
+     * @param toolbarVisibility An integer representing the visibility status of the toolbar layout.
+     *                          Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                          or {@code View.GONE}.
+     */
+    public void setToolbarVisibility(int toolbarVisibility) {
+        this.toolbarVisibility = toolbarVisibility;
+        binding.toolbarLayout.setVisibility(toolbarVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the back icon.
+     *
+     * @return An integer representing the visibility of the back icon.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getBackIconVisibility() {
+        return backIconVisibility;
+    }
+
+    /**
+     * Sets the visibility of the back icon in the toolbar.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    public void setBackIconVisibility(int visibility) {
+        this.backIconVisibility = visibility;
+        binding.toolbarBackIcon.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the empty state indicator.
+     *
+     * @return An integer representing the visibility of the empty state.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getEmptyStateVisibility() {
+        return emptyStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the empty state view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    private void setEmptyStateVisibility(int visibility) {
+        this.emptyStateVisibility = visibility;
+        binding.emptyStateView.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the loading state indicator.
+     *
+     * @return An integer representing the visibility of the loading state.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getLoadingStateVisibility() {
+        return loadingStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the loading state.
+     * Also updates the shimmer effect visibility based on the provided value.
+     *
+     * @param loadingStateVisibility An integer representing the visibility status of the loading state.
+     *                               Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                               or {@code View.GONE}.
+     */
+    public void setLoadingStateVisibility(int loadingStateVisibility) {
+        this.loadingStateVisibility = loadingStateVisibility;
+        setShimmerVisibility(loadingStateVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the error state indicator.
+     *
+     * @return An integer representing the visibility of the error state.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getErrorStateVisibility() {
+        return errorStateVisibility;
+    }
+
+    /**
+     * Sets the visibility of the error state view.
+     *
+     * @param visibility Visibility constant (View.VISIBLE, View.GONE, etc.).
+     */
+    private void setErrorStateVisibility(int visibility) {
+        this.errorStateVisibility = visibility;
+        binding.errorStateView.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the separator view.
+     *
+     * @return An integer representing the visibility of the separator.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getSeparatorVisibility() {
+        return separatorVisibility;
+    }
+
+    /**
+     * Sets the visibility of the separator view.
+     * Updates the visibility of the separator line based on the provided value.
+     *
+     * @param separatorVisibility An integer representing the visibility status of the separator.
+     *                            Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                            or {@code View.GONE}.
+     */
+    public void setSeparatorVisibility(int separatorVisibility) {
+        this.separatorVisibility = separatorVisibility;
+        binding.viewSeparator.setVisibility(separatorVisibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the title.
+     *
+     * @return An integer representing the visibility of the title.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getTitleVisibility() {
+        return titleVisibility;
+    }
+
+    /**
+     * Sets the visibility of the title.
+     * Updates the toolbar title's visibility based on the provided value.
+     *
+     * @param titleVisibility An integer representing the visibility status of the title.
+     *                        Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE},
+     *                        or {@code View.GONE}.
+     */
+    public void setTitleVisibility(int titleVisibility) {
+        this.titleVisibility = titleVisibility;
+        binding.toolbarTitle.setVisibility(titleVisibility);
+    }
+
+    /**
+     * Retrieves the adapter used for displaying the call logs list.
+     *
+     * @return The {@link CallLogsAdapter} instance.
+     */
+    public CallLogsAdapter getAdapter() {
+        return callLogsAdapter;
+    }
+
+    /**
+     * Sets the adapter for the call logs list.
+     * Binds the provided {@link CallLogsAdapter} to the recycler view.
+     *
+     * @param callLogsAdapter The {@link CallLogsAdapter} instance to be set.
+     */
+    public void setAdapter(CallLogsAdapter callLogsAdapter) {
+        this.callLogsAdapter = callLogsAdapter;
+        binding.recyclerviewList.setAdapter(callLogsAdapter);
+    }
+
+    /**
+     * Retrieves the function that provides additional menu options for a call log.
+     *
+     * @return A {@link Function2} that takes a {@link Context} and a {@link CallLog}
+     * as input and returns a list of {@link CometChatPopupMenu.MenuItem}.
+     */
+    public Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> getAddOptions() {
+        return addOptions;
+    }
+
+    public void setAddOptions(Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> addOptions) {
+        this.addOptions = addOptions;
+    }
+
+    /**
+     * Retrieves the function that provides menu options for a call log.
+     *
+     * @return A {@link Function2} that takes a {@link Context} and a {@link CallLog}
+     * as input and returns a list of {@link CometChatPopupMenu.MenuItem}.
+     */
+    public Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> getOptions() {
+        return options;
+    }
+
+    public void setOptions(Function2<Context, CallLog, List<CometChatPopupMenu.MenuItem>> options) {
+        this.options = options;
+    }
+
+    public interface OnCallIconClick {
+        void onCallIconClick(View view, CallLogsAdapter.CallLogsViewHolder holder, int position, CallLog callLog);
+    }
+
+
 
 
 

@@ -41,6 +41,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.cometchat.chat.constants.CometChatConstants;
 import com.cometchat.chat.core.Call;
 import com.cometchat.chat.core.MessagesRequest;
+import com.cometchat.chat.core.ReactionsRequest;
 import com.cometchat.chat.exceptions.CometChatException;
 import com.cometchat.chat.models.Action;
 import com.cometchat.chat.models.BaseMessage;
@@ -50,13 +51,12 @@ import com.cometchat.chat.models.ReactionCount;
 import com.cometchat.chat.models.TextMessage;
 import com.cometchat.chat.models.User;
 import com.cometchat.chatuikit.R;
-import com.cometchat.chatuikit.extensions.reaction.emojikeyboard.CometChatEmojiKeyboard;
-import com.cometchat.chatuikit.extensions.reaction.emojikeyboard.EmojiKeyBoardView;
 import com.cometchat.chatuikit.logger.CometChatLogger;
 import com.cometchat.chatuikit.messageinformation.CometChatMessageInformation;
 import com.cometchat.chatuikit.reactionlist.CometChatReactionList;
-import com.cometchat.chatuikit.reactionlist.interfaces.CometChatUIKitReactionActionEvents;
+import com.cometchat.chatuikit.reactionlist.OnReactionListItemClick;
 import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKit;
+import com.cometchat.chatuikit.shared.cometchatuikit.CometChatUIKitHelper;
 import com.cometchat.chatuikit.shared.constants.UIKitConstants;
 import com.cometchat.chatuikit.shared.formatters.CometChatMentionsFormatter;
 import com.cometchat.chatuikit.shared.formatters.CometChatTextFormatter;
@@ -65,7 +65,9 @@ import com.cometchat.chatuikit.shared.framework.ChatConfigurator;
 import com.cometchat.chatuikit.shared.interfaces.EmojiPickerClickListener;
 import com.cometchat.chatuikit.shared.interfaces.Function1;
 import com.cometchat.chatuikit.shared.interfaces.MessageOptionClickListener;
+import com.cometchat.chatuikit.shared.interfaces.OnEmpty;
 import com.cometchat.chatuikit.shared.interfaces.OnError;
+import com.cometchat.chatuikit.shared.interfaces.OnLoad;
 import com.cometchat.chatuikit.shared.interfaces.ReactionClickListener;
 import com.cometchat.chatuikit.shared.models.AdditionParameter;
 import com.cometchat.chatuikit.shared.models.CometChatMessageOption;
@@ -77,10 +79,17 @@ import com.cometchat.chatuikit.shared.resources.utils.MediaUtils;
 import com.cometchat.chatuikit.shared.resources.utils.Utils;
 import com.cometchat.chatuikit.shared.resources.utils.custom_dialog.CometChatConfirmDialog;
 import com.cometchat.chatuikit.shared.resources.utils.sticker_header.StickyHeaderDecoration;
+import com.cometchat.chatuikit.shared.views.aiconversationstarter.CometChatAIConversationStarterView;
+import com.cometchat.chatuikit.shared.views.aismartreplies.CometChatAISmartRepliesView;
 import com.cometchat.chatuikit.shared.views.badge.CometChatBadge;
 import com.cometchat.chatuikit.shared.views.messagebubble.CometChatMessageBubble;
 import com.cometchat.chatuikit.shared.views.optionsheet.OptionSheetMenuItem;
 import com.cometchat.chatuikit.shared.views.optionsheet.messageoptionsheet.CometChatMessageOptionSheet;
+import com.cometchat.chatuikit.shared.views.reaction.emojikeyboard.CometChatEmojiKeyboard;
+import com.cometchat.chatuikit.shared.views.reaction.emojikeyboard.EmojiKeyBoardView;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnAddMoreReactionsClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionClick;
+import com.cometchat.chatuikit.shared.views.reaction.interfaces.OnReactionLongClick;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerAdapter;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerFrameLayout;
 import com.cometchat.chatuikit.shimmer.CometChatShimmerUtils;
@@ -88,7 +97,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -122,6 +133,21 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     private final HashMap<String, String> messageTypesToRetrieve = new HashMap<>();
     private final HashMap<String, String> messageCategoriesToRetrieve = new HashMap<>();
     private final HashMap<String, CometChatMessageTemplate> messageTemplateHashMap = new HashMap<>();
+    private boolean enableConversationStarter = false;
+    private boolean enableSmartReplies = false;
+    private int replyInThreadOptionVisibility = VISIBLE;
+    private int translateMessageOptionVisibility = VISIBLE;
+    private int copyMessageOptionVisibility = VISIBLE;
+    private int editMessageOptionVisibility = VISIBLE;
+    private int shareMessageOptionVisibility = VISIBLE;
+    private int messagePrivatelyOptionVisibility = VISIBLE;
+    private int deleteMessageOptionVisibility = VISIBLE;
+    private int messageInfoOptionVisibility = VISIBLE;
+    private int groupActionMessageVisibility = VISIBLE;
+    private int messageReactionOptionVisibility = VISIBLE;
+    private int avatarVisibility = VISIBLE;
+    private int receiptsVisibility = VISIBLE;
+
     // User and Group
     private User user;
     private Group group;
@@ -145,48 +171,34 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     private boolean isScrolling;
     private boolean isInProgress;
     private boolean scrollToBottomOnNewMessage;
-
     // UI Components - Headers, Footers, and Indicators
     private LinearLayout headerView, footerView;
     private MaterialCardView newMessageLayout;
     private CometChatBadge badge;
     private ImageView newMessageIndicatorIcon;
-
     private int newMessageCount = 0;
-
     // Custom Views (Empty, Error, Loading)
     private View customEmptyView;
     private View customErrorView;
     private View customLoadingView;
-    private String customErrorStateTitleText;
-    private String customErrorStateSubtitleText;
-
-    // Error State
-    private boolean hideError;
-    private String errorStateText;
+    private int errorStateVisibility = VISIBLE;
     private TextView errorTextView, errorSubtitleTextView;
     private @ColorInt int errorStateTitleTextColor;
     private @ColorInt int errorStateSubtitleTextColor;
     private @StyleRes int errorStateTitleTextAppearance;
     private @StyleRes int errorStateSubtitleTextAppearance;
-
     // Shimmer Layouts and Adapters
     private LinearLayout shimmerParentLayout;
     private RecyclerView shimmerRecyclerviewMessageListList;
     private CometChatShimmerFrameLayout shimmerEffectFrame;
-
     // Custom Panels (Top, Bottom)
     private View internalBottomPanel, internalTopPanel;
     private RelativeLayout messageListLayout;
-
     // Reactions and Mentions
     private CometChatEmojiKeyboard emojiKeyboard;
     private CometChatMentionsFormatter cometchatMentionsFormatter;
     private List<String> quickReactions;
-    private boolean disableReactions = false;
-    private boolean hideAddReactionsIcon = false;
     private @DrawableRes int addReactionIcon;
-
     // Dialogs and Alerts
     private CometChatMessageInformation cometchatMessageInformation;
     private CometChatConfirmDialog deleteAlertDialog;
@@ -202,8 +214,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         @Override
         public void onChanged(UIKitConstants.DeleteState progressState) {
             if (UIKitConstants.DeleteState.INITIATED_DELETE.equals(progressState)) {
-                if (deleteAlertDialog != null)
-                    deleteAlertDialog.hidePositiveButtonProgressBar(false);
+                if (deleteAlertDialog != null) deleteAlertDialog.hidePositiveButtonProgressBar(false);
             } else if (UIKitConstants.DeleteState.SUCCESS_DELETE.equals(progressState)) {
                 if (deleteAlertDialog != null) {
                     deleteAlertDialog.dismiss();
@@ -239,65 +250,10 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     private BottomSheetDialog bottomSheetDialog;
     // ViewModel
     private MessageListViewModel messageListViewModel;
-    /**
-     * Initializes a final instance of {@link CometChatUIKitReactionActionEvents} to
-     * handle reaction events on chat messages. The implementation provides
-     * functionality to add or remove reactions from messages, handle long-click
-     * actions on reactions, and open a bottom sheet dialog for selecting more
-     * reactions.
-     *
-     * <p>
-     * Key functionalities include:
-     *
-     * <ul>
-     * <li>{onReactionAdded(Context, BaseMessage, String)}: Adds a reaction to a
-     * message. If the reaction is already added by the user, it is removed.
-     * <li>{onReactionRemoved(Context, BaseMessage, String)}: Removes a reaction
-     * from a message. If the reaction exists, it is removed; otherwise, it adds the
-     * reaction again.
-     * <li>{onReactionLongClick(Context, BaseMessage, String)}: Handles long-click
-     * events on reactions, opening a bottom sheet dialog to display more options.
-     * <li>{onOpenMoreReactions(Context, BaseMessage)}: Opens a bottom sheet dialog
-     * for selecting more reactions.
-     * </ul>
-     */
-    private final CometChatUIKitReactionActionEvents cometchatUIKitReactionActionEvents = new CometChatUIKitReactionActionEvents() {
-        @Override
-        public void onReactionAdded(Context context, BaseMessage baseMessage, String emoji) {
-            // Adds or removes a reaction based on user interaction.
-            for (ReactionCount reactionCount : baseMessage.getReactions()) {
-                if (reactionCount.getReaction().equals(emoji) && reactionCount.getReactedByMe()) {
-                    messageListViewModel.removeReaction(baseMessage, emoji);
-                    return;
-                }
-            }
-            messageListViewModel.addReaction(baseMessage, emoji);
-        }
-
-        @Override
-        public void onReactionRemoved(Context context, BaseMessage baseMessage, String emoji) {
-            // Removes the reaction if the user has reacted with the emoji, or adds it back.
-            for (ReactionCount reactionCount : baseMessage.getReactions()) {
-                if (reactionCount.getReaction().equals(emoji) && reactionCount.getReactedByMe()) {
-                    messageListViewModel.removeReaction(baseMessage, emoji);
-                    return;
-                }
-            }
-            messageListViewModel.addReaction(baseMessage, emoji);
-        }
-
-        @Override
-        public void onReactionLongClick(Context context, BaseMessage baseMessage, String emoji) {
-            // Opens a bottom sheet for managing reactions on long-click.
-            openReactionListBottomSheet(emoji, baseMessage);
-        }
-
-        @Override
-        public void onOpenMoreReactions(Context context, BaseMessage baseMessage) {
-            // Opens a bottom sheet with more reaction options.
-            openReactionListBottomSheet(getContext().getString(R.string.cometchat_all), baseMessage);
-        }
-    };
+    // Interfaces
+    private OnError onError;
+    private OnLoad<BaseMessage> onLoad;
+    private OnEmpty onEmpty;
     /**
      * Observer for monitoring changes in UI states. It reacts to different states
      * like LOADING, LOADED, ERROR, EMPTY, and NON_EMPTY.
@@ -323,13 +279,43 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                 break;
         }
     };
-    // Interfaces
-    private OnError onError;
+    private OnReactionListItemClick onReactionListItemClick;
     private ThreadReplyClick onThreadRepliesClick;
     private MessageAdapter.OnMessageLongClick messageLongClick;
     private EmojiPickerClickListener emojiPickerClickListener;
     private MessageOptionClickListener messageOptionClickListener;
-    private ReactionClickListener reactionClickListener;
+    private ReactionClickListener quickReactionClickListener;
+    private ReactionsRequest.ReactionsRequestBuilder reactionRequestBuilder;
+    /**
+     * onReactionClick is an interface that provides methods to handle click on reaction
+     */
+    private OnReactionClick onReactionClick = new OnReactionClick() {
+        @Override
+        public void onClick(String emoji, BaseMessage baseMessage) {
+            for (ReactionCount reactionCount : baseMessage.getReactions()) {
+                if (reactionCount.getReaction().equals(emoji) && reactionCount.getReactedByMe()) {
+                    messageListViewModel.removeReaction(baseMessage, emoji);
+                    return;
+                }
+            }
+            messageListViewModel.addReaction(baseMessage, emoji);
+        }
+    };
+    /**
+     * onReactionLongClick is an interface that provides methods to handle long click on reaction
+     */
+    private OnReactionLongClick onReactionLongClick = this::openReactionListBottomSheet;
+    /**
+     * onAddMoreReactionsClick is an interface that provides methods to handle click on add more reactions
+     */
+    private OnAddMoreReactionsClick onAddMoreReactionsClick = baseMessage -> openReactionListBottomSheet(getContext().getString(R.string.cometchat_all),
+                                                                                                         baseMessage);
+    private List<String> smartRepliesKeywords;
+    private int smartRepliesDelayDuration;
+    private CometChatAISmartRepliesView aiSmartRepliesView;
+    private CometChatAIConversationStarterView aiConversationStarterView;
+    private @StyleRes int smartRepliesStyle = 0;
+    private @StyleRes int conversationStarterStyle = 0;
 
     /**
      * Constructs a new {@link CometChatMessageList} with the specified context.
@@ -374,6 +360,8 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         CometChatReactionList cometchatReactionList = new CometChatReactionList(getContext());
         cometchatReactionList.setSelectedReaction(emoji);
         cometchatReactionList.setBaseMessage(baseMessage);
+        cometchatReactionList.setReactionsRequestBuilder(reactionRequestBuilder);
+        cometchatReactionList.setOnReactionListItemClick(onReactionListItemClick);
         cometchatReactionList.setOnEmpty(() -> bottomSheetDialog.dismiss());
         showBottomSheet(bottomSheetDialog, true, true, cometchatReactionList);
     }
@@ -462,15 +450,19 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
 
         // Initialize text formatters and set default mentions
         this.textFormatters = new ArrayList<>();
+        setQuickReactions(Arrays.asList(Utils.getDefaultReactionsList()));
+        initializeSmartRepliesView();
+        initializeConversationStarterView();
         processMentionsFormatter();
-        setTextFormatters(null);
 
         // Set up RecyclerView for the chat list
         rvChatListView = view.findViewById(R.id.rv_message_list);
         messageAdapter = new MessageAdapter(getContext(), messageTemplateHashMap, messageLongClick);
 
         // Configure message adapter with reactions Action Events
-        messageAdapter.setReactionsEvents(cometchatUIKitReactionActionEvents);
+        messageAdapter.setOnReactionClick(onReactionClick);
+        messageAdapter.setOnReactionLongClick(onReactionLongClick);
+        messageAdapter.setOnAddMoreReactionsClick(onAddMoreReactionsClick);
 
         // Fetch and set message filters
         fetchMessageFilter();
@@ -498,7 +490,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         parent = view.findViewById(R.id.parent);
 
         // Hide header date initially
-        hideHeaderDate(false);
+        setStickyDateVisibility(VISIBLE);
 
         // Set up message list layout and header/footer views
         messageListLayout = view.findViewById(R.id.message_list_layout);
@@ -529,10 +521,26 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
 
         newMessageLayout.setOnClickListener(v -> {
             newMessageCount = 0;
-            if (isScrolling)
-                rvChatListView.stopScroll();
+            if (isScrolling) rvChatListView.stopScroll();
             scrollToBottom();
             newMessageLayout.setVisibility(GONE);
+        });
+    }
+
+    private void initializeConversationStarterView() {
+        aiConversationStarterView = new CometChatAIConversationStarterView(getContext());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                               ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(Utils.convertDpToPx(getContext(), 10),
+                                getResources().getDimensionPixelSize(R.dimen.cometchat_margin_2),
+                                Utils.convertDpToPx(getContext(), 10),
+                                Utils.convertDpToPx(getContext(), 10)
+        );
+        aiConversationStarterView.setLayoutParams(layoutParams);
+        aiConversationStarterView.setOnClick((id, reply, position) -> {
+            CometChatUIKitHelper.onComposeMessage(id, reply);
+            detachedAIConversationStarterView();
         });
     }
 
@@ -555,6 +563,77 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         messageListViewModel.closeBottomPanel().observe((AppCompatActivity) getContext(), this::closeInternalBottomPanel);
         messageListViewModel.showTopPanel().observe((AppCompatActivity) getContext(), this::showInternalTopPanel);
         messageListViewModel.showBottomPanel().observe((AppCompatActivity) getContext(), this::showInternalBottomPanel);
+        messageListViewModel.getMutableSmartReplies().observe((AppCompatActivity) getContext(), this::setSmartReplies);
+        messageListViewModel
+            .getMutableConversationStarterReplies()
+            .observe((AppCompatActivity) getContext(), this::setConversationStarters);
+        messageListViewModel.getRemoveConversationStarter().observe((AppCompatActivity) getContext(), this::removeAIView);
+        messageListViewModel.getConversationStarterUIState().observe((AppCompatActivity) getContext(), this::handleConversationStarterUIState);
+        messageListViewModel.getSmartRepliesUIState().observe((AppCompatActivity) getContext(), this::handleAISmartRepliesUIState);
+    }
+
+    public void handleAISmartRepliesUIState(UIKitConstants.States states) {
+        switch (states) {
+            case LOADING:
+                aiSmartRepliesView.showLoadingView();
+                attachAISmartRepliesView();
+                break;
+            case ERROR:
+                aiSmartRepliesView.showErrorView();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void attachAISmartRepliesView() {
+        setFooterView(aiSmartRepliesView);
+    }
+
+    public void detachedAISmartRepliesView() {
+        footerView.removeView(aiSmartRepliesView);
+    }
+
+    public void handleConversationStarterUIState(UIKitConstants.States states) {
+        switch (states) {
+            case LOADING:
+                aiConversationStarterView.showLoadingView();
+                setFooterView(aiConversationStarterView);
+                break;
+            case ERROR:
+                aiConversationStarterView.showErrorView();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void attachAIConversationStarterView() {
+        setFooterView(aiConversationStarterView);
+    }
+
+    /**
+     * Sets a custom footer view for the message list.
+     *
+     * @param footerView The View object representing the custom footer view.
+     */
+    public void setFooterView(View footerView) {
+        Utils.handleView(this.footerView, footerView, false);
+    }
+
+    public void detachedAIConversationStarterView() {
+        footerView.removeView(aiConversationStarterView);
+    }
+
+    private void removeAIView(Boolean aBoolean) {
+        if (aBoolean) {
+            detachedAISmartRepliesView();
+            detachedAIConversationStarterView();
+        }
+    }
+
+    private void setConversationStarters(List<String> strings) {
+        aiConversationStarterView.setReplyList(strings);
     }
 
     /**
@@ -592,8 +671,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
             newMessageCount = 0;
         } else {
             newMessageLayout.setVisibility(VISIBLE);
-            if (newMessageCount == 0)
-                badge.setVisibility(GONE);
+            if (newMessageCount == 0) badge.setVisibility(GONE);
             else {
                 badge.setVisibility(VISIBLE);
                 badge.setCount(newMessageCount);
@@ -648,6 +726,9 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
             setRadius(typedArray.getDimension(R.styleable.CometChatMessageList_cometchatMessageListCornerRadius, 0));
             Drawable backgroundDrawable = typedArray.getDrawable(R.styleable.CometChatMessageList_cometchatMessageListBackgroundDrawable);
             setReactionListStyle(typedArray.getResourceId(R.styleable.CometChatMessageList_cometchatMessageListReactionListStyle, 0));
+            setAISmartRepliesStyle(typedArray.getResourceId(R.styleable.CometChatMessageList_cometchatMessageListAISmartRepliesStyle, 0));
+            setAIConversationStarterStyle(typedArray.getResourceId(R.styleable.CometChatMessageList_cometchatMessageListAIConversationStarterStyle,
+                                                                   0));
             if (backgroundDrawable != null) setBackgroundDrawable(backgroundDrawable);
         } finally {
             typedArray.recycle();
@@ -710,6 +791,83 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         } finally {
             typedArray.recycle();
         }
+    }
+
+    private void setSmartReplies(List<String> replies) {
+        aiSmartRepliesView.setReplyList(replies);
+    }
+
+    public void initializeSmartRepliesView() {
+        aiSmartRepliesView = new CometChatAISmartRepliesView(getContext());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                               ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(Utils.convertDpToPx(getContext(), 10),
+                                getResources().getDimensionPixelSize(R.dimen.cometchat_margin_2),
+                                Utils.convertDpToPx(getContext(), 10),
+                                Utils.convertDpToPx(getContext(), 10)
+        );
+        aiSmartRepliesView.setLayoutParams(layoutParams);
+
+        aiSmartRepliesView.setOnCLoseIconClick(view -> detachedAISmartRepliesView());
+        aiSmartRepliesView.setOnClick((view, id, reply, position) -> {
+            CometChatUIKitHelper.onComposeMessage(id, reply);
+            detachedAISmartRepliesView();
+        });
+    }
+
+    public boolean isEnableConversationStarter() {
+        return enableConversationStarter;
+    }
+
+    public void setEnableConversationStarter(boolean enableConversationStarter) {
+        this.enableConversationStarter = enableConversationStarter;
+        messageListViewModel.setEnableConversationStarter(enableConversationStarter);
+    }
+
+    public boolean isEnableSmartReplies() {
+        return enableSmartReplies;
+    }
+
+    public void setEnableSmartReplies(boolean enableSmartReplies) {
+        this.enableSmartReplies = enableSmartReplies;
+        messageListViewModel.setEnableSmartReplies(enableSmartReplies);
+    }
+
+    public List<String> getSmartRepliesKeywords() {
+        return smartRepliesKeywords;
+    }
+
+    public void setAISmartRepliesKeywords(List<String> smartRepliesKeywords) {
+        this.smartRepliesKeywords = smartRepliesKeywords;
+        messageListViewModel.setSmartReplyKeywords(smartRepliesKeywords);
+    }
+
+    public int getAISmartRepliesDelayDuration() {
+        return smartRepliesDelayDuration;
+    }
+
+    public void setSmartRepliesDelayDuration(int smartRepliesDelayDuration) {
+        this.smartRepliesDelayDuration = smartRepliesDelayDuration;
+        messageListViewModel.setSmartRepliesDelay(smartRepliesDelayDuration);
+    }
+
+    public int getAISmartRepliesStyle() {
+        return smartRepliesStyle;
+    }
+
+    public void setAISmartRepliesStyle(@StyleRes int styleResId) {
+        this.smartRepliesStyle = styleResId;
+        aiSmartRepliesView.setStyle(styleResId);
+    }
+
+    public int getAIConversationStarterStyle() {
+        return conversationStarterStyle;
+    }
+
+    public void setAIConversationStarterStyle(@StyleRes int styleResId) {
+        this.conversationStarterStyle = styleResId;
+        aiConversationStarterView.setStyle(styleResId);
     }
 
     /**
@@ -821,41 +979,14 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * `cometchatMentionsFormatter` if found.
      */
     private void processMentionsFormatter() {
-        for (CometChatTextFormatter textFormatter : CometChatUIKit.getDataSource().getTextFormatters(getContext())) {
+        List<CometChatTextFormatter> formatters = CometChatUIKit.getDataSource().getTextFormatters(getContext(), additionParameter);
+        for (CometChatTextFormatter textFormatter : formatters) {
             if (textFormatter instanceof CometChatMentionsFormatter) {
                 cometchatMentionsFormatter = (CometChatMentionsFormatter) textFormatter;
                 break;
             }
         }
-        this.textFormatters.add(cometchatMentionsFormatter);
-    }
-
-    /**
-     * Sets the list of custom text formatters.
-     *
-     * @param cometchatTextFormatters A list of {@link CometChatTextFormatter} to add to the current
-     *                                list of formatters. If the provided list is not null, it will add
-     *                                these formatters to the existing ones and process them.
-     */
-    public void setTextFormatters(List<CometChatTextFormatter> cometchatTextFormatters) {
-        if (cometchatTextFormatters != null) {
-            this.textFormatters.addAll(cometchatTextFormatters);
-            processFormatters();
-        }
-    }
-
-    /**
-     * Enables or disables the mentions feature in the text formatters. If mentions
-     * are disabled, it removes the {@link CometChatMentionsFormatter} from the list
-     * of formatters.
-     *
-     * @param disable True to disable mentions, false to enable them.
-     */
-    public void setDisableMentions(boolean disable) {
-        if (disable) {
-            textFormatters.remove(cometchatMentionsFormatter);
-            processFormatters();
-        }
+        setTextFormatters(formatters);
     }
 
     /**
@@ -904,10 +1035,10 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     /**
      * Toggles the visibility of the header date in the message list.
      *
-     * @param hide If true, hides the header date; if false, shows the header date.
+     * @param visibility If GONE, hides the header date; if VISIBLE, shows the header date.
      */
-    public void hideHeaderDate(boolean hide) {
-        if (!hide) {
+    public void setStickyDateVisibility(int visibility) {
+        if (visibility == VISIBLE) {
             stickyHeaderDecoration = new StickyHeaderDecoration(messageAdapter);
             rvChatListView.addItemDecoration(stickyHeaderDecoration, 0);
         } else {
@@ -986,43 +1117,12 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
-     * Sets the title text for the error state.
-     *
-     * @param customErrorStateTitleText The custom title text to be set for the error state. If null, the
-     *                                  existing value remains unchanged.
-     */
-    public void setErrorStateTitleText(String customErrorStateTitleText) {
-        if (customErrorStateTitleText != null)
-            this.customErrorStateTitleText = customErrorStateTitleText;
-    }
-
-    /**
-     * Sets the subtitle text for the error state.
-     *
-     * @param customErrorStateSubtitleText The custom subtitle text to be set for the error state. If null,
-     *                                     the existing value remains unchanged.
-     */
-    public void setErrorStateSubtitleText(String customErrorStateSubtitleText) {
-        if (customErrorStateSubtitleText != null)
-            this.customErrorStateSubtitleText = customErrorStateSubtitleText;
-    }
-
-    /**
      * Sets whether to enable automatic fetching of messages.
      *
      * @param autoFetch If true, automatic fetching is enabled; if false, it is disabled.
      */
     public void setAutoFetch(boolean autoFetch) {
         this.autoFetch = autoFetch;
-    }
-
-    /**
-     * Hides or shows the deleted messages in the message list.
-     *
-     * @param hide Pass true to hide deleted messages, false to show them.
-     */
-    public void hideDeletedMessages(boolean hide) {
-        messageListViewModel.hideDeleteMessages(hide);
     }
 
     /**
@@ -1091,8 +1191,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * @param baseMessage The BaseMessage object representing the new message.
      */
     public void addMessage(BaseMessage baseMessage) {
-        if (!disableSoundForMessages)
-            soundManager.play(Sound.incomingMessage, customSoundForMessages);
+        if (!disableSoundForMessages) soundManager.play(Sound.incomingMessage, customSoundForMessages);
 
         if (!scrollToBottomOnNewMessage) {
             if (rvChatListView.getLayoutManager() != null) {
@@ -1102,20 +1201,19 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                     if (baseMessage != null && baseMessage.getSender() != null && CometChatUIKit.getLoggedInUser() != null && !CometChatUIKit
                         .getLoggedInUser()
                         .getUid()
-                        .equalsIgnoreCase(baseMessage.getSender().getUid()))
-                        showNewMessage(++newMessageCount);
+                        .equalsIgnoreCase(baseMessage.getSender().getUid())) showNewMessage(++newMessageCount);
                     else messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
                 }
             } else {
                 if (baseMessage != null && baseMessage.getSender() != null && CometChatUIKit.getLoggedInUser() != null && !CometChatUIKit
                     .getLoggedInUser()
                     .getUid()
-                    .equalsIgnoreCase(baseMessage.getSender().getUid()))
-                    showNewMessage(++newMessageCount);
+                    .equalsIgnoreCase(baseMessage.getSender().getUid())) showNewMessage(++newMessageCount);
                 else messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
             }
         } else scrollToBottom();
     }
+
 
     /**
      * Sets a custom header view for the message list.
@@ -1124,42 +1222,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      */
     public void setHeaderView(View headerView) {
         Utils.handleView(this.headerView, headerView, false);
-    }
-
-    /**
-     * Sets a custom footer view for the message list.
-     *
-     * @param footerView The View object representing the custom footer view.
-     */
-    public void setFooterView(View footerView) {
-        Utils.handleView(this.footerView, footerView, false);
-    }
-
-    /**
-     * Sets the text color for the error state text of the message list.
-     *
-     * @param errorMessageColor The color value for the error state text.
-     */
-    public void errorStateTitleTextColor(@ColorInt int errorMessageColor) {
-        if (errorMessageColor != 0) this.errorStateTitleTextColor = errorMessageColor;
-    }
-
-    /**
-     * Sets the text color for the error state text of the message list.
-     *
-     * @param errorMessageColor The color value for the error state text.
-     */
-    public void errorStateSubtitleTextColor(@ColorInt int errorMessageColor) {
-        if (errorMessageColor != 0) this.errorStateSubtitleTextColor = errorMessageColor;
-    }
-
-    /**
-     * Sets the text for the error state of the message list.
-     *
-     * @param errorText The text to be displayed in the error state.
-     */
-    public void errorStateText(String errorText) {
-        if (errorText != null && !errorText.isEmpty()) this.errorStateText = errorText;
     }
 
     /**
@@ -1253,8 +1315,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                     containsActionMessage = true;
                 }
             }
-            if (containsActionMessage && ((messageAdapter.getItemCount() - 1) - linearLayoutManager.findLastVisibleItemPosition() < 10))
-                return true;
+            if (containsActionMessage && ((messageAdapter.getItemCount() - 1) - linearLayoutManager.findLastVisibleItemPosition() < 10)) return true;
         }
         return messageAdapter != null && ((messageAdapter.getItemCount() - 1) - linearLayoutManager.findLastVisibleItemPosition() < 5);
     }
@@ -1280,6 +1341,10 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         messageListViewModel.setMessagesRequestBuilder(builder);
     }
 
+    public void setReactionsRequestBuilder(ReactionsRequest.ReactionsRequestBuilder builder) {
+        this.reactionRequestBuilder = builder;
+    }
+
     /**
      * Sets whether to disable sound for messages in the message list.
      *
@@ -1290,22 +1355,23 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
-     * Sets a custom sound resource for incoming messages in the message list.
+     * Retrieves the visibility status of read receipts.
      *
-     * @param sound The resource ID of the custom sound. Pass 0 to use the default
-     *              sound.
+     * @return An integer representing the visibility of read receipts.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
      */
-    public void setCustomSoundForMessages(@RawRes int sound) {
-        if (sound != 0) this.customSoundForMessages = sound;
+    public int getReceiptsVisibility() {
+        return receiptsVisibility;
     }
 
     /**
      * Hide or show the read receipt in the Message list view.
      *
-     * @param hideReceipt true to hide the read receipt, false to show it.
+     * @param visibility GONE to hide the read receipt, VISIBLE to show it.
      */
-    public void hideReceipt(boolean hideReceipt) {
-        messageAdapter.hideReceipt(hideReceipt);
+    public void setReceiptsVisibility(int visibility) {
+        this.receiptsVisibility = visibility;
+        messageAdapter.hideReceipts(visibility != VISIBLE);
     }
 
     /**
@@ -1313,54 +1379,48 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @param alignment The MessageListAlignment enum representing the alignment.
      */
-    public void setAlignment(UIKitConstants.MessageListAlignment alignment) {
+    public void setMessageAlignment(UIKitConstants.MessageListAlignment alignment) {
         messageAdapter.setAlignment(alignment);
     }
 
     /**
-     * Shows or hides the avatar in the message list.
+     * Retrieves the visibility status of the avatar.
      *
-     * @param showAvatar True to show the avatar, false to hide the avatar.
+     * @return An integer representing the visibility of the avatar.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
      */
-    public void showAvatar(boolean showAvatar) {
-        messageAdapter.showAvatar(showAvatar);
+    public int getAvatarVisibility() {
+        return avatarVisibility;
+    }
+
+    /**
+     * Shows or hides the avatar in the Thread Header.
+     *
+     * @param visibility GONE to hide the avatar, VISIBLE to show it. Controls whether the
+     *                   sender's avatar appears alongside messages in the thread.
+     */
+    public void setAvatarVisibility(int visibility) {
+        this.avatarVisibility = visibility;
+        messageAdapter.showAvatar(visibility == VISIBLE);
     }
 
     /**
      * Sets the date pattern for displaying message dates in the message list.
      *
-     * @param datePattern The Function1 object representing the date pattern.
+     * @param timeFormat The SimpleDateFormat object representing the date pattern.
      */
-    public void setDatePattern(Function1<BaseMessage, String> datePattern) {
-        messageAdapter.setDatePattern(datePattern);
+    public void setTimeFormat(SimpleDateFormat timeFormat) {
+        messageAdapter.setTimeFormat(timeFormat);
     }
 
     /**
-     * Sets the date separator pattern for displaying date separators in the message
+     * Sets the date pattern for displaying sticky dates
      * list.
      *
-     * @param dateSeparatorPattern The Function1 object representing the date separator pattern.
+     * @param dateFormat The SimpleDateFormat object representing the date separator pattern.
      */
-    public void setDateSeparatorPattern(Function1<BaseMessage, String> dateSeparatorPattern) {
-        messageAdapter.setDateSeparatorPattern(dateSeparatorPattern);
-    }
-
-    /**
-     * Sets the alignment of the timestamp in messages in the message list.
-     *
-     * @param timeStampAlignment The TimeStampAlignment enum representing the timestamp alignment.
-     */
-    public void setTimeStampAlignment(UIKitConstants.TimeStampAlignment timeStampAlignment) {
-        messageAdapter.setTimeStampAlignment(timeStampAlignment);
-    }
-
-    /**
-     * Retrieves the current CometChat UIKit reaction action events instance.
-     *
-     * @return the instance of CometChatUIKitReactionActionEvents
-     */
-    public CometChatUIKitReactionActionEvents getCometChatUIKitReactionsEvents() {
-        return cometchatUIKitReactionActionEvents;
+    public void setDateFormat(SimpleDateFormat dateFormat) {
+        messageAdapter.setDateFormat(dateFormat);
     }
 
     /**
@@ -1397,12 +1457,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         }
     }
 
-    /**
-     * Retrieves the current instance of {@link CometChatUIKitReactionActionEvents}.
-     *
-     * @return The instance of {@link CometChatUIKitReactionActionEvents} used for
-     * handling reaction action events within the CometChat UIKit.
-     */
     public void fetchMessageFilter() {
         messageTypesToRetrieve.clear();
         messageCategoriesToRetrieve.clear();
@@ -1411,6 +1465,10 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         int i = 1;
         for (CometChatMessageTemplate template : messageTemplates) {
             if (template != null && template.getCategory() != null && template.getType() != null) {
+                if (groupActionMessageVisibility != VISIBLE && template.getType().equals(CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER)) {
+                    continue;
+                }
+
                 messageTypesToRetrieve.put(template.getCategory() + "_" + template.getType(), template.getType());
                 messageCategoriesToRetrieve.put(template.getCategory(), template.getCategory());
                 messageTemplateHashMap.put(template.getCategory() + "_" + template.getType(), template);
@@ -1490,16 +1548,20 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      */
     private void handleErrorState() {
         if (messageListViewModel.getMessageList() == null || messageListViewModel.getMessageList().isEmpty()) {
-            if (!hideError && customErrorView != null) {
-                customViewLayout.setVisibility(View.VISIBLE);
-                customViewLayout.removeAllViews();
-                customViewLayout.addView(customErrorView);
+            if (errorStateVisibility == VISIBLE) {
+                if (customErrorView != null) {
+                    customViewLayout.setVisibility(View.VISIBLE);
+                    customViewLayout.removeAllViews();
+                    customViewLayout.addView(customErrorView);
+                } else {
+                    hideShimmer();
+                    hideAllStates();
+                    errorTextView.setText(getResources().getString(R.string.cometchat_error_conversations_title));
+                    errorSubtitleTextView.setText(getResources().getString(R.string.cometchat_error_conversations_subtitle));
+                    errorViewLayout.setVisibility(View.VISIBLE);
+                }
             } else {
-                hideShimmer();
-                hideAllStates();
-                errorTextView.setText(customErrorStateTitleText == null ? getResources().getString(R.string.cometchat_error_conversations_title) : customErrorStateTitleText);
-                errorSubtitleTextView.setText(customErrorStateSubtitleText == null ? getResources().getString(R.string.cometchat_error_conversations_subtitle) : customErrorStateSubtitleText);
-                errorViewLayout.setVisibility(View.VISIBLE);
+                errorViewLayout.setVisibility(View.GONE);
             }
         } else {
             paginationLoadingIcon.setVisibility(GONE);
@@ -1511,6 +1573,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * otherwise hides the shimmer and error state.
      */
     private void handleEmptyState() {
+        if (onEmpty != null) onEmpty.onEmpty();
         if (customEmptyView != null) {
             customViewLayout.setVisibility(View.VISIBLE);
             customViewLayout.removeAllViews();
@@ -1540,18 +1603,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
-     * Sets the listener for handling thread reply clicks in the message list.
-     *
-     * @param onThreadRepliesClick The ThreadReplyClick object representing the listener.
-     */
-    public void setOnThreadRepliesClick(ThreadReplyClick onThreadRepliesClick) {
-        if (onThreadRepliesClick != null) {
-            this.onThreadRepliesClick = onThreadRepliesClick;
-            messageAdapter.setThreadReplyClick(onThreadRepliesClick);
-        }
-    }
-
-    /**
      * Sets the list of messages to be displayed in the chat view.
      *
      * <p>
@@ -1566,6 +1617,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     public void setList(List<BaseMessage> messageList) {
         rvChatListView.setAdapter(messageAdapter);
         messageAdapter.setBaseMessageList(messageList);
+        if (onLoad != null) onLoad.onLoad(messageList);
         messageAdapter.setMessageTemplateHashMap(messageTemplateHashMap, messageViewTypes);
         scrollToBottom();
     }
@@ -1632,7 +1684,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @return The {@link MessageAdapter} instance currently set for the chat view.
      */
-    public MessageAdapter getMessageAdapter() {
+    public MessageAdapter getAdapter() {
         return messageAdapter;
     }
 
@@ -1645,7 +1697,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @param adapter The {@link MessageAdapter} to be set for the chat view.
      */
-    public void setMessageAdapter(MessageAdapter adapter) {
+    public void setAdapter(MessageAdapter adapter) {
         this.messageAdapter = adapter;
         rvChatListView.setAdapter(adapter);
     }
@@ -1713,10 +1765,192 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     /**
      * Sets whether to hide or show the error in the message list.
      *
-     * @param hide True to hide the error, false to show the error.
+     * @param visibility gone to hide the error, visible to show the error.
      */
-    public void hideError(boolean hide) {
-        hideError = hide;
+    public void setErrorStateVisibility(int visibility) {
+        errorStateVisibility = visibility;
+    }
+
+    /**
+     * Retrieves the visibility status of the "Reply in Thread" option.
+     *
+     * @return An integer representing the visibility of the reply in thread option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getReplyInThreadOptionVisibility() {
+        return replyInThreadOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Reply in Thread" option.
+     *
+     * @param visibility An integer representing the visibility status of the reply in thread option.
+     *                   Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE}, or {@code View.GONE}.
+     */
+    public void setReplyInThreadOptionVisibility(int visibility) {
+        this.replyInThreadOptionVisibility = visibility;
+        additionParameter.setReplyInThreadOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Translate Message" option.
+     *
+     * @return An integer representing the visibility of the translate message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getTranslateMessageOptionVisibility() {
+        return translateMessageOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Translate Message" option.
+     *
+     * @param visibility An integer representing the visibility status of the translate message option.
+     */
+    public void setTranslateMessageOptionVisibility(int visibility) {
+        this.translateMessageOptionVisibility = visibility;
+        additionParameter.setTranslateMessageOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Copy Message" option.
+     *
+     * @return An integer representing the visibility of the copy message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getCopyMessageOptionVisibility() {
+        return copyMessageOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Copy Message" option.
+     *
+     * @param visibility An integer representing the visibility status of the copy message option.
+     */
+    public void setCopyMessageOptionVisibility(int visibility) {
+        this.copyMessageOptionVisibility = visibility;
+        additionParameter.setCopyMessageOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Edit Message" option.
+     *
+     * @return An integer representing the visibility of the edit message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getEditMessageOptionVisibility() {
+        return editMessageOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Edit Message" option.
+     *
+     * @param visibility An integer representing the visibility status of the edit message option.
+     */
+    public void setEditMessageOptionVisibility(int visibility) {
+        this.editMessageOptionVisibility = visibility;
+        additionParameter.setEditMessageOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Share Message" option.
+     *
+     * @return An integer representing the visibility of the share message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getShareMessageOptionVisibility() {
+        return shareMessageOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Share Message" option.
+     *
+     * @param visibility An integer representing the visibility status of the share message option.
+     */
+    public void setShareMessageOptionVisibility(int visibility) {
+        this.shareMessageOptionVisibility = visibility;
+        additionParameter.setShareMessageOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Message Privately" option.
+     *
+     * @return An integer representing the visibility of the message privately option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getMessagePrivatelyOptionVisibility() {
+        return messagePrivatelyOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Message Privately" option.
+     *
+     * @param visibility An integer representing the visibility status of the message privately option.
+     */
+    public void setMessagePrivatelyOptionVisibility(int visibility) {
+        this.messagePrivatelyOptionVisibility = visibility;
+        additionParameter.setMessagePrivatelyOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Delete Message" option.
+     *
+     * @return An integer representing the visibility of the delete message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getDeleteMessageOptionVisibility() {
+        return deleteMessageOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Delete Message" option.
+     *
+     * @param visibility An integer representing the visibility status of the delete message option.
+     */
+    public void setDeleteMessageOptionVisibility(int visibility) {
+        this.deleteMessageOptionVisibility = visibility;
+        additionParameter.setDeleteMessageOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Message Info" option.
+     *
+     * @return An integer representing the visibility of the message info option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getMessageInfoOptionVisibility() {
+        return messageInfoOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Message Info" option.
+     *
+     * @param visibility An integer representing the visibility status of the message info option.
+     */
+    public void setMessageInfoOptionVisibility(int visibility) {
+        this.messageInfoOptionVisibility = visibility;
+        additionParameter.setMessageInfoOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the "Group Action Message" option.
+     *
+     * @return An integer representing the visibility of the group action message option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getGroupActionMessageVisibility() {
+        return groupActionMessageVisibility;
+    }
+
+    /**
+     * Sets the visibility of the "Group Action Message".
+     *
+     * @param visibility An integer representing the visibility status of the group action message.
+     */
+    public void setGroupActionMessageVisibility(int visibility) {
+        this.groupActionMessageVisibility = visibility;
+        additionParameter.setGroupActionMessageVisibility(visibility);
+        messageAdapter.hideGroupActionMessage(visibility != View.VISIBLE);
     }
 
     /**
@@ -1726,16 +1960,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * @param cometchatException The CometChatException to be thrown and handled.
      */
     public void throwError(CometChatException cometchatException) {
-        if (onError != null) onError.onError(getContext(), cometchatException);
-    }
-
-    /**
-     * Sets the callback for handling errors in the message list.
-     *
-     * @param onError The OnError object representing the error callback.
-     */
-    public void setOnError(OnError onError) {
-        this.onError = onError;
+        if (onError != null) onError.onError(cometchatException);
     }
 
     /**
@@ -1770,13 +1995,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         cometchatMessageOptionSheet.setMessageOptionItems(items);
         cometchatMessageOptionSheet.setStyle(messageOptionSheetStyle);
 
-        if (UIKitConstants.MessageCategory.INTERACTIVE.equals(baseMessage.getCategory())) {
-            cometchatMessageOptionSheet.disableReactions(true);
-        } else {
-            cometchatMessageOptionSheet.disableReactions(disableReactions);
-            cometchatMessageOptionSheet.hideEmojiPicker(hideAddReactionsIcon);
-        }
-
         cometchatMessageOptionSheet.setEmojiPickerClickListener(() -> {
             if (emojiPickerClickListener != null) {
                 emojiPickerClickListener.onEmojiPickerClick();
@@ -1804,12 +2022,17 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                 }
             }
         });
+        cometchatMessageOptionSheet.setQuickReactions(quickReactions);
+
+        if (UIKitConstants.MessageCategory.INTERACTIVE.equals(baseMessage.getCategory()) || messageReactionOptionVisibility != View.VISIBLE) {
+            cometchatMessageOptionSheet.disableReactions(true);
+        }
 
         cometchatMessageOptionSheet.setReactionClickListener((msg, reaction) -> {
-            if (reactionClickListener != null) {
-                reactionClickListener.onReactionClick(baseMessage, reaction);
+            if (quickReactionClickListener != null) {
+                quickReactionClickListener.onReactionClick(baseMessage, reaction);
             } else {
-                cometchatUIKitReactionActionEvents.onReactionAdded(getContext(), baseMessage, reaction);
+                onReactionClick.onClick(reaction, baseMessage);
             }
             bottomSheetDialog.dismiss();
         });
@@ -1855,7 +2078,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
         emojiKeyboard.setOnClick(new EmojiKeyBoardView.OnClick() {
             @Override
             public void onClick(String emoji) {
-                cometchatUIKitReactionActionEvents.onReactionAdded(getContext(), baseMessage, emoji);
+                onReactionClick.onClick(emoji, baseMessage);
                 emojiKeyboard.dismiss();
             }
 
@@ -1985,23 +2208,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      */
     public void shareMessage() {
         if (baseMessage != null && baseMessage.getType().equals(CometChatConstants.MESSAGE_TYPE_TEXT)) {
-            /*
-             * Intent shareIntent = new Intent(); shareIntent.setAction(Intent.ACTION_SEND);
-             * shareIntent.putExtra(Intent.EXTRA_TITLE,
-             * getResources().getString(R.string.cometchat_app_name));
-             * shareIntent.putExtra(Intent.EXTRA_TEXT,
-             * SpannableString.valueOf(FormatterUtils.getFormattedText(getContext(),
-             * baseMessage, UIKitConstants.FormattingType.MESSAGE_BUBBLE,
-             * UIKitConstants.MessageBubbleAlignment.RIGHT, ((TextMessage)
-             * baseMessage).getText(), additionParameter != null &&
-             * additionParameter.getTextFormatters() != null ?
-             * additionParameter.getTextFormatters() : new ArrayList<>())));
-             * shareIntent.setType("text/plain"); Intent intent =
-             * Intent.createChooser(shareIntent,
-             * getResources().getString(R.string.cometchat_share_message));
-             * getContext().startActivity(intent);
-             */
-
             Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             String shareBody = ((TextMessage) baseMessage).getText();
             intent.setType("text/plain");
@@ -2052,26 +2258,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
-     * Checks if reactions are disabled.
-     *
-     * @return True if reactions are disabled, false otherwise.
-     */
-    public boolean isReactionDisable() {
-        return disableReactions;
-    }
-
-    /**
-     * Sets the value to disable reactions.
-     *
-     * @param disableReactions The value to set for disabling reactions.
-     */
-    public void disableReactions(boolean disableReactions) {
-        this.disableReactions = disableReactions;
-        messageListViewModel.setDisableReactions(disableReactions);
-        messageAdapter.disableReactions(disableReactions);
-    }
-
-    /**
      * Gets the resource ID for the add reaction icon.
      *
      * @return The resource ID of the add reaction icon.
@@ -2090,24 +2276,6 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
-     * Checks if the add reactions icon is hidden.
-     *
-     * @return True if the add reactions icon is hidden, false otherwise.
-     */
-    public boolean isAddReactionsIconHidden() {
-        return hideAddReactionsIcon;
-    }
-
-    /**
-     * Sets the value to hide the add reactions icon.
-     *
-     * @param hideAddReactionsIcon The value to set for hiding the add reactions icon.
-     */
-    public void hideAddReactionsIcon(boolean hideAddReactionsIcon) {
-        this.hideAddReactionsIcon = hideAddReactionsIcon;
-    }
-
-    /**
      * Gets the list of quick reactions.
      *
      * @return The list of quick reactions.
@@ -2122,7 +2290,8 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * @param quickReactions The list of quick reactions to set.
      */
     public void setQuickReactions(List<String> quickReactions) {
-        this.quickReactions = quickReactions;
+        if (quickReactions != null)
+            this.quickReactions = quickReactions;
     }
 
     /**
@@ -2151,6 +2320,8 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                                          new ArrayList<>(messageCategoriesToRetrieve.values()),
                                          parentMessageId);
             if (autoFetch) messageListViewModel.fetchMessagesWithUnreadCount();
+            aiConversationStarterView.setUid(user.getUid());
+            aiSmartRepliesView.setUid(user.getUid());
             processFormatters();
         }
     }
@@ -2182,18 +2353,10 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
                                           new ArrayList<>(messageCategoriesToRetrieve.values()),
                                           parentMessageId);
             if (autoFetch) messageListViewModel.fetchMessagesWithUnreadCount();
+            aiConversationStarterView.setUid(group.getGuid());
+            aiSmartRepliesView.setUid(group.getGuid());
             processFormatters();
         }
-    }
-
-    /**
-     * Returns the error state text. This method provides the text displayed in the
-     * error state.
-     *
-     * @return the error state text as a {@link String}
-     */
-    public String getErrorStateText() {
-        return errorStateText;
     }
 
     /**
@@ -2307,6 +2470,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      */
     public void setErrorStateTitleTextColor(@ColorInt int errorStateTitleTextColor) {
         this.errorStateTitleTextColor = errorStateTitleTextColor;
+        errorTextView.setTextColor(errorStateTitleTextColor);
     }
 
     /**
@@ -2326,6 +2490,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      */
     public void setErrorStateSubtitleTextColor(@ColorInt int errorStateSubtitleTextColor) {
         this.errorStateSubtitleTextColor = errorStateSubtitleTextColor;
+        errorSubtitleTextView.setTextColor(errorStateSubtitleTextColor);
     }
 
     /**
@@ -2344,7 +2509,8 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * @param appearance The style resource for the error state text appearance.
      */
     public void setErrorStateTitleTextAppearance(@StyleRes int appearance) {
-        if (appearance != 0) this.errorStateTitleTextAppearance = appearance;
+        this.errorStateTitleTextAppearance = appearance;
+        errorTextView.setTextAppearance(appearance);
     }
 
     /**
@@ -2364,7 +2530,8 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      * @param appearance The style resource for the error state text appearance.
      */
     public void setErrorStateSubtitleTextAppearance(@StyleRes int appearance) {
-        if (appearance != 0) this.errorStateSubtitleTextAppearance = appearance;
+        this.errorStateSubtitleTextAppearance = appearance;
+        errorSubtitleTextView.setTextAppearance(appearance);
     }
 
     /**
@@ -2426,17 +2593,17 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @return the ReactionClickListener.
      */
-    public ReactionClickListener getReactionClickListener() {
-        return reactionClickListener;
+    public ReactionClickListener getQuickReactionClickListener() {
+        return quickReactionClickListener;
     }
 
     /**
      * Sets the listener for reaction clicks.
      *
-     * @param reactionClickListener the ReactionClickListener to set.
+     * @param quickReactionClickListener the ReactionClickListener to set.
      */
-    public void setReactionClickListener(ReactionClickListener reactionClickListener) {
-        this.reactionClickListener = reactionClickListener;
+    public void setQuickReactionClickListener(ReactionClickListener quickReactionClickListener) {
+        this.quickReactionClickListener = quickReactionClickListener;
     }
 
     /**
@@ -2458,6 +2625,67 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
     }
 
     /**
+     * Retrieves the callback for reaction click events.
+     *
+     * @return An instance of {@link OnReactionClick} that handles reaction click events.
+     */
+    public OnReactionClick getOnReactionClick() {
+        return onReactionClick;
+    }
+
+    /**
+     * Sets the callback for reaction click events.
+     * Updates the message adapter with the provided reaction click listener.
+     *
+     * @param onReactionClick An instance of {@link OnReactionClick} to be invoked when a reaction is clicked.
+     */
+    public void setOnReactionClick(OnReactionClick onReactionClick) {
+        this.onReactionClick = onReactionClick;
+        messageAdapter.setOnReactionClick(onReactionClick);
+    }
+
+    /**
+     * Retrieves the callback for reaction long-click events.
+     *
+     * @return An instance of {@link OnReactionLongClick} that handles reaction long-click events.
+     */
+    public OnReactionLongClick getOnReactionLongClick() {
+        return onReactionLongClick;
+    }
+
+    /**
+     * Sets the callback for reaction long-click events.
+     * Updates the message adapter with the provided reaction long-click listener.
+     *
+     * @param onReactionLongClick An instance of {@link OnReactionLongClick} to be invoked when a reaction is long-clicked.
+     */
+    public void setOnReactionLongClick(OnReactionLongClick onReactionLongClick) {
+        this.onReactionLongClick = onReactionLongClick;
+        messageAdapter.setOnReactionLongClick(onReactionLongClick);
+    }
+
+    /**
+     * Retrieves the callback for the "Add More Reactions" click event.
+     *
+     * @return An instance of {@link OnAddMoreReactionsClick} that handles add-more-reactions click events.
+     */
+    public OnAddMoreReactionsClick getOnAddMoreReactionsClick() {
+        return onAddMoreReactionsClick;
+    }
+
+    /**
+     * Sets the callback for the "Add More Reactions" click event.
+     * Updates the message adapter with the provided add-more-reactions click listener.
+     *
+     * @param onAddMoreReactionsClick An instance of {@link OnAddMoreReactionsClick} to be invoked when
+     *                                the "Add More Reactions" button is clicked.
+     */
+    public void setOnAddMoreReactionsClick(OnAddMoreReactionsClick onAddMoreReactionsClick) {
+        this.onAddMoreReactionsClick = onAddMoreReactionsClick;
+        messageAdapter.setOnAddMoreReactionsClick(onAddMoreReactionsClick);
+    }
+
+    /**
      * Retrieves the configured addition parameter object.
      *
      * @return the AdditionParameter.
@@ -2471,7 +2699,7 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @return the EmojiPickerClickListener.
      */
-    public EmojiPickerClickListener getEmojiPickerClickListener() {
+    public EmojiPickerClickListener getEmojiPickerClick() {
         return emojiPickerClickListener;
     }
 
@@ -2480,8 +2708,206 @@ public class CometChatMessageList extends MaterialCardView implements MessageAda
      *
      * @param emojiPickerClickListener the EmojiPickerClickListener to set.
      */
-    public void setEmojiPickerClickListener(EmojiPickerClickListener emojiPickerClickListener) {
+    public void setEmojiPickerClick(EmojiPickerClickListener emojiPickerClickListener) {
         this.emojiPickerClickListener = emojiPickerClickListener;
+    }
+
+    /**
+     * Checks whether sound is disabled for incoming messages.
+     *
+     * @return {@code true} if message sound is disabled, {@code false} otherwise.
+     */
+    public boolean isDisableSoundForMessages() {
+        return disableSoundForMessages;
+    }
+
+    /**
+     * Retrieves the custom sound ID for incoming messages.
+     *
+     * @return An integer representing the custom sound resource ID.
+     */
+    public int getCustomSoundForMessages() {
+        return customSoundForMessages;
+    }
+
+    /**
+     * Sets a custom sound resource for incoming messages in the message list.
+     *
+     * @param sound The resource ID of the custom sound. Pass 0 to use the default
+     *              sound.
+     */
+    public void setCustomSoundForMessages(@RawRes int sound) {
+        if (sound != 0) this.customSoundForMessages = sound;
+    }
+
+    /**
+     * Retrieves the error callback.
+     *
+     * @return An instance of {@link OnError} that handles error events.
+     */
+    public OnError getOnError() {
+        return onError;
+    }
+
+    /**
+     * Sets the callback for handling errors in the message list.
+     *
+     * @param onError The OnError object representing the error callback.
+     */
+    public void setOnError(OnError onError) {
+        this.onError = onError;
+    }
+
+    /**
+     * Retrieves the callback for handling data loading events.
+     *
+     * @return An instance of {@link OnLoad} for handling the loading of {@link BaseMessage} objects.
+     */
+    public OnLoad<BaseMessage> getOnLoad() {
+        return onLoad;
+    }
+
+    /**
+     * Sets the callback for handling data loading events.
+     *
+     * @param onLoad An instance of {@link OnLoad} that is triggered when messages are being loaded.
+     */
+    public void setOnLoad(OnLoad<BaseMessage> onLoad) {
+        this.onLoad = onLoad;
+    }
+
+    /**
+     * Retrieves the callback for handling empty state events.
+     *
+     * @return An instance of {@link OnEmpty} triggered when no messages are available.
+     */
+    public OnEmpty getOnEmpty() {
+        return onEmpty;
+    }
+
+    /**
+     * Sets the callback for handling empty state events.
+     *
+     * @param onEmpty An instance of {@link OnEmpty} that is triggered when there are no messages available.
+     */
+    public void setOnEmpty(OnEmpty onEmpty) {
+        this.onEmpty = onEmpty;
+    }
+
+    /**
+     * Retrieves the list of text formatters applied to messages.
+     *
+     * @return A list of {@link CometChatTextFormatter} instances used for text formatting.
+     */
+    public List<CometChatTextFormatter> getTextFormatters() {
+        return textFormatters;
+    }
+
+    /**
+     * Sets the list of custom text formatters.
+     *
+     * @param cometchatTextFormatters A list of {@link CometChatTextFormatter} to add to the current
+     *                                list of formatters. If the provided list is not null, it will add
+     *                                these formatters to the existing ones and process them.
+     */
+    public void setTextFormatters(List<CometChatTextFormatter> cometchatTextFormatters) {
+        if (cometchatTextFormatters != null) {
+            this.textFormatters = cometchatTextFormatters;
+            processFormatters();
+        }
+    }
+
+    /**
+     * Retrieves the parent message ID for thread replies.
+     *
+     * @return An integer representing the parent message ID.
+     */
+    public int getParentMessageId() {
+        return parentMessageId;
+    }
+
+    /**
+     * Retrieves the callback for reaction list item clicks.
+     *
+     * @return An instance of {@link OnReactionListItemClick} triggered when a reaction list item is clicked.
+     */
+    public OnReactionListItemClick getOnReactionListItemClick() {
+        return onReactionListItemClick;
+    }
+
+    /**
+     * Sets the item click listener for the ReactedUsers.
+     *
+     * @param onReactionListItemClick The item click listener to set.
+     */
+    public void setOnReactionListItemClick(OnReactionListItemClick onReactionListItemClick) {
+        this.onReactionListItemClick = onReactionListItemClick;
+    }
+
+    /**
+     * Retrieves the callback for handling thread reply clicks.
+     *
+     * @return An instance of {@link ThreadReplyClick} triggered when a thread reply is clicked.
+     */
+    public ThreadReplyClick getOnThreadRepliesClick() {
+        return onThreadRepliesClick;
+    }
+
+    /**
+     * Sets the listener for handling thread reply clicks in the message list.
+     *
+     * @param onThreadRepliesClick The ThreadReplyClick object representing the listener.
+     */
+    public void setOnThreadRepliesClick(ThreadReplyClick onThreadRepliesClick) {
+        if (onThreadRepliesClick != null) {
+            this.onThreadRepliesClick = onThreadRepliesClick;
+            messageAdapter.setThreadReplyClick(onThreadRepliesClick);
+        }
+    }
+
+    /**
+     * Retrieves the builder for creating a reaction request.
+     *
+     * @return An instance of {@link ReactionsRequest.ReactionsRequestBuilder} for configuring reaction requests.
+     */
+    public ReactionsRequest.ReactionsRequestBuilder getReactionRequestBuilder() {
+        return reactionRequestBuilder;
+    }
+
+    /**
+     * Retrieves the style ID for smart replies.
+     *
+     * @return An integer representing the smart replies style.
+     */
+    public int getSmartRepliesStyle() {
+        return smartRepliesStyle;
+    }
+
+    /**
+     * Retrieves the style ID for conversation starters.
+     *
+     * @return An integer representing the conversation starter style.
+     */
+    public int getConversationStarterStyle() {
+        return conversationStarterStyle;
+    }
+
+    /**
+     * get message reaction option visibility
+     *
+     * @return
+     */
+    public int getMessageReactionOptionVisibility() {
+        return messageReactionOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the message reaction option.
+     *
+     * @param messageReactionOptionVisibility
+     */
+    public void setMessageReactionOptionVisibility(int messageReactionOptionVisibility) {
+        this.messageReactionOptionVisibility = messageReactionOptionVisibility;
     }
 
     /**

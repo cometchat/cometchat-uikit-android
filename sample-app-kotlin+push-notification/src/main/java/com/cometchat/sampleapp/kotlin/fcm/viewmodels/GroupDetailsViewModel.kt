@@ -72,44 +72,63 @@ class GroupDetailsViewModel : ViewModel() {
     /** Adds listeners for group-related events.  */
     fun addListeners() {
         CometChat.addGroupListener(GROUP_LISTENER_ID, object : GroupListener() {
-            override fun onGroupMemberKicked(
-                action: Action, kickedUser: User, kickedBy: User, mGroup: Group
-            ) {
-                super.onGroupMemberKicked(action, kickedUser, kickedBy, mGroup)
-                if (group == null) return
-                group!!.membersCount = mGroup.membersCount
-                group!!.updatedAt = mGroup.updatedAt
-
-                if (kickedUser.uid == CometChatUIKit.getLoggedInUser().uid && mGroup.guid == group!!.guid) {
-                    group!!.setHasJoined(false)
+            override fun onGroupMemberJoined(action: Action, user: User, group_: Group) {
+                super.onGroupMemberJoined(action, user, group)
+                if (group_.guid == group!!.guid) {
+                    group!!.membersCount = group_.membersCount
+                    group!!.updatedAt = group_.updatedAt
+                    updatedGroup.value = group
                 }
-                updatedGroup.value = group
             }
 
-            override fun onGroupMemberLeft(
-                action: Action, user: User, group_: Group
-            ) {
+            override fun onGroupMemberLeft(action: Action, user: User, group_: Group) {
                 super.onGroupMemberLeft(action, user, group_)
-                group!!.membersCount = group_.membersCount
-                group!!.updatedAt = group_.updatedAt
+                if (group_.guid == group!!.guid) {
+                    group!!.membersCount = group_.membersCount
+                    group!!.updatedAt = group_.updatedAt
+                    updatedGroup.value = group
+                }
             }
 
-            override fun onGroupMemberBanned(
-                action: Action, bannedUser: User, bannedBy: User, mGroup: Group
-            ) {
-                super.onGroupMemberBanned(action, bannedUser, bannedBy, mGroup)
-                if (bannedUser.uid == CometChatUIKit.getLoggedInUser().uid && mGroup.guid == group!!.guid) group!!.setHasJoined(false)
-                updatedGroup.value = group
+            override fun onGroupMemberKicked(action: Action, kickedUser: User, kickedBy: User, group_: Group) {
+                super.onGroupMemberKicked(action, kickedUser, kickedBy, group_)
+                if (group_.guid == group!!.guid) {
+                    group!!.membersCount = group_.membersCount
+                    group!!.updatedAt = group_.updatedAt
+
+                    if (kickedUser.uid == CometChatUIKit.getLoggedInUser().uid) {
+                        group!!.setHasJoined(false)
+                    }
+                    updatedGroup.value = group
+                }
+            }
+
+            override fun onGroupMemberBanned(action: Action, bannedUser: User, bannedBy: User, group_: Group) {
+                super.onGroupMemberBanned(action, bannedUser, bannedBy, group_)
+                if (group_.guid == group!!.guid) {
+                    group!!.membersCount = group_.membersCount
+                    group!!.updatedAt = group_.updatedAt
+                    if (bannedUser.uid == CometChatUIKit.getLoggedInUser().uid) group!!.setHasJoined(false)
+                    updatedGroup.value = group
+                }
             }
 
             override fun onGroupMemberScopeChanged(
                 action: Action, updatedBy: User, updatedUser: User, scopeChangedTo: String, scopeChangedFrom: String, group_: Group
             ) {
-                super.onGroupMemberScopeChanged(
-                    action, updatedBy, updatedUser, scopeChangedTo, scopeChangedFrom, group_
-                )
-                if (updatedUser.uid == CometChatUIKit.getLoggedInUser().uid && group_.guid == group!!.guid) {
-                    group!!.scope = scopeChangedTo
+                super.onGroupMemberScopeChanged(action, updatedBy, updatedUser, scopeChangedTo, scopeChangedFrom, group_)
+                if (group_.guid == group!!.guid) {
+                    if (updatedUser.uid == CometChatUIKit.getLoggedInUser().uid) {
+                        group!!.scope = scopeChangedTo
+                        updatedGroup.value = group
+                    }
+                }
+            }
+
+            override fun onMemberAddedToGroup(action: Action, user: User, user1: User, group_: Group) {
+                if (group_.guid == group!!.guid) {
+                    group!!.membersCount = group_.membersCount
+                    group!!.updatedAt = group_.updatedAt
                     updatedGroup.value = group
                 }
             }

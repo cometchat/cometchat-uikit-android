@@ -13,13 +13,12 @@
 
         <attr name="cometchatIncomingCallAvatarStyle" format="reference" />
 
-        <attr name="cometchatIncomingCallRejectCallIcon" format="reference" />
-        <attr name="cometchatIncomingCallRejectCallIconTint" format="color" />
-        <attr name="cometchatIncomingCallRejectCallButtonBackgroundColor" format="color" />
-
-        <attr name="cometchatIncomingCallAcceptCallIcon" format="reference" />
-        <attr name="cometchatIncomingCallAcceptCallIconTint" format="color" />
-        <attr name="cometchatIncomingCallAcceptCallButtonBackgroundColor" format="color" />
+        <attr name="cometchatIncomingCallRejectButtonBackgroundColor" format="color" />
+        <attr name="cometchatIncomingCallAcceptButtonBackgroundColor" format="color" />
+        <attr name="cometchatIncomingCallRejectButtonTextColor" format="color" />
+        <attr name="cometchatIncomingCallAcceptButtonTextColor" format="color" />
+        <attr name="cometchatIncomingCallRejectButtonTextAppearance" format="reference" />
+        <attr name="cometchatIncomingCallAcceptButtonTextAppearance" format="reference" />
 
         <attr name="cometchatIncomingCallBackgroundColor" format="color" />
         <attr name="cometchatIncomingCallCornerRadius" format="dimension" />

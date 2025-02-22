@@ -35,13 +35,15 @@ import java.util.List;
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewHolder> {
     private static final String TAG = GroupsAdapter.class.getSimpleName();
     private final Context context;
-
+    private boolean hideGroupType = false;
     private boolean isSelectionEnabled;
     private List<Group> groupList;
     private HashMap<Group, Boolean> selectedGroups;
     private GroupsViewHolderListener tailView;
     private GroupsViewHolderListener subtitleView;
     private GroupsViewHolderListener listItemView;
+    private GroupsViewHolderListener leadingView;
+    private GroupsViewHolderListener titleView;
 
     private @StyleRes int avatarStyle;
     private @StyleRes int itemTitleTextAppearance;
@@ -459,7 +461,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
      *
      * @param listItemView The listener for the list item view.
      */
-    public void setListItemView(GroupsViewHolderListener listItemView) {
+    public void setItemView(GroupsViewHolderListener listItemView) {
         if (listItemView != null) {
             this.listItemView = listItemView;
             notifyDataSetChanged();
@@ -483,11 +485,26 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
      *
      * @param tailView The listener for the tail view.
      */
-    public void setTailView(GroupsViewHolderListener tailView) {
+    public void setTrailingView(GroupsViewHolderListener tailView) {
         if (tailView != null) {
             this.tailView = tailView;
             notifyDataSetChanged();
         }
+    }
+
+    public void setTitleView(GroupsViewHolderListener titleView) {
+        this.titleView = titleView;
+        notifyDataSetChanged();
+    }
+
+    public void setLeadingView(GroupsViewHolderListener leadingView) {
+        this.leadingView = leadingView;
+        notifyDataSetChanged();
+    }
+
+    public void hideGroupType(boolean hide) {
+        this.hideGroupType = hide;
+        notifyDataSetChanged();
     }
 
     /**
@@ -495,7 +512,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
      */
     public class GroupViewHolder extends RecyclerView.ViewHolder {
         CometchatListBaseItemsBinding binding;
-        private View customListItemView, customSubtitleView, customTailView;
+        private View customListItemView, customSubtitleView, customTailView, customTitleView, customLeadingView;
 
         /**
          * Constructor for GroupViewHolder.
@@ -509,6 +526,15 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
                 customListItemView = listItemView.createView(context, binding);
                 Utils.handleView(binding.parentView, customListItemView, true);
             } else {
+                if (leadingView != null) {
+                    customLeadingView = leadingView.createView(context, binding);
+                    Utils.handleView(binding.avatarContainer, customLeadingView, true);
+                }
+
+                if (titleView != null) {
+                    customTitleView = titleView.createView(context, binding);
+                    Utils.handleView(binding.titleContainer, customTitleView, true);
+                }
                 if (subtitleView != null) {
                     customSubtitleView = subtitleView.createView(context, binding);
                     Utils.handleView(binding.subtitleContainer, customSubtitleView, true);
@@ -530,25 +556,22 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
             if (listItemView != null) {
                 listItemView.bindView(context, customListItemView, group, this, groupList, position);
             } else {
-                binding.avatar.setAvatar(group.getName(), group.getIcon());
-                binding.avatar.setStyle(avatarStyle);
+                if (leadingView != null)
+                    leadingView.bindView(context, customLeadingView, group, this, groupList, position);
+                else {
+                    binding.avatar.setAvatar(group.getName(), group.getIcon());
+                    binding.avatar.setStyle(avatarStyle);
+                    handleGroupType(group);
+                }
 
-                binding.tvTitle.setText(group.getName());
-                binding.tvTitle.setTextAppearance(itemTitleTextAppearance);
-                binding.tvTitle.setTextColor(itemTitleTextColor);
-
-                TextView subtitleText = new TextView(context);
-                String members = group.getMembersCount() + " " + context.getResources().getString(R.string.cometchat_members);
-                subtitleText.setTextAppearance(subtitleTextAppearance);
-                subtitleText.setTextColor(subtitleTextColor);
-                subtitleText.setMaxLines(1);
-                subtitleText.setEllipsize(TextUtils.TruncateAt.END);
-                subtitleText.setText(members);
-                binding.subtitleContainer.removeAllViews();
-                binding.subtitleContainer.addView(subtitleText);
-
-                handleGroupType(group);
-
+                if (titleView != null) {
+                    titleView.bindView(context, customTitleView, group, this, groupList, position);
+                } else {
+                    binding.tvTitle.setText(group.getName());
+                    binding.tvTitle.setTextAppearance(itemTitleTextAppearance);
+                    binding.tvTitle.setTextColor(itemTitleTextColor);
+                }
+                
                 if (isSelectionEnabled) {
                     Utils.initMaterialCard(binding.checkboxView);
                     binding.ivCheckbox.setImageDrawable(checkBoxSelectIcon);
@@ -576,6 +599,16 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
 
                 if (subtitleView != null) {
                     subtitleView.bindView(context, customSubtitleView, group, this, groupList, position);
+                } else {
+                    TextView subtitleText = new TextView(context);
+                    String members = group.getMembersCount() + " " + context.getResources().getString(R.string.cometchat_members);
+                    subtitleText.setTextAppearance(subtitleTextAppearance);
+                    subtitleText.setTextColor(subtitleTextColor);
+                    subtitleText.setMaxLines(1);
+                    subtitleText.setEllipsize(TextUtils.TruncateAt.END);
+                    subtitleText.setText(members);
+                    binding.subtitleContainer.removeAllViews();
+                    binding.subtitleContainer.addView(subtitleText);
                 }
 
                 if (tailView != null) {
@@ -591,12 +624,17 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
          * @param group The group whose type is to be handled.
          */
         private void handleGroupType(Group group) {
-            if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
-                binding.statusIndicator.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
-            } else if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
-                binding.statusIndicator.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
+            if (!hideGroupType) {
+                binding.statusIndicator.setVisibility(View.VISIBLE);
+                if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PASSWORD)) {
+                    binding.statusIndicator.setStatusIndicator(StatusIndicator.PROTECTED_GROUP);
+                } else if (group.getGroupType().equals(CometChatConstants.GROUP_TYPE_PRIVATE)) {
+                    binding.statusIndicator.setStatusIndicator(StatusIndicator.PRIVATE_GROUP);
+                } else {
+                    binding.statusIndicator.setStatusIndicator(StatusIndicator.PUBLIC_GROUP);
+                }
             } else {
-                binding.statusIndicator.setStatusIndicator(StatusIndicator.PUBLIC_GROUP);
+                binding.statusIndicator.setVisibility(View.GONE);
             }
         }
     }

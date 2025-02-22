@@ -126,10 +126,7 @@ public class Utils {
         HashMap<String, String> idMap = new HashMap<>();
         if (baseMessage.getParentMessageId() > 0)
             idMap.put(UIKitConstants.MapId.PARENT_MESSAGE_ID, String.valueOf(baseMessage.getParentMessageId()));
-        idMap.put(UIKitConstants.MapId.RECEIVER_ID,
-                  baseMessage.getReceiverUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? baseMessage
-                      .getSender()
-                      .getUid() : baseMessage.getReceiverUid());
+        idMap.put(UIKitConstants.MapId.RECEIVER_ID, baseMessage.getReceiverUid().equalsIgnoreCase(CometChatUIKit.getLoggedInUser().getUid()) ? baseMessage.getSender().getUid() : baseMessage.getReceiverUid());
         idMap.put(UIKitConstants.MapId.RECEIVER_TYPE, baseMessage.getReceiverType());
         return idMap;
     }
@@ -1203,7 +1200,7 @@ public class Utils {
 
     public static SimpleDateFormat getDateFormat(DateTimeElement timeElement) {
         SimpleDateFormat dateFormat;
-        if (timeElement.getSimpleDateFormat() == null || !isDatePatternValid(timeElement.getSimpleDateFormat().toPattern())) {
+        if (timeElement.getSimpleDateFormat() == null || !isdateFormatValid(timeElement.getSimpleDateFormat().toPattern())) {
             if (timeElement.getMode().equals(UIKitConstants.DateTimeMode.DATE_TIME))
                 dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
             else if (timeElement.getMode().equals(UIKitConstants.DateTimeMode.DATE))
@@ -1217,7 +1214,7 @@ public class Utils {
         return dateFormat;
     }
 
-    public static boolean isDatePatternValid(String pattern) {
+    public static boolean isdateFormatValid(String pattern) {
         try {
             new SimpleDateFormat(pattern, Locale.US);
             return true;

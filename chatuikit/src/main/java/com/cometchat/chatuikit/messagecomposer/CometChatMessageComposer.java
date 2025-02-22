@@ -125,6 +125,20 @@ public class CometChatMessageComposer extends MaterialCardView {
      * Configuration properties for attachment, media, and auxiliary views.
      */
     private final HashMap<String, CometChatMessageComposerAction> actionHashMap = new HashMap<>();
+    private int imageAttachmentOptionVisibility = View.VISIBLE;
+    private int cameraAttachmentOptionVisibility = View.VISIBLE;
+    private int videoAttachmentOptionVisibility = View.VISIBLE;
+    private int audioAttachmentOptionVisibility = View.VISIBLE;
+    private int fileAttachmentOptionVisibility = View.VISIBLE;
+    private int pollAttachmentOptionVisibility = View.VISIBLE;
+    private int collaborativeDocumentOptionVisibility = View.VISIBLE;
+    private int collaborativeWhiteboardOptionVisibility = View.VISIBLE;
+    private int attachmentButtonVisibility = View.VISIBLE;
+    private int voiceNoteButtonVisibility = View.VISIBLE;
+    private int stickersButtonVisibility = View.VISIBLE;
+    private int sendButtonVisibility = View.VISIBLE;
+    private int auxiliaryButtonVisibility = View.VISIBLE;
+
     /**
      * Holds context, user, group, and messaging-related properties.
      */
@@ -145,7 +159,7 @@ public class CometChatMessageComposer extends MaterialCardView {
     private Timer typingTimer;
     private Timer queryTimer;
     private Timer operationTimer;
-    private Function4<Context, User, Group, HashMap<String, String>, List<CometChatMessageComposerAction>> cometchatMessageComposerActions;
+    private List<CometChatMessageComposerAction> messageComposerActions;
     private Function4<Context, User, Group, HashMap<String, String>, List<CometChatMessageComposerAction>> aiOptions;
     private SendButtonClick sendButtonClick;
     private OnError onError;
@@ -163,30 +177,20 @@ public class CometChatMessageComposer extends MaterialCardView {
     private PermissionResultListener permissionResultListener;
     private int parentMessageId = -1;
     private String RESULT_TO_BE_OPEN = "";
-
     /**
      * UI elements and appearance customization.
      */
     private View headerView;
-
     private View footerView;
     @Nullable
     private View internalBottomPanel, internalTopPanel, sendButtonView;
     private LinearLayout auxiliaryViewContainer;
     private Function4<Context, User, Group, HashMap<String, String>, View> auxiliaryButtonView;
-
-    /**
-     * UI Element Visibility
-     */
-    private int attachmentButtonVisibility = View.VISIBLE;
-
-    private int voiceNoteButtonVisibility = View.VISIBLE;
-
+    private View auxiliaryButton;
     /**
      * Text message properties and text formatting settings.
      */
     private TextMessage editMessage;
-
     private BaseMessage sendMessage;
     private String text, id, type;
     private List<CometChatTextFormatter> cometchatTextFormatters;
@@ -196,12 +200,10 @@ public class CometChatMessageComposer extends MaterialCardView {
     private CometChatMentionsFormatter cometchatMentionsFormatter;
     private int lastTextFormatterOpenedIndex = -1;
     private OnItemClickListener<SuggestionItem> onItemClickListener;
-
     /**
      * Visual styles and drawable resources.
      */
     private @StyleRes int actionSheetStyle;
-
     private AIOptionsStyle aiOptionsStyle;
     private AdditionParameter additionParameter;
     private Drawable attachmentIcon;
@@ -214,12 +216,10 @@ public class CometChatMessageComposer extends MaterialCardView {
     private @ColorInt int inactiveStickerIconTint;
     private Drawable activeSendButtonDrawable;
     private Drawable inactiveSendButtonDrawable;
-
     /**
      * Edit preview appearance configurations.
      */
     private @StyleRes int editPreviewTitleTextAppearance;
-
     private @StyleRes int editPreviewMessageTextAppearance;
     private @ColorInt int editPreviewTitleTextColor;
     private @ColorInt int editPreviewMessageTextColor;
@@ -229,12 +229,10 @@ public class CometChatMessageComposer extends MaterialCardView {
     private @Dimension int editPreviewStrokeWidth;
     private Drawable editPreviewCloseIcon;
     private @ColorInt int editPreviewCloseIconTint;
-
     /**
      * Information and messaging input styles.
      */
     private Drawable infoIcon;
-
     private @ColorInt int infoTextColor;
     private @StyleRes int infoTextAppearance;
     private @ColorInt int infoBackgroundColor;
@@ -245,28 +243,23 @@ public class CometChatMessageComposer extends MaterialCardView {
     private @StyleRes int messageInputStyle;
     private @StyleRes int mentionsStyle;
     private @StyleRes int style;
-
     /**
      * Composed box customization and separator properties.
      */
     private @ColorInt int composeBoxBackgroundColor;
-
     private @Dimension int composeBoxStrokeWidth;
     private @ColorInt int composeBoxStrokeColor;
     private @Dimension int composeBoxCornerRadius;
     private Drawable composeBoxBackgroundDrawable;
     private @ColorInt int separatorColor;
-
     /**
      * composer box customization properties.
      */
     private @ColorInt int backgroundColor;
-
     private @ColorInt int strokeColor;
     private @Dimension int strokeWidth;
     private Drawable backgroundDrawable;
     private int cornerRadius;
-
     private @StyleRes int mediaRecorderStyle;
     private @StyleRes int aiOptionSheetStyle;
     private @StyleRes int attachmentOptionSheetStyle;
@@ -412,7 +405,7 @@ public class CometChatMessageComposer extends MaterialCardView {
         composerViewModel.closeBottomPanel().observe((AppCompatActivity) getContext(), this::closeInternalBottomPanel);
         composerViewModel.showTopPanel().observe((AppCompatActivity) getContext(), this::showInternalTopPanel);
         composerViewModel.showBottomPanel().observe((AppCompatActivity) getContext(), this::showInternalBottomPanel);
-        composerViewModel.getComposeText().observe((AppCompatActivity) getContext(), this::setText);
+        composerViewModel.getComposeText().observe((AppCompatActivity) getContext(), this::setInitialComposerText);
     }
 
     /**
@@ -460,9 +453,6 @@ public class CometChatMessageComposer extends MaterialCardView {
      * Initializes the message composer actions and AI options.
      */
     private void initializeComposerActions() {
-        cometchatMessageComposerActions = (context, user, group, map) -> ChatConfigurator
-            .getDataSource()
-            .getAttachmentOptions(context, user, group, composerViewModel.getIdMap());
 
         aiOptions = (context, user, group, map) -> ChatConfigurator
             .getDataSource()
@@ -834,7 +824,7 @@ public class CometChatMessageComposer extends MaterialCardView {
      * `cometchatTextFormatters` list.
      */
     private void getDefaultMentionsFormatter() {
-        for (CometChatTextFormatter textFormatter : CometChatUIKit.getDataSource().getTextFormatters(getContext())) {
+        for (CometChatTextFormatter textFormatter : CometChatUIKit.getDataSource().getTextFormatters(getContext(), additionParameter)) {
             if (textFormatter instanceof CometChatMentionsFormatter) {
                 cometchatMentionsFormatter = (CometChatMentionsFormatter) textFormatter;
                 break;
@@ -914,13 +904,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             }
         }
         return new ArrayList<>();
-    }    /**
-     * @param color The new color to set for the card background
-     */
-    @Override
-    public void setCardBackgroundColor(@ColorInt int color) {
-        this.backgroundColor = color;
-        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -936,6 +919,13 @@ public class CometChatMessageComposer extends MaterialCardView {
                     tempTextFormatter.search(getContext(), getQueryString(text, cursorPosition, tempTextFormatter.getTrackingCharacter()));
             }
         }, interval);
+    }    /**
+     * @param color The new color to set for the card background
+     */
+    @Override
+    public void setCardBackgroundColor(@ColorInt int color) {
+        this.backgroundColor = color;
+        super.setCardBackgroundColor(color);
     }
 
     /**
@@ -974,7 +964,7 @@ public class CometChatMessageComposer extends MaterialCardView {
     public void setSuggestionListVisibility(int visibility) {
         if (visibility == View.VISIBLE) {
             visibleSuggestionList();
-        } else if (visibility == View.GONE) {
+        } else {
             hideSuggestionList();
         }
     }
@@ -1016,13 +1006,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             this.cometchatTextFormatters.addAll(cometchatTextFormatters);
             processFormatters();
         }
-    }    /**
-     * @param strokeWidth The new width to set for the stroke
-     */
-    @Override
-    public void setStrokeWidth(@Dimension int strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -1362,7 +1345,7 @@ public class CometChatMessageComposer extends MaterialCardView {
      * @param exception The exception that occurred during the message send operation.
      */
     public void messageSendException(CometChatException exception) {
-        if (onError != null) onError.onError(getContext(), exception);
+        if (onError != null) onError.onError(exception);
     }
 
     /**
@@ -1567,6 +1550,7 @@ public class CometChatMessageComposer extends MaterialCardView {
 
     private void openAttachmentOptionSheet() {
         try {
+            setComposerActions();
             CometChatAttachmentOptionSheet cometchatAttachmentOptionSheet = new CometChatAttachmentOptionSheet(getContext());
             cometchatAttachmentOptionSheet.setAttachmentOptionItems(attachmentOptionSheetMenuItems);
             cometchatAttachmentOptionSheet.setStyle(attachmentOptionSheetStyle);
@@ -1706,10 +1690,9 @@ public class CometChatMessageComposer extends MaterialCardView {
      *
      * @param cometchatMessageComposerActions The function to retrieve the list of composer actions.
      */
-    public void setAttachmentOptions(Function4<Context, User, Group, HashMap<String, String>, List<CometChatMessageComposerAction>> cometchatMessageComposerActions) {
+    public void setAttachmentOptions(List<CometChatMessageComposerAction> cometchatMessageComposerActions) {
         if (cometchatMessageComposerActions != null) {
-            this.cometchatMessageComposerActions = cometchatMessageComposerActions;
-            setComposerActions();
+            this.messageComposerActions = cometchatMessageComposerActions;
         }
     }
 
@@ -1725,10 +1708,16 @@ public class CometChatMessageComposer extends MaterialCardView {
      */
     private void setComposerActions() {
         attachmentOptionSheetMenuItems.clear();
-        for (CometChatMessageComposerAction option : cometchatMessageComposerActions.invoke(getContext(),
-                                                                                            user,
-                                                                                            group,
-                                                                                            composerViewModel.getIdMap())) {
+        List<CometChatMessageComposerAction> tempMessageComposerActions;
+        if (messageComposerActions == null || messageComposerActions.isEmpty()) {
+            tempMessageComposerActions = CometChatUIKit
+                .getDataSource()
+                .getAttachmentOptions(getContext(), user, group, composerViewModel.getIdMap(), additionParameter);
+        } else {
+            tempMessageComposerActions = messageComposerActions;
+        }
+
+        for (CometChatMessageComposerAction option : tempMessageComposerActions) {
             if (option != null) {
                 actionHashMap.put(option.getId(), option);
                 attachmentOptionSheetMenuItems.add(new OptionSheetMenuItem(option.getId(),
@@ -1876,7 +1865,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             composerViewModel.setUser(user);
             processFormatters();
             setAuxiliaryButtonViewInternally();
-            setComposerActions();
         }
     }
 
@@ -2004,7 +1992,6 @@ public class CometChatMessageComposer extends MaterialCardView {
             composerViewModel.setGroup(group);
             processFormatters();
             setAuxiliaryButtonViewInternally();
-            setComposerActions();
         }
     }
 
@@ -2126,15 +2113,13 @@ public class CometChatMessageComposer extends MaterialCardView {
     public void setAttachmentIconTint(@ColorInt int color) {
         this.attachmentIconTint = color;
         secondaryButtonLayoutBinding.ivAttachments.setImageTintList(ColorStateList.valueOf(color));
-    }
-
-    /**
-     * Gets the callback function used to retrieve the available composer actions.
-     *
-     * @return The composer actions callback function.
+    }    /**
+     * @param strokeWidth The new width to set for the stroke
      */
-    public Function4<Context, User, Group, HashMap<String, String>, List<CometChatMessageComposerAction>> getCometChatMessageComposerActions() {
-        return cometchatMessageComposerActions;
+    @Override
+    public void setStrokeWidth(@Dimension int strokeWidth) {
+        this.strokeWidth = strokeWidth;
+        super.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -2200,7 +2185,7 @@ public class CometChatMessageComposer extends MaterialCardView {
      *
      * @param text The text to set.
      */
-    public void setText(String text) {
+    public void setInitialComposerText(String text) {
         binding.messageInput.setText(text);
     }
 
@@ -2343,10 +2328,6 @@ public class CometChatMessageComposer extends MaterialCardView {
      */
     public Function4<Context, User, Group, HashMap<String, String>, View> getAuxiliaryButtonView() {
         return auxiliaryButtonView;
-    }    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        composerViewModel.addListeners();
     }
 
     /**
@@ -2354,9 +2335,10 @@ public class CometChatMessageComposer extends MaterialCardView {
      *
      * @param auxiliaryButtonView The function to retrieve the auxiliary button view.
      */
-    public void setAuxiliaryButtonView(Function4<Context, User, Group, HashMap<String, String>, View> auxiliaryButtonView) {
+    public void setAuxiliaryButtonView(View auxiliaryButtonView) {
         if (auxiliaryButtonView != null) {
-            this.auxiliaryButtonView = auxiliaryButtonView;
+            this.auxiliaryButton = auxiliaryButtonView;
+            binding.messageInput.setAuxiliaryButtonView(auxiliaryButtonView);
         }
     }
 
@@ -3126,7 +3108,7 @@ public class CometChatMessageComposer extends MaterialCardView {
     public void setStyle(@StyleRes int style) {
         if (style != 0) {
             this.style = style;
-            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatTextBubble);
+            TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(style, R.styleable.CometChatMessageComposer);
             extractAttributesAndApplyDefaults(typedArray);
         }
     }
@@ -3139,10 +3121,24 @@ public class CometChatMessageComposer extends MaterialCardView {
      */
     private void extractAttributesAndApplyDefaults(TypedArray typedArray) {
         try {
-            setBackgroundDrawable(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerBackgroundDrawable));
-            setCardBackgroundColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerBackgroundColor, 0));
+
+
             setStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerStrokeWidth, 0));
             setStrokeColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerStrokeColor, 0));
+            setSeparatorColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerSeparatorColor, 0));
+            setVoiceRecordingIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerVoiceRecordingIcon));
+            setInactiveStickerIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInactiveStickerIconTint, 0));
+            setVoiceRecordingIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerVoiceRecordingIconTint, 0));
+            setEditPreviewTitleTextAppearance(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerEditPreviewTitleTextAppearance,
+                                                                       0));
+            setInfoTextColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoTextColor, 0));
+            setInfoBackgroundColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoBackgroundColor, 0));
+            setInfoCornerRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoCornerRadius, 0));
+            setInfoStrokeColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoStrokeColor, 0));
+            setInfoStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoStrokeWidth, 0));
+
+            setBackgroundDrawable(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerBackgroundDrawable));
+            setCardBackgroundColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerBackgroundColor, 0));
             setRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerCornerRadius, 0));
             setComposeBoxCardBackgroundColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerComposeBoxBackgroundColor,
                                                                  0));
@@ -3157,17 +3153,11 @@ public class CometChatMessageComposer extends MaterialCardView {
             setInactiveSendButtonDrawable(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerInactiveSendButtonDrawable));
             setAttachmentIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerAttachmentIcon));
             setAttachmentIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerAttachmentIconTint, 0));
-            setSeparatorColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerSeparatorColor, 0));
-            setVoiceRecordingIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerVoiceRecordingIcon));
-            setVoiceRecordingIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerVoiceRecordingIconTint, 0));
             setAIIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerAIIcon));
             setAIIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerAIIconTint, 0));
             setInactiveStickerIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerInactiveStickerIcon));
-            setInactiveStickerIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInactiveStickerIconTint, 0));
             setActiveStickerIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerActiveStickerIcon));
             setActiveStickerIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerActiveStickerIconTint, 0));
-            setEditPreviewTitleTextAppearance(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerEditPreviewTitleTextAppearance,
-                                                                       0));
             setEditPreviewMessageTextAppearance(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerEditPreviewMessageTextAppearance,
                                                                          0));
             setEditPreviewTitleTextColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerEditPreviewTitleTextColor,
@@ -3186,12 +3176,7 @@ public class CometChatMessageComposer extends MaterialCardView {
                                                             0));
             setInfoIcon(typedArray.getDrawable(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoIcon));
             setInfoIconTint(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoIconTint, 0));
-            setInfoTextColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoTextColor, 0));
             setInfoTextAppearance(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoTextAppearance, 0));
-            setInfoBackgroundColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoBackgroundColor, 0));
-            setInfoCornerRadius(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoCornerRadius, 0));
-            setInfoStrokeColor(typedArray.getColor(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoStrokeColor, 0));
-            setInfoStrokeWidth(typedArray.getDimensionPixelSize(R.styleable.CometChatMessageComposer_cometchatMessageComposerInfoStrokeWidth, 0));
             setMentionsStyle(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerMentionsStyle, 0));
             setSuggestionListStyle(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerSuggestionListStyle, 0));
             setAttachmentOptionSheetStyle(typedArray.getResourceId(R.styleable.CometChatMessageComposer_cometchatMessageComposerAttachmentOptionSheetStyle,
@@ -3240,6 +3225,228 @@ public class CometChatMessageComposer extends MaterialCardView {
     }
 
     /**
+     * Retrieves the visibility status of the image attachment option.
+     *
+     * @return An integer representing the visibility of the image attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getImageAttachmentOptionVisibility() {
+        return imageAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the image attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the image attachment option.
+     *                   Accepts values such as {@code View.VISIBLE}, {@code View.INVISIBLE}, or {@code View.GONE}.
+     */
+    public void setImageAttachmentOptionVisibility(int visibility) {
+        this.imageAttachmentOptionVisibility = visibility;
+        additionParameter.setImageAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the camera attachment option.
+     *
+     * @return An integer representing the visibility of the camera attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getCameraAttachmentOptionVisibility() {
+        return cameraAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the camera attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the camera attachment option.
+     */
+    public void setCameraAttachmentOptionVisibility(int visibility) {
+        this.cameraAttachmentOptionVisibility = visibility;
+        additionParameter.setCameraAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the video attachment option.
+     *
+     * @return An integer representing the visibility of the video attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getVideoAttachmentOptionVisibility() {
+        return videoAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the video attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the video attachment option.
+     */
+    public void setVideoAttachmentOptionVisibility(int visibility) {
+        this.videoAttachmentOptionVisibility = visibility;
+        additionParameter.setVideoAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the audio attachment option.
+     *
+     * @return An integer representing the visibility of the audio attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getAudioAttachmentOptionVisibility() {
+        return audioAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the audio attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the audio attachment option.
+     */
+    public void setAudioAttachmentOptionVisibility(int visibility) {
+        this.audioAttachmentOptionVisibility = visibility;
+        additionParameter.setAudioAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the file attachment option.
+     *
+     * @return An integer representing the visibility of the file attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getFileAttachmentOptionVisibility() {
+        return fileAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the file attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the file attachment option.
+     */
+    public void setFileAttachmentOptionVisibility(int visibility) {
+        this.fileAttachmentOptionVisibility = visibility;
+        additionParameter.setFileAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the poll attachment option.
+     *
+     * @return An integer representing the visibility of the poll attachment option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getPollAttachmentOptionVisibility() {
+        return pollAttachmentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the poll attachment option.
+     *
+     * @param visibility An integer representing the visibility status of the poll attachment option.
+     */
+    public void setPollAttachmentOptionVisibility(int visibility) {
+        this.pollAttachmentOptionVisibility = visibility;
+        additionParameter.setPollAttachmentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the collaborative document option.
+     *
+     * @return An integer representing the visibility of the collaborative document option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getCollaborativeDocumentOptionVisibility() {
+        return collaborativeDocumentOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the collaborative document option.
+     *
+     * @param visibility An integer representing the visibility status of the collaborative document option.
+     */
+    public void setCollaborativeDocumentOptionVisibility(int visibility) {
+        this.collaborativeDocumentOptionVisibility = visibility;
+        additionParameter.setCollaborativeDocumentOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the collaborative whiteboard option.
+     *
+     * @return An integer representing the visibility of the collaborative whiteboard option.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getCollaborativeWhiteboardOptionVisibility() {
+        return collaborativeWhiteboardOptionVisibility;
+    }
+
+    /**
+     * Sets the visibility of the collaborative whiteboard option.
+     *
+     * @param visibility An integer representing the visibility status of the collaborative whiteboard option.
+     */
+    public void setCollaborativeWhiteboardOptionVisibility(int visibility) {
+        this.collaborativeWhiteboardOptionVisibility = visibility;
+        additionParameter.setCollaborativeWhiteboardOptionVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the stickers button.
+     *
+     * @return An integer representing the visibility of the stickers button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getStickersButtonVisibility() {
+        return stickersButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the stickers button.
+     *
+     * @param visibility An integer representing the visibility status of the stickers button.
+     */
+    public void setStickersButtonVisibility(int visibility) {
+        this.stickersButtonVisibility = visibility;
+        additionParameter.setStickersButtonVisibility(visibility);
+        setAuxiliaryButtonViewInternally();
+    }
+
+    /**
+     * Retrieves the visibility status of the send button.
+     *
+     * @return An integer representing the visibility of the send button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getSendButtonVisibility() {
+        return sendButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the send button.
+     *
+     * @param visibility An integer representing the visibility status of the send button.
+     */
+    public void setSendButtonVisibility(int visibility) {
+        this.sendButtonVisibility = visibility;
+        sendButtonLayoutBinding.ivSendBtn.setVisibility(visibility);
+    }
+
+    /**
+     * Retrieves the visibility status of the auxiliary button.
+     *
+     * @return An integer representing the visibility of the auxiliary button.
+     * Possible values include {@code View.VISIBLE}, {@code View.INVISIBLE}, and {@code View.GONE}.
+     */
+    public int getAuxiliaryButtonVisibility() {
+        return auxiliaryButtonVisibility;
+    }
+
+    /**
+     * Sets the visibility of the auxiliary button.
+     *
+     * @param visibility An integer representing the visibility status of the auxiliary button.
+     */
+    public void setAuxiliaryButtonVisibility(int visibility) {
+        this.auxiliaryButtonVisibility = visibility;
+        binding.messageInput.setAuxiliaryButtonVisibility(visibility);
+    }
+
+    /**
      * Interface representing a callback to be invoked when the send button is
      * clicked.
      *
@@ -3263,6 +3470,11 @@ public class CometChatMessageComposer extends MaterialCardView {
 
 
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        composerViewModel.addListeners();
+    }
 
 
     @Override

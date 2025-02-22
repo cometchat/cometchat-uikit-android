@@ -19,8 +19,6 @@
         <attr name="cometchatGroupsSubmitSelectionIcon" format="reference" />
         <attr name="cometchatGroupsSubmitSelectionIconTint" format="color" />
 
-        <attr name="cometchatGroupsSearchInputStartIcon" format="reference" />
-        <attr name="cometchatGroupsSearchInputStartIconTint" format="color" />
         <attr name="cometchatGroupsSearchInputEndIcon" format="reference" />
         <attr name="cometchatGroupsSearchInputEndIconTint" format="color" />
 
