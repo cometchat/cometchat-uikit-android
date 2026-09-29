@@ -244,4 +244,39 @@ class AuthenticationE2ETest {
             homeLoaded && !onLogin
         )
     }
+
+    /**
+     * iOS "Empty UID Blocked": tapping Continue with an EMPTY UID must not log in — the app
+     * blocks it (LoginState.Error "Please select a user or enter a UID") and stays on the login
+     * screen. Non-vacuous: fails if an empty UID reaches Home.
+     */
+    @Test
+    fun test05_emptyUidBlocked() {
+        E2ETestHelper.launchApp(device)
+
+        // Wait for the login screen.
+        assertTrue(
+            "Login screen did not appear",
+            device.wait(Until.hasObject(By.text("Enter UID")), TIMEOUT) ||
+                device.wait(Until.hasObject(By.text("Continue")), SHORT_TIMEOUT)
+        )
+
+        // Ensure the UID field is empty, then tap Continue.
+        device.findObject(By.clazz("android.widget.EditText"))?.clear()
+        val continueBtn = device.findObject(By.text("Continue"))
+            ?: device.findObject(By.textContains("Continue"))
+        assertNotNull("Continue button not found", continueBtn)
+        continueBtn!!.click()
+        Thread.sleep(3000)
+
+        // Must remain on the login screen — no Home.
+        val onLogin = device.findObject(By.text("Enter UID")) != null ||
+            device.findObject(By.text("Continue")) != null ||
+            device.findObject(By.clazz("android.widget.EditText")) != null
+        val chatsTab = device.findObject(By.desc("Chats")) ?: device.findObject(By.text("Chats"))
+        assertTrue(
+            "Empty UID should be blocked — expected to remain on the login screen (no Home)",
+            onLogin && chatsTab == null
+        )
+    }
 }

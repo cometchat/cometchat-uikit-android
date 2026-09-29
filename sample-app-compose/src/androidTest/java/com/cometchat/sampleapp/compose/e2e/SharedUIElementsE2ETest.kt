@@ -9,6 +9,8 @@ import androidx.test.uiautomator.Until
 import com.cometchat.sampleapp.compose.e2e.helpers.E2ETestHelper
 import com.cometchat.sampleapp.compose.e2e.helpers.E2ETestHelper.SETTLE_TIME
 import com.cometchat.sampleapp.compose.e2e.helpers.E2ETestHelper.TIMEOUT
+import com.cometchat.sampleapp.compose.e2e.helpers.E2ETestConfig
+import com.cometchat.sampleapp.compose.e2e.helpers.RestApiHelper
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -115,46 +117,30 @@ class SharedUIElementsE2ETest {
      *
      * Note: This test may pass vacuously if no conversations have unread messages.
      */
+    /**
+     * E2E-058: unread badge — GENUINE (non-vacuous). Deterministically seed an incoming
+     * (peer→me) message via REST so the peer's conversation row must carry an unread badge,
+     * then assert it. The row's content-description reads e.g. "dove, Badge123, 2 unread messages".
+     * Fails if no unread badge appears — no soft/vacuous pass.
+     */
     @Test
     fun test02_badgeCountShown() {
-        // Navigate to Chats tab
         E2ETestHelper.navigateToTab(device, "Chats")
-        Thread.sleep(SETTLE_TIME)
-        device.waitForIdle()
 
-        // Wait for conversations list to load
-        Thread.sleep(SETTLE_TIME)
+        // Unique probe (avoid the substring "unread" so it can't be confused with the badge text).
+        val tag = "Badge" + (System.currentTimeMillis() % 100000)
+        RestApiHelper.sendMessage(
+            sender = E2ETestConfig.ONE_TO_ONE_UID,
+            receiver = E2ETestConfig.LOGGED_IN_UID,
+            text = tag
+        )
 
-        // Look for badge count elements using safeGetBounds
-        // Badge counts are numeric TextViews (1-99 or "99+")
-        var hasBadge = false
-
-        val allTextViews = device.findObjects(By.clazz("android.widget.TextView"))
-        for (tv in allTextViews) {
-            try {
-                val text = tv.text ?: ""
-                if (text.matches(Regex("^\\d+\\+?$")) && text != "0") {
-                    hasBadge = true
-                    break
-                }
-            } catch (_: androidx.test.uiautomator.StaleObjectException) {
-                continue
-            }
-        }
-
-        // Also look for badge via content descriptions
-        if (!hasBadge) {
-            val descBadges = E2ETestHelper.safeGetBounds(device, By.descContains("unread"))
-            hasBadge = descBadges.isNotEmpty()
-        }
-
-        // Soft pass: if no unread messages, just verify the list loaded
-        val hasContent = device.findObject(By.scrollable(true)) != null ||
-            E2ETestHelper.safeGetBounds(device, By.clickable(true)) { it.top > 150 }.isNotEmpty()
-
+        // The peer's row surfaces carrying an unread badge in its content-description.
+        val row = E2ETestHelper.waitFor(device, By.descContains(tag))
+        assertNotNull("Peer conversation row for the incoming message '$tag' did not appear", row)
         assertTrue(
-            "Conversations list should be visible (badge may not exist if all read). hasContent: $hasContent",
-            hasBadge || hasContent
+            "Conversation row did not show an unread badge after a peer sent an incoming message",
+            (row!!.contentDescription ?: "").contains("unread", ignoreCase = true)
         )
     }
 

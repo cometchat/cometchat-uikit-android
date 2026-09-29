@@ -21,11 +21,11 @@ import org.junit.runners.MethodSorters
 /**
  * E2E tests for **Thread Subscription** in the Compose sample app (ENG-37567 / ENG-37569).
  *
- * Gated by `CometChatUIKit.isThreadSubscriptionEnabled()` (`enableThreadSubscription`, **default
- * OFF**). It is enabled in the *master* app (`ComposeApplication` calls
- * `setEnableThreadSubscription(true)`) but **NOT in the sample app** — so here the option/bell are
- * expected to be ABSENT. These tests document the gate and prove the thread flow is unaffected; if
- * a future build flips the flag on, the happy-path branches assert the real behaviour.
+ * Gated by the UIKit init flag `UIKitSettings.enableThreadSubscription`, read via
+ * `CometChatUIKit.isThreadSubscriptionEnabled()` — **default ON**, so neither the sample nor the
+ * master app sets it and the option/bell are expected to be PRESENT; the happy-path branches assert
+ * the real behaviour. The gated-off branches are kept so the suite still passes for an integrator
+ * who opts out with `setEnableThreadSubscription(false)`.
  *
  * When enabled, the surfaces are:
  * - Action-sheet option (state-labelled): "Notify me about replies" / "Stop reply notifications".

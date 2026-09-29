@@ -8,6 +8,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.cometchat.sampleapp.kotlin.e2e.helpers.E2ETestConfig
 import com.cometchat.sampleapp.kotlin.e2e.helpers.E2ETestHelper
+import com.cometchat.sampleapp.kotlin.e2e.helpers.RestApiHelper
 import com.cometchat.sampleapp.kotlin.e2e.helpers.E2ETestHelper.PACKAGE
 import com.cometchat.sampleapp.kotlin.e2e.helpers.E2ETestHelper.SETTLE_TIME
 import com.cometchat.sampleapp.kotlin.e2e.helpers.E2ETestHelper.TIMEOUT
@@ -132,117 +133,46 @@ class SharedUIElementsE2ETest {
     }
 
     /**
-     * E2E-058: Navigate to Conversations, verify unread badge count is visible.
-     *
-     * The CometChatConversationListItem has a CometChatBadgeCount component in the
-     * tail_view area that shows the unread message count. If any conversation has
-     * unread messages, the badge should be visible with a numeric count.
-     *
-     * Note: This test may pass vacuously if no conversations have unread messages.
+     * E2E-058: unread badge — GENUINE (non-vacuous). Deterministically seed an incoming
+     * (peer→me) message via the REST API so the peer's conversation row must carry an unread
+     * badge, then assert it. The badge (`badge_view`) sits in a sibling `tail_view`, not inside
+     * the item container, so it's associated with the row's subtitle geometrically (same y-band).
+     * Fails if no unread badge appears — no soft/vacuous pass, and no SDK re-login gymnastics.
      */
     @Test
     fun test02_badgeCountShown() {
-        // First, send messages as another user to create unread badges
-        val otherUid = E2ETestConfig.ONE_TO_ONE_UID
-        val loginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
-
-        // Send 2 messages to dhruv (creates unread count)
-        for (i in 1..2) {
-            val sendLatch = java.util.concurrent.CountDownLatch(1)
-            val msg = com.cometchat.chat.models.TextMessage(
-                E2ETestHelper.testUid, "BadgeMsg$i${System.currentTimeMillis()}",
-                com.cometchat.chat.constants.CometChatConstants.RECEIVER_TYPE_USER
-            )
-            com.cometchat.chat.core.CometChat.sendMessage(msg,
-                object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.TextMessage>() {
-                    override fun onSuccess(m: com.cometchat.chat.models.TextMessage?) { sendLatch.countDown() }
-                    override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { sendLatch.countDown() }
-                })
-            sendLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
-        }
-
-        // Login back as test user
-        val reloginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
-
-        // Re-launch app so conversations list shows unread badge
-        E2ETestHelper.launchApp(device)
-        Thread.sleep(E2ETestHelper.SETTLE_TIME)
-
         E2ETestHelper.navigateToTab(device, "Chats")
-        Thread.sleep(5000) // Extra wait for conversations to load with badges
 
-        val uikitPackage = "com.cometchat.uikit.kotlin"
-
-        // Wait for conversations list to load
-        val conversationsList = E2ETestHelper.waitForObject(
-            device, By.res(PACKAGE, "conversationList")
-        )
-        assertNotNull("Conversations list not found", conversationsList)
-
-        // Wait for items to load in the RecyclerView
-        val recyclerView = device.wait(
-            Until.findObject(By.res(uikitPackage, "recyclerview_conversations_list")),
-            TIMEOUT
-        ) ?: device.findObject(By.res(PACKAGE, "recyclerview_conversations_list"))
-            ?: device.findObject(
-                By.clazz("androidx.recyclerview.widget.RecyclerView")
-                    .hasAncestor(By.res(PACKAGE, "conversationList"))
-            )
-
-        assertNotNull("Conversations RecyclerView not found", recyclerView)
-
-        // Wait for items to be populated
-        val deadline = System.currentTimeMillis() + TIMEOUT
-        while (System.currentTimeMillis() < deadline) {
-            if (recyclerView!!.children.isNotEmpty()) break
-            Thread.sleep(1500)
-        }
-
-        assertTrue("Conversations list is empty", recyclerView!!.children.isNotEmpty())
-
-        // Look for badge count elements across all visible conversation items.
-        // CometChatBadgeCount renders as a MaterialCardView with a TextView inside showing a number.
-        // We look for TextViews containing numeric values (1, 2, 10, 99+, etc.) in the tail area.
-        val allTextViews = recyclerView.findObjects(By.clazz("android.widget.TextView"))
-        val badgeCandidates = allTextViews.filter { tv ->
-            val text = tv.text ?: ""
-            // Badge counts are numeric (or "99+")
-            text.matches(Regex("^\\d+\\+?$")) && text != "0"
-        }
-
-        // Also look for CometChatBadgeCount components directly
-        val badgeComponents = device.findObjects(
-            By.clazz("com.cometchat.uikit.kotlin.presentation.shared.baseelements.badgecount.CometChatBadgeCount")
+        // Unique probe (avoid the substring "unread" so it can't be confused with the badge text).
+        val tag = "Badge" + (System.currentTimeMillis() % 100000)
+        RestApiHelper.sendMessage(
+            sender = E2ETestConfig.ONE_TO_ONE_UID,
+            receiver = E2ETestConfig.LOGGED_IN_UID,
+            text = tag
         )
 
-        val hasBadge = badgeCandidates.isNotEmpty() || badgeComponents.isNotEmpty()
+        val rowSel = By.res(PACKAGE, "conversations_item_container").hasDescendant(By.text(tag))
+        val row = E2ETestHelper.waitForObject(device, rowSel)
+        assertNotNull("Peer conversation row for the incoming message '$tag' did not appear", row)
+        assertTrue(
+            "Conversation row did not show an unread badge after a peer sent an incoming message",
+            rowHasUnreadBadge(tag)
+        )
+    }
 
-        // This assertion is soft — if no conversations have unread messages, we just verify
-        // that the list rendered correctly
-        if (hasBadge) {
-            assertTrue(
-                "Badge count found with numeric value — component renders correctly",
-                true
-            )
-        } else {
-            // No unread messages — verify the list at least rendered items (soft pass)
-            assertTrue(
-                "No unread badge visible (all conversations may be read). " +
-                    "Conversation items rendered: ${recyclerView.children.size}",
-                recyclerView.children.isNotEmpty()
-            )
+    /**
+     * True if the conversation row whose subtitle is [subtitleText] shows an unread-count badge.
+     * The badge lives in a sibling view of the item container, so match it by vertical overlap
+     * with the row's subtitle rather than by parent/child containment.
+     */
+    private fun rowHasUnreadBadge(subtitleText: String): Boolean {
+        val sub = device.findObject(By.res(PACKAGE, "tv_subtitle").text(subtitleText))
+            ?: device.findObject(By.text(subtitleText))
+            ?: return false
+        val rb = sub.visibleBounds
+        return device.findObjects(By.res(PACKAGE, "badge_view")).any {
+            val cy = it.visibleBounds.centerY()
+            cy in (rb.top - 20)..(rb.bottom + 20)
         }
     }
 

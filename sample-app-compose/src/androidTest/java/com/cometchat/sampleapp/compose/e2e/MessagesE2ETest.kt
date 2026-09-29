@@ -723,13 +723,7 @@ class MessagesE2ETest {
         val ts = System.currentTimeMillis()
 
         // Login as "d1" and send message to test user
-        val loginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherUid)
 
         val sendLatch = java.util.concurrent.CountDownLatch(1)
         val msg = com.cometchat.chat.models.TextMessage(E2ETestHelper.testUid, "OtherEdit$ts", com.cometchat.chat.constants.CometChatConstants.RECEIVER_TYPE_USER)
@@ -741,13 +735,7 @@ class MessagesE2ETest {
         sendLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
 
         // Login back as test user
-        val reloginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
 
         // Re-launch and navigate to chat with "Dhruv New 1"
         E2ETestHelper.launchApp(device)
@@ -870,13 +858,7 @@ class MessagesE2ETest {
         val ts = System.currentTimeMillis()
 
         // Login as "d1" and send message to test user
-        val loginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherUid)
 
         val sendLatch = java.util.concurrent.CountDownLatch(1)
         val msg = com.cometchat.chat.models.TextMessage(E2ETestHelper.testUid, "OtherDel$ts", com.cometchat.chat.constants.CometChatConstants.RECEIVER_TYPE_USER)
@@ -888,13 +870,7 @@ class MessagesE2ETest {
         sendLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
 
         // Login back as test user
-        val reloginLatch = java.util.concurrent.CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : com.cometchat.chat.core.CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: com.cometchat.chat.exceptions.CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, java.util.concurrent.TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
 
         E2ETestHelper.launchApp(device)
         Thread.sleep(E2ETestHelper.SETTLE_TIME)

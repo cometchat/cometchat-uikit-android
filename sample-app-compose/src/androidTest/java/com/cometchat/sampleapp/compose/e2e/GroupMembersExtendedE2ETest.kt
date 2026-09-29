@@ -106,13 +106,7 @@ class GroupMembersExtendedE2ETest {
     @After
     fun teardown() {
         // Ensure we're logged in as owner for cleanup
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
 
         if (testGroupId.isNotEmpty()) {
             val latch = CountDownLatch(1)
@@ -413,13 +407,7 @@ class GroupMembersExtendedE2ETest {
     @Test
     fun test08_regularMemberHasNoAdminActions() {
         // Login as participant
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(memberUid1,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(memberUid1)
 
         E2ETestHelper.launchApp(device)
         Thread.sleep(SETTLE_TIME)
@@ -459,13 +447,7 @@ class GroupMembersExtendedE2ETest {
         scopeLatch.await(10, TimeUnit.SECONDS)
 
         // Login as admin
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(memberUid1,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(memberUid1)
 
         E2ETestHelper.launchApp(device)
         Thread.sleep(SETTLE_TIME)

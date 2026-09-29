@@ -9,7 +9,7 @@
         android:layout_width="@dimen/cometchat_24dp"
         android:layout_height="@dimen/cometchat_24dp"
         android:layout_marginStart="@dimen/cometchat_margin_4"
-        android:importantForAccessibility="no"
+        android:contentDescription="@string/app_btn_create_group"
         android:src="@drawable/ic_create_group" />
 
 </LinearLayout>

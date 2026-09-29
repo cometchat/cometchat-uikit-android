@@ -235,4 +235,32 @@ class AuthenticationE2ETest {
         assertTrue("App did not auto-login with existing session — expected Home screen", homeLoaded)
     }
 
+    /**
+     * E2E-002b (iOS "Empty UID Blocked"): tapping Continue with an EMPTY UID must not log in —
+     * the app blocks it (validation toast "Please select user or enter the correct UID") and
+     * stays on the login screen. Non-vacuous: fails if an empty UID reaches Home.
+     */
+    @Test
+    fun test05_emptyUidBlocked() {
+        E2ETestHelper.launchApp(device)
+
+        val uidField = device.wait(Until.findObject(By.res(PACKAGE, "etUid")), TIMEOUT)
+        assertNotNull("Login UID field not found", uidField)
+
+        // Leave the UID empty, then tap Continue.
+        uidField!!.clear()
+        val continueBtn = device.findObject(By.res(PACKAGE, "btnContinue"))
+        assertNotNull("Continue button not found", continueBtn)
+        continueBtn!!.click()
+        Thread.sleep(3000)
+
+        // Must remain on the login screen — no Home.
+        val stillOnLogin = device.findObject(By.res(PACKAGE, "etUid")) != null
+        val bottomNav = device.findObject(By.res(PACKAGE, "bottomNavigationView"))
+        assertTrue(
+            "Empty UID should be blocked — expected to remain on the login screen (no Home)",
+            stillOnLogin && bottomNav == null
+        )
+    }
+
 }

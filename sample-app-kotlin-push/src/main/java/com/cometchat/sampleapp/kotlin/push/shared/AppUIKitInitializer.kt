@@ -53,7 +53,6 @@ object AppUIKitInitializer {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setEnableCalling(true)
-            .setEnableThreadSubscription(true)
             .build()
 
         CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {

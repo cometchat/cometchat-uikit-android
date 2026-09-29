@@ -105,7 +105,10 @@ class CometChatMessageHeaderScreenshotTest {
      * Lets the Activity handle layout naturally — simplified approach
      * matching real-world usage.
      */
-    private fun launchAndCapture(configure: (ComponentActivity) -> CometChatMessageHeader) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> CometChatMessageHeader,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
@@ -119,6 +122,9 @@ class CometChatMessageHeaderScreenshotTest {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
             )
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             ShadowLooper.idleMainLooper()
         }
@@ -520,5 +526,19 @@ class CometChatMessageHeaderScreenshotTest {
             activity.window.decorView.captureRoboImage(roborazziOptions = RoborazziConfig.options())
         }
         scenario.close()
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateUserOnline_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val header = CometChatMessageHeader(activity)
+            val vm = createViewModel()
+            header.setViewModel(vm)
+            val user = createUser(uid = "user-1", name = "Alice Johnson", status = CometChatConstants.USER_STATUS_ONLINE)
+            vm.setUser(user)
+            header
+        }
     }
 }

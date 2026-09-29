@@ -47,23 +47,23 @@ object E2ETestConfig {
     val MULTI_MEMBER_UID: String get() = arg("partner2Uid") ?: "YOUR_SECOND_PARTNER_UID"
 
     /** Group member / "other user" for SDK- and REST-based group setup. */
-    const val GROUP_MEMBER_1_UID = "YOUR_GROUP_MEMBER_1_UID"
+    val GROUP_MEMBER_1_UID: String get() = arg("groupMember1Uid") ?: "YOUR_GROUP_MEMBER_1_UID"
 
     /** Second group member / moderator in member-management tests. */
-    const val GROUP_MEMBER_2_UID = "YOUR_GROUP_MEMBER_2_UID"
+    val GROUP_MEMBER_2_UID: String get() = arg("groupMember2Uid") ?: "YOUR_GROUP_MEMBER_2_UID"
 
     /** Third group member, promoted to admin in member-management tests. */
-    const val GROUP_MEMBER_3_UID = "YOUR_GROUP_MEMBER_3_UID"
+    val GROUP_MEMBER_3_UID: String get() = arg("groupMember3Uid") ?: "YOUR_GROUP_MEMBER_3_UID"
 
     // ─── Groups / data (REPLACE with public groups owned by LOGGED_IN_UID) ────────
     /** Public group owned by [LOGGED_IN_UID] for the realtime group tests. */
-    const val REALTIME_GROUP_GUID = "YOUR_REALTIME_GROUP_GUID"
+    val REALTIME_GROUP_GUID: String get() = arg("realtimeGroupGuid") ?: "YOUR_REALTIME_GROUP_GUID"
 
     /** Public group owned by [LOGGED_IN_UID] for the realtime group-receive tests. */
-    const val GROUP_RECEIVE_GUID = "YOUR_GROUP_RECEIVE_GUID"
+    val GROUP_RECEIVE_GUID: String get() = arg("groupReceiveGuid") ?: "YOUR_GROUP_RECEIVE_GUID"
 
     /** Password used for the password-protected group tests. */
-    const val GROUP_PASSWORD = "YOUR_GROUP_PASSWORD"
+    val GROUP_PASSWORD: String get() = arg("groupPassword") ?: "YOUR_GROUP_PASSWORD"
 
     /** A reachable hosted file used as a media attachment in realtime media tests. */
     const val MEDIA_FILE_URL =

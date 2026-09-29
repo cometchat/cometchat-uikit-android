@@ -641,7 +641,10 @@ class CometChatIncomingCallScreenshotTest {
 
     // ==================== Helper: Screenshot Capture ====================
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> CometChatIncomingCall) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> CometChatIncomingCall,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
@@ -658,6 +661,9 @@ class CometChatIncomingCallScreenshotTest {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ))
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             try {
                 ShadowLooper.idleMainLooper()
@@ -698,5 +704,17 @@ class CometChatIncomingCallScreenshotTest {
         whenever(call.callInitiator).thenReturn(caller)
         whenever(call.sender).thenReturn(caller)
         return call
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateRingingAudio_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val view = createIncomingCallView(activity)
+            val call = createMockCall("session-1", CometChatConstants.CALL_TYPE_AUDIO, "Iron Man")
+            view.setCall(call)
+            view
+        }
     }
 }

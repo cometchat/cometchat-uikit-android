@@ -75,6 +75,10 @@ class CallDetailsViewModel : ViewModel() {
         setupHistoryRequest(callUser)
     }
     
+    // setCallCategory's @StringDef names com.cometchat.calls.constants.Constants, but the
+    // public CometChatCallsConstants facade holds the same values (both CALL_CATEGORY_CALL
+    // are "call" in calls-sdk-android 5.0.4). Lint cannot see across the two holders.
+    @Suppress("WrongConstant")
     private fun setupHistoryRequest(callUser: CallUser?) {
         callUser?.uid?.let { uid ->
             callLogRequest = CallLogRequest.CallLogRequestBuilder()

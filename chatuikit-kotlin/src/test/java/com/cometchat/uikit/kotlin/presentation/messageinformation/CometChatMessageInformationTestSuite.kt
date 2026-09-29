@@ -9,14 +9,14 @@ import io.kotest.core.spec.style.FunSpec
  *   ./gradlew :chatuikit-kotlin:testDebugUnitTest --tests "*.messageinformation.*"
  *
  * Individual test classes:
- * - CometChatMessageInformationRenderingTest: UIState → rendering states
+ * - CometChatMessageInformationViewModelTest: UIState → rendering states
  * - CometChatMessageInformationInteractionTest: User interactions → state changes
  */
 class CometChatMessageInformationTestSuite : FunSpec({
 
     test("Suite marker — all MessageInformation Kotlin JVM tests") {
         println("=== CometChatMessageInformation Kotlin JVM Test Suite ===")
-        println("  • CometChatMessageInformationRenderingTest — 8 tests (states, PBT, conversation type)")
+        println("  • CometChatMessageInformationViewModelTest — 8 tests (states, PBT, conversation type)")
         println("  • CometChatMessageInformationInteractionTest — 6 tests (setMessage, fetch, timestamps, listener)")
         println("  Total: 14 JVM tests")
     }

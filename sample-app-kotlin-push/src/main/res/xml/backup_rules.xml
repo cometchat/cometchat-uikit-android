@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
+<!--
+   ENG-38653 (G5): Android 11 and below (legacy auto-backup). Same posture as
+   data_extraction_rules.xml - chat databases and credential/token prefs are
+   excluded wholesale so nothing sensitive reaches cloud backup.
+
+   Enterprise recommendation: set android:allowBackup="false" on <application>
+   to disable backup entirely.
 -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="database" path="." />
 </full-backup-content>

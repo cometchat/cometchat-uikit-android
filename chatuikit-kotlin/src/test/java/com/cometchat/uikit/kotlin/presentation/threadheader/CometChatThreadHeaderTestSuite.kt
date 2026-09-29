@@ -7,7 +7,7 @@ import io.kotest.core.spec.style.FunSpec
  * Test suite aggregating all JVM tests for CometChatThreadHeader (chatuikit-kotlin).
  *
  * Includes:
- * - CometChatThreadHeaderRenderingTest: ViewModel states → correct data for View rendering
+ * - CometChatThreadHeaderViewModelTest: ViewModel states → correct data for View rendering
  * - CometChatThreadHeaderInteractionTest: User interactions → correct ViewModel state changes
  * - CometChatThreadHeaderStyleTest: Style data class defaults, copy, equals
  * - CometChatThreadHeaderScreenshotTest: Visual regression (Roborazzi, run separately)
@@ -23,7 +23,7 @@ class CometChatThreadHeaderTestSuite : FunSpec({
     test("suite marker - all threadheader tests are in this package") {
         // Marker test to ensure the suite file is valid
         println("  📦 CometChatThreadHeader Test Suite")
-        println("    → CometChatThreadHeaderRenderingTest")
+        println("    → CometChatThreadHeaderViewModelTest")
         println("    → CometChatThreadHeaderInteractionTest")
         println("    → CometChatThreadHeaderStyleTest")
         println("    → CometChatThreadHeaderScreenshotTest (Roborazzi)")

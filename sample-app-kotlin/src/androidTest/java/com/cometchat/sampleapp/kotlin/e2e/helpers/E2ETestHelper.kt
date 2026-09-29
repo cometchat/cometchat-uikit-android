@@ -89,13 +89,18 @@ object E2ETestHelper {
             .subscribePresenceForAllUsers()
             .build()
 
-        CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {
-            override fun onSuccess(p0: String?) { latch.countDown() }
-            override fun onError(e: CometChatException?) {
-                error = e?.message ?: "SDK init failed"
-                latch.countDown()
-            }
-        })
+        // CometChatUIKit.init enforces the main-thread threading contract (Track 1 / X5),
+        // so dispatch it onto the main thread; the async callback still counts down the latch
+        // we await below on the instrumentation thread.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {
+                override fun onSuccess(p0: String?) { latch.countDown() }
+                override fun onError(e: CometChatException?) {
+                    error = e?.message ?: "SDK init failed"
+                    latch.countDown()
+                }
+            })
+        }
 
         latch.await(30, TimeUnit.SECONDS)
         if (error != null) throw RuntimeException("SDK init failed: $error")
@@ -106,7 +111,12 @@ object E2ETestHelper {
      */
     fun logoutIfNeeded() {
         try {
-            if (CometChatUIKit.getLoggedInUser() != null) {
+            // getLoggedInUser is also a main-thread CometChatUIKit entry point (Track 1 / X5).
+            var loggedIn = false
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                loggedIn = CometChatUIKit.getLoggedInUser() != null
+            }
+            if (loggedIn) {
                 val latch = CountDownLatch(1)
                 CometChat.logout(object : CometChat.CallbackListener<String>() {
                     override fun onSuccess(p0: String?) { latch.countDown() }
@@ -115,6 +125,26 @@ object E2ETestHelper {
                 latch.await(10, TimeUnit.SECONDS)
             }
         } catch (_: Exception) { /* Not logged in or SDK not initialized */ }
+    }
+
+    /**
+     * Logs in as [uid] and waits for the callback to land.
+     *
+     * CometChatUIKit.login enforces the main-thread threading contract (Track 1 / X5) and
+     * throws IllegalStateException when called from the instrumentation thread, so the call
+     * is dispatched onto the main thread the same way [initSdk] dispatches init. The async
+     * callback still counts the latch down, and we await it here on the instrumentation
+     * thread so the caller blocks until the login settles.
+     */
+    fun loginAs(uid: String, timeoutSeconds: Long = 10) {
+        val latch = CountDownLatch(1)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            CometChatUIKit.login(uid, object : CometChat.CallbackListener<User>() {
+                override fun onSuccess(p0: User?) { latch.countDown() }
+                override fun onError(e: CometChatException?) { latch.countDown() }
+            })
+        }
+        latch.await(timeoutSeconds, TimeUnit.SECONDS)
     }
 
     // ─── App Launch & Login ──────────────────────────────────────────────────────
@@ -635,6 +665,33 @@ object E2ETestHelper {
      */
     fun waitUntilExists(device: UiDevice, selector: BySelector, timeout: Long = TIMEOUT): Boolean {
         return device.wait(Until.hasObject(selector), timeout)
+    }
+
+    /**
+     * Polls until [selector] is GONE (for filters clearing / dismissals); true if it disappeared.
+     */
+    fun waitGone(device: UiDevice, selector: BySelector, timeout: Long = TIMEOUT): Boolean {
+        return device.wait(Until.gone(selector), timeout)
+    }
+
+    /**
+     * Types [text] into the field matched by [selector], RE-FINDING the node before each attempt
+     * so a recomposition/relayout between find-and-act can't throw StaleObjectException. Returns
+     * true if the text was set. (Prefer this over a cached findObject + setText.)
+     */
+    fun typeInto(device: UiDevice, selector: BySelector, text: String, timeout: Long = TIMEOUT): Boolean {
+        val deadline = System.currentTimeMillis() + timeout
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                val field = device.wait(Until.findObject(selector), 2_000L) ?: continue
+                field.clear()
+                field.text = text
+                return true
+            } catch (_: androidx.test.uiautomator.StaleObjectException) {
+                // node invalidated — loop re-finds and retries
+            }
+        }
+        return false
     }
 
     /**

@@ -674,6 +674,7 @@ class CometChatGroupMembersScreenshotTest {
     // ==================== Helper: Static Screenshot Capture ====================
 
     private fun launchAndCapture(
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> CometChatGroupMembers
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
@@ -695,6 +696,9 @@ class CometChatGroupMembersScreenshotTest {
                 )
             )
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             ShadowLooper.idleMainLooper()
 
@@ -971,5 +975,18 @@ class CometChatGroupMembersScreenshotTest {
             changeMemberScopeUseCase = ChangeMemberScopeUseCase(repository),
             enableListeners = false
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val view = CometChatGroupMembers(activity)
+            val vm = createViewModel(createGroupMembers(5))
+            view.setViewModel(vm)
+            view.setGroup(createGroup())
+            view
+        }
     }
 }

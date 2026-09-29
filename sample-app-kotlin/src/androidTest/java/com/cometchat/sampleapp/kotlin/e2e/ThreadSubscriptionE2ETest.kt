@@ -23,12 +23,11 @@ import org.junit.runners.MethodSorters
  * E2E tests for **Thread Subscription** (Slack-style follow/unfollow — ENG-37567 / ENG-37569),
  * View / sample-app-kotlin.
  *
- * The feature is gated by the UIKit flag `CometChatUIKit.isThreadSubscriptionEnabled()`
- * (`UIKitSettings.enableThreadSubscription`, **default OFF**). It is turned ON in the *master*
- * apps (`KotlinApplication` calls `setEnableThreadSubscription(true)`) but **NOT in the sample
- * apps** — so in this suite the option/bell are expected to be ABSENT, and these tests document
- * that gate while proving the underlying thread flow is unaffected. If a future build flips the
- * flag on, the happy-path branches below assert the real behaviour.
+ * The feature is gated by the UIKit init flag `UIKitSettings.enableThreadSubscription`, read via
+ * `CometChatUIKit.isThreadSubscriptionEnabled()` — **default ON**, so neither the sample nor the
+ * master apps set it and the option/bell are expected to be PRESENT; the happy-path branches below
+ * assert the real behaviour. The gated-off branches are kept so the suite still passes for an
+ * integrator who opts out with `setEnableThreadSubscription(false)`.
  *
  * When enabled, the surfaces are:
  * - Message action-sheet option (state-labelled): "Notify me about replies" (subscribe) /

@@ -370,6 +370,9 @@ class GroupDetailsViewModel : ViewModel() {
      * Creates an Action message for group operations.
      * This is a local implementation replacing Utils.getGroupActionMessage from the Java UIKit.
      */
+    // BaseMessage.type carries a @StringDef listing only MESSAGE_TYPE_*, but an Action's
+    // type is an action type, not a message type. ACTION_TYPE_GROUP_MEMBER is correct here.
+    @Suppress("WrongConstant")
     private fun getGroupActionMessage(actionOn: AppEntity?, actionFor: Group, receiver: Group, uid: String): Action {
         return Action().apply {
             setActionBy(CometChatUIKit.getLoggedInUser())

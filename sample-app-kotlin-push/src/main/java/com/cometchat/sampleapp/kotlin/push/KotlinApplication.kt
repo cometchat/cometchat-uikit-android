@@ -206,7 +206,6 @@ class KotlinApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setEnableCalling(true)
-            .setEnableThreadSubscription(true)
             .build()
         CometChatUIKit.init(this, settings, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(result: String?) {

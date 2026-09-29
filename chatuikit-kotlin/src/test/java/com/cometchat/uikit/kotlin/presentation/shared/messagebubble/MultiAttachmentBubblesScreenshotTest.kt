@@ -194,6 +194,7 @@ class MultiAttachmentBubblesScreenshotTest {
 
     private fun launchAndCapture(
         outgoing: Boolean = false,
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> View
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
@@ -221,13 +222,21 @@ class MultiAttachmentBubblesScreenshotTest {
                 )
             }
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
             ShadowLooper.idleMainLooper()
 
+            // Idle first, then lay out: the activity runs its own traversal off the
+            // looper and sizes the container to the window (1200x2400 at these
+            // qualifiers). Idling after the manual layout is a race, and the captured
+            // canvas flips size between runs. Our layout has to be the last thing
+            // before the capture.
+            ShadowLooper.idleMainLooper()
             val widthSpec = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
             val heightSpec = View.MeasureSpec.makeMeasureSpec(2160, View.MeasureSpec.EXACTLY)
             container.measure(widthSpec, heightSpec)
             container.layout(0, 0, 1080, 2160)
-            ShadowLooper.idleMainLooper()
 
             container.captureRoboImage(roborazziOptions = RoborazziConfig.options())
         }
@@ -436,6 +445,32 @@ class MultiAttachmentBubblesScreenshotTest {
         launchAndCapture { activity ->
             CometChatImagesBubble(activity).apply {
                 setMessage(mediaMessage(CometChatConstants.MESSAGE_TYPE_IMAGE, imageAttachments(6)))
+            }
+        }
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun imagesGrid_fourImages_incoming_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            CometChatImagesBubble(activity).apply {
+                setMessage(mediaMessage(CometChatConstants.MESSAGE_TYPE_IMAGE, imageAttachments(4)))
+            }
+        }
+    }
+
+    @Test
+    fun filesBubble_singleFile_incoming_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            CometChatFilesBubble(activity).apply {
+                setOutgoing(false)
+                setMessage(
+                    mediaMessage(
+                        CometChatConstants.MESSAGE_TYPE_FILE,
+                        listOf(attachment("report.pdf", "application/pdf"))
+                    )
+                )
             }
         }
     }

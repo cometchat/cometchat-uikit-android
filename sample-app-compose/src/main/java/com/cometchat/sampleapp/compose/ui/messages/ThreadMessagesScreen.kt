@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,7 @@ import com.cometchat.uikit.compose.presentation.messagecomposer.ui.CometChatMess
 import com.cometchat.uikit.compose.presentation.messagelist.ui.CometChatMessageList
 import com.cometchat.uikit.compose.presentation.threadheader.ui.CometChatThreadHeader
 import com.cometchat.uikit.compose.presentation.threadheader.ui.ThreadSubscriptionBell
+import com.cometchat.uikit.core.formatter.RichTextFormat
 
 /**
  * Thread messages screen composable for displaying thread replies.
@@ -119,6 +121,11 @@ fun ThreadMessagesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // Pad for the navigation bar as well as the IME: MainActivity goes
+                // edge-to-edge, so without this the composer's send button renders
+                // behind the nav bar and taps land on the system gesture area
+                // instead. Matches master-app-compose's ThreadMessageScreen.
+                .navigationBarsPadding()
                 .imePadding()
         ) {
             // Top App Bar with back navigation
@@ -174,10 +181,19 @@ fun ThreadMessagesScreen(
                 user = user,
                 group = group,
                 parentMessageId = parentMessageId.toLong(),
-                // Enable all attachment types
+                enableRichTextFormatting = true,
+                // Enable all rich-text formats so the formatting toolbar is shown, matching the
+                // main messages screen and the master app's thread screen.
+                enabledFormats = RichTextFormat.entries.toSet(),
+                // Enable all attachment types. The three option flags default to true
+                // (hidden), so they have to be set explicitly -- hideAttachmentButton only
+                // controls the button itself.
                 hideAttachmentButton = false,
                 hideVoiceRecordingButton = false,
-                hideSendButton = false
+                hideSendButton = false,
+                hidePollOption = false,
+                hideCollaborativeDocumentOption = false,
+                hideCollaborativeWhiteboardOption = false
             )
         }
     }

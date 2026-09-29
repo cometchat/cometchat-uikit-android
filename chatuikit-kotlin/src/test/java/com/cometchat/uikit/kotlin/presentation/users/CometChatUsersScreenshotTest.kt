@@ -596,6 +596,7 @@ class CometChatUsersScreenshotTest {
      * decorations including sticky headers, separators, and item decorations.
      */
     private fun launchAndCapture(
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> CometChatUsers
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
@@ -611,6 +612,9 @@ class CometChatUsersScreenshotTest {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
         }
 
         // Let the looper process all pending messages (layout, draw, ViewModel emissions)
@@ -800,5 +804,17 @@ class CometChatUsersScreenshotTest {
             searchUsersUseCase = SearchUsersUseCase(repository),
             enableListeners = false
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val view = CometChatUsers(activity)
+            val vm = createViewModel(createUsers(5))
+            view.setViewModel(vm)
+            view
+        }
     }
 }

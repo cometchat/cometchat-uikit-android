@@ -72,8 +72,7 @@ class SearchE2ETest {
             ?: device.findObject(By.descContains("search"))
         if (searchIcon != null) {
             searchIcon.click()
-            Thread.sleep(1500)
-            searchBar = device.findObject(By.clazz("android.widget.EditText"))
+            searchBar = E2ETestHelper.waitFor(device, By.clazz("android.widget.EditText"), SHORT_TIMEOUT)
             if (searchBar != null) return searchBar
         }
 
@@ -106,13 +105,10 @@ class SearchE2ETest {
         // matches the way the original test searched ("Andrew"); the full display name is
         // resolved from getUser but a prefix is what the search field expects.
         val searchQuery = E2ETestHelper.getUserName(E2ETestConfig.GROUP_MEMBER_1_UID).substringBefore(" ")
-        searchBar!!.click()
-        Thread.sleep(500)
-        searchBar.clear()
-        searchBar.text = searchQuery
+        // Stale-safe type (re-finds on recomposition) — same fix as Users.test03 / Search.test03.
+        E2ETestHelper.typeInto(device, By.clazz("android.widget.EditText"), searchQuery)
 
-        // Wait for filter to apply (network call + recomposition)
-        Thread.sleep(SHORT_TIMEOUT)
+        // Poll for the filtered result instead of a flat sleep (see waitFor rationale).
 
         // NOTE: no pressBack here. The soft keyboard is disabled on the test emulator, so
         // pressBack acts as a real back-navigation that collapses the search field and clears
@@ -120,8 +116,8 @@ class SearchE2ETest {
 
         // Verify filtered results show the searched user
         // In Compose, text might be in By.text, By.textContains, or By.descContains
-        val filteredResult = device.findObject(By.textContains(searchQuery))
-            ?: device.findObject(By.descContains(searchQuery))
+        val filteredResult = E2ETestHelper.waitFor(device, By.textContains(searchQuery))
+            ?: E2ETestHelper.waitFor(device, By.descContains(searchQuery), SHORT_TIMEOUT)
 
         // Also check using safeGetBounds — the text might be below the search field
         val resultBounds = if (filteredResult == null) {
@@ -166,14 +162,10 @@ class SearchE2ETest {
 
         // Type a partial group name (most test groups contain "Group")
         val searchQuery = "Group"
-        searchBar!!.clear()
-        searchBar.text = searchQuery
+        E2ETestHelper.typeInto(device, By.clazz("android.widget.EditText"), searchQuery)
 
-        // Wait for filter to apply
-        Thread.sleep(SHORT_TIMEOUT)
-
-        // Verify filtered results show a matching group
-        val filteredResult = device.findObject(By.textContains(searchQuery))
+        // Poll for the filtered result instead of a flat sleep.
+        val filteredResult = E2ETestHelper.waitFor(device, By.textContains(searchQuery))
         assertNotNull(
             "Group matching '$searchQuery' not found in filtered results",
             filteredResult
@@ -206,9 +198,11 @@ class SearchE2ETest {
         device.wait(Until.hasObject(By.textContains(uniqueContent)), TIMEOUT)
         Thread.sleep(2000)
 
-        // Go back to conversations list
+        // Go back to conversations list and wait for the Chats home to actually return
+        // (poll for the bottom-nav tab instead of a flat sleep — back-nav settle time varies).
         E2ETestHelper.pressBack(device)
-        Thread.sleep(SETTLE_TIME)
+        E2ETestHelper.waitFor(device, By.desc("Chats"), TIMEOUT)
+            ?: E2ETestHelper.waitFor(device, By.text("Chats"), SHORT_TIMEOUT)
 
         // Try to find and use a search bar on the Chats tab
         var searchBar = device.findObject(By.clazz("android.widget.EditText"))
@@ -225,10 +219,11 @@ class SearchE2ETest {
         }
 
         if (searchBar != null) {
-            // Search is available — type partial message content
-            searchBar.clear()
-            searchBar.text = uniqueContent.take(10)
-            Thread.sleep(SHORT_TIMEOUT)
+            // Search is available — type partial message content. Re-find + retry on a stale
+            // node: the send + back navigation recomposes the Chats screen, which can
+            // invalidate the cached searchBar handle (StaleObjectException).
+            E2ETestHelper.typeInto(device, By.clazz("android.widget.EditText"), uniqueContent.take(10))
+            device.waitForIdle()
 
             // Verify the app didn't crash (still has bottom nav or content)
             val stillFunctional = E2ETestHelper.isOnHomeScreen(device) ||
@@ -267,8 +262,9 @@ class SearchE2ETest {
         searchBar!!.clear()
         searchBar.text = nonexistentQuery
 
-        // Wait for filter to apply
-        Thread.sleep(SHORT_TIMEOUT)
+        // Deterministic signal the filter applied: the previously-listed known user disappears.
+        val knownFirst = E2ETestHelper.getUserName(E2ETestConfig.GROUP_MEMBER_1_UID).substringBefore(" ")
+        E2ETestHelper.waitGone(device, By.textContains(knownFirst))
 
         // Verify no matching results are shown
         // Strategy 1: Look for an empty state text ("No Users Found", "No results", etc.)

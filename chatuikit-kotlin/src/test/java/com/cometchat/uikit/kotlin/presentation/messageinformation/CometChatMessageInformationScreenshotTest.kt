@@ -352,6 +352,7 @@ class CometChatMessageInformationScreenshotTest {
      * matching real-world usage.
      */
     private fun launchAndCapture(
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> CometChatMessageInformation
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
@@ -367,6 +368,9 @@ class CometChatMessageInformationScreenshotTest {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             ShadowLooper.idleMainLooper()
         }
@@ -730,5 +734,17 @@ class CometChatMessageInformationScreenshotTest {
             eventListener = eventListener,
             enableListeners = false
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val view = CometChatMessageInformation(activity)
+            view.setViewModel(createViewModel(createReceiptUsers(5)))
+            view.setMessage(createGroupMessage())
+            view
+        }
     }
 }

@@ -16,7 +16,7 @@ A sample Android application demonstrating the CometChat UI Kit with Jetpack Com
 ## Prerequisites
 
 - Android Studio Hedgehog (2023.1.1) or later
-- Android SDK 24 (Android 7.0) or higher
+- Android SDK 28 (Android 9.0) or higher
 - Kotlin 1.9+
 - CometChat Account with App ID, Region, and Auth Key
 
@@ -31,7 +31,7 @@ cd <repository-name>
 
 ### 2. Configure CometChat Credentials
 
-Open `sample-app-jetpack/src/main/java/com/cometchat/sampleapp/jetpack/utils/AppConstants.kt` and update:
+Open `sample-app-compose/src/main/java/com/cometchat/sampleapp/compose/utils/AppConstants.kt` and update:
 
 ```kotlin
 object AppConstants {
@@ -47,18 +47,18 @@ object AppConstants {
 
 ```bash
 # Build the project
-./gradlew :sample-app-jetpack:assembleDebug
+./gradlew :sample-app-compose:assembleDebug
 
 # Install on connected device
-./gradlew :sample-app-jetpack:installDebug
+./gradlew :sample-app-compose:installDebug
 ```
 
-Or open the project in Android Studio and run the `sample-app-jetpack` configuration.
+Or open the project in Android Studio and run the `sample-app-compose` configuration.
 
 ## Project Structure
 
 ```
-sample-app-jetpack/
+sample-app-compose/
 ├── src/main/java/com/cometchat/sampleapp/jetpack/
 │   ├── app/
 │   │   └── SampleApplication.kt      # Application class with SDK initialization
@@ -253,7 +253,8 @@ The app requests the following permissions:
 
 ## License
 
-This sample app is provided for demonstration purposes. See the LICENSE file for details.
+This sample app is provided for demonstration purposes under the same licence as
+the rest of this repository — see [LICENSE](../LICENSE).
 
 ## Support
 

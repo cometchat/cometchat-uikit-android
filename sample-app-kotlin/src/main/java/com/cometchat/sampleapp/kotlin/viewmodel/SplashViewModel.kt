@@ -131,7 +131,6 @@ class SplashViewModel : ViewModel() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setEnableCalling(true)
-            .setEnableThreadSubscription(true)
             .build()
         
         CometChatUIKit.init(context, uiKitSettings, object : CometChat.CallbackListener<String>() {

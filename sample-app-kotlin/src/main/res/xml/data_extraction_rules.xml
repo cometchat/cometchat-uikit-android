@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-   Sample data extraction rules for Android 12+ (API 31+)
-   See https://developer.android.com/about/versions/12/backup-restore
+   ENG-38653 (G5): CometChat data must never leave the device via backup.
+   The local databases (CometChatSDK.db, CometChatCallsSDK.db) hold the full
+   chat history; the shared prefs (COMETCHATSDK.xml, COMETCHAT_CALLS_SDK.xml,
+   and the app's own prefs) hold credentials and the session auth token.
+   Both domains are excluded wholesale - from cloud backup AND device-to-device
+   transfer - so a renamed file can never silently re-enter the backup set.
+
+   Enterprise recommendation: set android:allowBackup="false" on <application>
+   to disable backup entirely.
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- Exclude sensitive data from cloud backup -->
-        <exclude domain="sharedpref" path="app_credentials.xml"/>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="database" path="." />
     </cloud-backup>
     <device-transfer>
-        <!-- Allow device-to-device transfer -->
-        <include domain="sharedpref" path="."/>
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="database" path="." />
     </device-transfer>
 </data-extraction-rules>

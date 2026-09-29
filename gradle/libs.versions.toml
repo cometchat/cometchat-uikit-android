@@ -1,9 +1,12 @@
 [versions]
 agp = "8.9.1"
+dokka = "2.0.0"
+lintApi = "31.9.1"  # AGP + 23
+binaryCompatibilityValidator = "0.16.3"
 cardsAndroid = "1.0.0"
-chatuikitComposeAndroid = "6.0.8"
-chatuikitCoreAndroid = "6.0.8"
-chatuikitKotlinAndroid = "6.0.8"
+chatuikitComposeAndroid = "6.1.0"
+chatuikitCoreAndroid = "6.1.0"
+chatuikitKotlinAndroid = "6.1.0"
 coreTesting = "2.2.0"
 espressoContrib = "3.7.0"
 junitVintageEngine = "6.1.1"
@@ -17,7 +20,6 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesTest = "1.10.2"
-lottie = "6.5.2"
 material = "1.12.0"
 constraintlayout = "2.2.0"
 chatSdkAndroid = "5.0.6"
@@ -98,7 +100,6 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version = "1.9.3" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
@@ -123,10 +124,16 @@ lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", 
 androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshotTest" }
 
+lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibilityValidator" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

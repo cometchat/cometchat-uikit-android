@@ -51,9 +51,6 @@ class UsersE2ETest {
      */
     @Test
     fun test01_usersListShowsTestUsers() {
-        // Wait for users to load
-        Thread.sleep(E2ETestHelper.SETTLE_TIME)
-
         // In Compose, list items are rendered within a scrollable/lazy container.
         // Find clickable user items in the content area.
 
@@ -103,11 +100,8 @@ class UsersE2ETest {
      */
     @Test
     fun test02_scrollLoadsPagination() {
-        // Wait for users to load
-        Thread.sleep(E2ETestHelper.SETTLE_TIME)
-
-        // Verify there's content before scrolling
-        val scrollable = device.findObject(By.scrollable(true))
+        // Poll for the list instead of a flat sleep.
+        val scrollable = E2ETestHelper.waitFor(device, By.scrollable(true))
         val hasContent = scrollable != null || device.findObjects(By.clickable(true)).size > 4
         assertTrue("No content found for pagination test", hasContent)
 
@@ -134,11 +128,8 @@ class UsersE2ETest {
      */
     @Test
     fun test03_searchFiltersUsers() {
-        // Wait for users list to load
-        Thread.sleep(E2ETestHelper.SETTLE_TIME)
-
-        // Find search bar — in Compose, it's an EditText or TextField
-        var searchBar = device.findObject(By.clazz("android.widget.EditText"))
+        // Find search bar — in Compose, it's an EditText or TextField (poll for it).
+        var searchBar = E2ETestHelper.waitFor(device, By.clazz("android.widget.EditText"), SHORT_TIMEOUT)
 
         if (searchBar == null) {
             // Try clicking a search icon first
@@ -146,8 +137,7 @@ class UsersE2ETest {
                 ?: device.findObject(By.descContains("search"))
             if (searchIcon != null) {
                 searchIcon.click()
-                Thread.sleep(1500)
-                searchBar = device.findObject(By.clazz("android.widget.EditText"))
+                searchBar = E2ETestHelper.waitFor(device, By.clazz("android.widget.EditText"), SHORT_TIMEOUT)
             }
         }
 
@@ -162,21 +152,16 @@ class UsersE2ETest {
         // Type a known user name to filter. Search by the first name token (prefix) so the
         // filter matches as the original test did ("Andrew"); the name is resolved from getUser.
         val searchQuery = E2ETestHelper.getUserName(E2ETestConfig.GROUP_MEMBER_1_UID).substringBefore(" ")
-        searchBar!!.click()
-        Thread.sleep(500)
-        searchBar.clear()
-        searchBar.text = searchQuery
-
-        // Wait for filter results
-        Thread.sleep(SHORT_TIMEOUT)
+        // Stale-safe type into the search field (re-finds on recomposition).
+        E2ETestHelper.typeInto(device, By.clazz("android.widget.EditText"), searchQuery)
 
         // NOTE: no pressBack here. The soft keyboard is disabled on the test emulator, so
         // pressBack acts as a real back-navigation that collapses the search field and clears
         // the filtered results — making the assertion below fail. Matches kotlin, which omits it.
 
-        // Verify that a user matching the search is visible
-        val filteredResult = device.findObject(By.textContains(searchQuery))
-            ?: device.findObject(By.descContains(searchQuery))
+        // Poll for the filtered result instead of a flat sleep.
+        val filteredResult = E2ETestHelper.waitFor(device, By.textContains(searchQuery))
+            ?: E2ETestHelper.waitFor(device, By.descContains(searchQuery), SHORT_TIMEOUT)
         assertNotNull(
             "Filtered result for '$searchQuery' not found in users list",
             filteredResult

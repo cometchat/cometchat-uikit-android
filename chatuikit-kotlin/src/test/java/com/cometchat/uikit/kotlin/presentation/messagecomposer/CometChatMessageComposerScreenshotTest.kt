@@ -88,8 +88,18 @@ class CometChatMessageComposerScreenshotTest {
 
     private lateinit var cometChatMock: org.mockito.MockedStatic<com.cometchat.chat.core.CometChat>
 
+    /**
+     * these captures let the component format `sentAt` itself, and the
+     * JVM default zone is not pinned anywhere in the build. A baseline recorded in
+     * one zone and compared in another (CI runs UTC) differs by the glyphs and
+     * width of the time label. Pinned to GMT so the capture is host-independent.
+     */
+    private lateinit var originalZone: java.util.TimeZone
+
     @Before
     fun setup() {
+        originalZone = java.util.TimeZone.getDefault()
+        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("GMT"))
         cometChatMock = org.mockito.Mockito.mockStatic(com.cometchat.chat.core.CometChat::class.java)
         val mockLoggedInUser = mock<User>()
         whenever(mockLoggedInUser.uid).thenReturn("logged-in-user")
@@ -100,6 +110,7 @@ class CometChatMessageComposerScreenshotTest {
 
     @After
     fun tearDown() {
+        java.util.TimeZone.setDefault(originalZone)
         cometChatMock.close()
     }
 
@@ -448,6 +459,7 @@ class CometChatMessageComposerScreenshotTest {
     // ==================== Helper: Static Screenshot Capture ====================
 
     private fun launchAndCapture(
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> CometChatMessageComposer
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
@@ -470,15 +482,19 @@ class CometChatMessageComposerScreenshotTest {
                 )
             )
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
+            // Idle first, then lay out: the activity runs its own traversal off the
+            // looper and sizes the container to the window. Idling after the manual
+            // layout is a race, and the captured canvas flips size between runs.
             ShadowLooper.idleMainLooper()
 
             val widthSpec = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
             val heightSpec = View.MeasureSpec.makeMeasureSpec(2160, View.MeasureSpec.EXACTLY)
             container.measure(widthSpec, heightSpec)
             container.layout(0, 0, 1080, 2160)
-
-            ShadowLooper.idleMainLooper()
 
             view.captureRoboImage(roborazziOptions = RoborazziConfig.options())
         }
@@ -541,5 +557,17 @@ class CometChatMessageComposerScreenshotTest {
             editMessageUseCase = EditMessageUseCase(repository),
             enableListeners = false
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateIdle_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            CometChatMessageComposer(activity).apply {
+                setUser(createTargetUser())
+                setViewModel(createViewModel())
+            }
+        }
     }
 }

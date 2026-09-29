@@ -252,6 +252,12 @@ class ThreadMessageActivity : AppCompatActivity() {
         binding.messageComposer.setPollOptionVisibility(View.VISIBLE)
         binding.messageComposer.setCollaborativeDocumentOptionVisibility(View.VISIBLE)
         binding.messageComposer.setCollaborativeWhiteboardOptionVisibility(View.VISIBLE)
+
+        // Rich-text formatting, matching MessagesActivity. setShowFormattingToolbar is not
+        // called here: the composer is SINGLE_LINE by default and that setter returns early
+        // unless the layout is MULTI_LINE, so it would be a no-op.
+        binding.messageComposer.setEnableRichTextFormatting(true)
+        binding.messageComposer.setRichTextToolbarVisibility(View.VISIBLE)
     }
     
     private fun setUserBlockedStatus(user: User) {

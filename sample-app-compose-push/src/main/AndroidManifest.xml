@@ -9,6 +9,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- Chat works without a camera or microphone: attachments can come from storage and
+         calling is optional. Declaring these as not required keeps the app installable on
+         camera-less hardware (ChromeOS, some tablets) instead of Play filtering it out. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
     <application
         android:name=".ComposeApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"

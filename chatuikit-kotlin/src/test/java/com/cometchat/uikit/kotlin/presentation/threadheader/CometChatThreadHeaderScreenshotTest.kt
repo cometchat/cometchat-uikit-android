@@ -1,41 +1,39 @@
 package com.cometchat.uikit.kotlin.presentation.threadheader
 
-import android.graphics.Color
-import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
-import android.view.Gravity
+import android.content.res.Configuration
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.cometchat.chat.core.CometChat
+import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.testutils.MockFactory
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.presentation.threadheader.ui.CometChatThreadHeader
+import com.cometchat.uikit.kotlin.presentation.utils.RoborazziConfig
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.cometchat.uikit.kotlin.presentation.utils.RoborazziConfig
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowLooper
+import java.util.TimeZone
 
 /**
- * Roborazzi screenshot tests for CometChatThreadHeader (chatuikit-kotlin).
+ * Snapshot layer for the **View** [CometChatThreadHeader].
  *
- * Uses the simulated-view approach to render the thread header component
- * with mock data, avoiding SDK dependencies that cause RuntimeExceptions.
- *
- * The thread header shows:
- * - Parent message bubble (avatar + sender name + message text + timestamp)
- * - Reaction bar (emoji reactions)
- * - Reply count bar ("X replies")
- *
- * Run:
- *   ./gradlew :chatuikit-kotlin:recordRoborazziDebug --tests "*CometChatThreadHeaderScreenshotTest"
+ * The suite this replaces hand-assembled a mock layout out of TextViews and never
+ * constructed the component, so its baselines were pictures of a stand-in. These
+ * capture the real view.
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -49,380 +47,106 @@ class CometChatThreadHeaderScreenshotTest {
         )
     )
 
-    // ==================== Colors ====================
-
-    private val BG_COLOR = Color.parseColor("#F5F5F5")
-    private val BG_COLOR_DARK = Color.parseColor("#1A1A2E")
-    private val BUBBLE_BG = Color.WHITE
-    private val BUBBLE_BG_DARK = Color.parseColor("#2D2D44")
-    private val TEXT_PRIMARY = Color.parseColor("#1A1A1A")
-    private val TEXT_PRIMARY_DARK = Color.parseColor("#EEEEEE")
-    private val TEXT_SECONDARY = Color.parseColor("#666666")
-    private val TEXT_SECONDARY_DARK = Color.parseColor("#AAAAAA")
-    private val TEXT_TERTIARY = Color.parseColor("#999999")
-    private val AVATAR_BG = Color.parseColor("#6851D6")
-    private val REPLY_COUNT_BG = Color.parseColor("#EEEEEE")
-    private val REPLY_COUNT_BG_DARK = Color.parseColor("#2A2A3E")
-    private val REPLY_COUNT_TEXT = Color.parseColor("#6851D6")
-    private val SEPARATOR_COLOR = Color.parseColor("#E0E0E0")
-    private val SEPARATOR_COLOR_DARK = Color.parseColor("#333344")
-    private val REACTION_BG = Color.parseColor("#F0F0F0")
-    private val REACTION_BG_DARK = Color.parseColor("#333344")
-
-    // ==================== Mock Data ====================
-
-    private val parentMessageText = "This is the parent message that started the thread conversation."
-    private val senderName = "Alice Smith"
-    private val timestamp = "10:30 AM"
-
-    // ==================== UI States ====================
-
-    @Test
-    fun stateWithMessage() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                addReplyCountBar(activity, 5)
-            }
-        }
+    private companion object {
+        const val CANVAS_LIGHT = 0xFFEEEEEE.toInt()
+        const val CANVAS_DARK = 0xFF121212.toInt()
+        const val PARENT_TEXT = "the parent message everyone replied to"
     }
 
-    @Test
-    fun stateWithReplyCount() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                addReplyCountBar(activity, 12)
-            }
-        }
+    private lateinit var cometChat: MockedStatic<CometChat>
+    private lateinit var originalZone: TimeZone
+
+    @Before
+    fun setUp() {
+        originalZone = TimeZone.getDefault()
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
+        val me = MockFactory.createUser(uid = "me", name = "Me")
+        cometChat = Mockito.mockStatic(CometChat::class.java)
+        cometChat.`when`<User?> { CometChat.getLoggedInUser() }.thenReturn(me)
     }
 
-    @Test
-    fun stateNoReplyCount() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                // No reply count bar
-            }
-        }
+    @After
+    fun tearDown() {
+        cometChat.close()
+        TimeZone.setDefault(originalZone)
     }
 
-    // ==================== Dark Theme ====================
-
-    @Test
-    @Config(qualifiers = "w400dp-h800dp-night-xxhdpi")
-    fun stateContentDark() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR_DARK) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp, dark = true)
-                addReactions(activity, dark = true)
-                addReplyCountBar(activity, 3, dark = true)
-            }
-        }
-    }
-
-    // ==================== Style ====================
-
-    @Test
-    fun styleCustomBackground() {
-        val customBg = Color.parseColor("#F5F5DC")
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, customBg) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                addReplyCountBar(activity, 5)
-            }
-        }
-    }
-
-    // ==================== Visibility Toggles ====================
-
-    @Test
-    fun visibilityNoReactions() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                // No reactions
-                addReplyCountBar(activity, 5)
-            }
-        }
-    }
-
-    @Test
-    fun visibilityNoAvatar() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp, showAvatar = false)
-                addReactions(activity)
-                addReplyCountBar(activity, 5)
-            }
-        }
-    }
-
-    @Test
-    fun visibilityNoReplyCountBar() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                // No reply count bar
-            }
-        }
-    }
-
-    // ==================== Alignment ====================
-
-    @Test
-    fun alignmentLeftAligned() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp, alignment = Gravity.START)
-                addReactions(activity)
-                addReplyCountBar(activity, 3)
-            }
-        }
-    }
-
-    @Test
-    fun alignmentStandard() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, "Bob Johnson", "Hey, can we discuss the new feature?", "11:45 AM", alignment = Gravity.END, isOutgoing = true)
-                addReactions(activity)
-                addReplyCountBar(activity, 3)
-            }
-        }
-    }
-
-    // ==================== Reply Count Variants ====================
-
-    @Test
-    fun replyCountSingle() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                addReplyCountBar(activity, 1)
-            }
-        }
-    }
-
-    @Test
-    fun replyCountLarge() {
-        launchAndCapture { activity ->
-            buildThreadHeaderLayout(activity, BG_COLOR) {
-                addParentBubble(activity, senderName, parentMessageText, timestamp)
-                addReactions(activity)
-                addReplyCountBar(activity, 999)
-            }
-        }
-    }
-
-    // ==================== Helper: Capture ====================
-
-    private fun launchAndCapture(configure: (ComponentActivity) -> View) {
+    private fun capture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity, CometChatThreadHeader) -> Unit,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
-            val view = configure(activity)
-            activity.setContentView(view)
+            val header = CometChatThreadHeader(activity)
+
+            val isNight = (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+            val container = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
+                setBackgroundColor(if (isNight) CANVAS_DARK else CANVAS_LIGHT)
+                addView(
+                    header,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+            }
+            activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
             ShadowLooper.idleMainLooper()
 
+            configure(activity, header)
+            ShadowLooper.idleMainLooper()
+
+            // Idle first, then lay out: the activity runs its own traversal off the
+            // looper and sizes the container to the window (1200x2400 at these
+            // qualifiers). Idling after the manual layout is a race, and the captured
+            // canvas flips size between runs. Our layout has to be the last thing
+            // before the capture.
+            ShadowLooper.idleMainLooper()
             val widthSpec = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
             val heightSpec = View.MeasureSpec.makeMeasureSpec(2160, View.MeasureSpec.EXACTLY)
-            view.measure(widthSpec, heightSpec)
-            view.layout(0, 0, 1080, 2160)
-            ShadowLooper.idleMainLooper()
+            container.measure(widthSpec, heightSpec)
+            container.layout(0, 0, 1080, 2160)
 
-            view.captureRoboImage(roborazziOptions = RoborazziConfig.options())
+            container.captureRoboImage(roborazziOptions = RoborazziConfig.options())
         }
         scenario.close()
     }
 
-    // ==================== Layout Builder ====================
+    private fun parent(text: String = PARENT_TEXT) = MockFactory.createTextMessage(sentAt = MockFactory.FIXED_SENT_AT, text = text)
 
-    private fun buildThreadHeaderLayout(
-        activity: ComponentActivity,
-        bgColor: Int,
-        builder: LinearLayout.() -> Unit
-    ): View {
-        return LinearLayout(activity).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            setBackgroundColor(bgColor)
-            setPadding(dp(16), dp(16), dp(16), dp(16))
-            builder()
-        }
+    @Test fun standard() = capture { _, h -> h.setParentMessage(parent()) }
+
+    @Config(qualifiers = "w400dp-h800dp-night-xxhdpi")
+    @Test fun standard_dark() = capture { _, h -> h.setParentMessage(parent()) }
+
+    @Test fun leftAligned() = capture { _, h ->
+        h.setAlignment(UIKitConstants.MessageListAlignment.LEFT_ALIGNED)
+        h.setParentMessage(parent())
     }
 
-    // ==================== Component Builders ====================
+    @Test fun shortParent() = capture { _, h -> h.setParentMessage(parent("ok")) }
 
-    private fun LinearLayout.addParentBubble(
-        activity: ComponentActivity,
-        senderName: String,
-        messageText: String,
-        time: String,
-        dark: Boolean = false,
-        showAvatar: Boolean = true,
-        alignment: Int = Gravity.START,
-        isOutgoing: Boolean = false
-    ) {
-        val row = LinearLayout(activity).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            gravity = alignment
-        }
-
-        if (showAvatar && !isOutgoing) {
-            // Avatar
-            val avatar = TextView(activity).apply {
-                text = senderName.first().toString()
-                textSize = 14f
-                setTextColor(Color.WHITE)
-                setTypeface(null, Typeface.BOLD)
-                gravity = Gravity.CENTER
-                val size = dp(36)
-                layoutParams = LinearLayout.LayoutParams(size, size).apply { marginEnd = dp(8) }
-                background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(AVATAR_BG)
-                }
-            }
-            row.addView(avatar)
-        }
-
-        // Bubble
-        val bubbleBg = if (isOutgoing) Color.parseColor("#6851D6") else if (dark) BUBBLE_BG_DARK else BUBBLE_BG
-        val bubble = LinearLayout(activity).apply {
-            orientation = LinearLayout.VERTICAL
-            background = roundedBg(bubbleBg, dp(12))
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                if (isOutgoing) marginStart = dp(50) else marginEnd = dp(50)
-            }
-        }
-
-        if (!isOutgoing) {
-            val nameText = TextView(activity).apply {
-                text = senderName
-                textSize = 12f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(if (dark) TEXT_SECONDARY_DARK else TEXT_SECONDARY)
-            }
-            bubble.addView(nameText)
-        }
-
-        val msgText = TextView(activity).apply {
-            text = messageText
-            textSize = 14f
-            setTextColor(if (isOutgoing) Color.WHITE else if (dark) TEXT_PRIMARY_DARK else TEXT_PRIMARY)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(4) }
-        }
-        bubble.addView(msgText)
-
-        val timeText = TextView(activity).apply {
-            text = time
-            textSize = 10f
-            setTextColor(if (isOutgoing) Color.argb(180, 255, 255, 255) else TEXT_TERTIARY)
-            gravity = Gravity.END
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(4) }
-        }
-        bubble.addView(timeText)
-
-        row.addView(bubble)
-        addView(row)
+    @Test fun withoutTheReplyCountBar() = capture { _, h ->
+        h.setParentMessage(parent())
+        h.setReplyCountBarVisibility(View.GONE)
     }
 
-    private fun LinearLayout.addReactions(activity: ComponentActivity, dark: Boolean = false) {
-        val reactionsRow = LinearLayout(activity).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = dp(8)
-                marginStart = dp(44) // Align with bubble (after avatar)
-            }
-        }
+    // withoutTheAvatar and withoutReactions are deliberately absent: with a plain
+    // parent message there are no reactions to hide and no avatar drawn, so both
+    // captured byte-identically to `standard`. Their effect is asserted in the
+    // functional test instead.
 
-        val reactions = listOf("👍 3", "❤️ 2", "😂 1")
-        for (reaction in reactions) {
-            val chip = TextView(activity).apply {
-                text = reaction
-                textSize = 12f
-                setTextColor(if (dark) TEXT_PRIMARY_DARK else TEXT_PRIMARY)
-                setPadding(dp(8), dp(4), dp(8), dp(4))
-                background = roundedBg(if (dark) REACTION_BG_DARK else REACTION_BG, dp(12))
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { marginEnd = dp(6) }
-            }
-            reactionsRow.addView(chip)
-        }
+    // ── right-to-left ───────────────────────────────────────────────────────
 
-        addView(reactionsRow)
-    }
-
-    private fun LinearLayout.addReplyCountBar(activity: ComponentActivity, count: Int, dark: Boolean = false) {
-        val separator = View(activity).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dp(1)
-            ).apply { topMargin = dp(12) }
-            setBackgroundColor(if (dark) SEPARATOR_COLOR_DARK else SEPARATOR_COLOR)
-        }
-        addView(separator)
-
-        val replyText = if (count == 1) "1 reply" else "$count replies"
-        val replyBar = LinearLayout(activity).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(8) }
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            background = roundedBg(if (dark) REPLY_COUNT_BG_DARK else REPLY_COUNT_BG, dp(8))
-            gravity = Gravity.CENTER_VERTICAL
-        }
-
-        val replyLabel = TextView(activity).apply {
-            text = replyText
-            textSize = 13f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(REPLY_COUNT_TEXT)
-        }
-        replyBar.addView(replyLabel)
-
-        addView(replyBar)
-    }
-
-    // ==================== Utility Methods ====================
-
-    private fun dp(value: Int): Int = (value * 2.75f).toInt()
-
-    private fun roundedBg(color: Int, radius: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = radius.toFloat()
-            setColor(color)
-        }
-    }
+    @Test fun standard_rtl() = capture(rtl = true) { _, h -> h.setParentMessage(parent()) }
 }

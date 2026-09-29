@@ -44,6 +44,7 @@ import com.cometchat.uikit.compose.presentation.shared.popupmenu.CometChatPopupM
 import com.cometchat.uikit.compose.shared.views.popupmenu.MenuItem
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.domain.model.ComposerLayoutMode
+import com.cometchat.uikit.core.formatter.RichTextFormat
 
 /**
  * Messages screen composable for one-on-one and group messaging.
@@ -314,10 +315,17 @@ private fun MessagesContent(
                     modifier = Modifier.fillMaxWidth(),
                     user = user,
                     group = group,
-                    layoutMode = ComposerLayoutMode.SINGLE_LINE,
+                    layoutMode = ComposerLayoutMode.MULTI_LINE,
                     enableRichTextFormatting = true,
+                    // Enable all rich-text formats so the formatting toolbar is shown (parity with the
+                    // XML sample app, which auto-enables all formats when the toolbar is made visible).
+                    enabledFormats = RichTextFormat.entries.toSet(),
                     // Set parent message ID for threaded conversations (from chat history)
                     parentMessageId = parentMessageId ?: -1,
+                    // Show all attachment options -- these default to true (hidden).
+                    hidePollOption = false,
+                    hideCollaborativeDocumentOption = false,
+                    hideCollaborativeWhiteboardOption = false,
                     onError = { exception ->
                         // Error handling is done internally by the component
                     }

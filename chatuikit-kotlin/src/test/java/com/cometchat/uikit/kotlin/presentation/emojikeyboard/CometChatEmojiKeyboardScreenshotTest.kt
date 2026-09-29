@@ -163,7 +163,10 @@ class CometChatEmojiKeyboardScreenshotTest {
         return EmojiKeyBoardView(activity)
     }
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> EmojiKeyBoardView) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> EmojiKeyBoardView,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             val view = configure(activity)
@@ -178,6 +181,9 @@ class CometChatEmojiKeyboardScreenshotTest {
                 ))
             }
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
             ShadowLooper.idleMainLooper()
         }
         scenario.onActivity { activity ->
@@ -186,5 +192,14 @@ class CometChatEmojiKeyboardScreenshotTest {
             activity.window.decorView.captureRoboImage(roborazziOptions = RoborazziConfig.options())
         }
         scenario.close()
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            createEmojiKeyboardView(activity)
+        }
     }
 }

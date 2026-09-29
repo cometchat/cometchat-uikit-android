@@ -19,7 +19,8 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "6.0.1"
+        // ENG-38657 (B3): track the library release instead of drifting
+        versionName = System.getenv("LIBRARY_VERSION") ?: "6.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,7 +52,7 @@ android {
 
 dependencies {
     implementation(project(":chatuikit-kotlin"))
-    implementation(project(":chatuikit-core"))
+    implementation(libs.chatuikit.core.android)
     implementation(libs.chat.sdk.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)

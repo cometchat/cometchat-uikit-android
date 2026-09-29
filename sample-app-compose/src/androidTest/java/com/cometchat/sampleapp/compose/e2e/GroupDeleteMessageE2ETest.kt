@@ -103,13 +103,7 @@ class GroupDeleteMessageE2ETest {
         modLatch.await(10, TimeUnit.SECONDS)
 
         // Send a message as the other member (for delete tests)
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherMemberUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherMemberUid)
 
         val sendLatch = CountDownLatch(1)
         val otherMsg = TextMessage(testGroupId, "OtherMsg$ts", CometChatConstants.RECEIVER_TYPE_GROUP)
@@ -120,13 +114,7 @@ class GroupDeleteMessageE2ETest {
         sendLatch.await(10, TimeUnit.SECONDS)
 
         // Login back as test user (owner/admin)
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
 
         // Re-launch the app to ensure UI is in sync after SDK login switches
         E2ETestHelper.launchApp(device)
@@ -245,13 +233,7 @@ class GroupDeleteMessageE2ETest {
         Thread.sleep(2000)
 
         // Now login as the other member (participant)
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherMemberUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherMemberUid)
 
         // Re-launch and navigate to the group
         E2ETestHelper.launchApp(device)
@@ -284,13 +266,7 @@ class GroupDeleteMessageE2ETest {
         Thread.sleep(500)
 
         // Login back as test user for teardown
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
     }
 
     /**
@@ -337,13 +313,7 @@ class GroupDeleteMessageE2ETest {
     @Test
     fun test06_moderatorCanDeleteOtherMemberMessage() {
         // Login as moderator
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(moderatorUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(moderatorUid)
 
         // Re-launch and navigate to the group
         E2ETestHelper.launchApp(device)
@@ -387,13 +357,7 @@ class GroupDeleteMessageE2ETest {
         )
 
         // Login back as test user for teardown
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════

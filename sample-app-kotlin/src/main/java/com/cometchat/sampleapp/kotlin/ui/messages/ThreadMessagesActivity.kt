@@ -100,7 +100,7 @@ class ThreadMessagesActivity : AppCompatActivity() {
     private fun applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
@@ -245,9 +245,18 @@ class ThreadMessagesActivity : AppCompatActivity() {
             // Set parent message ID for thread context
             setParentMessageId(parentMessageId)
 
-            // Enable all attachment types
+            // Enable all attachment types. The poll and collaborative options default to
+            // hidden, so they have to be turned on explicitly -- setHideAttachmentButton
+            // only controls the button itself.
             setHideAttachmentButton(false)
             setHideVoiceRecordingButton(false)
+            setPollOptionVisibility(View.VISIBLE)
+            setCollaborativeDocumentOptionVisibility(View.VISIBLE)
+            setCollaborativeWhiteboardOptionVisibility(View.VISIBLE)
+
+            // Rich-text formatting, matching this app's MessagesActivity.
+            setEnableRichTextFormatting(true)
+            setRichTextToolbarVisibility(View.VISIBLE)
         }
     }
 

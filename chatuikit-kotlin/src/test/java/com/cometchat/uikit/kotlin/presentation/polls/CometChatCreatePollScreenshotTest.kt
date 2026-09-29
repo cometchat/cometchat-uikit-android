@@ -48,12 +48,18 @@ class CometChatCreatePollScreenshotTest {
 
     // ==================== Helper Methods ====================
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> View) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> View,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
             val view = configure(activity)
             activity.setContentView(view)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
             ShadowLooper.idleMainLooper()
         }
         scenario.onActivity { activity ->
@@ -229,6 +235,15 @@ class CometChatCreatePollScreenshotTest {
             holder2?.itemView?.findViewById<android.widget.EditText>(R.id.et_option)?.setText("Friday")
             ShadowLooper.idleMainLooper()
             view
+        }
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateIdle_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            createComponentView(activity)
         }
     }
 }

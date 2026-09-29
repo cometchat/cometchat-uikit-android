@@ -29,6 +29,16 @@ GRADLEW="$ROOT/gradlew"
 CONFIG="$SCRIPT_DIR/src/androidTest/java/${PKG//.//}/e2e/helpers/E2ETestConfig.kt"
 TEST_FILTER="${1:-}"
 
+# ─── Variant: run against the PUBLISHED (R8-minified, Cloudsmith AAR) app by default — that R8
+# canary is the whole point of this script (ENG-38671 E1/E2). Override with E2E_VARIANT=debug to
+# run against local, non-minified source.
+E2E_VARIANT="${E2E_VARIANT:-published}"
+case "$E2E_VARIANT" in
+  published) GRADLE_TASK="connectedPublishedAndroidTest"; VARIANT_ARGS=(-Pe2ePublished); REPORT_VARIANT="published";;
+  debug)     GRADLE_TASK="connectedDebugAndroidTest";     VARIANT_ARGS=();               REPORT_VARIANT="debug";;
+  *) printf 'Unknown E2E_VARIANT: %s (use: published | debug)\n' "$E2E_VARIANT" >&2; exit 1;;
+esac
+
 bold() { printf '\033[1m%s\033[0m\n' "$1"; }
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 warn() { printf '  \033[33m⚠\033[0m %s\n' "$1"; }
@@ -108,7 +118,9 @@ stop_progress() {
 }
 trap stop_progress EXIT INT TERM
 
-GRADLE_ARGS=(":$MODULE:connectedDebugAndroidTest" --console=plain)
+echo "   variant: $E2E_VARIANT  (task: $GRADLE_TASK)"
+GRADLE_ARGS=(":$MODULE:$GRADLE_TASK" --console=plain)
+[ "${#VARIANT_ARGS[@]}" -gt 0 ] && GRADLE_ARGS+=("${VARIANT_ARGS[@]}")
 [ -n "$TEST_FILTER" ] && GRADLE_ARGS+=("-Pandroid.testInstrumentationRunnerArguments.class=$TEST_FILTER")
 
 ANDROID_SERIAL="$SERIAL" "$GRADLEW" "${GRADLE_ARGS[@]}" 2>&1 | tee "$LOG"
@@ -116,8 +128,8 @@ GRADLE_RC=${PIPESTATUS[0]}
 stop_progress
 
 # ─── 4. Summary + report locations ───────────────────────────────────────────
-RESULTS_DIR="$SCRIPT_DIR/build/outputs/androidTest-results/connected/debug"
-HTML="$SCRIPT_DIR/build/reports/androidTests/connected/debug/index.html"
+RESULTS_DIR="$SCRIPT_DIR/build/outputs/androidTest-results/connected/$REPORT_VARIANT"
+HTML="$SCRIPT_DIR/build/reports/androidTests/connected/$REPORT_VARIANT/index.html"
 bold "4. Results"
 python3 - "$RESULTS_DIR" <<'PY'
 import glob, os, re, sys

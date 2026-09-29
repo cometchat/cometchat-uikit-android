@@ -247,13 +247,7 @@ class GroupConversationE2ETest {
     @Test
     fun test04_joinPasswordProtectedGroupOpensChat() {
         // Login as another user who is NOT a member of the password group
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherMemberUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherMemberUid)
 
         E2ETestHelper.launchApp(device)
         Thread.sleep(SETTLE_TIME)
@@ -319,13 +313,7 @@ class GroupConversationE2ETest {
         assertTrue("Messages screen did not open after joining password group", messagesLoaded)
 
         // Login back as main user
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
     }
 
     /**
@@ -334,13 +322,7 @@ class GroupConversationE2ETest {
     @Test
     fun test05_joinPasswordGroupWrongPasswordShowsError() {
         // Login as another user
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherMemberUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherMemberUid)
 
         E2ETestHelper.launchApp(device)
         Thread.sleep(SETTLE_TIME)
@@ -407,13 +389,7 @@ class GroupConversationE2ETest {
         )
 
         // Login back
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════

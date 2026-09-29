@@ -457,4 +457,5 @@
     <string name="property_enable_call_initiated">Enable onCallInitiated</string>
     <string name="property_enable_start_direct_call">Enable onStartDirectCall</string>
     <string name="property_margin_between_buttons">Margin Between Buttons</string>
+    <string name="app_btn_create_group">Create Group</string>
 </resources>

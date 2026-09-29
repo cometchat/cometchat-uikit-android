@@ -52,6 +52,10 @@ class CallDetailsHistoryViewModel : ViewModel() {
      * Determines the user to filter by based on whether the logged-in user
      * was the initiator or receiver of the call.
      */
+    // setCallCategory's @StringDef names com.cometchat.calls.constants.Constants, but the
+    // public CometChatCallsConstants facade holds the same values (both CALL_CATEGORY_CALL
+    // are "call" in calls-sdk-android 5.0.4). Lint cannot see across the two holders.
+    @Suppress("WrongConstant")
     fun setCallLog(callLog: CallLog) {
         val initiator = callLog.initiator as CallUser
         val isLoggedInUser = CometChatUIKit.getLoggedInUser()?.uid == initiator.uid

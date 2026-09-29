@@ -240,6 +240,9 @@ private fun addMembersToGroup(
 /**
  * Creates an Action message for group member added operation.
  */
+// BaseMessage.type carries a @StringDef listing only MESSAGE_TYPE_*, but an Action's
+// type is an action type, not a message type. ACTION_TYPE_GROUP_MEMBER is correct here.
+@Suppress("WrongConstant")
 private fun createGroupActionMessage(user: User, group: Group): Action {
     return Action().apply {
         setActionBy(CometChatUIKit.getLoggedInUser())

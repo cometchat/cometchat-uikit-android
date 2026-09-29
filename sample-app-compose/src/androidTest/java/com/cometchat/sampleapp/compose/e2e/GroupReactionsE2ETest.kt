@@ -87,13 +87,7 @@ class GroupReactionsE2ETest {
         addLatch.await(10, TimeUnit.SECONDS)
 
         // Send a message as the other member (for GRP-077)
-        val loginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(otherMemberUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { loginLatch.countDown() }
-                override fun onError(e: CometChatException?) { loginLatch.countDown() }
-            })
-        loginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(otherMemberUid)
 
         val sendLatch = CountDownLatch(1)
         val otherMsg = TextMessage(testGroupId, "OtherReactMsg$ts", CometChatConstants.RECEIVER_TYPE_GROUP)
@@ -104,13 +98,7 @@ class GroupReactionsE2ETest {
         sendLatch.await(10, TimeUnit.SECONDS)
 
         // Login back as test user
-        val reloginLatch = CountDownLatch(1)
-        com.cometchat.uikit.core.CometChatUIKit.login(E2ETestHelper.testUid,
-            object : CometChat.CallbackListener<com.cometchat.chat.models.User>() {
-                override fun onSuccess(u: com.cometchat.chat.models.User?) { reloginLatch.countDown() }
-                override fun onError(e: CometChatException?) { reloginLatch.countDown() }
-            })
-        reloginLatch.await(10, TimeUnit.SECONDS)
+        E2ETestHelper.loginAs(E2ETestHelper.testUid)
 
         // Navigate to group and send a target message
         E2ETestHelper.launchApp(device)

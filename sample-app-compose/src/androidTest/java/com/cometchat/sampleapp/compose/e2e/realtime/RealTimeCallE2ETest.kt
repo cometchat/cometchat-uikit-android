@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.FixMethodOrder
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -18,16 +19,16 @@ import org.junit.runners.MethodSorters
  *
  * Mirror of the verified kotlin RealTimeCallE2ETest. The partner ([partnerUid]) initiates a
  * default call via the JS Chat SDK (WebView driver) so the app receives onIncomingCallReceived
- * and shows the CometChatIncomingCall component — verified flow modeled on master-app-jetpack
- * (Application.addCallListener → launchIncomingCallPopup → CometChatIncomingCall overlay).
+ * and shows the CometChatIncomingCall component.
  *
- * IMPORTANT: sample-app-compose does NOT yet wire incoming calls (no addCallListener /
- * CometChatIncomingCall) — that's a known app gap to be added by the senior dev (master-app-jetpack
- * already has it). Until then, the incoming-UI tests (test01/02/03/04) will fail; the call-message
- * tests (test05/06) may pass since the call message is created server-side regardless of the UI.
+ * Incoming calls are now wired in sample-app-compose (ENG-39043): SampleApplication initializes
+ * the Calls SDK, registers a CometChat.CallListener, and exposes an incomingCall StateFlow that
+ * MainActivity renders as a CometChatIncomingCall overlay (ported from master-app-compose). So the
+ * incoming-UI tests (test01–04) exercise the real flow. test06 stays @Ignore'd — the backend does
+ * not make a call the conversation lastMessage, so no call preview appears in the list.
  *
  * Covers: RT-CALL-001/005 (incoming voice/video), RT-CALL-002 (decline), RT-CALL-003 (cancel),
- * RT-CALL-004 (call-ended message), RT-CALL-006 (conversation-list update).
+ * RT-CALL-004 (call-ended message), RT-CALL-006 (conversation-list update — parked).
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -95,6 +96,11 @@ class RealTimeCallE2ETest : RealtimeTestBase() {
         )
     }
 
+    // Ignored: CometChat does not surface call-category messages as a conversation's lastMessage,
+    // so the conversation-list preview never shows the call (REST-verified — call events newer than
+    // the conversation's lastMessage still don't advance it). Backend behaviour (holds on iOS too),
+    // not an app defect. Mirrors the kotlin RealTimeCallE2ETest decision.
+    @Ignore("Backend: call messages are not the conversation lastMessage, so no call preview in the list (REST-verified)")
     @Test
     fun test06_callUpdatesConversationList() {
         startIncomingCall(video = false)

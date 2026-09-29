@@ -172,12 +172,18 @@ class CometChatImageViewerScreenshotTest {
 
     // ==================== Helper: Capture ====================
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> View) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> View,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
             val view = configure(activity)
             activity.setContentView(view)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
             ShadowLooper.idleMainLooper()
 
             val widthSpec = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
@@ -427,4 +433,16 @@ class CometChatImageViewerScreenshotTest {
     // ==================== Utility Methods ====================
 
     private fun dp(value: Int): Int = (value * 2.75f).toInt() // xxhdpi scale
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            buildImageViewerLayout(activity) {
+                addImagePlaceholder(activity, mockImages[0], showImage = true)
+                addToolbar(activity, mockImages[0].senderName, mockImages[0].timestamp)
+            }
+        }
+    }
 }

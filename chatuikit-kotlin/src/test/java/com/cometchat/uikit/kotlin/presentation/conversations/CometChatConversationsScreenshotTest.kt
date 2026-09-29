@@ -911,9 +911,10 @@ class CometChatConversationsScreenshotTest {
      * configures it via the provided block, and captures a screenshot.
      */
     private fun launchAndCapture(
+        rtl: Boolean = false,
         configure: (ComponentActivity) -> CometChatConversations
     ) {
-        launchAndCaptureWithPostAction(configure = configure, postAction = null)
+        launchAndCaptureWithPostAction(configure = configure, postAction = null, rtl = rtl)
     }
 
     /**
@@ -929,7 +930,8 @@ class CometChatConversationsScreenshotTest {
      */
     private fun launchAndCaptureWithPostAction(
         configure: (ComponentActivity) -> CometChatConversations,
-        postAction: ((CometChatConversations) -> Unit)? = null
+        postAction: ((CometChatConversations) -> Unit)? = null,
+        rtl: Boolean = false,
     ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
@@ -944,6 +946,9 @@ class CometChatConversationsScreenshotTest {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) view.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             ShadowLooper.idleMainLooper()
 
@@ -1549,5 +1554,17 @@ class CometChatConversationsScreenshotTest {
             refreshConversationListUseCase = RefreshConversationListUseCase(repository),
             enableListeners = false
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateContent_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            val view = createConversationsView(activity)
+            val vm = createViewModel(createRealUserConversations(5))
+            view.setViewModel(vm)
+            view
+        }
     }
 }

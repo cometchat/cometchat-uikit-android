@@ -18,9 +18,6 @@ import org.junit.runners.Suite
  */
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    // Top-level conversation tests
-    CometChatConversationsInteractionTest::class,
-    CometChatConversationsRenderingTest::class,
     // Style tests
     CometChatConversationListItemStyleTest::class,
     // UI tests

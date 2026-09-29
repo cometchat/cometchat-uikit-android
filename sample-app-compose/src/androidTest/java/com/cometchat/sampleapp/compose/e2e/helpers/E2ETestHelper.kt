@@ -72,6 +72,52 @@ object E2ETestHelper {
         return name
     }
 
+    // ─── Polling waits (prefer these over Thread.sleep + findObject) ───────────────
+    //
+    // Rationale (ENG-39000 flakiness work): a fixed `Thread.sleep(t)` followed by a
+    // single `device.findObject(...)` snapshot is the suite's main flake source — the
+    // snapshot is taken once, so if the async work (network fetch + recomposition) is
+    // still in flight when `t` elapses on a loaded emulator, the node reads null and a
+    // passable test fails. `device.wait(Until.findObject(...), t)` instead POLLS until
+    // the node appears (returning early the moment it does), up to the timeout.
+
+    /** Polls until an object matching [selector] is present; returns it, or null on timeout. */
+    fun waitFor(device: UiDevice, selector: BySelector, timeout: Long = TIMEOUT): UiObject2? =
+        device.wait(Until.findObject(selector), timeout)
+
+    /** Polls until [selector] is present and asserts it; returns the object. */
+    fun requireObject(device: UiDevice, selector: BySelector, message: String, timeout: Long = TIMEOUT): UiObject2 {
+        val obj = device.wait(Until.findObject(selector), timeout)
+        assertNotNull(message, obj)
+        return obj!!
+    }
+
+    /** Polls until [selector] is GONE (for dismissals / filters clearing); true if it disappeared. */
+    fun waitGone(device: UiDevice, selector: BySelector, timeout: Long = TIMEOUT): Boolean =
+        device.wait(Until.gone(selector), timeout)
+
+    /**
+     * Types [text] into the field matched by [selector], RE-FINDING the node before each
+     * attempt. A Compose recomposition between find-and-act invalidates a cached UiObject2
+     * and throws StaleObjectException (the other flake class besides sleep-then-find); by
+     * re-finding on each retry within the deadline, a stale node is simply re-acquired.
+     * Returns true if the text was set.
+     */
+    fun typeInto(device: UiDevice, selector: BySelector, text: String, timeout: Long = TIMEOUT): Boolean {
+        val deadline = System.currentTimeMillis() + timeout
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                val field = device.wait(Until.findObject(selector), 2_000L) ?: continue
+                field.clear()
+                field.text = text
+                return true
+            } catch (_: androidx.test.uiautomator.StaleObjectException) {
+                // recomposition invalidated the node — loop re-finds and retries
+            }
+        }
+        return false
+    }
+
     // ─── SDK Initialization ──────────────────────────────────────────────────────
 
     /**
@@ -99,13 +145,18 @@ object E2ETestHelper {
             .subscribePresenceForAllUsers()
             .build()
 
-        CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {
-            override fun onSuccess(p0: String?) { latch.countDown() }
-            override fun onError(e: CometChatException?) {
-                error = e?.message ?: "SDK init failed"
-                latch.countDown()
-            }
-        })
+        // CometChatUIKit.init enforces the main-thread threading contract (Track 1 / X5),
+        // so dispatch the call onto the main thread. The async callback still fires off it
+        // and counts down the latch we await below on the instrumentation thread.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {
+                override fun onSuccess(p0: String?) { latch.countDown() }
+                override fun onError(e: CometChatException?) {
+                    error = e?.message ?: "SDK init failed"
+                    latch.countDown()
+                }
+            })
+        }
 
         latch.await(30, TimeUnit.SECONDS)
         if (error != null) throw RuntimeException("SDK init failed: $error")
@@ -116,7 +167,12 @@ object E2ETestHelper {
      */
     fun logoutIfNeeded() {
         try {
-            if (CometChatUIKit.getLoggedInUser() != null) {
+            // getLoggedInUser is also a main-thread CometChatUIKit entry point (Track 1 / X5).
+            var loggedIn = false
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                loggedIn = CometChatUIKit.getLoggedInUser() != null
+            }
+            if (loggedIn) {
                 val latch = CountDownLatch(1)
                 CometChat.logout(object : CometChat.CallbackListener<String>() {
                     override fun onSuccess(p0: String?) { latch.countDown() }
@@ -125,6 +181,26 @@ object E2ETestHelper {
                 latch.await(10, TimeUnit.SECONDS)
             }
         } catch (_: Exception) { /* Not logged in or SDK not initialized */ }
+    }
+
+    /**
+     * Logs in as [uid] and waits for the callback to land.
+     *
+     * CometChatUIKit.login enforces the main-thread threading contract (Track 1 / X5) and
+     * throws IllegalStateException when called from the instrumentation thread, so the call
+     * is dispatched onto the main thread the same way [initSdk] dispatches init. The async
+     * callback still counts the latch down, and we await it here on the instrumentation
+     * thread so the caller blocks until the login settles.
+     */
+    fun loginAs(uid: String, timeoutSeconds: Long = 10) {
+        val latch = CountDownLatch(1)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            CometChatUIKit.login(uid, object : CometChat.CallbackListener<User>() {
+                override fun onSuccess(p0: User?) { latch.countDown() }
+                override fun onError(e: CometChatException?) { latch.countDown() }
+            })
+        }
+        latch.await(timeoutSeconds, TimeUnit.SECONDS)
     }
 
     // ─── App Launch & Login ──────────────────────────────────────────────────────
@@ -263,8 +339,6 @@ object E2ETestHelper {
     /**
      * Full setup: init SDK → logout → launch app → login via UI.
      * Call in @Before of each test class.
-     *
-     * Note: No onSDKInitialized() call — Compose app doesn't have CometChatCalls SDK.
      */
     fun fullSetupAndLogin(device: UiDevice) {
         // Send app to home screen to clear any leftover activity state.
@@ -274,6 +348,12 @@ object E2ETestHelper {
         Thread.sleep(1000)
 
         initSdk()
+
+        // Trigger the Application-level Calls SDK init + incoming-call listeners (the harness inits
+        // the UIKit SDK itself, bypassing SampleApplication.initializeCometChat, so call this here).
+        (InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+            as com.cometchat.sampleapp.compose.app.SampleApplication).onSDKInitialized()
+
         logoutIfNeeded()
         launchApp(device)
         loginViaUI(device)

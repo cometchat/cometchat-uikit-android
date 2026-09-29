@@ -16,7 +16,7 @@ A sample Android application demonstrating the CometChat UI Kit with XML Views a
 ## Prerequisites
 
 - Android Studio Arctic Fox (2020.3.1) or later
-- Android SDK 24 (Android 7.0) or higher
+- Android SDK 28 (Android 9.0) or higher
 - Kotlin 1.9+
 - CometChat Account with App ID, Region, and Auth Key
 
@@ -31,7 +31,7 @@ cd <repository-name>
 
 ### 2. Configure CometChat Credentials
 
-Open `sample-app-kotlin2/src/main/java/com/cometchat/sampleapp/kotlin/utils/AppConstants.kt` and update:
+Open `sample-app-kotlin/src/main/java/com/cometchat/sampleapp/kotlin/utils/AppConstants.kt` and update:
 
 ```kotlin
 object AppConstants {
@@ -47,18 +47,18 @@ object AppConstants {
 
 ```bash
 # Build the project
-./gradlew :sample-app-kotlin2:assembleDebug
+./gradlew :sample-app-kotlin:assembleDebug
 
 # Install on connected device
-./gradlew :sample-app-kotlin2:installDebug
+./gradlew :sample-app-kotlin:installDebug
 ```
 
-Or open the project in Android Studio and run the `sample-app-kotlin2` configuration.
+Or open the project in Android Studio and run the `sample-app-kotlin` configuration.
 
 ## Project Structure
 
 ```
-sample-app-kotlin2/
+sample-app-kotlin/
 ├── src/main/java/com/cometchat/sampleapp/kotlin/
 │   ├── app/
 │   │   └── SampleApplication.kt      # Application class with SDK initialization
@@ -183,7 +183,8 @@ The app requests the following permissions:
 
 ## License
 
-This sample app is provided for demonstration purposes. See the LICENSE file for details.
+This sample app is provided for demonstration purposes under the same licence as
+the rest of this repository — see [LICENSE](../LICENSE).
 
 ## Support
 
