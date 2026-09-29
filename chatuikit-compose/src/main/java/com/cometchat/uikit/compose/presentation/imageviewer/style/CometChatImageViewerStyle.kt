@@ -21,7 +21,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param shareIcon Drawable for the share action.
  */
 @Immutable
-data class CometChatImageViewerStyle(
+public data class CometChatImageViewerStyle(
     val backgroundColor: Color,
     val toolbarBackgroundColor: Color,
     val iconTintColor: Color,
@@ -29,14 +29,14 @@ data class CometChatImageViewerStyle(
     @DrawableRes val downloadIcon: Int = R.drawable.cometchat_download_icon,
     @DrawableRes val shareIcon: Int = R.drawable.cometchat_ic_share
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatImageViewerStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatImageViewerStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color.Black,
             toolbarBackgroundColor: Color = Color.Black.copy(alpha = 0.5f),
             iconTintColor: Color = CometChatTheme.colorScheme.iconTintWhite,

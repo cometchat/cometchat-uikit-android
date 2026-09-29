@@ -12,12 +12,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cometchat.chat.models.Action
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatActionBubbleStyle
 
 /**
@@ -45,7 +47,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
  *              so all wrapper properties like backgroundColor, cornerRadius are directly accessible)
  */
 @Composable
-fun CometChatActionBubble(
+public fun CometChatActionBubble(
     message: Action,
     modifier: Modifier = Modifier,
     style: CometChatActionBubbleStyle = CometChatActionBubbleStyle.default()
@@ -70,7 +72,7 @@ fun CometChatActionBubble(
  *              so all wrapper properties like backgroundColor, cornerRadius are directly accessible)
  */
 @Composable
-fun CometChatActionBubble(
+public fun CometChatActionBubble(
     text: String,
     modifier: Modifier = Modifier,
     style: CometChatActionBubbleStyle = CometChatActionBubbleStyle.default()
@@ -92,7 +94,7 @@ fun CometChatActionBubble(
  *              so all wrapper properties like backgroundColor, cornerRadius are directly accessible)
  */
 @Composable
-fun CometChatActionBubble(
+public fun CometChatActionBubble(
     text: AnnotatedString,
     modifier: Modifier = Modifier,
     style: CometChatActionBubbleStyle = CometChatActionBubbleStyle.default()
@@ -116,6 +118,7 @@ private fun ActionBubbleContent(
             .padding(horizontal = 32.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_action_message, text)
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(style.cornerRadius))
@@ -131,7 +134,7 @@ private fun ActionBubbleContent(
                 )
                 .padding(style.padding)
                 .semantics {
-                    contentDescription = "Action message: $text"
+                    contentDescription = cdHoist2
                 }
         ) {
             Text(
@@ -156,6 +159,7 @@ private fun ActionBubbleAnnotatedContent(
             .padding(horizontal = 32.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_action_message, text.text)
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(style.cornerRadius))
@@ -171,7 +175,7 @@ private fun ActionBubbleAnnotatedContent(
                 )
                 .padding(style.padding)
                 .semantics {
-                    contentDescription = "Action message: ${text.text}"
+                    contentDescription = cdHoist1
                 }
         ) {
             Text(

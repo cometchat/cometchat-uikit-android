@@ -28,7 +28,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param tabBackgroundSize Size of the category tab background (oval container)
  */
 @Immutable
-data class CometChatEmojiKeyboardStyle(
+public data class CometChatEmojiKeyboardStyle(
     val backgroundColor: Color,
     val cornerRadius: Dp,
     val strokeWidth: Dp,
@@ -42,14 +42,14 @@ data class CometChatEmojiKeyboardStyle(
     val tabIconSize: Dp,
     val tabBackgroundSize: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatEmojiKeyboardStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatEmojiKeyboardStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 0.dp,
             strokeWidth: Dp = 0.dp,

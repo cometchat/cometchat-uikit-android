@@ -47,7 +47,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param visualizerStyle Style configuration for the audio visualizer component
  */
 @Immutable
-data class CometChatMediaRecorderStyle(
+public data class CometChatMediaRecorderStyle(
     // Container styling
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -84,7 +84,7 @@ data class CometChatMediaRecorderStyle(
     // Nested style for audio visualizer
     val visualizerStyle: CometChatAudioVisualizerStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors and typography are derived from the current theme.
@@ -92,7 +92,7 @@ data class CometChatMediaRecorderStyle(
          * **Validates: Requirements 6.7** - Default values from CometChatTheme
          */
         @Composable
-        fun default(
+        public fun default(
             // Container
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 12.dp,

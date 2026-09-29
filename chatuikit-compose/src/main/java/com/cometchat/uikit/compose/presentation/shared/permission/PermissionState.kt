@@ -11,7 +11,7 @@ import androidx.compose.runtime.Stable
  * @property shouldShowRationale Whether we should show UI with rationale for requesting permission
  */
 @Stable
-data class PermissionState(
+public data class PermissionState(
     val permission: String,
     val hasPermission: Boolean,
     val shouldShowRationale: Boolean
@@ -25,7 +25,7 @@ data class PermissionState(
  * @property shouldShowRationale Whether at least one permission requires showing rationale
  */
 @Stable
-data class MultiplePermissionsState(
+public data class MultiplePermissionsState(
     val permissions: List<PermissionState>,
     val allPermissionsGranted: Boolean,
     val shouldShowRationale: Boolean
@@ -50,7 +50,7 @@ data class MultiplePermissionsState(
  * @property data The intent data returned from the activity
  */
 @Stable
-data class ActivityResult(
+public data class ActivityResult(
     val resultCode: Int,
     val data: Intent?
 )

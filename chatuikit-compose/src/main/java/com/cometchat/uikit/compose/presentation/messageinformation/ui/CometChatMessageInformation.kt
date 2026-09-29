@@ -87,7 +87,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageInformationViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CometChatMessageInformation(
+public fun CometChatMessageInformation(
     message: BaseMessage,
     modifier: Modifier = Modifier,
     viewModel: CometChatMessageInformationViewModel? = null,

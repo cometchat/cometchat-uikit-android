@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.theme.CometChatTheme
 
 /**
@@ -93,7 +95,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * ```
  */
 @Composable
-fun CometChatAvatar(
+public fun CometChatAvatar(
     modifier: Modifier = Modifier,
     name: String,
     avatarUrl: String? = null,
@@ -138,7 +140,7 @@ fun CometChatAvatar(
                     .data(avatarUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Avatar for $name",
+                contentDescription = stringResource(R.string.cometchat_a11y_avatar_for, name),
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.Crop,
                 placeholder = placeholder,
@@ -177,13 +179,13 @@ fun CometChatAvatar(
  * ```
  * CometChatAvatar(
  *     painter = painterResource(R.drawable.my_avatar),
- *     contentDescription = "User avatar",
+ *     contentDescription = stringResource(R.string.cometchat_a11y_user_avatar),
  *     style = AvatarStyle.default()
  * )
  * ```
  */
 @Composable
-fun CometChatAvatar(
+public fun CometChatAvatar(
     modifier: Modifier = Modifier,
     painter: Painter,
     contentDescription: String? = null,
@@ -237,7 +239,7 @@ fun CometChatAvatar(
  * ```
  */
 @Composable
-fun CometChatAvatar(
+public fun CometChatAvatar(
     modifier: Modifier = Modifier,
     user: User,
     placeholder: Painter? = null,
@@ -270,7 +272,7 @@ fun CometChatAvatar(
  * ```
  */
 @Composable
-fun CometChatAvatar(
+public fun CometChatAvatar(
     modifier: Modifier = Modifier,
     group: Group,
     placeholder: Painter? = null,

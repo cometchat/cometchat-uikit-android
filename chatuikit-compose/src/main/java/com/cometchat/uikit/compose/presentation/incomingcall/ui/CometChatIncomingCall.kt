@@ -88,7 +88,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
  * Validates: Requirements 7.1-7.21, 2.3, 2.5
  */
 @Composable
-fun CometChatIncomingCall(
+public fun CometChatIncomingCall(
     call: Call,
     modifier: Modifier = Modifier,
     viewModel: CometChatIncomingCallViewModel? = null,
@@ -204,12 +204,15 @@ fun CometChatIncomingCall(
     val acceptButtonDescription = "$acceptText $callerName"
     val declineButtonDescription = "$declineText $callerName"
     val callTypeDescription = incomingCallTypeText
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_avatar_of, callerName)
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_caller, callerName)
+    val cdHoist3 = stringResource(R.string.cometchat_a11y_incoming_call_from, callerName)
     
     Card(
         modifier = modifier
             .fillMaxWidth()
             .semantics {
-                contentDescription = "Incoming call from $callerName"
+                contentDescription = cdHoist3
             },
         shape = RoundedCornerShape(style.cornerRadius),
         colors = CardDefaults.cardColors(
@@ -253,7 +256,7 @@ fun CometChatIncomingCall(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.semantics {
-                                    contentDescription = "Caller: $callerName"
+                                    contentDescription = cdHoist2
                                 }
                             )
                         }
@@ -309,7 +312,7 @@ fun CometChatIncomingCall(
                             modifier = Modifier
                                 .size(48.dp)
                                 .semantics {
-                                    contentDescription = "Avatar of $callerName"
+                                    contentDescription = cdHoist1
                                 }
                         )
                     }

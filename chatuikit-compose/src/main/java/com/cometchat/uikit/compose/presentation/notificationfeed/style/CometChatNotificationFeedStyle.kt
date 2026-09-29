@@ -17,7 +17,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  *
  * Figma reference: Android - Chat UI Kits / Campaigns section
  */
-data class CometChatNotificationFeedStyle(
+public data class CometChatNotificationFeedStyle(
     // Screen
     val backgroundColor: Color = Color.Unspecified,
 
@@ -76,13 +76,13 @@ data class CometChatNotificationFeedStyle(
     val emptyTitleColor: Color = Color.Unspecified,
     val emptyDescriptionColor: Color = Color.Unspecified
 ) {
-    companion object {
+    public companion object {
         /**
          * Resolves all [Color.Unspecified] values from [CometChatTheme.colorScheme].
          * Call this inside a @Composable to get a fully-resolved style instance.
          */
         @Composable
-        fun fromTheme(overrides: CometChatNotificationFeedStyle = CometChatNotificationFeedStyle()): CometChatNotificationFeedStyle {
+        public fun fromTheme(overrides: CometChatNotificationFeedStyle = CometChatNotificationFeedStyle()): CometChatNotificationFeedStyle {
             val colorScheme = CometChatTheme.colorScheme
             val typography = CometChatTheme.typography
 

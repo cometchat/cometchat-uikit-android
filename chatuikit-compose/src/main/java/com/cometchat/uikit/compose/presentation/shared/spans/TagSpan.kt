@@ -8,7 +8,7 @@ import com.cometchat.uikit.compose.presentation.shared.formatters.SuggestionItem
 import com.cometchat.uikit.compose.presentation.shared.formatters.style.PromptTextStyle
 
 
-class TagSpan(
+public class TagSpan(
     private var id: Char,
     private var text: String,
     private var suggestionItem: SuggestionItem,
@@ -40,15 +40,15 @@ class TagSpan(
 
     private fun applyColorWithAlpha(color: Int, alpha: Int): Int = (alpha shl 24) or (color and 0x00FFFFFF)
 
-    fun getId(): Char = id
-    fun setId(id: Char) { this.id = id }
-    fun getText(): String = text
-    fun setText(text: String) { this.text = text }
-    fun getSuggestionItem(): SuggestionItem = suggestionItem
-    fun setSuggestionItem(item: SuggestionItem) { 
+    public fun getId(): Char = id
+    public fun setId(id: Char) { this.id = id }
+    public fun getText(): String = text
+    public fun setText(text: String) { this.text = text }
+    public fun getSuggestionItem(): SuggestionItem = suggestionItem
+    public fun setSuggestionItem(item: SuggestionItem) { 
         this.suggestionItem = item 
         this.textAppearance = item.promptTextStyle
     }
-    fun getTextAppearance(): PromptTextStyle? = textAppearance
-    fun setTextAppearance(style: PromptTextStyle?) { this.textAppearance = style }
+    public fun getTextAppearance(): PromptTextStyle? = textAppearance
+    public fun setTextAppearance(style: PromptTextStyle?) { this.textAppearance = style }
 }

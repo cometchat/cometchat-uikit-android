@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.uikit.compose.R
@@ -18,6 +19,7 @@ import com.cometchat.uikit.compose.theme.lightColorScheme
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
 import com.cometchat.uikit.core.testutils.MockFactory
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +31,8 @@ import org.mockito.kotlin.whenever
  *
  * The bell (an un-subscribed thread renders bell-off → accessible name "Subscribe to thread") shows only
  * when the `enableThreadSubscription` gate is on, a parent message is present, and the control is not
- * hidden. The gate is set by initializing [CometChatUIKit] before composition.
+ * hidden. The gate is set by initializing [CometChatUIKit] before composition; it is default-ON, so
+ * the gate-off case opts out explicitly and `@After` restores the default.
  *
  * Run with:
  *   ./gradlew :chatuikit-compose:connectedDebugAndroidTest --tests "*CometChatThreadHeaderSubscriptionComposeTest"
@@ -51,14 +54,47 @@ class CometChatThreadHeaderSubscriptionComposeTest {
         MessageListComposeTestHelper.ensureInitialized()
     }
 
+    @After
+    fun restoreThreadSubscriptionGate() {
+        // The gate lives on CometChatUIKit's process-wide settings and is default-ON, so a gate-off
+        // case must not be left behind for whatever runs next.
+        setThreadSubscriptionGate(true)
+    }
+
+    @Suppress("DEPRECATION")
+
+    private fun arg(name: String): String? =
+        InstrumentationRegistry.getArguments().getString(name)?.takeIf { it.isNotBlank() }
+
+    /**
+     * Flips the `enableThreadSubscription` gate the bell reads, by initializing [CometChatUIKit]
+     * before composition.
+     *
+     * **Runs on the main thread.** [CometChatUIKit.init] asserts its own threading contract
+     * (ENG-38658 / X5) and throws `IllegalStateException` off the main thread; a JUnit test body
+     * runs on the instrumentation thread, not the main one. `runOnMainSync` blocks until the
+     * block returns, so `authenticationSettings` is assigned before `setContent` composes the
+     * header — which is the ordering every assertion here depends on. The View-side twin of this
+     * test needs no such wrapping because it initializes inside `Fragment.onCreateView`, already
+     * on the main thread.
+     *
+     * Credentials come from instrumentation runner arguments (ENG-38650), never hardcoded — same
+     * argument names as [MessageListComposeTestHelper] and the sample apps' `E2ETestConfig`. The
+     * placeholder fallbacks are deliberate and sufficient: this test never authenticates, and the
+     * assertions only read the gate off the settings, so the app ID and auth key are inert. Do not
+     * substitute real credentials — a value that works offline keeps this suite runnable without
+     * secrets.
+     */
     private fun setThreadSubscriptionGate(enabled: Boolean) {
         val settings = UIKitSettings.UIKitSettingsBuilder()
-            .setAppId("278059f315a564b4")
-            .setRegion("in")
-            .setAuthKey("5bb2416b7eb003c1f94234c26178a4b053c66b97")
+            .setAppId(arg("appId") ?: "YOUR_APP_ID")
+            .setRegion(arg("region") ?: "in")
+            .setAuthKey(arg("authKey") ?: "YOUR_AUTH_KEY")
             .setEnableThreadSubscription(enabled)
             .build()
-        CometChatUIKit.init(ApplicationProvider.getApplicationContext(), settings, null)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            CometChatUIKit.init(ApplicationProvider.getApplicationContext(), settings, null)
+        }
     }
 
     /**

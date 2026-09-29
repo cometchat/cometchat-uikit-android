@@ -17,12 +17,12 @@ import com.cometchat.uikit.core.utils.GroupMembersPermissionUtils
  * [GroupMembersPermissionUtils] in chatuikit-core. This object adds UI-layer
  * concerns: localized display strings and Compose [MenuItem] generation.
  */
-object GroupMembersUtils {
+public object GroupMembersUtils {
 
     // ==================== Permission Checks (delegated to core) ====================
 
     /** @see GroupMembersPermissionUtils.canKickMember */
-    fun canKickMember(
+    public fun canKickMember(
         loggedInUserScope: String,
         targetMemberScope: String,
         loggedInUserId: String,
@@ -34,7 +34,7 @@ object GroupMembersUtils {
     )
 
     /** @see GroupMembersPermissionUtils.canBanMember */
-    fun canBanMember(
+    public fun canBanMember(
         loggedInUserScope: String,
         targetMemberScope: String,
         loggedInUserId: String,
@@ -46,7 +46,7 @@ object GroupMembersUtils {
     )
 
     /** @see GroupMembersPermissionUtils.canChangeMemberScope */
-    fun canChangeMemberScope(
+    public fun canChangeMemberScope(
         loggedInUserId: String,
         targetMemberId: String,
         groupOwnerId: String?
@@ -69,7 +69,7 @@ object GroupMembersUtils {
      * @param disableChangeScope Whether to disable the change scope option
      * @return List of Compose menu items for the member
      */
-    fun getDefaultGroupMemberOptions(
+    public fun getDefaultGroupMemberOptions(
         context: Context,
         groupMember: GroupMember,
         group: Group,
@@ -142,7 +142,7 @@ object GroupMembersUtils {
      * @param scope The scope constant (OWNER, ADMIN, MODERATOR, PARTICIPANT)
      * @return Localized scope display string
      */
-    fun getScopeDisplayName(context: Context, scope: String): String {
+    public fun getScopeDisplayName(context: Context, scope: String): String {
         return when (scope.uppercase()) {
             GroupMembersPermissionUtils.SCOPE_OWNER -> context.getString(R.string.cometchat_owner)
             CometChatConstants.SCOPE_ADMIN.uppercase() -> context.getString(R.string.cometchat_admin)
@@ -158,7 +158,7 @@ object GroupMembersUtils {
      * @param context Android context for string resources
      * @return List of pairs containing scope constant and display name
      */
-    fun getScopeOptions(context: Context): List<Pair<String, String>> {
+    public fun getScopeOptions(context: Context): List<Pair<String, String>> {
         return GroupMembersPermissionUtils.getAssignableScopes().map { scope ->
             scope to getScopeDisplayName(context, scope)
         }
@@ -167,26 +167,26 @@ object GroupMembersUtils {
     // ==================== Delegated Utilities ====================
 
     /** @see GroupMembersPermissionUtils.getAssignableScopes */
-    fun getAssignableScopes(): List<String> = GroupMembersPermissionUtils.getAssignableScopes()
+    public fun getAssignableScopes(): List<String> = GroupMembersPermissionUtils.getAssignableScopes()
 
     /** @see GroupMembersPermissionUtils.userToGroupMember */
-    fun userToGroupMember(
+    public fun userToGroupMember(
         user: User,
         scope: String = CometChatConstants.SCOPE_PARTICIPANT
     ): GroupMember = GroupMembersPermissionUtils.userToGroupMember(user, scope)
 
     /** @see GroupMembersPermissionUtils.hasScope */
-    fun hasScope(member: GroupMember, scope: String): Boolean =
+    public fun hasScope(member: GroupMember, scope: String): Boolean =
         GroupMembersPermissionUtils.hasScope(member, scope)
 
     /** @see GroupMembersPermissionUtils.isOwner */
-    fun isOwner(member: GroupMember, group: Group): Boolean =
+    public fun isOwner(member: GroupMember, group: Group): Boolean =
         GroupMembersPermissionUtils.isOwner(member, group)
 
     /** @see GroupMembersPermissionUtils.getScopeLevel */
-    fun getScopeLevel(scope: String): Int = GroupMembersPermissionUtils.getScopeLevel(scope)
+    public fun getScopeLevel(scope: String): Int = GroupMembersPermissionUtils.getScopeLevel(scope)
 
     /** @see GroupMembersPermissionUtils.compareScopes */
-    fun compareScopes(scope1: String, scope2: String): Int =
+    public fun compareScopes(scope1: String, scope2: String): Int =
         GroupMembersPermissionUtils.compareScopes(scope1, scope2)
 }

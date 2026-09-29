@@ -45,7 +45,7 @@ import kotlin.math.roundToInt
  * @param iconSizeDp The size of the reply icon in dp
  * @param iconMarginDp The margin from the edge for the reply icon in dp
  */
-data class SwipeToReplyConfig(
+public data class SwipeToReplyConfig(
     val swipeThresholdDp: Float = 72f,
     val iconSizeDp: Float = 24f,
     val iconMarginDp: Float = 16f
@@ -65,7 +65,7 @@ data class SwipeToReplyConfig(
  * @param message The message to check
  * @return true if the message can be swiped to reply, false otherwise
  */
-fun isSwipeToReplyEligible(message: BaseMessage): Boolean {
+public fun isSwipeToReplyEligible(message: BaseMessage): Boolean {
     // Disable for ACTION, CALL, AGENTIC, and STREAM category messages
     val category = message.category
     if (category.equals(CometChatConstants.CATEGORY_ACTION, ignoreCase = true) ||
@@ -106,7 +106,7 @@ fun isSwipeToReplyEligible(message: BaseMessage): Boolean {
  * @param content The message content to wrap
  */
 @Composable
-fun SwipeToReplyWrapper(
+public fun SwipeToReplyWrapper(
     message: BaseMessage,
     enabled: Boolean,
     onReply: (BaseMessage) -> Unit,

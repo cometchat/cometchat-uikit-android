@@ -14,7 +14,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Contains all visual styling properties for the error state component.
  */
 @Immutable
-data class CometChatErrorStateStyle(
+public data class CometChatErrorStateStyle(
     val backgroundColor: Color,
     val icon: Painter?,
     val iconTint: Color,
@@ -28,13 +28,13 @@ data class CometChatErrorStateStyle(
     val retryButtonTextColor: Color,
     val retryButtonTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             icon: Painter? = null,
             iconTint: Color = CometChatTheme.colorScheme.iconTintSecondary,

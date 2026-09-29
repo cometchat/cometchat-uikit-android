@@ -55,7 +55,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property captionTextStyle The text style for the caption
  */
 @Immutable
-data class CometChatFilesBubbleStyle(
+public data class CometChatFilesBubbleStyle(
     // Content-specific properties ONLY
     val cardBackgroundColor: Color,
     val cardCornerRadius: Dp,
@@ -99,7 +99,7 @@ data class CometChatFilesBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default files bubble style using CometChat theme tokens.
          *
@@ -121,7 +121,7 @@ data class CometChatFilesBubbleStyle(
          * @return A new [CometChatFilesBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             cardBackgroundColor: Color = Color.Black.copy(alpha = 0.04f),
             cardCornerRadius: Dp = 12.dp,
@@ -192,7 +192,7 @@ data class CometChatFilesBubbleStyle(
          * @return A new [CometChatFilesBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatFilesBubbleStyle = default()
+        public fun incoming(): CometChatFilesBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) multi-file messages.
@@ -204,7 +204,7 @@ data class CometChatFilesBubbleStyle(
          * @return A new [CometChatFilesBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatFilesBubbleStyle = default(
+        public fun outgoing(): CometChatFilesBubbleStyle = default(
             cardBackgroundColor = Color.White.copy(alpha = 0.16f),
             titleTextColor = Color.White,
             subtitleTextColor = Color.White.copy(alpha = 0.8f),

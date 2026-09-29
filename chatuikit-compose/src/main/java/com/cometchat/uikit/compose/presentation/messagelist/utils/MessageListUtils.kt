@@ -19,7 +19,7 @@ import java.util.Calendar
  * @param loggedInUser The currently logged-in user (optional, will fetch from CometChat if null)
  * @return The [MessageAlignment] for the message
  */
-fun getMessageAlignment(message: BaseMessage, loggedInUser: User? = null): MessageAlignment {
+public fun getMessageAlignment(message: BaseMessage, loggedInUser: User? = null): MessageAlignment {
     val currentUser = loggedInUser ?: CometChat.getLoggedInUser()
     
     return when {
@@ -48,7 +48,7 @@ fun getMessageAlignment(message: BaseMessage, loggedInUser: User? = null): Messa
  * @param previousMessage The previous message in the list (null if current is first)
  * @return True if a date separator should be displayed before the current message
  */
-fun shouldShowDateSeparator(currentMessage: BaseMessage, previousMessage: BaseMessage?): Boolean {
+public fun shouldShowDateSeparator(currentMessage: BaseMessage, previousMessage: BaseMessage?): Boolean {
     if (previousMessage == null) return true
     
     val currentCal = Calendar.getInstance().apply {
@@ -73,7 +73,7 @@ fun shouldShowDateSeparator(currentMessage: BaseMessage, previousMessage: BaseMe
  * @param timestamp The timestamp in seconds
  * @return The formatted date string
  */
-fun formatDateSeparator(timestamp: Long): String {
+public fun formatDateSeparator(timestamp: Long): String {
     val messageDate = Calendar.getInstance().apply {
         timeInMillis = timestamp * 1000
     }

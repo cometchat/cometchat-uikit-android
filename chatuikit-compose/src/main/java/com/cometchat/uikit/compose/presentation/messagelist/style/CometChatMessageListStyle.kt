@@ -162,7 +162,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @see CometChatTheme
  */
 @Immutable
-data class CometChatMessageListStyle(
+public data class CometChatMessageListStyle(
     // Container
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -235,7 +235,7 @@ data class CometChatMessageListStyle(
     // Delete dialog style
     val deleteDialogStyle: CometChatConfirmDialogStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default message list style using CometChat theme tokens.
          *
@@ -293,7 +293,7 @@ data class CometChatMessageListStyle(
          * @return A new [CometChatMessageListStyle] instance
          */
         @Composable
-        fun default(
+        public fun default(
             // Container
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             cornerRadius: Dp = 0.dp,

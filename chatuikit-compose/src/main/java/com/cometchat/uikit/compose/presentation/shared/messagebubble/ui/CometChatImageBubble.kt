@@ -1,6 +1,5 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -43,6 +42,7 @@ import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatImageBubbleStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
+import com.cometchat.uikit.core.utils.CometChatLogger
 import org.json.JSONObject
 
 private const val TAG = "CometChatImageBubble"
@@ -84,7 +84,7 @@ private const val MAX_VISIBLE_ITEMS = 4
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatImageBubble(
+public fun CometChatImageBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -102,6 +102,7 @@ fun CometChatImageBubble(
     val attachments = remember(message.id) {
         extractAttachments(message)
     }
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_image_message_with_image_s, attachments.size)
 
     // Extract local file path from metadata (for in-progress uploads)
     val localFilePath = remember(message.id) {
@@ -114,20 +115,20 @@ fun CometChatImageBubble(
     }
 
     // Debug logging
-    Log.d(TAG, "=== CometChatImageBubble Debug ===")
-    Log.d(TAG, "Message ID: ${message.id}")
-    Log.d(TAG, "Attachments count: ${attachments.size}")
-    Log.d(TAG, "Local file path: $localFilePath")
-    Log.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
-    Log.d(TAG, "Attachment URL: ${attachments.firstOrNull()?.fileUrl}")
-    Log.d(TAG, "Metadata: ${message.metadata}")
+    CometChatLogger.d(TAG, "=== CometChatImageBubble Debug ===")
+    CometChatLogger.d(TAG, "Message ID: ${message.id}")
+    CometChatLogger.d(TAG, "Attachments count: ${attachments.size}")
+    CometChatLogger.d(TAG, "Local file path: $localFilePath")
+    CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
+    CometChatLogger.d(TAG, "Attachment URL: ${attachments.firstOrNull()?.fileUrl}")
+    CometChatLogger.d(TAG, "Metadata: ${message.metadata}")
 
     Column(
         modifier = modifier
             .width(240.dp)
             .padding(start = 4.dp, top = 4.dp, end = 4.dp)
             .semantics {
-                contentDescription = "Image message with ${attachments.size} image(s)"
+                contentDescription = cdHoist2
             }
     ) {
         when {
@@ -156,12 +157,12 @@ fun CometChatImageBubble(
                 // Fallback: if thumbnail URL fails (403), retry with attachment URL
                 val fallbackUrl = if (localFilePath == null && thumbnailUrl != null) attachmentUrl else null
                 
-                Log.d(TAG, "=== SingleImageView URL Resolution ===")
-                Log.d(TAG, "Local file path: $localFilePath")
-                Log.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
-                Log.d(TAG, "Attachment URL: $attachmentUrl")
-                Log.d(TAG, "Effective URL: $effectiveUrl")
-                Log.d(TAG, "Fallback URL: $fallbackUrl")
+                CometChatLogger.d(TAG, "=== SingleImageView URL Resolution ===")
+                CometChatLogger.d(TAG, "Local file path: $localFilePath")
+                CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
+                CometChatLogger.d(TAG, "Attachment URL: $attachmentUrl")
+                CometChatLogger.d(TAG, "Effective URL: $effectiveUrl")
+                CometChatLogger.d(TAG, "Fallback URL: $fallbackUrl")
                 
                 SingleImageView(
                     url = effectiveUrl,
@@ -320,7 +321,7 @@ private fun SingleImageView(
     var useFallback by remember(url) { mutableStateOf(false) }
     val effectiveUrl = if (useFallback && !fallbackUrl.isNullOrEmpty()) fallbackUrl else url
     
-    Log.d(TAG, "SingleImageView loading URL: $effectiveUrl (useFallback=$useFallback)")
+    CometChatLogger.d(TAG, "SingleImageView loading URL: $effectiveUrl (useFallback=$useFallback)")
     
     Box(
         modifier = Modifier
@@ -339,18 +340,18 @@ private fun SingleImageView(
                 .data(effectiveUrl)
                 .crossfade(true)
                 .listener(
-                    onStart = { Log.d(TAG, "Coil: Started loading: $effectiveUrl") },
-                    onSuccess = { _, _ -> Log.d(TAG, "Coil: Successfully loaded: $effectiveUrl") },
+                    onStart = { CometChatLogger.d(TAG, "Coil: Started loading: $effectiveUrl") },
+                    onSuccess = { _, _ -> CometChatLogger.d(TAG, "Coil: Successfully loaded: $effectiveUrl") },
                     onError = { _, result ->
-                        Log.e(TAG, "Coil: Failed to load: $effectiveUrl, error: ${result.throwable}")
+                        CometChatLogger.e(TAG, "Coil: Failed to load: $effectiveUrl, error: ${result.throwable}")
                         if (!useFallback && !fallbackUrl.isNullOrEmpty()) {
-                            Log.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
+                            CometChatLogger.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
                             useFallback = true
                         }
                     }
                 )
                 .build(),
-            contentDescription = "Image",
+            contentDescription = stringResource(R.string.cometchat_a11y_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             loading = {
@@ -367,7 +368,7 @@ private fun SingleImageView(
             error = {
                 // Only show error if fallback also failed or no fallback available
                 if (useFallback || fallbackUrl.isNullOrEmpty()) {
-                    Log.e(TAG, "SubcomposeAsyncImage error state for URL: $effectiveUrl (fallback exhausted)")
+                    CometChatLogger.e(TAG, "SubcomposeAsyncImage error state for URL: $effectiveUrl (fallback exhausted)")
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -552,7 +553,7 @@ private fun GridImageItem(
                 .data(attachment.fileUrl ?: "")
                 .crossfade(true)
                 .build(),
-            contentDescription = "Image ${index + 1}",
+            contentDescription = stringResource(R.string.cometchat_a11y_image_2, index + 1),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             loading = {
@@ -606,7 +607,7 @@ private fun GridImageItem(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatImageBubble(
+public fun CometChatImageBubble(
     attachments: List<Attachment>,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -619,11 +620,12 @@ fun CometChatImageBubble(
     onMoreClick: ((List<Attachment>) -> Unit)? = null,
     onLongClick: (() -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_image_message_with_image_s, attachments.size)
     Column(
         modifier = modifier
             .widthIn(max = style.maxGridWidth)
             .semantics {
-                contentDescription = "Image message with ${attachments.size} image(s)"
+                contentDescription = cdHoist1
             }
     ) {
         when {

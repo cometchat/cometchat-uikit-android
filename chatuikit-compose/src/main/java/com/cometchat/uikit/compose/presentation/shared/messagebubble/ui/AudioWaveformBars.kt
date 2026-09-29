@@ -9,13 +9,15 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 
 @Composable
-fun AudioWaveformBars(
+public fun AudioWaveformBars(
     amplitudes: List<Float>,
     progress: Float,
     playedColor: Color,
@@ -23,9 +25,10 @@ fun AudioWaveformBars(
     modifier: Modifier = Modifier,
     height: Dp = 24.dp
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_audio_waveform)
     Canvas(
         modifier = modifier.fillMaxWidth().height(height)
-            .semantics { contentDescription = "Audio waveform" }
+            .semantics { contentDescription = cdHoist1 }
     ) {
         if (amplitudes.isEmpty()) return@Canvas
         val barCount = amplitudes.size

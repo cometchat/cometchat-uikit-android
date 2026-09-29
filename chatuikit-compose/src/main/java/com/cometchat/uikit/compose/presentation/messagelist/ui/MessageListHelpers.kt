@@ -115,10 +115,11 @@ internal fun DefaultLoadingView(
     modifier: Modifier = Modifier
 ) {
     ProvideShimmerAnimation {
+        val cdHoist3 = stringResource(R.string.cometchat_a11y_loading_messages)
         CometChatMessageListShimmer(
             modifier = modifier
                 .fillMaxSize()
-                .semantics { contentDescription = "Loading messages" }
+                .semantics { contentDescription = cdHoist3 }
         )
     }
 }
@@ -181,11 +182,12 @@ internal fun DefaultEmptyView(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_text, title, subtitle)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(32.dp)
-                .semantics { contentDescription = "$title. $subtitle" }
+                .semantics { contentDescription = cdHoist2 }
         ) {
             // Show avatar for agent chats
             if (isAgentChat && user != null) {
@@ -303,11 +305,12 @@ internal fun DefaultErrorView(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_text, title, subtitle)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(32.dp)
-                .semantics { contentDescription = "$title. $subtitle" }
+                .semantics { contentDescription = cdHoist1 }
         ) {
             Text(
                 text = title,

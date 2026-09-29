@@ -5,132 +5,258 @@ plugins {
     id 'com.google.firebase.crashlytics' version "3.0.2" apply false
     id 'com.diffplug.spotless' version '6.12.1'
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.roborazzi) apply false
+    alias(libs.plugins.screenshot) apply false
+    alias(libs.plugins.dokka)
 }
 
-tasks.register('applyPatch-sampleapp+notification+voip-java') {
-    group = 'Custom Tasks'
-    description = 'Applies the sampleapp+notification+voip-java patch'
+// ENG-38658 (X6): aggregate the three modules' KDoc into one browsable HTML
+// reference site at build/dokka/html (run :dokkaGenerate).
+dependencies {
+    dokka project(':chatuikit-core')
+    dokka project(':chatuikit-kotlin')
+    dokka project(':chatuikit-compose')
+}
 
-    doLast {
-        def projectDir = file('.')
 
-        // Execute git reset --hard to discard any changes
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'reset', '--hard'
-        }
 
-        def targetDir = file('sample-app-java')  // Directory to delete (same as above)
-        if (targetDir.exists()) {
-            println "Deleting existing folder: ${targetDir}"
-            targetDir.deleteDir()  // Deletes the folder and all of its contents
-        }
+// Coverage for the three library modules. XML + HTML land under build/reports/jacoco.
+//   ./gradlew :<module>:jacocoTestReport           unit + Roborazzi screenshot passes
+//   ./gradlew :<module>:jacocoAndroidTestReport    instrumented (connected) pass
+//   ./gradlew :<module>:jacocoMergedReport         the union of both
 
-        def patchFile = file('patches/sampleapp+notification+voip-java.patch')
-        if (!patchFile.exists()) {
-            throw new GradleException("Patch file does not exist: ${patchFile}")
-        }
+ext.coveredModules = ['chatuikit-core', 'chatuikit-kotlin', 'chatuikit-compose']
+ext.jacocoVersion = '0.8.13'
 
-        println "Applying patch: ${patchFile}"
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'apply', patchFile.absolutePath
+// Generated code only; anything hand-written is counted.
+ext.coverageExclusions = [
+    '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+    '**/databinding/**', '**/*Binding.*', '**/DataBinderMapperImpl*.*',
+    '**/*_Factory.*', '**/*_MembersInjector.*', '**/Dagger*Component*.*',
+    '**/*$WhenMappings.*', '**/*$DefaultImpls.*', '**/*$$serializer.*',
+    '**/*$inlined$*.*', '**/*$Lambda$*.*',
+    '**/ComposableSingletons*.*', '**/*Preview*Kt.*',
+]
+
+// Where each pass leaves its JaCoCo execution data, as [directory below build/,
+// include pattern]. Split by pass so the merged report is a union with no double
+// count, and so CI can drop artifacts gathered from other jobs into jacoco-import/
+// without either report having to know how they got there.
+//
+// Naming the directory rather than globbing build/ as a whole matters: execution
+// data is a task input, and a fileTree rooted at build/ makes every task that
+// writes anywhere beneath it -- assembleDebug included -- an implicit producer
+// that Gradle then demands a dependency edge for.
+ext.unitExecSpecs = [
+    ['outputs/unit_test_code_coverage/debugUnitTest', '*.exec'],
+    ['outputs/unit_test_code_coverage/screenshotTest', '*.exec'],
+    ['jacoco-import/unit', '**/*.exec'],
+]
+ext.androidTestExecSpecs = [
+    // AGP pulls one .ec per device off the emulator; the runner script archives
+    // each batch under connected/kept/ before restarting a wedged emulator.
+    ['outputs/code_coverage/debugAndroidTest/connected', '**/*.ec'],
+    ['jacoco-import/instrumented', '**/*.ec'],
+]
+
+subprojects { sub ->
+    if (!(sub.name in rootProject.ext.coveredModules)) return
+
+    sub.apply plugin: 'jacoco'
+    // 0.8.13 is the floor: 0.8.12 cannot read class file major version 68 (Java 24),
+    // which byte-buddy 1.17.7 ships under META-INF/versions/24/. Those entries are
+    // dead weight on Android, but AGP's dexing transform instruments the whole jar
+    // and fails the androidTest build on them.
+    sub.jacoco { toolVersion = rootProject.ext.jacocoVersion }
+
+    // Robolectric loads classes through its own classloader, so they carry no source location
+    // and JaCoCo drops them by default. Without this, every test that hosts a real component --
+    // prop-matrix, functional and screenshot alike -- records zero coverage.
+    sub.tasks.withType(Test).configureEach {
+        jacoco {
+            includeNoLocationClasses = true
+            excludes = ['jdk.internal.*']
         }
     }
-}
 
-tasks.register('applyPatch-sampleapp-java') {
-    group = 'Custom Tasks'
-    description = 'Applies the sampleapp-java patch'
-
-    doLast {
-        def projectDir = file('.')
-
-        // Execute git reset --hard to discard any changes
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'reset', '--hard'
-        }
-
-        def targetDir = file('sample-app-java')  // Directory to delete (same as above)
-        if (targetDir.exists()) {
-            println "Deleting existing folder: ${targetDir}"
-            targetDir.deleteDir()  // Deletes the folder and all of its contents
-        }
-
-        def patchFile = file('patches/sample-app-java.patch')
-        if (!patchFile.exists()) {
-            throw new GradleException("Patch file does not exist: ${patchFile}")
-        }
-
-        println "Applying patch: ${patchFile}"
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'apply', patchFile.absolutePath
-        }
-    }
-}
-
-tasks.register('applyPatch-sampleapp+notification+voip-kotlin') {
-    group = 'Custom Tasks'
-    description = 'Applies the sampleapp+notification+voip-kotlin patch'
-
-    doLast {
-        def projectDir = file('.')
-
-        // Execute git reset --hard to discard any changes
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'reset', '--hard'
-        }
-
-        def targetDir = file('sample-app-kotlin')  // Directory to delete (same as above)
-        if (targetDir.exists()) {
-            println "Deleting existing folder: ${targetDir}"
-            targetDir.deleteDir()  // Deletes the folder and all of its contents
-        }
-
-        def patchFile = file('patches/sampleapp+notification+voip-kotlin.patch')
-        if (!patchFile.exists()) {
-            throw new GradleException("Patch file does not exist: ${patchFile}")
-        }
-
-        println "Applying patch: ${patchFile}"
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'apply', patchFile.absolutePath
+    // T0.5 of the coverage standard: a run that discovers no tests must fail, not report
+    // success. Two ways that happens, and they need different handling:
+    //   (a) the task runs but its filters match nothing -- Gradle errors on a --tests
+    //       filter matching nothing, but not on an include/exclude that does;
+    //   (b) the test sources stop being seen at all (a source-set or variant
+    //       misconfiguration), in which case Gradle marks the task NO-SOURCE and skips it
+    //       and the build goes green having run nothing.
+    // A doLast action only covers (a): a skipped task executes no actions. A finalizer runs
+    // even when the task it finalizes is skipped, so it covers both. It is registered here
+    // rather than inside configureEach because Gradle forbids registering a task from
+    // within another task's configuration.
+    //
+    // Counted from the JUnit XML rather than an afterSuite listener: afterSuite is not
+    // configuration-cache compatible, and nothing here should block enabling that later.
+    def zeroTestCheck = sub.tasks.register('verifyTestsDiscovered') {
+        it.group = 'verification'
+        it.description = 'Fails the build if a test run produced no test results.'
+        def resultsRoot = sub.layout.buildDirectory.dir('test-results')
+        def projectPath = sub.path
+        it.doLast {
+            def root = resultsRoot.get().asFile
+            int total = 0
+            if (root.exists()) {
+                root.eachFileRecurse { file ->
+                    if (file.isFile() && file.name.startsWith('TEST-') && file.name.endsWith('.xml')) {
+                        def matcher = (file.text =~ /<testsuite[^>]*\stests="(\d+)"/)
+                        if (matcher) {
+                            total += (matcher[0][1] as int)
+                        }
+                    }
+                }
+            }
+            if (total == 0) {
+                throw new GradleException(
+                    "${projectPath}: the test run produced no results at all. An empty run must " +
+                    "not report success -- check the test source set, the variant filters, and " +
+                    "any --tests pattern.")
+            }
+            logger.lifecycle("${projectPath}: ${total} tests discovered")
         }
     }
-}
 
-tasks.register('applyPatch-sampleapp-kotlin') {
-    group = 'Custom Tasks'
-    description = 'Applies the sampleapp-kotlin patch'
+    sub.tasks.withType(Test).configureEach { testTask ->
+        testTask.finalizedBy(zeroTestCheck)
+    }
 
-    doLast {
-        def projectDir = file('.')
+    sub.afterEvaluate {
+        sub.android.buildTypes.debug.enableUnitTestCoverage = true
+        // ENG-38670 / I3: instruments the debug variant for connected runs too, so
+        // connectedDebugAndroidTest leaves .ec data behind instead of nothing.
+        sub.android.buildTypes.debug.enableAndroidTestCoverage = true
+        // AGP instruments the androidTest runtime classpath with its own JaCoCo,
+        // version-selected here rather than from the jacoco plugin above.
+        sub.android.testCoverage.jacocoVersion = rootProject.ext.jacocoVersion
 
-        // Execute git reset --hard to discard any changes
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'reset', '--hard'
+        // Roborazzi's tasks are testDebugUnitTest with a different filter, so both
+        // passes write the same .exec and the screenshot pass was always discarded.
+        // AGP owns destinationFile, so set it aside afterwards instead; the report
+        // globs *.exec below and unions the two.
+        if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('roborazzi') }) {
+            sub.tasks.matching { it.name == 'testDebugUnitTest' }.configureEach { t ->
+                t.doLast {
+                    // Move it out of the unit directory entirely. The task writes to the
+                    // unit pass's filename, so a screenshot run always destroys unit data
+                    // that was there: run the screenshot pass first, then the unit pass.
+                    def unitDir = sub.layout.buildDirectory
+                        .dir('outputs/unit_test_code_coverage/debugUnitTest').get().asFile
+                    def shotDir = sub.layout.buildDirectory
+                        .dir('outputs/unit_test_code_coverage/screenshotTest').get().asFile
+                    def produced = new File(unitDir, 'testDebugUnitTest.exec')
+                    if (produced.exists()) {
+                        shotDir.mkdirs()
+                        def kept = new File(shotDir, 'screenshotTest.exec')
+                        kept.delete()
+                        produced.renameTo(kept)
+                    }
+                }
+            }
         }
 
-        def targetDir = file('sample-app-kotlin')  // Directory to delete (same as above)
-        if (targetDir.exists()) {
-            println "Deleting existing folder: ${targetDir}"
-            targetDir.deleteDir()  // Deletes the folder and all of its contents
+        // A report never runs a suite: in CI the execution data arrives as artifacts
+        // from other jobs and other workflows, and depending on the suites would
+        // re-run an hour of tests to describe results we already hold. But when a
+        // suite *is* in the same build, the report has to come second or it would
+        // read half-written data -- which is also what Gradle wants declared before
+        // it will let one task read another's output.
+        def orderAfterSuites = { task, List suiteNames ->
+            suiteNames.each { name ->
+                if (sub.tasks.findByName(name) != null) {
+                    task.mustRunAfter(sub.tasks.named(name))
+                }
+            }
         }
 
-        def patchFile = file('patches/sample-app-kotlin.patch')
-        if (!patchFile.exists()) {
-            throw new GradleException("Patch file does not exist: ${patchFile}")
+        // The three reports differ only in which execution data they read, so the
+        // rest is shared: same class directories, same exclusions, same sources.
+        // Anything else and the unit and merged numbers would be measured against
+        // different denominators and could not be compared.
+        def configureCoverageReport = { task, String desc, List execSpecs ->
+            task.group = 'verification'
+            task.description = desc
+
+            task.reports {
+                xml.required = true
+                html.required = true
+                csv.required = false
+            }
+
+            def kotlinClasses = sub.fileTree(
+                dir: "${sub.layout.buildDirectory.get()}/tmp/kotlin-classes/debug",
+                excludes: rootProject.ext.coverageExclusions)
+            def javaClasses = sub.fileTree(
+                dir: "${sub.layout.buildDirectory.get()}/intermediates/javac/debug/classes",
+                excludes: rootProject.ext.coverageExclusions)
+            task.classDirectories.setFrom(sub.files(kotlinClasses, javaClasses))
+
+            task.sourceDirectories.setFrom(sub.files('src/main/java', 'src/main/kotlin'))
+            task.executionData.setFrom(sub.files(execSpecs.collect { spec ->
+                sub.fileTree(dir: "${sub.layout.buildDirectory.get()}/${spec[0]}",
+                             includes: [spec[1]])
+            }))
+
+            // Reading those class directories means depending on the tasks that
+            // produce them, or Gradle rejects the report for an undeclared
+            // dependency as soon as a compile task shares the graph. Compilation
+            // only: no report task re-runs a test suite.
+            ['compileDebugKotlin', 'compileDebugJavaWithJavac'].each { name ->
+                if (sub.tasks.findByName(name) != null) {
+                    task.dependsOn(name)
+                }
+            }
         }
 
-        println "Applying patch: ${patchFile}"
-        exec {
-            workingDir = projectDir
-            commandLine 'git', 'apply', patchFile.absolutePath
+        // Names what actually counted. A pass that produced nothing lowers coverage
+        // silently, which is indistinguishable from code that genuinely got worse.
+        // Nothing is logged when there is no data at all: Gradle skips a JacocoReport
+        // with empty execution data outright, so no report is written and the
+        // coverage summary reports the file as missing instead of as a zero.
+        def reportProvenance = { task ->
+            task.doFirst {
+                def present = task.executionData.files.findAll { it.exists() }*.name.sort()
+                logger.lifecycle("  [${sub.name}] coverage from: ${present.join(', ')}")
+            }
+        }
+
+        sub.tasks.register('jacocoTestReport', JacocoReport) { task ->
+            configureCoverageReport(task, "Unit-test coverage report for ${sub.name}.",
+                rootProject.ext.unitExecSpecs)
+            task.dependsOn sub.tasks.named('testDebugUnitTest')
+
+            reportProvenance(task)
+            task.doFirst {
+                def present = task.executionData.files.findAll { it.exists() }*.name
+                if (!present.contains('screenshotTest.exec')) {
+                    logger.lifecycle("  [${sub.name}] no screenshot coverage - run verifyRoborazziDebug first")
+                }
+            }
+        }
+
+        // ENG-38670 / I3. Deliberately does not depend on connectedDebugAndroidTest:
+        // in CI the .ec files arrive from three sharded jobs that ran on their own
+        // emulators, and re-running the suite here would both cost an hour and
+        // overwrite the data we just collected. Locally, run the connected tests
+        // first, then this.
+        sub.tasks.register('jacocoAndroidTestReport', JacocoReport) { task ->
+            configureCoverageReport(task, "Instrumented-test coverage report for ${sub.name}.",
+                rootProject.ext.androidTestExecSpecs)
+            reportProvenance(task)
+            orderAfterSuites(task, ['connectedDebugAndroidTest'])
+        }
+
+        // The number the programme actually cares about: what the unit, screenshot
+        // and instrumented suites cover between them.
+        sub.tasks.register('jacocoMergedReport', JacocoReport) { task ->
+            configureCoverageReport(task, "Merged unit + instrumented coverage report for ${sub.name}.",
+                rootProject.ext.unitExecSpecs + rootProject.ext.androidTestExecSpecs)
+            reportProvenance(task)
+            orderAfterSuites(task, ['testDebugUnitTest', 'connectedDebugAndroidTest'])
         }
     }
 }

@@ -6,26 +6,26 @@ package com.cometchat.uikit.compose.presentation.messagelist.ui
  * This sealed class encapsulates the possible outcomes when evaluating
  * whether pagination should be triggered based on scroll state.
  */
-sealed class PaginationDecision {
+sealed public class PaginationDecision {
     /**
      * Indicates that older messages should be fetched.
      * This occurs when the user scrolls near the top of the message list.
      */
-    data object FetchOlderMessages : PaginationDecision()
+    public data object FetchOlderMessages : PaginationDecision()
     
     /**
      * Indicates that newer messages should be fetched.
      * This occurs when the user scrolls near the bottom of the message list
      * after having scrolled up.
      */
-    data object FetchNewerMessages : PaginationDecision()
+    public data object FetchNewerMessages : PaginationDecision()
     
     /**
      * Indicates that no pagination action should be taken.
      * This occurs when guard conditions prevent fetching or when
      * the scroll position doesn't meet the threshold requirements.
      */
-    data object NoAction : PaginationDecision()
+    public data object NoAction : PaginationDecision()
 }
 
 /**
@@ -33,7 +33,7 @@ sealed class PaginationDecision {
  * When the user scrolls within this many items of the top or bottom,
  * pagination will be triggered if other conditions are met.
  */
-const val PAGINATION_THRESHOLD = 5
+public const val PAGINATION_THRESHOLD: Int = 5
 
 /**
  * Determines the pagination action to take based on the current scroll state.
@@ -60,7 +60,7 @@ const val PAGINATION_THRESHOLD = 5
  * @param isInProgress Whether a fetch operation is currently in progress
  * @return The pagination decision indicating what action to take
  */
-fun determinePaginationAction(
+public fun determinePaginationAction(
     totalItems: Int,
     firstVisibleIndex: Int,
     lastVisibleIndex: Int,
@@ -114,7 +114,7 @@ fun determinePaginationAction(
  * @param isInProgress Whether a fetch operation is currently in progress
  * @return True if newer message pagination should be triggered
  */
-fun shouldFetchNewerMessages(
+public fun shouldFetchNewerMessages(
     totalItems: Int,
     firstVisibleIndex: Int,
     hasMoreNewMessages: Boolean,
@@ -150,7 +150,7 @@ fun shouldFetchNewerMessages(
  * @param isInProgress Whether a fetch operation is currently in progress
  * @return True if older message pagination should be triggered
  */
-fun shouldFetchOlderMessages(
+public fun shouldFetchOlderMessages(
     totalItems: Int,
     lastVisibleIndex: Int,
     hasMorePreviousMessages: Boolean,

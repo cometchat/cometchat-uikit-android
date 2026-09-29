@@ -46,7 +46,7 @@ import com.cometchat.uikit.core.events.CometChatUIEvent
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatCardBubble(
+public fun CometChatCardBubble(
     message: CardMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,

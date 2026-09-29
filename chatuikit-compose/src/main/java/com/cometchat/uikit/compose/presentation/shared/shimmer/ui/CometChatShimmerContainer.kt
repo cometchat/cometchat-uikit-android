@@ -59,7 +59,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.rememberShi
  * @param content Child composables that will share the shimmer animation
  */
 @Composable
-fun CometChatShimmerContainer(
+public fun CometChatShimmerContainer(
     modifier: Modifier = Modifier,
     isShimmerVisible: Boolean = true,
     config: CometChatShimmerConfig = CometChatShimmerConfig.default(),

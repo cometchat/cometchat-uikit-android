@@ -4,7 +4,7 @@ package com.cometchat.uikit.compose.presentation.shared.statusindicator
  * Enum representing various status indicators.
  * Mirrors the View-based StatusIndicator enum.
  */
-enum class StatusIndicator {
+public enum class StatusIndicator {
     /**
      * Represents the online status of a user.
      */

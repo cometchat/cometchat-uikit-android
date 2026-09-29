@@ -22,7 +22,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Contains all visual styling properties for the conversations list component.
  */
 @Immutable
-data class CometChatConversationsStyle(
+public data class CometChatConversationsStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -101,13 +101,13 @@ data class CometChatConversationsStyle(
     // Mention styling for conversation subtitles
     val mentionStyle: CometChatMentionStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = Color.Transparent,

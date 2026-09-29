@@ -36,7 +36,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatS
  * @param shape Shape to clip the shimmer effect. Defaults to [RectangleShape].
  * @return Modifier with shimmer effect applied
  */
-fun Modifier.shimmer(
+public fun Modifier.shimmer(
     config: CometChatShimmerConfig,
     shape: Shape = RectangleShape
 ): Modifier = composed {
@@ -76,7 +76,7 @@ fun Modifier.shimmer(
  *               [ProvideShimmerAnimation] or falls back to [CometChatShimmerConfig.default].
  * @return Modifier with shimmer effect applied
  */
-fun Modifier.shimmerWithSharedAnimation(
+public fun Modifier.shimmerWithSharedAnimation(
     shape: Shape = RectangleShape,
     config: CometChatShimmerConfig? = null
 ): Modifier = composed {

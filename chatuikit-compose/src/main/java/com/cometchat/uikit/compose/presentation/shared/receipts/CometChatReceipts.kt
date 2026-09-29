@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import com.cometchat.chat.models.BaseMessage
+import com.cometchat.uikit.compose.R
 
 /**
  * CometChatReceipts displays the message receipt status with appropriate icons and colors.
@@ -25,7 +27,7 @@ import com.cometchat.chat.models.BaseMessage
  * @param style Style configuration for the receipt indicator
  */
 @Composable
-fun CometChatReceipts(
+public fun CometChatReceipts(
     receipt: Receipt,
     modifier: Modifier = Modifier,
     style: CometChatReceiptsStyle = CometChatReceiptsStyle.default()
@@ -47,11 +49,11 @@ fun CometChatReceipts(
     Image(
         painter = icon,
         contentDescription = when (receipt) {
-            Receipt.IN_PROGRESS -> "Message in progress"
-            Receipt.SENT -> "Message sent"
-            Receipt.DELIVERED -> "Message delivered"
-            Receipt.READ -> "Message read"
-            Receipt.ERROR -> "Message error"
+            Receipt.IN_PROGRESS -> stringResource(R.string.cometchat_a11y_message_in_progress)
+            Receipt.SENT -> stringResource(R.string.cometchat_a11y_message_sent)
+            Receipt.DELIVERED -> stringResource(R.string.cometchat_a11y_message_delivered)
+            Receipt.READ -> stringResource(R.string.cometchat_a11y_message_read)
+            Receipt.ERROR -> stringResource(R.string.cometchat_a11y_message_error)
         },
         modifier = modifier.size(style.size),
         contentScale = ContentScale.Fit,
@@ -81,7 +83,7 @@ fun CometChatReceipts(
  * ```
  */
 @Composable
-fun CometChatReceipts(
+public fun CometChatReceipts(
     message: BaseMessage,
     modifier: Modifier = Modifier,
     style: CometChatReceiptsStyle = CometChatReceiptsStyle.default()

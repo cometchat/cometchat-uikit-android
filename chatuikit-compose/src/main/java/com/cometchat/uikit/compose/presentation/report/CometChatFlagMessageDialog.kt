@@ -98,7 +98,7 @@ import com.cometchat.uikit.compose.R
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CometChatFlagMessageDialog(
+public fun CometChatFlagMessageDialog(
     flagReasons: List<FlagReason>,
     style: CometChatFlagMessageDialogStyle = CometChatFlagMessageDialogStyle.default(),
     localizationMap: Map<String, Int> = emptyMap(),
@@ -159,11 +159,12 @@ fun CometChatFlagMessageDialog(
             dismissOnClickOutside = dismissOnClickOutside
         )
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_flag_message_dialog)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .semantics { contentDescription = "Flag Message Dialog" },
+                .semantics { contentDescription = cdHoist1 },
             shape = RoundedCornerShape(style.borderRadius),
             colors = CardDefaults.cardColors(containerColor = style.backgroundColor),
             border = if (style.strokeWidth > 0.dp) {
@@ -192,7 +193,7 @@ fun CometChatFlagMessageDialog(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.cometchat_ic_close),
-                            contentDescription = "Close",
+                            contentDescription = stringResource(R.string.cometchat_a11y_close),
                             tint = style.closeIconColor
                         )
                     }

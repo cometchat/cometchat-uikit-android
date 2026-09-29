@@ -30,7 +30,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * - States: emptyState*, errorState* attributes
  */
 @Immutable
-data class CometChatGroupMembersStyle(
+public data class CometChatGroupMembersStyle(
     // Container styling
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -105,7 +105,7 @@ data class CometChatGroupMembersStyle(
     val errorStateStyle: CometChatErrorStateStyle,
     val loadingStateStyle: CometChatLoadingStateStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -114,7 +114,7 @@ data class CometChatGroupMembersStyle(
          * to ensure consistency with the design system and proper light/dark theme support.
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 0.dp,

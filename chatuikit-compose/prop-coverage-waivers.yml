@@ -1,0 +1,30 @@
+# ENG-38678 — prop-coverage waivers for the Compose (chatuikit-compose) toolkit.
+# Format: ENG-38956 WaiverSet (owner / name / reason / by). A waiver removes a
+# prop from the coverage denominator; it is only for props that genuinely cannot
+# be matrixed, never to hide a missing test.
+
+# --- CometChatSearchStyle (Compose) nested style objects: matrixed by their own components ---
+- owner: CometChatSearchStyle
+  name: conversationItemStyle
+  reason: nested SearchConversationItemStyle; matrixed by the conversation item's own style
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: messageItemStyle
+  reason: nested SearchMessageItemStyle; matrixed by the message item's own style
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: emptyStateStyle
+  reason: nested CometChatEmptyStateStyle; matrixed by the empty-state component
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: errorStateStyle
+  reason: nested CometChatErrorStateStyle; matrixed by the error-state component
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: loadingStateStyle
+  reason: nested CometChatLoadingStateStyle; matrixed by the loading-state component
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: initialStateStyle
+  reason: nested CometChatEmptyStateStyle (initial); matrixed by the empty-state component
+  by: ENG-38678

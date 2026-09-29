@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import com.cometchat.chat.core.NotificationCategoriesRequest
 import com.cometchat.chat.core.NotificationFeedRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.NotificationFeedItem
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.notificationfeed.style.CometChatNotificationFeedStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.factory.CometChatNotificationFeedViewModelFactory
@@ -65,7 +67,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatNotificationFeedViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CometChatNotificationFeed(
+public fun CometChatNotificationFeed(
     modifier: Modifier = Modifier,
     feedRequestBuilder: NotificationFeedRequest.NotificationFeedRequestBuilder? = null,
     categoriesRequestBuilder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder? = null,
@@ -139,7 +141,7 @@ fun CometChatNotificationFeed(
                             ) {
                                 Icon(
                                     painter = painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
-                                    contentDescription = "Back",
+                                    contentDescription = stringResource(R.string.cometchat_a11y_back),
                                     tint = CometChatTheme.colorScheme.iconTintPrimary
                                 )
                             }
@@ -148,8 +150,10 @@ fun CometChatNotificationFeed(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = resolvedStyle.headerBackgroundColor,
                         scrolledContainerColor = resolvedStyle.headerBackgroundColor
-                    ),
-                    windowInsets = WindowInsets(0)
+                    )
+                    // ENG-38657 (T5): the WindowInsets(0) override made the header
+                    // render under the status bar on edge-to-edge (API 35+) hosts;
+                    // TopAppBar's default insets handle it correctly.
                 )
                 HorizontalDivider(
                     color = resolvedStyle.headerBorderColor,

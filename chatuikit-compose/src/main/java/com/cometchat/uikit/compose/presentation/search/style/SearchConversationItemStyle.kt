@@ -14,7 +14,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Style configuration for SearchConversationItem component.
  */
 @Immutable
-data class SearchConversationItemStyle(
+public data class SearchConversationItemStyle(
     val backgroundColor: Color,
     val titleTextColor: Color,
     val titleTextStyle: TextStyle,
@@ -27,9 +27,9 @@ data class SearchConversationItemStyle(
     val statusIndicatorStyle: CometChatStatusIndicatorStyle,
     val receiptStyle: CometChatReceiptsStyle
 ) {
-    companion object {
+    public companion object {
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color.Transparent,
             titleTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,
             titleTextStyle: TextStyle = CometChatTheme.typography.heading4Medium,

@@ -38,7 +38,7 @@ import com.cometchat.uikit.compose.presentation.imageviewer.style.CometChatImage
  * @param onShare Called when the share button is tapped, with the visible page's data
  */
 @Composable
-fun CometChatImageViewerScreen(
+public fun CometChatImageViewerScreen(
     imageUrls: List<String>,
     fileNames: List<String>,
     mimeTypes: List<String>,
@@ -149,7 +149,7 @@ fun CometChatImageViewerScreen(
  * @param onShare Called when the share button is tapped
  */
 @Composable
-fun CometChatImageViewerScreen(
+public fun CometChatImageViewerScreen(
     imageUrl: String,
     fileName: String,
     mimeType: String,

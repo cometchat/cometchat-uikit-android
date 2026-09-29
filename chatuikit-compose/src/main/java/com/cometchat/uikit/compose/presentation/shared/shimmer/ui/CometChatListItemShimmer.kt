@@ -16,8 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.shimmer.style.CometChatListItemShimmerStyle
 import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerBrush
 
@@ -66,10 +68,11 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerB
  *              Defaults to [CometChatListItemShimmerStyle.default]
  */
 @Composable
-fun CometChatListItemShimmer(
+public fun CometChatListItemShimmer(
     modifier: Modifier = Modifier,
     style: CometChatListItemShimmerStyle = CometChatListItemShimmerStyle.default()
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_list_item)
     // Use shared shimmer brush for synchronized animation across all elements
     val brush = useShimmerBrush(style.shimmerConfig)
 
@@ -81,7 +84,7 @@ fun CometChatListItemShimmer(
                 vertical = style.verticalPadding
             )
             .semantics {
-                contentDescription = "Loading list item"
+                contentDescription = cdHoist1
             },
         verticalAlignment = Alignment.CenterVertically
     ) {

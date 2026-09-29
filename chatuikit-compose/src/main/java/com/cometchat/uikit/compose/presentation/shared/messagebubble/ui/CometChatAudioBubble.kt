@@ -1,6 +1,5 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -42,6 +42,7 @@ import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatAudioBubbleStyle
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.AudioBubbleStateManager
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import com.cometchat.uikit.core.utils.WaveformUtils
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +59,7 @@ private const val BAR_COUNT = 28
 private const val POLL_INTERVAL_MS = 50L
 
 @Composable
-fun CometChatAudioBubble(
+public fun CometChatAudioBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -76,7 +77,7 @@ fun CometChatAudioBubble(
 }
 
 @Composable
-fun CometChatAudioBubble(
+public fun CometChatAudioBubble(
     audioUrl: String, fileSize: Int,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -97,6 +98,7 @@ private fun CometChatAudioBubbleContent(
     alignment: UIKitConstants.MessageBubbleAlignment,
     onLongClick: (() -> Unit)?, modifier: Modifier = Modifier
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_audio_message)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val playedColor = style.playedBarColor
@@ -198,7 +200,7 @@ private fun CometChatAudioBubbleContent(
         modifier = modifier.width(240.dp)
             .combinedClickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = {}, onLongClick = onLongClick)
             .padding(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 4.dp)
-            .semantics { contentDescription = "Audio message" },
+            .semantics { contentDescription = cdHoist1 },
         verticalAlignment = Alignment.CenterVertically
     ) {
         AudioBubblePlayPauseButton(playState, isDownloading, downloadProgress, isInitializing, ::onPlayTap, style.playIconTint, style.buttonBackgroundColor)
@@ -216,11 +218,17 @@ private fun AudioBubblePlayPauseButton(
     playState: PlayState, isDownloading: Boolean, downloadProgress: Float, isInitializing: Boolean,
     onClick: () -> Unit, iconColor: androidx.compose.ui.graphics.Color, backgroundColor: androidx.compose.ui.graphics.Color
 ) {
+    val audioBubbleCd = when {
+        isDownloading -> stringResource(R.string.cometchat_a11y_downloading)
+        isInitializing -> stringResource(R.string.cometchat_a11y_loading_short)
+        playState == PlayState.PLAYING -> stringResource(R.string.cometchat_a11y_pause)
+        else -> stringResource(R.string.cometchat_a11y_play)
+    }
     // 34dp circle with a 24dp glyph — matches the Views (kotlin) audio bubble button.
     Box(
         modifier = Modifier.size(34.dp).clip(CircleShape).background(backgroundColor)
             .then(if (!isDownloading && !isInitializing) Modifier.clickable(onClick = onClick) else Modifier)
-            .semantics { contentDescription = when { isDownloading -> "Downloading"; isInitializing -> "Loading"; playState == PlayState.PLAYING -> "Pause"; else -> "Play" } },
+            .semantics { contentDescription = audioBubbleCd },
         contentAlignment = Alignment.Center
     ) {
         when {
@@ -252,10 +260,10 @@ private suspend fun downloadFile(url: String, targetFile: File, onProgress: (Flo
         }}
         connection.disconnect()
         if (tempFile.length() > 0 && tempFile.renameTo(targetFile)) targetFile.absolutePath else { tempFile.delete(); null }
-    } catch (e: Exception) { Log.e(TAG, "Download failed: ${e.message}"); tempFile.delete(); null }
+    } catch (e: Exception) { CometChatLogger.e(TAG, "Download failed: ${e.message}"); tempFile.delete(); null }
 }
 
-fun formatDurationMs(ms: Long): String {
+public fun formatDurationMs(ms: Long): String {
     if (ms <= 0) return "00:00"
     val totalSeconds = ms / 1000; val minutes = (totalSeconds / 60).toInt(); val seconds = (totalSeconds % 60).toInt()
     return String.format(Locale.US, "%02d:%02d", minutes, seconds)

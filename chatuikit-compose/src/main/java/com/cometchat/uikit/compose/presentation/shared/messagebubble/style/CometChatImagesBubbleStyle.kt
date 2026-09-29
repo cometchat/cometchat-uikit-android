@@ -44,7 +44,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property captionTextStyle The text style for the caption
  */
 @Immutable
-data class CometChatImagesBubbleStyle(
+public data class CometChatImagesBubbleStyle(
     // Content-specific properties ONLY
     val tileCornerRadius: Dp,
     val gridSpacing: Dp,
@@ -81,7 +81,7 @@ data class CometChatImagesBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default images bubble style using CometChat theme tokens.
          *
@@ -96,7 +96,7 @@ data class CometChatImagesBubbleStyle(
          * @return A new [CometChatImagesBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             tileCornerRadius: Dp = 8.dp,
             gridSpacing: Dp = 2.dp,
@@ -151,7 +151,7 @@ data class CometChatImagesBubbleStyle(
          * @return A new [CometChatImagesBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatImagesBubbleStyle = default()
+        public fun incoming(): CometChatImagesBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) multi-image messages.
@@ -163,7 +163,7 @@ data class CometChatImagesBubbleStyle(
          * @return A new [CometChatImagesBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatImagesBubbleStyle = default(
+        public fun outgoing(): CometChatImagesBubbleStyle = default(
             captionTextColor = Color.White
         )
     }

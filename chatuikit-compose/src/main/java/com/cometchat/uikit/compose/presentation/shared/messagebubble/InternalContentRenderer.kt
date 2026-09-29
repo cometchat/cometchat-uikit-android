@@ -1,6 +1,5 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +40,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
+import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatFileProviderAuthority
 import com.cometchat.uikit.compose.presentation.shared.mentions.MentionTextStyle
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.aiassistantbubble.CometChatAIAssistantBubble
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.aiassistantbubble.CometChatAIAssistantBubbleStyle
@@ -102,6 +102,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.model.StreamMessage
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 // ============================================================================
 // Leading View Resolution API
@@ -120,7 +121,7 @@ import com.cometchat.uikit.core.domain.model.StreamMessage
  * This abstraction allows the resolution logic to be tested independently
  * of Compose runtime, as it doesn't require actual composable functions.
  */
-sealed class LeadingViewResolution {
+sealed public class LeadingViewResolution {
     /**
      * Indicates that a custom leading view was explicitly provided.
      *
@@ -129,7 +130,7 @@ sealed class LeadingViewResolution {
      *
      * **Validates: Requirements 1.2** - Custom LeadingView Providers Override Default Behavior
      */
-    object CustomLeadingView : LeadingViewResolution()
+    public object CustomLeadingView : LeadingViewResolution()
 
     /**
      * Indicates that the factory's default leading view should be used.
@@ -141,7 +142,7 @@ sealed class LeadingViewResolution {
      * The actual factory leading view may still be null if the factory
      * doesn't provide one for the given message type.
      */
-    object FactoryLeadingView : LeadingViewResolution()
+    public object FactoryLeadingView : LeadingViewResolution()
 
     /**
      * Indicates that no leading view should be displayed.
@@ -152,7 +153,7 @@ sealed class LeadingViewResolution {
      *
      * **Validates: Requirements 1.1** - Outgoing Messages Never Show Default Avatar
      */
-    object NoLeadingView : LeadingViewResolution()
+    public object NoLeadingView : LeadingViewResolution()
 }
 
 /**
@@ -190,7 +191,7 @@ sealed class LeadingViewResolution {
  * @see LeadingViewResolution
  * @see resolveLeadingViewWithFactory
  */
-fun resolveLeadingView(
+internal fun resolveLeadingView(
     hasCustomLeadingView: Boolean,
     shouldShowDefaultAvatar: Boolean
 ): LeadingViewResolution {
@@ -243,7 +244,7 @@ fun resolveLeadingView(
  * @see LeadingViewResolution
  * @see resolveLeadingView
  */
-fun resolveLeadingViewWithFactory(
+internal fun resolveLeadingViewWithFactory(
     hasCustomLeadingView: Boolean,
     factoryProvidesLeadingView: Boolean,
     shouldShowDefaultAvatar: Boolean
@@ -310,6 +311,9 @@ internal object InternalContentRenderer {
      * Message type constants for custom extensions.
      * These match the extension types used in ComposeBubbleFactory implementations.
      */
+    // Max individual reaction chips shown on a bubble before the rest collapse into a "+N" chip,
+    // matching chatuikit-kotlin's InternalContentRenderer.REACTION_LIMIT (ENG-39506).
+    private const val REACTION_LIMIT = 4
     internal const val EXTENSION_POLLS = "extension_poll"
     internal const val EXTENSION_STICKER = "extension_sticker"
     internal const val EXTENSION_DOCUMENT = "extension_document"
@@ -461,7 +465,7 @@ internal object InternalContentRenderer {
      * @param message The message with unknown type
      */
     private fun logUnknownType(message: BaseMessage) {
-        Log.w(TAG, "Unknown message type: category=${message.category}, type=${message.type}")
+        CometChatLogger.w(TAG, "Unknown message type: category=${message.category}, type=${message.type}")
     }
 
     /**
@@ -474,7 +478,7 @@ internal object InternalContentRenderer {
      * @param expectedType The expected type name
      */
     private fun logCastFailure(message: BaseMessage, expectedType: String) {
-        Log.w(TAG, "Failed to cast message to $expectedType: category=${message.category}, type=${message.type}, actualClass=${message.javaClass.simpleName}")
+        CometChatLogger.w(TAG, "Failed to cast message to $expectedType: category=${message.category}, type=${message.type}, actualClass=${message.javaClass.simpleName}")
     }
 
     // ========================================================================
@@ -523,7 +527,7 @@ internal object InternalContentRenderer {
                     if (file.exists()) {
                         val uri = androidx.core.content.FileProvider.getUriForFile(
                             context,
-                            "${context.packageName}.provider",
+                            context.cometchatFileProviderAuthority,
                             file
                         )
                         val mimeType = mediaMessage.attachment?.fileMimeType ?: "*/*"
@@ -541,7 +545,7 @@ internal object InternalContentRenderer {
                 }
             }
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to open local file: ${e.message}")
+            CometChatLogger.w(TAG, "Failed to open local file: ${e.message}")
         }
 
         // Fall back to remote URL
@@ -559,7 +563,7 @@ internal object InternalContentRenderer {
                 context.startActivity(intent)
             }
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to open remote file: ${e.message}")
+            CometChatLogger.w(TAG, "Failed to open remote file: ${e.message}")
         }
     }
 
@@ -665,7 +669,7 @@ internal object InternalContentRenderer {
             val manager = context.getSystemService(android.content.Context.DOWNLOAD_SERVICE) as? android.app.DownloadManager
             manager?.enqueue(request)
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to enqueue file download: ${e.message}")
+            CometChatLogger.w(TAG, "Failed to enqueue file download: ${e.message}")
         }
     }
 
@@ -1302,6 +1306,9 @@ internal object InternalContentRenderer {
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      * @param styles Container holding all bubble style overrides
      */
+    // ENG-38656: pre-existing ComposableNaming convention across the render* family
+    // (out of scope for this i18n ticket); suppressed to keep the lint gate green.
+    @Suppress("ComposableNaming")
     @Composable
     private fun renderDeleteBubble(
         message: BaseMessage,
@@ -1981,7 +1988,7 @@ internal object InternalContentRenderer {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_ic_thread),
-                contentDescription = "Thread replies",
+                contentDescription = stringResource(R.string.cometchat_a11y_thread_replies),
                 tint = style.threadIndicatorIconTint,
                 modifier = Modifier.size(16.dp)
             )
@@ -2097,7 +2104,7 @@ internal object InternalContentRenderer {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = R.drawable.cometchat_ic_warning),
-                    contentDescription = "Moderation warning",
+                    contentDescription = stringResource(R.string.cometchat_a11y_moderation_warning),
                     tint = CometChatTheme.colorScheme.errorColor,
                     modifier = Modifier.size(18.dp)
                 )
@@ -2156,7 +2163,7 @@ internal object InternalContentRenderer {
         Box(modifier = Modifier.padding(top = 4.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_ic_copy_paste),
-                contentDescription = "Copy",
+                contentDescription = stringResource(R.string.cometchat_a11y_copy),
                 tint = CometChatTheme.colorScheme.textColorSecondary,
                 modifier = Modifier
                     .size(20.dp)
@@ -2206,7 +2213,10 @@ internal object InternalContentRenderer {
                 .padding(top = 4.dp),
             horizontalArrangement = horizontalArrangement
         ) {
-            reactions.forEach { reactionCount ->
+            // Show at most REACTION_LIMIT individual chips; the rest collapse into a single "+N"
+            // chip. Without this cap every distinct reaction rendered in one non-wrapping Row and
+            // overflowed the bubble instead of aggregating (ENG-39506).
+            reactions.take(REACTION_LIMIT).forEach { reactionCount ->
                 val emoji = reactionCount.reaction ?: return@forEach
                 val count = reactionCount.count
 
@@ -2246,6 +2256,42 @@ internal object InternalContentRenderer {
                 }
             }
 
+            // "+N" overflow chip for the reactions beyond the limit. Highlighted when any hidden
+            // reaction is one I made, and tapping it opens the full reaction list.
+            if (reactions.size > REACTION_LIMIT) {
+                val overflowCount = reactions.size - REACTION_LIMIT
+                val overflowReactedByMe = reactions.drop(REACTION_LIMIT).any { it.reactedByMe }
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 2.dp)
+                        .background(
+                            color = if (overflowReactedByMe)
+                                CometChatTheme.colorScheme.extendedPrimaryColor100
+                            else
+                                CometChatTheme.colorScheme.backgroundColor3,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .then(
+                            if (overflowReactedByMe)
+                                Modifier.border(
+                                    width = 1.dp,
+                                    color = CometChatTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                            else Modifier
+                        )
+                        .clickable { onAddMoreReactionsClick?.invoke(message) }
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "+$overflowCount",
+                        style = CometChatTheme.typography.caption1Medium,
+                        color = CometChatTheme.colorScheme.textColorPrimary
+                    )
+                }
+            }
+
             // Add more reactions button — only when a handler is wired. Read-only surfaces (the
             // pinned/saved lists) pass no callback, so their reactions render view-only with no
             // add affordance; the message list always wires one.
@@ -2263,7 +2309,7 @@ internal object InternalContentRenderer {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.cometchat_add_reaction),
-                        contentDescription = "Add reaction",
+                        contentDescription = stringResource(R.string.cometchat_a11y_add_reaction),
                         tint = CometChatTheme.colorScheme.iconTintSecondary,
                         modifier = Modifier.size(16.dp)
                     )

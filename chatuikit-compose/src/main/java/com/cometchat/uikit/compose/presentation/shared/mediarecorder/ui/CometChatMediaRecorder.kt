@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -86,7 +87,7 @@ import java.io.File
  * @param controlButtonsView Custom view for the control buttons
  */
 @Composable
-fun CometChatMediaRecorder(
+public fun CometChatMediaRecorder(
     modifier: Modifier = Modifier,
     viewModel: CometChatMediaRecorderViewModel = viewModel(),
     style: CometChatMediaRecorderStyle = CometChatMediaRecorderStyle.default(),
@@ -179,6 +180,9 @@ fun CometChatMediaRecorder(
     }
     
     // Main container
+    val mediaRecorderIdleCd = stringResource(R.string.cometchat_a11y_media_recorder_idle)
+    val mediaRecorderRecordingCd = stringResource(R.string.cometchat_a11y_recording_in_progress_elapsed, recordingTime)
+    val mediaRecorderRecordedCd = stringResource(R.string.cometchat_a11y_recording_ready)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -189,9 +193,9 @@ fun CometChatMediaRecorder(
             .padding(16.dp)
             .semantics {
                 contentDescription = when (recordingState) {
-                    MediaRecorderState.IDLE -> "Media recorder ready to record"
-                    MediaRecorderState.RECORDING -> "Recording in progress, $recordingTime elapsed"
-                    MediaRecorderState.RECORDED -> "Recording complete, ready to play or submit"
+                    MediaRecorderState.IDLE -> mediaRecorderIdleCd
+                    MediaRecorderState.RECORDING -> mediaRecorderRecordingCd
+                    MediaRecorderState.RECORDED -> mediaRecorderRecordedCd
                 }
             },
         horizontalAlignment = Alignment.CenterHorizontally
@@ -300,6 +304,7 @@ private fun IdleStateContent(
             .height(120.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist8 = stringResource(R.string.cometchat_a11y_start_recording)
         IconButton(
             onClick = onStartRecording,
             modifier = Modifier
@@ -307,7 +312,7 @@ private fun IdleStateContent(
                 .clip(CircleShape)
                 .background(style.recordButtonBackgroundColor)
                 .semantics {
-                    contentDescription = "Start recording"
+                    contentDescription = cdHoist8
                     role = Role.Button
                 }
         ) {
@@ -341,6 +346,7 @@ private fun RecordingStateContent(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist7 = stringResource(R.string.cometchat_a11y_recording_time, recordingTime)
         // Timer
         // **Validates: Requirements 3.1, 3.2**
         Text(
@@ -350,7 +356,7 @@ private fun RecordingStateContent(
             modifier = Modifier
                 .width(60.dp)
                 .semantics {
-                    contentDescription = "Recording time: $recordingTime"
+                    contentDescription = cdHoist7
                 }
         )
         
@@ -389,6 +395,9 @@ private fun RecordedStateRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        val cdHoist6 = stringResource(R.string.cometchat_a11y_delete_recording)
+        val cdHoist5 = stringResource(R.string.cometchat_a11y_recording_duration, duration)
+        val cdHoist4 = stringResource(R.string.cometchat_a11y_submit_recording)
         // Delete button (24x24 icon as per Figma)
         // **Validates: Requirements 5.5**
         Box(
@@ -401,7 +410,7 @@ private fun RecordedStateRow(
                     onClick = onDelete
                 )
                 .semantics {
-                    contentDescription = "Delete recording"
+                    contentDescription = cdHoist6
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center
@@ -414,6 +423,8 @@ private fun RecordedStateRow(
             )
         }
         
+        val playbackPauseCd = stringResource(R.string.cometchat_a11y_pause_playback)
+        val playbackPlayCd = stringResource(R.string.cometchat_a11y_play_recording)
         // Play/Pause button (24x24 as per Figma)
         // **Validates: Requirements 4.1, 4.2, 4.3**
         Box(
@@ -426,7 +437,7 @@ private fun RecordedStateRow(
                     onClick = onPlayPauseClick
                 )
                 .semantics {
-                    contentDescription = if (isPlaying) "Pause playback" else "Play recording"
+                    contentDescription = if (isPlaying) playbackPauseCd else playbackPlayCd
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center
@@ -466,7 +477,7 @@ private fun RecordedStateRow(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .semantics {
-                    contentDescription = "Recording duration: $duration"
+                    contentDescription = cdHoist5
                 }
         )
         
@@ -483,7 +494,7 @@ private fun RecordedStateRow(
                     onClick = onSubmit
                 )
                 .semantics {
-                    contentDescription = "Submit recording"
+                    contentDescription = cdHoist4
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center
@@ -520,6 +531,9 @@ private fun RecordedStateContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        val cdHoist3 = stringResource(R.string.cometchat_a11y_recording_duration, duration)
+        val playbackPauseCd = stringResource(R.string.cometchat_a11y_pause_playback)
+        val playbackPlayCd = stringResource(R.string.cometchat_a11y_play_recording)
         // Play/Pause button (24x24 as per Figma)
         // **Validates: Requirements 4.1, 4.2, 4.3**
         Box(
@@ -532,7 +546,7 @@ private fun RecordedStateContent(
                     onClick = onPlayPauseClick
                 )
                 .semantics {
-                    contentDescription = if (isPlaying) "Pause playback" else "Play recording"
+                    contentDescription = if (isPlaying) playbackPauseCd else playbackPlayCd
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center
@@ -575,7 +589,7 @@ private fun RecordedStateContent(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .semantics {
-                    contentDescription = "Recording duration: $duration"
+                    contentDescription = cdHoist3
                 }
         )
     }
@@ -600,7 +614,7 @@ private fun RecordingControlButtons(
         // **Validates: Requirements 5.5**
         ControlButton(
             iconRes = R.drawable.cometchat_ic_media_recorder_delete,
-            contentDescription = "Delete recording",
+            contentDescription = stringResource(R.string.cometchat_a11y_delete_recording),
             tint = style.deleteIconColor,
             backgroundColor = style.deleteButtonBackgroundColor,
             onClick = onDelete
@@ -609,7 +623,7 @@ private fun RecordingControlButtons(
         // Stop button
         ControlButton(
             iconRes = R.drawable.cometchat_ic_media_recorder_stop,
-            contentDescription = "Stop recording",
+            contentDescription = stringResource(R.string.cometchat_a11y_stop_recording),
             tint = style.stopIconTint,
             backgroundColor = style.stopButtonBackgroundColor,
             onClick = onStop
@@ -619,7 +633,7 @@ private fun RecordingControlButtons(
         // **Validates: Requirements 5.7**
         ControlButton(
             iconRes = R.drawable.cometchat_ic_media_recorder_send,
-            contentDescription = "Submit recording (disabled)",
+            contentDescription = stringResource(R.string.cometchat_a11y_submit_recording_disabled),
             tint = style.submitIconTint.copy(alpha = 0.4f),
             backgroundColor = style.submitButtonBackgroundColor,
             onClick = { /* Disabled during recording */ },
@@ -644,6 +658,8 @@ private fun RecordedControlButtons(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_delete_recording)
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_submit_recording)
         // Delete button (24x24 icon)
         // **Validates: Requirements 5.5**
         Box(
@@ -656,7 +672,7 @@ private fun RecordedControlButtons(
                     onClick = onDelete
                 )
                 .semantics {
-                    contentDescription = "Delete recording"
+                    contentDescription = cdHoist2
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center
@@ -682,7 +698,7 @@ private fun RecordedControlButtons(
                     onClick = onSubmit
                 )
                 .semantics {
-                    contentDescription = "Submit recording"
+                    contentDescription = cdHoist1
                     role = Role.Button
                 },
             contentAlignment = Alignment.Center

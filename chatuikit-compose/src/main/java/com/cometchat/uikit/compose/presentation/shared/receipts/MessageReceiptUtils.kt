@@ -13,7 +13,7 @@ import org.json.JSONObject
  * This mirrors the View-based MessageReceiptUtils.java implementation
  * for use in Jetpack Compose components.
  */
-object MessageReceiptUtils {
+public object MessageReceiptUtils {
 
     /**
      * Determines the receipt status for a given message.
@@ -24,7 +24,7 @@ object MessageReceiptUtils {
      * @param baseMessage The message to get receipt status for, can be null
      * @return The appropriate [Receipt] status for the message
      */
-    fun getMessageReceipt(baseMessage: BaseMessage?): Receipt {
+    public fun getMessageReceipt(baseMessage: BaseMessage?): Receipt {
         if (baseMessage == null) {
             return Receipt.ERROR
         }
@@ -83,7 +83,7 @@ object MessageReceiptUtils {
      * @param baseMessage The message to check
      * @return true if the receipt should be hidden, false otherwise
      */
-    fun shouldHideReceipt(baseMessage: BaseMessage?): Boolean {
+    public fun shouldHideReceipt(baseMessage: BaseMessage?): Boolean {
         if (baseMessage == null || baseMessage.deletedAt != 0L) {
             return true
         }

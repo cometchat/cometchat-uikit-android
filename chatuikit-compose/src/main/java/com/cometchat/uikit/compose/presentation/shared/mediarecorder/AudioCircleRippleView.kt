@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
  * central point. The ripples expand outward and can be animated to create a visual effect.
  */
 @Composable
-fun AudioCircleRippleView(
+public fun AudioCircleRippleView(
     modifier: Modifier = Modifier,
     size: Dp = 120.dp,
     color: Color = MaterialTheme.colorScheme.primary,
@@ -89,7 +89,7 @@ fun AudioCircleRippleView(
  * Preview version of AudioCircleRippleView for development and testing
  */
 @Composable
-fun AudioCircleRippleViewPreview(
+public fun AudioCircleRippleViewPreview(
     modifier: Modifier = Modifier,
     isAnimating: Boolean = true
 ) {

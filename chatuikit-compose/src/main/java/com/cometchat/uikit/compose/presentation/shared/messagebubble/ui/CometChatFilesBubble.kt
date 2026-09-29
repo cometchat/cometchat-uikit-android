@@ -59,7 +59,7 @@ private const val COLLAPSED_FILE_COUNT = 3
  * @param onLongClick Callback when the bubble is long-pressed
  */
 @Composable
-fun CometChatFilesBubble(
+public fun CometChatFilesBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -175,7 +175,7 @@ private fun FileCard(
         ) {
             Icon(
                 painter = painterResource(id = icon),
-                contentDescription = "File type: ${fileType.name}",
+                contentDescription = stringResource(R.string.cometchat_a11y_file_type, fileType.name),
                 modifier = Modifier.size(style.fileIconSize - 14.dp),
                 tint = Color.Unspecified
             )
@@ -204,7 +204,7 @@ private fun FileCard(
             Spacer(modifier = Modifier.size(8.dp))
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_download_icon),
-                contentDescription = "Download file",
+                contentDescription = stringResource(R.string.cometchat_a11y_download_file),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(onClick = onDownloadClick),

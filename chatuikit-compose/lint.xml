@@ -7,6 +7,12 @@
     <!-- Treat all warnings as errors for strict code quality -->
     <issue id="all" severity="warning" />
 
+    <!-- ENG-38652: raw android.util.Log is forbidden in library code; use CometChatLogger -->
+    <issue id="RawAndroidLog" severity="error" />
+
+    <!-- ENG-38656: hardcoded contentDescription is forbidden; use string resources -->
+    <issue id="HardcodedContentDescription" severity="error" />
+
     <!-- ==================== COMPOSE-SPECIFIC RULES ==================== -->
     
     <!-- Ensure Composable functions follow naming conventions -->
@@ -127,7 +133,7 @@
     <!-- ==================== IGNORED ISSUES ==================== -->
     
     <!-- Ignore for library modules (consumers handle these) -->
-    <issue id="MissingTranslation" severity="ignore" />
+    <issue id="MissingTranslation" severity="error" />
     <issue id="ExtraTranslation" severity="ignore" />
     
     <!-- Ignore Gradle-related warnings -->

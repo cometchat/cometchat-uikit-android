@@ -22,7 +22,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * @param onLongClick Callback when the bubble is long-pressed
  */
 @Composable
-fun CometChatVideosBubble(
+public fun CometChatVideosBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,

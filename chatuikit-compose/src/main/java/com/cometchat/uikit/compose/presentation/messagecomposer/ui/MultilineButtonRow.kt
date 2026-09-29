@@ -13,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatMessageComposerStyle
 
 /**
@@ -51,7 +53,7 @@ import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatM
  * @param attachmentButtonContent Optional composable content wrapping the attachment button (for popup anchoring)
  */
 @Composable
-fun MultilineButtonRow(
+public fun MultilineButtonRow(
     modifier: Modifier = Modifier,
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     hideAttachmentButton: Boolean = false,
@@ -76,12 +78,13 @@ fun MultilineButtonRow(
     // 40dp buttons. Material3's IconButton would otherwise inflate each button to the
     // 48dp minimum touch target, spreading the icons apart and insetting the send button.
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+        val cdHoist4 = stringResource(R.string.cometchat_a11y_composer_action_buttons)
         Row(
             modifier = modifier
                 .fillMaxWidth()
                 .height(56.dp)
                 .padding(horizontal = 8.dp)
-                .semantics { contentDescription = "Composer action buttons" },
+                .semantics { contentDescription = cdHoist4 },
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 1. Attachment button (⊕)
@@ -99,16 +102,17 @@ fun MultilineButtonRow(
 
             // 2. Voice Recording button (🎤)
             if (!hideVoiceRecordingButton) {
+                val cdHoist3 = stringResource(R.string.cometchat_a11y_voice_recording)
                 IconButton(
                     onClick = onVoiceRecordClick,
                     modifier = Modifier
                         .size(40.dp)
-                        .semantics { contentDescription = "Voice Recording" }
+                        .semantics { contentDescription = cdHoist3 }
                 ) {
                     style.voiceRecordingIcon?.let { icon ->
                         Icon(
                             painter = icon,
-                            contentDescription = "Record voice message",
+                            contentDescription = stringResource(R.string.cometchat_a11y_record_voice_message),
                             tint = style.voiceRecordingIconTint,
                             modifier = Modifier.size(24.dp)
                         )
@@ -118,6 +122,7 @@ fun MultilineButtonRow(
 
             // 3. Sticker button (😊)
             if (!hideStickersButton) {
+                val cdHoist2 = stringResource(R.string.cometchat_a11y_stickers)
                 val visualState = resolveStickerVisualState(isStickerKeyboardOpen)
                 val stickerIcon = if (visualState == StickerButtonVisualState.ACTIVE) style.stickerActiveIcon else style.stickerIcon
                 val stickerTint = if (visualState == StickerButtonVisualState.ACTIVE) style.stickerActiveIconTint else style.stickerIconTint
@@ -125,12 +130,12 @@ fun MultilineButtonRow(
                     onClick = onStickerClick,
                     modifier = Modifier
                         .size(40.dp)
-                        .semantics { contentDescription = "Stickers" }
+                        .semantics { contentDescription = cdHoist2 }
                 ) {
                     stickerIcon?.let { icon ->
                         Icon(
                             painter = icon,
-                            contentDescription = if (isStickerKeyboardOpen) "Close stickers" else "Open stickers",
+                            contentDescription = if (isStickerKeyboardOpen) stringResource(R.string.cometchat_a11y_close_stickers) else stringResource(R.string.cometchat_a11y_open_stickers),
                             tint = stickerTint,
                             modifier = Modifier.size(24.dp)
                         )
@@ -140,16 +145,17 @@ fun MultilineButtonRow(
 
             // 4. Aa formatting toggle button
             if (showFormattingToggle) {
+                val cdHoist1 = stringResource(R.string.cometchat_a11y_format_text)
                 IconButton(
                     onClick = onFormattingToggleClick,
                     modifier = Modifier
                         .size(40.dp)
-                        .semantics { contentDescription = "Format Text" }
+                        .semantics { contentDescription = cdHoist1 }
                 ) {
                     style.richTextToggleIcon?.let { icon ->
                         Icon(
                             painter = icon,
-                            contentDescription = "Show formatting options",
+                            contentDescription = stringResource(R.string.cometchat_a11y_show_formatting_options),
                             tint = style.richTextToggleIconTint,
                             modifier = Modifier.size(24.dp)
                         )

@@ -35,7 +35,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property shimmerHighlightColor Highlight color for shimmer loading effect
  */
 @Immutable
-data class CometChatAISmartRepliesStyle(
+public data class CometChatAISmartRepliesStyle(
     val backgroundColor: Color,
     val cornerRadius: Dp,
     val strokeWidth: Dp,
@@ -55,7 +55,7 @@ data class CometChatAISmartRepliesStyle(
     val shimmerBaseColor: Color,
     val shimmerHighlightColor: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatAISmartRepliesStyle using CometChatTheme colors.
          *
@@ -79,7 +79,7 @@ data class CometChatAISmartRepliesStyle(
          * @param shimmerHighlightColor Highlight color for shimmer loading effect
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 4.dp,
             strokeWidth: Dp = 0.dp,

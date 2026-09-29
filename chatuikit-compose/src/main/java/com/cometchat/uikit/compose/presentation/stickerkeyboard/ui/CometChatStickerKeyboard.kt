@@ -66,6 +66,9 @@ import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
  * @param hideEmptyState Whether to hide the empty state
  * @param hideErrorState Whether to hide the error state
  * @param loadingView Custom loading state composable
+ * @param emptyStateTitleText Overrides the default empty-state title.
+ * @param emptyStateSubtitleText Overrides the default empty-state subtitle.
+ * @param errorStateText Overrides the default error-state message.
  * @param emptyView Custom empty state composable
  * @param errorView Custom error state composable with retry callback
  * @param onStickerClick Callback invoked when a sticker is clicked
@@ -73,7 +76,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatStickerKeyboard(
+public fun CometChatStickerKeyboard(
     modifier: Modifier = Modifier,
     viewModel: CometChatStickerKeyboardViewModel? = null,
     style: CometChatStickerKeyboardStyle = CometChatStickerKeyboardStyle.default(),
@@ -83,6 +86,9 @@ fun CometChatStickerKeyboard(
     hideErrorState: Boolean = false,
     // Custom views
     loadingView: (@Composable () -> Unit)? = null,
+    emptyStateTitleText: String? = null,
+    emptyStateSubtitleText: String? = null,
+    errorStateText: String? = null,
     emptyView: (@Composable () -> Unit)? = null,
     errorView: (@Composable (onRetry: () -> Unit) -> Unit)? = null,
     // Callbacks
@@ -127,7 +133,11 @@ fun CometChatStickerKeyboard(
 
             is StickerKeyboardUIState.Empty -> {
                 if (!hideEmptyState) {
-                    emptyView?.invoke() ?: StickerKeyboardEmptyState(style = style)
+                    emptyView?.invoke() ?: StickerKeyboardEmptyState(
+                        style = style,
+                        titleText = emptyStateTitleText,
+                        subtitleText = emptyStateSubtitleText
+                    )
                 }
             }
 
@@ -136,7 +146,8 @@ fun CometChatStickerKeyboard(
                     errorView?.invoke { stickerKeyboardViewModel.retry() }
                         ?: StickerKeyboardErrorState(
                             style = style,
-                            onRetry = { stickerKeyboardViewModel.retry() }
+                            onRetry = { stickerKeyboardViewModel.retry() },
+                            messageText = errorStateText
                         )
                 }
             }
@@ -230,13 +241,14 @@ private fun StickerKeyboardLoadingState(
     style: CometChatStickerKeyboardStyle
 ) {
     ProvideShimmerAnimation {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_stickers_please_wait)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(style.backgroundColor)
                 .padding(16.dp)
                 .semantics {
-                    contentDescription = "Loading stickers, please wait"
+                    contentDescription = cdHoist1
                     liveRegion = LiveRegionMode.Polite
                 }
         ) {
@@ -286,7 +298,9 @@ private fun StickerKeyboardLoadingState(
  */
 @Composable
 private fun StickerKeyboardEmptyState(
-    style: CometChatStickerKeyboardStyle
+    style: CometChatStickerKeyboardStyle,
+    titleText: String? = null,
+    subtitleText: String? = null
 ) {
     Box(
         modifier = Modifier
@@ -298,13 +312,14 @@ private fun StickerKeyboardEmptyState(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.cometchat_no_stickers_available),
+                text = titleText ?: stringResource(R.string.cometchat_no_stickers_available),
                 style = style.emptyStateTitleTextStyle,
                 color = style.emptyStateTitleTextColor
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.cometchat_you_don_t_have_any_stickers_yet),
+                text = subtitleText
+                    ?: stringResource(R.string.cometchat_you_don_t_have_any_stickers_yet),
                 style = style.emptyStateSubtitleTextStyle,
                 color = style.emptyStateSubtitleTextColor
             )
@@ -318,7 +333,8 @@ private fun StickerKeyboardEmptyState(
 @Composable
 private fun StickerKeyboardErrorState(
     style: CometChatStickerKeyboardStyle,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    messageText: String? = null
 ) {
     Box(
         modifier = Modifier
@@ -330,7 +346,8 @@ private fun StickerKeyboardErrorState(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.cometchat_looks_like_something_went_wrong_n_please_try_again),
+                text = messageText
+                    ?: stringResource(R.string.cometchat_looks_like_something_went_wrong_n_please_try_again),
                 style = style.errorStateTextStyle,
                 color = style.errorStateTextColor
             )

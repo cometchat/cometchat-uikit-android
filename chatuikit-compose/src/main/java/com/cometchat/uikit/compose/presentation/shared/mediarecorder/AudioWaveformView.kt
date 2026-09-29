@@ -57,7 +57,7 @@ import kotlin.random.Random
     )
 )
 @Composable
-fun AudioWaveformView(
+public fun AudioWaveformView(
     modifier: Modifier = Modifier,
     amplitude: Float = 0f,
     barCount: Int = 20,

@@ -39,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -62,6 +63,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.formatter.MarkdownRenderer
 import com.cometchat.uikit.core.formatter.RichTextFormat
@@ -115,7 +117,7 @@ private const val INLINE_CODE_ANNOTATION_TAG = "INLINE_CODE"
  * @param mentionTextStyle Optional custom style for mentions. If null, uses context-based defaults
  */
 @Composable
-fun CometChatTextBubble(
+public fun CometChatTextBubble(
     message: TextMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -130,6 +132,7 @@ fun CometChatTextBubble(
     onMentionAllClick: (() -> Unit)? = null,
     mentionTextStyle: MentionTextStyle? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_text_message, message.text)
     // Extract link preview data if available
     val linkPreview = remember(message.id) {
         extractLinkPreview(message)
@@ -202,7 +205,7 @@ fun CometChatTextBubble(
                 }
             )
             .semantics {
-                contentDescription = "Text message: ${message.text}"
+                contentDescription = cdHoist1
             }
     ) {
         // Code spans/blocks/blockquotes pick a light-on-dark ("outgoing") vs dark-on-light
@@ -286,7 +289,7 @@ private fun LinkPreviewSection(
                     .data(linkPreview.imageUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Link preview image",
+                contentDescription = stringResource(R.string.cometchat_a11y_link_preview_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -303,7 +306,7 @@ private fun LinkPreviewSection(
                         .data(linkPreview.favIconUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Site favicon",
+                    contentDescription = stringResource(R.string.cometchat_a11y_site_favicon),
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))

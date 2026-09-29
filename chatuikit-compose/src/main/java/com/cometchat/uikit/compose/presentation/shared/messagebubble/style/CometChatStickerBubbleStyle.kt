@@ -47,7 +47,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatStickerBubbleStyle(
+public data class CometChatStickerBubbleStyle(
     // No content-specific properties — stickers only have wrapper properties
     // Common properties passed to parent via override
     override val backgroundColor: Color,
@@ -76,7 +76,7 @@ data class CometChatStickerBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default sticker bubble style using CometChat theme tokens.
          *
@@ -95,7 +95,7 @@ data class CometChatStickerBubbleStyle(
          * @return A new [CometChatStickerBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // No content-specific properties — stickers only have wrapper properties
             // CommonProperties default to sentinels (filled from messageBubbleStyle during merge)
             backgroundColor: Color = Color.Transparent,
@@ -133,7 +133,7 @@ data class CometChatStickerBubbleStyle(
          * @return A new [CometChatStickerBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatStickerBubbleStyle = default()
+        public fun incoming(): CometChatStickerBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) sticker messages.
@@ -146,7 +146,7 @@ data class CometChatStickerBubbleStyle(
          * @return A new [CometChatStickerBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatStickerBubbleStyle = default(
+        public fun outgoing(): CometChatStickerBubbleStyle = default(
             timestampTextColor = CometChatTheme.colorScheme.textColorSecondary
         )
     }

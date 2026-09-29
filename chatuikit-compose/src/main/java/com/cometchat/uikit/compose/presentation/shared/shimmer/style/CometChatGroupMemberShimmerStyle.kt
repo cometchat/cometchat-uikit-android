@@ -31,7 +31,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatS
  * @property shimmerConfig Shimmer animation configuration
  */
 @Immutable
-data class CometChatGroupMemberShimmerStyle(
+public data class CometChatGroupMemberShimmerStyle(
     val avatarSize: Dp,
     val nameWidth: Float,
     val nameHeight: Dp,
@@ -47,51 +47,51 @@ data class CometChatGroupMemberShimmerStyle(
         require(nameWidth in 0f..1f) { "nameWidth must be between 0 and 1, was: $nameWidth" }
     }
 
-    companion object {
+    public companion object {
         /**
          * Default avatar size matching chatuikit-kotlin cometchat_group_member_shimmer.xml.
          */
-        val DEFAULT_AVATAR_SIZE = 48.dp
+        public val DEFAULT_AVATAR_SIZE: androidx.compose.ui.unit.Dp = 48.dp
 
         /**
          * Default name width as fraction of available width.
          */
-        const val DEFAULT_NAME_WIDTH = 0.6f
+        public const val DEFAULT_NAME_WIDTH: Float = 0.6f
 
         /**
          * Default name height matching chatuikit-kotlin (22dp).
          */
-        val DEFAULT_NAME_HEIGHT = 22.dp
+        public val DEFAULT_NAME_HEIGHT: androidx.compose.ui.unit.Dp = 22.dp
 
         /**
          * Default scope badge width.
          */
-        val DEFAULT_SCOPE_BADGE_WIDTH = 60.dp
+        public val DEFAULT_SCOPE_BADGE_WIDTH: androidx.compose.ui.unit.Dp = 60.dp
 
         /**
          * Default scope badge height matching chatuikit-kotlin (22dp).
          */
-        val DEFAULT_SCOPE_BADGE_HEIGHT = 22.dp
+        public val DEFAULT_SCOPE_BADGE_HEIGHT: androidx.compose.ui.unit.Dp = 22.dp
 
         /**
          * Default corner radius for rectangular placeholders.
          */
-        val DEFAULT_PLACEHOLDER_CORNER_RADIUS = 4.dp
+        public val DEFAULT_PLACEHOLDER_CORNER_RADIUS: androidx.compose.ui.unit.Dp = 4.dp
 
         /**
          * Default horizontal padding.
          */
-        val DEFAULT_HORIZONTAL_PADDING = 16.dp
+        public val DEFAULT_HORIZONTAL_PADDING: androidx.compose.ui.unit.Dp = 16.dp
 
         /**
          * Default vertical padding.
          */
-        val DEFAULT_VERTICAL_PADDING = 12.dp
+        public val DEFAULT_VERTICAL_PADDING: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Default spacing between avatar and content.
          */
-        val DEFAULT_CONTENT_SPACING = 12.dp
+        public val DEFAULT_CONTENT_SPACING: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Creates a default CometChatGroupMemberShimmerStyle with values matching
@@ -110,7 +110,7 @@ data class CometChatGroupMemberShimmerStyle(
          * @return A configured CometChatGroupMemberShimmerStyle instance
          */
         @Composable
-        fun default(
+        public fun default(
             avatarSize: Dp = DEFAULT_AVATAR_SIZE,
             nameWidth: Float = DEFAULT_NAME_WIDTH,
             nameHeight: Dp = DEFAULT_NAME_HEIGHT,

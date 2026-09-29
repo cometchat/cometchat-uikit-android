@@ -50,7 +50,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatActionBubbleStyle(
+public data class CometChatActionBubbleStyle(
     // Content-specific properties ONLY
     val textColor: Color,
     val textStyle: TextStyle,
@@ -81,7 +81,7 @@ data class CometChatActionBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default action bubble style using CometChat theme tokens.
          *
@@ -100,7 +100,7 @@ data class CometChatActionBubbleStyle(
          * @return A new [CometChatActionBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             textColor: Color = CometChatTheme.colorScheme.textColorSecondary,
             textStyle: TextStyle = CometChatTheme.typography.caption1Regular,
@@ -143,7 +143,7 @@ data class CometChatActionBubbleStyle(
          * @return A new [CometChatActionBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatActionBubbleStyle = default()
+        public fun incoming(): CometChatActionBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) action messages.
@@ -154,7 +154,7 @@ data class CometChatActionBubbleStyle(
          * @return A new [CometChatActionBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatActionBubbleStyle = default(
+        public fun outgoing(): CometChatActionBubbleStyle = default(
             textColor = CometChatTheme.colorScheme.colorWhite
         )
     }

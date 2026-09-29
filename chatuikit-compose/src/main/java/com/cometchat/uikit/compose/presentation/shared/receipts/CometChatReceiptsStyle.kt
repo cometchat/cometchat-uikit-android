@@ -39,7 +39,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param size Size of the receipt icon
  */
 @Immutable
-data class CometChatReceiptsStyle(
+public data class CometChatReceiptsStyle(
     val waitIcon: Painter?,
     val sentIcon: Painter?,
     val deliveredIcon: Painter?,
@@ -52,14 +52,14 @@ data class CometChatReceiptsStyle(
     val errorIconTint: Color,
     val size: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatReceiptsStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatReceiptsStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             waitIcon: Painter? = painterResource(R.drawable.cometchat_ic_message_waiting),
             sentIcon: Painter? = painterResource(R.drawable.cometchat_ic_message_sent),
             deliveredIcon: Painter? = painterResource(R.drawable.cometchat_ic_message_delivered),

@@ -85,7 +85,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property cornerBadgeIconTint Tint of the corner badge glyph (✕ / spinner).
  */
 @Immutable
-data class CometChatAttachmentTileStyle(
+public data class CometChatAttachmentTileStyle(
     val mediaTileSize: Dp,
     val mediaCornerRadius: Dp,
     val mediaStrokeColor: Color,
@@ -136,11 +136,11 @@ data class CometChatAttachmentTileStyle(
     val cornerBadgeBorderWidth: Dp,
     val cornerBadgeIconTint: Color
 ) {
-    companion object {
+    public companion object {
 
         /** Creates a default tile style using CometChat theme tokens. */
         @Composable
-        fun default(
+        public fun default(
             mediaTileSize: Dp = 60.dp,
             mediaCornerRadius: Dp = 10.dp,
             mediaStrokeColor: Color = CometChatTheme.colorScheme.strokeColorDefault,

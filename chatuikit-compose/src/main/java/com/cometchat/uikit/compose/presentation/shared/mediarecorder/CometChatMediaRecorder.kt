@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cometchat.uikit.compose.R
@@ -67,7 +68,7 @@ import java.util.*
  * ```
  */
 @Composable
-fun CometChatMediaRecorder(
+public fun CometChatMediaRecorder(
     modifier: Modifier = Modifier,
     style: MediaRecorderStyle = MediaRecorderStyle(),
     autoStartRecording: Boolean = true,
@@ -287,7 +288,7 @@ fun CometChatMediaRecorder(
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.cometchat_ic_media_recorder_icon),
-                                                contentDescription = "Recording Icon",
+                                                contentDescription = stringResource(R.string.cometchat_a11y_recording_icon),
                                                 tint = recordingIconTint,
                                                 modifier = Modifier.size(40.dp)
                                             )
@@ -305,7 +306,7 @@ fun CometChatMediaRecorder(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.cometchat_ic_media_recorder_icon),
-                                        contentDescription = "Recording Icon",
+                                        contentDescription = stringResource(R.string.cometchat_a11y_recording_icon),
                                         tint = recordingIconTint,
                                         modifier = Modifier.size(40.dp)
                                     )
@@ -397,7 +398,7 @@ fun CometChatMediaRecorder(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.cometchat_ic_media_recorder_delete),
-                                    contentDescription = "Delete",
+                                    contentDescription = stringResource(R.string.cometchat_a11y_delete),
                                     tint = deleteIconTint,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -524,10 +525,10 @@ fun CometChatMediaRecorder(
                                     }
                                 ),
                                 contentDescription = when (recordingState) {
-                                    RecordingState.START -> "Start Recording"
-                                    RecordingState.RECORDING -> "Pause Recording"
-                                    RecordingState.PAUSED -> "Resume Recording"
-                                    RecordingState.STOPPED -> "Send Recording"
+                                    RecordingState.START -> stringResource(R.string.cometchat_a11y_start_recording_full)
+                                    RecordingState.RECORDING -> stringResource(R.string.cometchat_a11y_pause_recording_full)
+                                    RecordingState.PAUSED -> stringResource(R.string.cometchat_a11y_resume_recording_full)
+                                    RecordingState.STOPPED -> stringResource(R.string.cometchat_a11y_send_recording_full)
                                 },
                                 tint = when (recordingState) {
                                     RecordingState.START, RecordingState.PAUSED -> startIconTint
@@ -573,7 +574,7 @@ fun CometChatMediaRecorder(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.cometchat_ic_media_recorder_stop),
-                                    contentDescription = "Stop",
+                                    contentDescription = stringResource(R.string.cometchat_a11y_stop),
                                     tint = stopIconTint,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -604,7 +605,7 @@ fun CometChatMediaRecorder(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.cometchat_ic_media_recorder_start),
-                                    contentDescription = "Restart",
+                                    contentDescription = stringResource(R.string.cometchat_a11y_restart),
                                     tint = restartIconTint,
                                     modifier = Modifier.size(20.dp)
                                 )

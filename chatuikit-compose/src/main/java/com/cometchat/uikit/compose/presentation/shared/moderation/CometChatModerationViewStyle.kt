@@ -18,18 +18,18 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property iconTint The tint color for the moderation icon
  */
 @Immutable
-data class CometChatModerationViewStyle(
+public data class CometChatModerationViewStyle(
     val backgroundColor: Color,
     val textColor: Color,
     val textStyle: TextStyle,
     val iconTint: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default moderation view style using CometChat theme tokens.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor2,
             textColor: Color = CometChatTheme.colorScheme.textColorSecondary,
             textStyle: TextStyle = CometChatTheme.typography.caption1Regular,

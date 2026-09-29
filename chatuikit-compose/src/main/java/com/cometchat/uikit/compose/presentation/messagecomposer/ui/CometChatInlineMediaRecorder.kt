@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -74,7 +75,7 @@ import java.io.File
     )
 )
 @Composable
-fun CometChatInlineMediaRecorder(
+public fun CometChatInlineMediaRecorder(
     modifier: Modifier = Modifier,
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     recordingState: RecordingState = RecordingState.START,
@@ -102,7 +103,7 @@ fun CometChatInlineMediaRecorder(
                 Spacer(modifier = Modifier.weight(1f))
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_start,
-                    contentDescription = "Start recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_start_recording),
                     tint = CometChatTheme.colorScheme.errorColor,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onStartClick
@@ -111,10 +112,11 @@ fun CometChatInlineMediaRecorder(
             }
             
             RecordingState.RECORDING -> {
+                val cdHoist2 = stringResource(R.string.cometchat_a11y_recording_time, recordingTime)
                 // [Delete] [Waveform] [Timer] [Pause] [Stop]
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_delete,
-                    contentDescription = "Delete recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_delete_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onDeleteClick
@@ -143,7 +145,7 @@ fun CometChatInlineMediaRecorder(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .width(50.dp)
-                        .semantics { contentDescription = "Recording time: $recordingTime" }
+                        .semantics { contentDescription = cdHoist2 }
                 )
                 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -151,7 +153,7 @@ fun CometChatInlineMediaRecorder(
                 // Pause button
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_pause,
-                    contentDescription = "Pause recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_pause_recording),
                     tint = CometChatTheme.colorScheme.errorColor,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onPauseClick
@@ -162,7 +164,7 @@ fun CometChatInlineMediaRecorder(
                 // Stop button
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_stop,
-                    contentDescription = "Stop recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_stop_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onStopClick
@@ -170,10 +172,11 @@ fun CometChatInlineMediaRecorder(
             }
             
             RecordingState.PAUSED -> {
+                val cdHoist1 = stringResource(R.string.cometchat_a11y_recording_time, recordingTime)
                 // [Delete] [Static Waveform] [Timer] [Resume] [Stop]
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_delete,
-                    contentDescription = "Delete recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_delete_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onDeleteClick
@@ -202,7 +205,7 @@ fun CometChatInlineMediaRecorder(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .width(50.dp)
-                        .semantics { contentDescription = "Recording time: $recordingTime" }
+                        .semantics { contentDescription = cdHoist1 }
                 )
                 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -210,7 +213,7 @@ fun CometChatInlineMediaRecorder(
                 // Resume button (same as start icon)
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_start,
-                    contentDescription = "Resume recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_resume_recording),
                     tint = CometChatTheme.colorScheme.errorColor,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onResumeClick
@@ -221,7 +224,7 @@ fun CometChatInlineMediaRecorder(
                 // Stop button
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_stop,
-                    contentDescription = "Stop recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_stop_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onStopClick
@@ -232,7 +235,7 @@ fun CometChatInlineMediaRecorder(
                 // [Delete] [Audio Preview] [Restart] [Send]
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_delete,
-                    contentDescription = "Delete recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_delete_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onDeleteClick
@@ -251,7 +254,7 @@ fun CometChatInlineMediaRecorder(
                 // Restart button
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_restart,
-                    contentDescription = "Restart recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_restart_recording),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = onRestartClick
@@ -262,7 +265,7 @@ fun CometChatInlineMediaRecorder(
                 // Send button
                 RecorderButton(
                     icon = R.drawable.cometchat_ic_media_recorder_send,
-                    contentDescription = "Send recording",
+                    contentDescription = stringResource(R.string.cometchat_a11y_send_recording),
                     tint = CometChatTheme.colorScheme.iconTintHighlight,
                     backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
                     onClick = { recordedFile?.let { onSendClick(it) } }
@@ -318,7 +321,7 @@ private fun AudioPreviewBubble(
     ) {
         Icon(
             painter = painterResource(R.drawable.cometchat_ic_media_recorder_play),
-            contentDescription = "Play recording",
+            contentDescription = stringResource(R.string.cometchat_a11y_play_recording),
             tint = CometChatTheme.colorScheme.iconTintHighlight,
             modifier = Modifier.size(20.dp)
         )

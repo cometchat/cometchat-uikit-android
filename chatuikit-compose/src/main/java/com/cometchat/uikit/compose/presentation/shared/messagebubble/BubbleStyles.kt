@@ -71,7 +71,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
  * @property aiAssistantBubbleStyle Style for AI assistant message bubbles (both streaming and static modes)
  */
 @Immutable
-data class BubbleStyles(
+public data class BubbleStyles(
     val messageBubbleStyle: CometChatMessageBubbleStyle? = null,
     val textBubbleStyle: CometChatTextBubbleStyle? = null,
     val imageBubbleStyle: CometChatImageBubbleStyle? = null,

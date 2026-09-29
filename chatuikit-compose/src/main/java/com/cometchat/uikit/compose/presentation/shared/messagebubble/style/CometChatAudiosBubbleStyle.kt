@@ -58,7 +58,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property captionTextStyle The text style for the caption
  */
 @Immutable
-data class CometChatAudiosBubbleStyle(
+public data class CometChatAudiosBubbleStyle(
     // Content-specific properties ONLY
     val cardBackgroundColor: Color,
     val cardCornerRadius: Dp,
@@ -105,7 +105,7 @@ data class CometChatAudiosBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default audios bubble style using CometChat theme tokens.
          *
@@ -130,7 +130,7 @@ data class CometChatAudiosBubbleStyle(
          * @return A new [CometChatAudiosBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             cardBackgroundColor: Color = Color.Black.copy(alpha = 0.04f),
             cardCornerRadius: Dp = 12.dp,
@@ -206,7 +206,7 @@ data class CometChatAudiosBubbleStyle(
          * @return A new [CometChatAudiosBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatAudiosBubbleStyle = default()
+        public fun incoming(): CometChatAudiosBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) multi-audio messages.
@@ -219,7 +219,7 @@ data class CometChatAudiosBubbleStyle(
          * @return A new [CometChatAudiosBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatAudiosBubbleStyle = default(
+        public fun outgoing(): CometChatAudiosBubbleStyle = default(
             cardBackgroundColor = Color.White.copy(alpha = 0.16f),
             playButtonBackgroundColor = Color.White,
             playIconTint = CometChatTheme.colorScheme.primary,

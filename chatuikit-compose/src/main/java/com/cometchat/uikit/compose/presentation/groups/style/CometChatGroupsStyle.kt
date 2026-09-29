@@ -79,7 +79,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param selectedGroupsRemoveIconTint Tint color for remove icon
  */
 @Immutable
-data class CometChatGroupsStyle(
+public data class CometChatGroupsStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -157,13 +157,13 @@ data class CometChatGroupsStyle(
     val selectedGroupsRemoveIcon: Painter?,
     val selectedGroupsRemoveIconTint: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = Color.Transparent,

@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -128,6 +129,10 @@ import kotlinx.coroutines.launch
  * @param hideErrorState Whether to hide error state
  * @param title Toolbar title text
  * @param searchPlaceholderText Placeholder text for search box
+ * @param searchKeyword Programmatically applies a search keyword. Parity with chatuikit-kotlin's
+ *   setSearchKeyword.
+ * @param furtherSelectionEnabled When false, members that are not already selected cannot be
+ *   selected. Parity with chatuikit-kotlin's setFurtherSelectionEnabled.
  * @param searchRequestBuilder Custom request builder for searching members
  * @param excludeOwner Whether to exclude the group owner from the members list
  * @param emptyView Custom empty state composable
@@ -209,7 +214,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CometChatGroupMembers(
+public fun CometChatGroupMembers(
     group: Group,
     modifier: Modifier = Modifier,
     viewModel: CometChatGroupMembersViewModel? = null,
@@ -229,6 +234,8 @@ fun CometChatGroupMembers(
     hideErrorState: Boolean = false,
     title: String? = null,
     searchPlaceholderText: String? = null,
+    searchKeyword: String? = null,
+    furtherSelectionEnabled: Boolean = true,
     searchRequestBuilder: GroupMembersRequest.GroupMembersRequestBuilder? = null,
     excludeOwner: Boolean = false,
     emptyView: (@Composable () -> Unit)? = null,
@@ -297,6 +304,13 @@ fun CometChatGroupMembers(
     // Internal mutable selection mode — initialized from the parameter but can be
     // reset to NONE when the user taps the discard (cross) button, hiding checkboxes.
     var activeSelectionMode by remember { mutableStateOf(selectionMode) }
+
+    // Programmatic search keyword, mirroring CometChatUsers' searchKeyword handling.
+    LaunchedEffect(searchKeyword) {
+        if (searchKeyword != null) {
+            effectiveViewModel.searchGroupMembers(searchKeyword.ifEmpty { null })
+        }
+    }
     
     // Sync internal state when the caller changes the parameter
     LaunchedEffect(selectionMode) {
@@ -467,7 +481,7 @@ fun CometChatGroupMembers(
                             if (activeSelectionMode != UIKitConstants.SelectionMode.NONE) {
                                 if (effectiveViewModel.isSelected(member)) {
                                     effectiveViewModel.deselectMember(member)
-                                } else {
+                                } else if (furtherSelectionEnabled) {
                                     if (activeSelectionMode == UIKitConstants.SelectionMode.SINGLE) {
                                         effectiveViewModel.clearSelection()
                                     }
@@ -582,6 +596,7 @@ private fun GroupMembersToolbar(
             actions = {
                 // Submit selection button
                 style.submitSelectionIcon?.let { icon ->
+                    val cdHoist2 = stringResource(R.string.cometchat_a11y_submit_selection_of_members, selectedCount)
                     Box(
                         modifier = Modifier
                             .size(48.dp)
@@ -591,7 +606,7 @@ private fun GroupMembersToolbar(
                                 interactionSource = remember { MutableInteractionSource() }
                             ){ onSubmitSelection() }
                             .semantics {
-                                contentDescription = "Submit selection of $selectedCount members"
+                                contentDescription = cdHoist2
                                 role = Role.Button
                             },
                         contentAlignment = Alignment.Center
@@ -834,6 +849,7 @@ private fun ScopeChangeBottomSheet(
     onScopeSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_change_scope)
     var selectedScope by remember(member.uid, currentScope) { mutableStateOf(currentScope) }
     var isSaving by remember { mutableStateOf(false) }
 
@@ -864,7 +880,7 @@ private fun ScopeChangeBottomSheet(
                     .background(CometChatTheme.colorScheme.neutralColor500)
             )
         },
-        modifier = Modifier.semantics { contentDescription = "Change Scope" }
+        modifier = Modifier.semantics { contentDescription = cdHoist1 }
     ) {
         // Inner content: paddingStart/End=20dp, paddingBottom=20dp
         Column(

@@ -7,7 +7,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * Enum representing different file types for display in file bubbles.
  * Each type maps to a specific icon resource.
  */
-enum class FileType {
+public enum class FileType {
     PDF,
     DOC,
     XLS,
@@ -28,7 +28,7 @@ enum class FileType {
  * @param fileUrl The URL or path of the file (used for extension-based detection)
  * @return The corresponding [FileType] enum value
  */
-fun getFileType(mimeType: String?, fileUrl: String?): FileType {
+public fun getFileType(mimeType: String?, fileUrl: String?): FileType {
     val lowerMimeType = mimeType?.lowercase()
     val lowerUrl = fileUrl?.lowercase()
     val matchers = UIKitConstants.FileTypeMatchers
@@ -76,7 +76,7 @@ fun getFileType(mimeType: String?, fileUrl: String?): FileType {
  * @param fileType The file type
  * @return The drawable resource ID for the file type icon
  */
-fun getFileTypeIcon(fileType: FileType): Int {
+public fun getFileTypeIcon(fileType: FileType): Int {
     return when (fileType) {
         FileType.PDF -> R.drawable.cometchat_pdf_file_icon
         FileType.DOC -> R.drawable.cometchat_word_file_icon
@@ -98,7 +98,7 @@ fun getFileTypeIcon(fileType: FileType): Int {
  * @param sizeInBytes The file size in bytes
  * @return A formatted string (e.g., "1.5 MB", "200 KB")
  */
-fun formatFileSize(sizeInBytes: Long): String {
+public fun formatFileSize(sizeInBytes: Long): String {
     if (sizeInBytes <= 0) return "0 B"
     
     val units = arrayOf("B", "KB", "MB", "GB", "TB")
@@ -119,7 +119,7 @@ fun formatFileSize(sizeInBytes: Long): String {
  * @param fileName The file name or URL
  * @return The file extension in uppercase (e.g., "PDF", "DOC"), or empty string if none
  */
-fun getFileExtension(fileName: String?): String {
+public fun getFileExtension(fileName: String?): String {
     if (fileName.isNullOrBlank()) return ""
     
     val lastDotIndex = fileName.lastIndexOf('.')
@@ -140,7 +140,7 @@ fun getFileExtension(fileName: String?): String {
  * @param fileName The file name (used to extract extension)
  * @return A formatted subtitle string (e.g., "1.5 MB • PDF")
  */
-fun formatFileSubtitle(fileSize: Long, fileName: String?): String {
+public fun formatFileSubtitle(fileSize: Long, fileName: String?): String {
     val sizeStr = formatFileSize(fileSize)
     val extension = getFileExtension(fileName)
     

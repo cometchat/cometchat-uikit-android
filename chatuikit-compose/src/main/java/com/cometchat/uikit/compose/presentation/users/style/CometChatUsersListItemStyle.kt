@@ -38,7 +38,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param separatorHeight Height of the item separator line
  */
 @Immutable
-data class CometChatUsersListItemStyle(
+public data class CometChatUsersListItemStyle(
     val backgroundColor: Color,
     val selectedBackgroundColor: Color,
     val titleTextColor: Color,
@@ -57,14 +57,14 @@ data class CometChatUsersListItemStyle(
     val separatorColor: Color,
     val separatorHeight: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatUsersListItemStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatUsersListItemStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color.Transparent,
             selectedBackgroundColor: Color = CometChatTheme.colorScheme.backgroundColor4,
             titleTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,

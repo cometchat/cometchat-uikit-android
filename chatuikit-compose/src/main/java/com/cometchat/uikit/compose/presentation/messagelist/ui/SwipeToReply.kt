@@ -65,7 +65,7 @@ private val ICON_VERTICAL_OFFSET_DP = 45.dp
  * @param content The message item content to wrap
  */
 @Composable
-fun SwipeToReply(
+public fun SwipeToReply(
     enabled: Boolean,
     onSwipeToReply: () -> Unit,
     content: @Composable () -> Unit

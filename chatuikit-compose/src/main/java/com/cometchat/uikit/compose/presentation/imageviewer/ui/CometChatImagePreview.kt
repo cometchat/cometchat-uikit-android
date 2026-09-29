@@ -28,10 +28,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.imageviewer.style.CometChatImageViewerStyle
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -102,7 +104,7 @@ internal fun CometChatImagePreview(
 
         AsyncImage(
             model = imageUrl,
-            contentDescription = "Image preview",
+            contentDescription = stringResource(R.string.cometchat_a11y_image_preview),
             contentScale = ContentScale.Fit,
             onState = { state ->
                 when (state) {

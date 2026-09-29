@@ -7,12 +7,12 @@ import android.content.Context
  *
  * @param T The type of data associated with the tag
  */
-fun interface OnTagClick<T> {
+public fun interface OnTagClick<T> {
     /**
      * Called when a tag is clicked.
      *
      * @param context The context in which the click occurred
      * @param data The data associated with the clicked tag
      */
-    fun onClick(context: Context, data: T)
+    public fun onClick(context: Context, data: T)
 }

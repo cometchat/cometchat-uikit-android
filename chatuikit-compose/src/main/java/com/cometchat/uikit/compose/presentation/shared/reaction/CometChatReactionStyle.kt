@@ -28,7 +28,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property activeStrokeColor The border stroke color when active
  */
 @Immutable
-data class CometChatReactionStyle(
+public data class CometChatReactionStyle(
     val emojiTextStyle: TextStyle,
     val emojiTextColor: Color,
     val countTextStyle: TextStyle,
@@ -42,12 +42,12 @@ data class CometChatReactionStyle(
     val activeStrokeWidth: Dp,
     val activeStrokeColor: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default reaction style using CometChat theme tokens.
          */
         @Composable
-        fun default(
+        public fun default(
             emojiTextStyle: TextStyle = CometChatTheme.typography.bodyRegular,
             emojiTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,
             countTextStyle: TextStyle = CometChatTheme.typography.caption1Regular,

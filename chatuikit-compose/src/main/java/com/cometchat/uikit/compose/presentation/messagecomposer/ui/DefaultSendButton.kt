@@ -43,7 +43,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param onClick Callback when the button is clicked
  */
 @Composable
-fun DefaultSendButton(
+public fun DefaultSendButton(
     modifier: Modifier = Modifier,
     isActive: Boolean = false,
     isAIGenerating: Boolean = false,

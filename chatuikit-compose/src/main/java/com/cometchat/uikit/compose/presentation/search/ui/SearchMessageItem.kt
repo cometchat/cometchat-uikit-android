@@ -74,7 +74,7 @@ private const val STACK_PEEK = 3
  * A composable that displays a message search result item.
  */
 @Composable
-fun SearchMessageItem(
+public fun SearchMessageItem(
     message: BaseMessage,
     onClick: (BaseMessage) -> Unit,
     modifier: Modifier = Modifier,
@@ -348,7 +348,7 @@ private fun ImageMessageContent(
                         .data(extensionThumbnail ?: attachments.first().fileUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Image",
+                    contentDescription = stringResource(R.string.cometchat_a11y_image),
                     modifier = Modifier
                         .matchParentSize()
                         .blur(MULTI_THUMBNAIL_BLUR.dp),
@@ -366,7 +366,7 @@ private fun ImageMessageContent(
                         .data(extensionThumbnail ?: message.attachment?.fileUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Image",
+                    contentDescription = stringResource(R.string.cometchat_a11y_image),
                     modifier = Modifier
                         .size(THUMBNAIL_SIZE.dp),
                     contentScale = ContentScale.Crop
@@ -424,7 +424,7 @@ private fun VideoMessageContent(
                             .data(extensionThumbnail)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Video thumbnail",
+                        contentDescription = stringResource(R.string.cometchat_a11y_video_thumbnail),
                         modifier = Modifier
                             .matchParentSize()
                             .blur(MULTI_THUMBNAIL_BLUR.dp),
@@ -435,7 +435,7 @@ private fun VideoMessageContent(
                     if (frame != null) {
                         Image(
                             bitmap = frame,
-                            contentDescription = "Video thumbnail",
+                            contentDescription = stringResource(R.string.cometchat_a11y_video_thumbnail),
                             modifier = Modifier
                                 .matchParentSize()
                                 .blur(MULTI_THUMBNAIL_BLUR.dp),
@@ -459,13 +459,13 @@ private fun VideoMessageContent(
                             .data(extensionThumbnail ?: message.attachment?.fileUrl)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Video thumbnail",
+                        contentDescription = stringResource(R.string.cometchat_a11y_video_thumbnail),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop
                     )
                     Icon(
                         painter = painterResource(R.drawable.cometchat_play_icon),
-                        contentDescription = "Play",
+                        contentDescription = stringResource(R.string.cometchat_a11y_play),
                         tint = style.titleTextColor,
                         modifier = Modifier.size(ICON_SIZE.dp)
                     )
@@ -490,7 +490,7 @@ private fun AudioMessageContent(
         // the stacked treatment is documents-only).
         Image(
             painter = painterResource(R.drawable.cometchat_ic_audio),
-            contentDescription = "Audio",
+            contentDescription = stringResource(R.string.cometchat_a11y_audio),
             modifier = Modifier.size(FILE_ICON_SIZE.dp),
             contentScale = ContentScale.Fit
         )
@@ -535,7 +535,7 @@ private fun DocumentMessageContent(
         StackedTypeIcon(
             iconRes = fileIconRes,
             count = attachments.size,
-            contentDescription = "Document"
+            contentDescription = stringResource(R.string.cometchat_a11y_document)
         )
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -713,7 +713,7 @@ private fun TrailingSection(
             val threadIcon = style.threadIcon ?: painterResource(R.drawable.cometchat_ic_thread)
             Icon(
                 painter = threadIcon,
-                contentDescription = "Thread",
+                contentDescription = stringResource(R.string.cometchat_a11y_thread),
                 tint = style.threadIconTint,
                 modifier = Modifier.size(16.dp)
             )

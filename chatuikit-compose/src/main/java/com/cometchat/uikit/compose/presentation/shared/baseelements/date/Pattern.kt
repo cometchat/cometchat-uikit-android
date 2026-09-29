@@ -8,7 +8,7 @@ package com.cometchat.uikit.compose.presentation.shared.baseelements.date
  * - DAY_DATE: Shows day or date with smart formatting ("Today", "Yesterday", or "dd MMM yyyy")
  * - DAY_DATE_TIME: Shows time for today, day name for last week, or full date for older
  */
-enum class Pattern {
+public enum class Pattern {
     /**
      * Time pattern - displays only the time portion (e.g., "2:30 PM")
      */

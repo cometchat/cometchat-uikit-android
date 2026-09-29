@@ -28,8 +28,8 @@
             android:value="${applicationId}" />
 
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:name="com.cometchat.uikit.compose.presentation.shared.mediaselection.CometChatComposeFileProvider"
+            android:authorities="${applicationId}.cometchat.compose.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -1,0 +1,43 @@
+name: Build
+
+# PUBLIC-REPO CI (Track 2 / C2). This file lives in the private repo only so the release
+# mirror can carry it to cometchat/cometchat-uikit-android; the triggers are scoped to the
+# public repo's `v6` branch, which does not exist privately, so it never runs here.
+# It gives the public repo a visible green check: every push and PR builds the tree a
+# customer would clone and runs the core unit suite.
+
+on:
+  push:
+    branches: [ v6 ]
+  pull_request:
+    branches: [ v6 ]
+
+jobs:
+  build:
+    name: Build & unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Assemble all modules (debug)
+        run: ./gradlew assembleDebug --console=plain --stacktrace
+
+      - name: chatuikit-core unit tests
+        run: ./gradlew :chatuikit-core:testDebugUnitTest --console=plain --stacktrace

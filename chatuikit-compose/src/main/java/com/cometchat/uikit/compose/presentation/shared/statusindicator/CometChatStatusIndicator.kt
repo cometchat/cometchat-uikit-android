@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 
 /**
  * CometChatStatusIndicator displays the online/offline status for users
@@ -35,7 +37,7 @@ import androidx.compose.ui.unit.dp
  * @param style Style configuration for the status indicator
  */
 @Composable
-fun CometChatStatusIndicator(
+public fun CometChatStatusIndicator(
     status: StatusIndicator,
     modifier: Modifier = Modifier,
     style: CometChatStatusIndicatorStyle = CometChatStatusIndicatorStyle.default()
@@ -81,9 +83,9 @@ fun CometChatStatusIndicator(
             Image(
                 painter = icon,
                 contentDescription = when (status) {
-                    StatusIndicator.ONLINE -> "Online"
-                    StatusIndicator.PRIVATE_GROUP -> "Private Group"
-                    StatusIndicator.PROTECTED_GROUP -> "Protected Group"
+                    StatusIndicator.ONLINE -> stringResource(R.string.cometchat_online)
+                    StatusIndicator.PRIVATE_GROUP -> stringResource(R.string.cometchat_a11y_private_group)
+                    StatusIndicator.PROTECTED_GROUP -> stringResource(R.string.cometchat_a11y_protected_group)
                     else -> ""
                 },
                 modifier = Modifier.fillMaxSize(),

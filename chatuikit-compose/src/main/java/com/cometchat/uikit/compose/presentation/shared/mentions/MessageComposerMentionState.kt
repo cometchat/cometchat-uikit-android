@@ -22,21 +22,21 @@ import com.cometchat.uikit.compose.presentation.shared.formatters.SuggestionItem
  * - Processing text before sending
  * - Calling handlePreMessageSend on all formatters
  */
-class MessageComposerMentionState(
+public class MessageComposerMentionState(
     private val textFormatters: List<CometChatTextFormatter>
 ) {
     private val insertionState = ComposeMentionInsertionState()
     
-    var mentionDetectionState by mutableStateOf(ComposeMentionState.INACTIVE)
+    public var mentionDetectionState: ComposeMentionState by mutableStateOf(ComposeMentionState.INACTIVE)
         private set
     
-    var isShowingSuggestions by mutableStateOf(false)
+    public var isShowingSuggestions: Boolean by mutableStateOf(false)
         private set
     
-    var suggestions by mutableStateOf<List<SuggestionItem>>(emptyList())
+    public var suggestions: List<SuggestionItem> by mutableStateOf<List<SuggestionItem>>(emptyList())
         private set
     
-    var isLoadingSuggestions by mutableStateOf(false)
+    public var isLoadingSuggestions: Boolean by mutableStateOf(false)
         private set
 
     /**
@@ -45,7 +45,7 @@ class MessageComposerMentionState(
      * @param textFieldValue The current text field value
      * @param context The context for triggering search
      */
-    fun onTextFieldValueChange(textFieldValue: TextFieldValue, context: Context) {
+    public fun onTextFieldValueChange(textFieldValue: TextFieldValue, context: Context) {
         mentionDetectionState = detectMention(
             text = textFieldValue.text,
             cursorPosition = textFieldValue.selection.start,
@@ -69,7 +69,7 @@ class MessageComposerMentionState(
      * Updates the suggestions list.
      * Call this when the formatter's suggestion list changes.
      */
-    fun updateSuggestions(newSuggestions: List<SuggestionItem>) {
+    public fun updateSuggestions(newSuggestions: List<SuggestionItem>) {
         suggestions = newSuggestions
         isLoadingSuggestions = false
     }
@@ -82,7 +82,7 @@ class MessageComposerMentionState(
      * @param mentionStyle The style to apply to the mention
      * @return New TextFieldValue with the mention inserted
      */
-    fun onSuggestionSelected(
+    public fun onSuggestionSelected(
         currentValue: TextFieldValue,
         suggestionItem: SuggestionItem,
         mentionStyle: SpanStyle? = null
@@ -113,7 +113,7 @@ class MessageComposerMentionState(
      * @param message The message being sent (will be modified)
      * @return The processed text
      */
-    fun processBeforeSend(context: Context, text: String, message: BaseMessage): String {
+    public fun processBeforeSend(context: Context, text: String, message: BaseMessage): String {
         // Get processed text
         val processedText = insertionState.getProcessedText(text)
         
@@ -133,21 +133,21 @@ class MessageComposerMentionState(
     /**
      * Gets the processed text without modifying any message.
      */
-    fun getProcessedText(text: String): String {
+    public fun getProcessedText(text: String): String {
         return insertionState.getProcessedText(text)
     }
 
     /**
      * Gets all selected suggestion items.
      */
-    fun getSelectedSuggestionItems(): List<SuggestionItem> {
+    public fun getSelectedSuggestionItems(): List<SuggestionItem> {
         return insertionState.getSelectedSuggestionItems()
     }
 
     /**
      * Clears all tracked mentions and resets the state.
      */
-    fun clear() {
+    public fun clear() {
         insertionState.clear()
         mentionDetectionState = ComposeMentionState.INACTIVE
         isShowingSuggestions = false
@@ -158,7 +158,7 @@ class MessageComposerMentionState(
     /**
      * Dismisses the suggestion list.
      */
-    fun dismissSuggestions() {
+    public fun dismissSuggestions() {
         isShowingSuggestions = false
         suggestions = emptyList()
     }
@@ -166,12 +166,12 @@ class MessageComposerMentionState(
     /**
      * Gets the insertion state for advanced operations.
      */
-    fun getInsertionState(): ComposeMentionInsertionState = insertionState
+    public fun getInsertionState(): ComposeMentionInsertionState = insertionState
 
     /**
      * Handles scroll to bottom in the suggestion list (for pagination).
      */
-    fun onScrollToBottom() {
+    public fun onScrollToBottom() {
         mentionDetectionState.activeFormatter?.onScrollToBottom()
     }
 }
@@ -182,7 +182,7 @@ class MessageComposerMentionState(
  * @param textFormatters List of text formatters to use
  */
 @Composable
-fun rememberMessageComposerMentionState(
+public fun rememberMessageComposerMentionState(
     textFormatters: List<CometChatTextFormatter>
 ): MessageComposerMentionState {
     return remember(textFormatters) {

@@ -7,17 +7,17 @@ import androidx.lifecycle.MutableLiveData
  * A generic ViewModel class for managing a list of items.
  * This ViewModel provides methods for manipulating and managing the list of items.
  */
-open class ListBase<T> {
+open public class ListBase<T> {
 
     private val _items = MutableLiveData<List<T>>()
-    val items: LiveData<List<T>> get() = _items
+    public val items: LiveData<List<T>> get() = _items
 
     /**
      * Adds an item to the list.
      *
      * @param item The item to add to the list.
      */
-    fun add(item: T) {
+    public fun add(item: T) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList + item
     }
@@ -27,7 +27,7 @@ open class ListBase<T> {
      *
      * @param item The item to remove from the list.
      */
-    fun remove(item: T) {
+    public fun remove(item: T) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList - item
     }
@@ -37,7 +37,7 @@ open class ListBase<T> {
      *
      * @param items The list of items to add to the list.
      */
-    fun addAll(items: List<T>) {
+    public fun addAll(items: List<T>) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList + items
     }
@@ -47,7 +47,7 @@ open class ListBase<T> {
      *
      * @param index The index of the item to remove.
      */
-    fun removeAt(index: Int) {
+    public fun removeAt(index: Int) {
         val currentList = _items.value ?: emptyList()
         if (index in currentList.indices) {
             _items.value = currentList - currentList[index]
@@ -60,7 +60,7 @@ open class ListBase<T> {
      * @param index The index of the item to update.
      * @param newItem The new item to replace the old item at the specified index.
      */
-    fun update(index: Int, newItem: T) {
+    public fun update(index: Int, newItem: T) {
         val currentList = _items.value ?: emptyList()
         if (index in currentList.indices) {
             val updatedList = currentList.toMutableList()
@@ -75,7 +75,7 @@ open class ListBase<T> {
      * @param index The index where the new item should be inserted.
      * @param newItem The item to insert at the specified index.
      */
-    fun insertAt(index: Int, newItem: T) {
+    public fun insertAt(index: Int, newItem: T) {
         val currentList = _items.value ?: emptyList()
         if (index in currentList.indices) {
             val updatedList = currentList.toMutableList()
@@ -89,7 +89,7 @@ open class ListBase<T> {
      *
      * @param items The list of items to add at the start.
      */
-    fun addAllAtStart(items: List<T>) {
+    public fun addAllAtStart(items: List<T>) {
         val currentList = _items.value ?: emptyList()
         _items.value = items + currentList
     }
@@ -100,7 +100,7 @@ open class ListBase<T> {
      * @param index1 The first index of the item to swap.
      * @param index2 The second index of the item to swap.
      */
-    fun swapItems(index1: Int, index2: Int) {
+    public fun swapItems(index1: Int, index2: Int) {
         val currentList = _items.value ?: emptyList()
         if (index1 in currentList.indices && index2 in currentList.indices) {
             val updatedList = currentList.toMutableList()
@@ -116,7 +116,7 @@ open class ListBase<T> {
      *
      * @param newItems The new list of items.
      */
-    fun replaceAll(newItems: List<T>) {
+    public fun replaceAll(newItems: List<T>) {
         _items.value = newItems
     }
 
@@ -126,7 +126,7 @@ open class ListBase<T> {
      * @param predicate The condition to match the item.
      * @return The first item that matches the condition, or `null` if none match.
      */
-    fun findFirst(predicate: (T) -> Boolean): T? {
+    public fun findFirst(predicate: (T) -> Boolean): T? {
         return _items.value?.find(predicate)
     }
 
@@ -135,7 +135,7 @@ open class ListBase<T> {
      *
      * @param predicate The condition to filter the items.
      */
-    fun filterItems(predicate: (T) -> Boolean) {
+    public fun filterItems(predicate: (T) -> Boolean) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList.filter(predicate)
     }
@@ -146,7 +146,7 @@ open class ListBase<T> {
      * @param item The item to check for.
      * @return `true` if the list contains the item, `false` otherwise.
      */
-    fun containsItem(item: T): Boolean {
+    public fun containsItem(item: T): Boolean {
         return _items.value?.contains(item) == true
     }
 
@@ -155,7 +155,7 @@ open class ListBase<T> {
      *
      * @param predicate The condition to identify items to remove.
      */
-    fun removeIf(predicate: (T) -> Boolean) {
+    public fun removeIf(predicate: (T) -> Boolean) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList.filterNot(predicate)
     }
@@ -163,7 +163,7 @@ open class ListBase<T> {
     /**
      * Reverses the order of items in the list.
      */
-    fun reverse() {
+    public fun reverse() {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList.reversed()
     }
@@ -171,7 +171,7 @@ open class ListBase<T> {
     /**
      * Shuffles the items in the list randomly.
      */
-    fun shuffle() {
+    public fun shuffle() {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList.shuffled()
     }
@@ -181,7 +181,7 @@ open class ListBase<T> {
      *
      * @param predicate The condition to identify items to clear.
      */
-    fun clearIf(predicate: (T) -> Boolean) {
+    public fun clearIf(predicate: (T) -> Boolean) {
         val currentList = _items.value ?: emptyList()
         _items.value = currentList.filterNot(predicate)
     }
@@ -192,7 +192,7 @@ open class ListBase<T> {
      * @param fromIndex The starting index of the sublist.
      * @param toIndex The ending index of the sublist.
      */
-    fun subList(fromIndex: Int, toIndex: Int) {
+    public fun subList(fromIndex: Int, toIndex: Int) {
         val currentList = _items.value ?: emptyList()
         if (fromIndex in currentList.indices && toIndex in currentList.indices) {
             _items.value = currentList.subList(fromIndex, toIndex)
@@ -205,7 +205,7 @@ open class ListBase<T> {
      * @param oldItem The item to be replaced.
      * @param newItem The new item to replace the old one.
      */
-    fun replaceFirst(oldItem: T, newItem: T) {
+    public fun replaceFirst(oldItem: T, newItem: T) {
         val currentList = _items.value ?: emptyList()
         val updatedList = currentList.toMutableList()
         val index = updatedList.indexOf(oldItem)
@@ -220,7 +220,7 @@ open class ListBase<T> {
      *
      * @param item The item to add if it's not already present.
      */
-    fun addUnique(item: T) {
+    public fun addUnique(item: T) {
         val currentList = _items.value ?: emptyList()
         if (item !in currentList) {
             _items.value = currentList + item
@@ -233,7 +233,7 @@ open class ListBase<T> {
      * @param index The index of the item.
      * @return The item at the specified index, or `null` if out of bounds.
      */
-    fun getItemAt(index: Int): T? {
+    public fun getItemAt(index: Int): T? {
         return _items.value?.getOrNull(index)
     }
 
@@ -244,7 +244,7 @@ open class ListBase<T> {
      * @param endIndex The ending index for the update.
      * @param newItems The list of new items to update in the range.
      */
-    fun updateRange(startIndex: Int, endIndex: Int, newItems: List<T>) {
+    public fun updateRange(startIndex: Int, endIndex: Int, newItems: List<T>) {
         val currentList = _items.value ?: emptyList()
         if (startIndex in currentList.indices && endIndex in currentList.indices) {
             val updatedList = currentList.toMutableList()
@@ -262,7 +262,7 @@ open class ListBase<T> {
      *
      * @param item The item to add if the list is not empty.
      */
-    fun addIfNotEmpty(item: T) {
+    public fun addIfNotEmpty(item: T) {
         val currentList = _items.value ?: emptyList()
         if (currentList.isNotEmpty()) {
             _items.value = currentList + item
@@ -272,7 +272,7 @@ open class ListBase<T> {
     /**
      * Clears the list by setting it to an empty list.
      */
-    fun clear() {
+    public fun clear() {
         _items.value = emptyList()
     }
 }

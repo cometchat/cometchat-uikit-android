@@ -6,13 +6,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
 import com.cometchat.uikit.compose.R
+import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatFileProviderAuthority
+import com.cometchat.uikit.core.utils.CometChatLogger
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -26,7 +27,7 @@ import java.net.URL
  *
  * **Validates: Requirements 1.1, 6.1, 6.2, 6.3, 7.1, 7.2**
  */
-class CometChatImageViewerActivity : ComponentActivity() {
+public class CometChatImageViewerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +62,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
      */
     private fun downloadImage(url: String, fileName: String) {
         if (url.isEmpty()) {
-            Log.e(TAG, "Cannot download image, url is empty")
+            CometChatLogger.e(TAG, "Cannot download image, url is empty")
             return
         }
         try {
@@ -76,7 +77,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
             (getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
             Toast.makeText(this, R.string.cometchat_downloading, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to download image: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to download image: ${e.message}")
         }
     }
 
@@ -86,7 +87,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
      */
     private fun shareImage(url: String, fileName: String, mimeType: String) {
         if (!ImageViewerUtils.isShareValid(url, fileName, mimeType)) {
-            Log.e(TAG, "Cannot share image, url or mimeType or filename is empty")
+            CometChatLogger.e(TAG, "Cannot share image, url or mimeType or filename is empty")
             return
         }
 
@@ -101,7 +102,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
                     val connection = URL(url).openConnection() as HttpURLConnection
                     connection.connect()
                     if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                        Log.e(TAG, "Failed to download image: HTTP ${connection.responseCode}")
+                        CometChatLogger.e(TAG, "Failed to download image: HTTP ${connection.responseCode}")
                         return@Thread
                     }
                     connection.inputStream.use { input ->
@@ -115,7 +116,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
                     try {
                         val uri = FileProvider.getUriForFile(
                             this,
-                            "$packageName.provider",
+                            cometchatFileProviderAuthority,
                             file
                         )
                         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -125,11 +126,11 @@ class CometChatImageViewerActivity : ComponentActivity() {
                         }
                         startActivity(Intent.createChooser(shareIntent, null))
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to share image: ${e.message}")
+                        CometChatLogger.e(TAG, "Failed to share image: ${e.message}")
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to download image for sharing: ${e.message}")
+                CometChatLogger.e(TAG, "Failed to download image for sharing: ${e.message}")
             }
         }.start()
     }
@@ -140,7 +141,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
         overridePendingTransition(0, R.anim.cometchat_fade_out_fast)
     }
 
-    companion object {
+    public companion object {
         private const val EXTRA_IMAGE_URL = "extra_image_url"
         private const val EXTRA_FILE_NAME = "extra_file_name"
         private const val EXTRA_MIME_TYPE = "extra_mime_type"
@@ -158,7 +159,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
          * @param fileName Filename for the downloaded file (used in share)
          * @param mimeType MIME type of the image (e.g., image/jpeg)
          */
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             imageUrl: String,
             fileName: String,
@@ -175,7 +176,7 @@ class CometChatImageViewerActivity : ComponentActivity() {
          * @param mimeTypes MIME types parallel to [imageUrls]
          * @param startIndex Index of the image to show first
          */
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             imageUrls: List<String>,
             fileNames: List<String>,

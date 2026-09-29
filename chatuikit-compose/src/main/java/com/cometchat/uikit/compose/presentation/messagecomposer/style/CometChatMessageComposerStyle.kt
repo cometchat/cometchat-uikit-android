@@ -55,7 +55,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param stickerActiveIconTint Tint color for the active sticker icon
  */
 @Immutable
-data class CometChatMessageComposerStyle(
+public data class CometChatMessageComposerStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -165,7 +165,7 @@ data class CometChatMessageComposerStyle(
     val linkDialogButtonTextColor: Color,
     val linkDialogButtonTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -173,7 +173,7 @@ data class CometChatMessageComposerStyle(
          * @return A new CometChatMessageComposerStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             strokeColor: Color = Color.Transparent,

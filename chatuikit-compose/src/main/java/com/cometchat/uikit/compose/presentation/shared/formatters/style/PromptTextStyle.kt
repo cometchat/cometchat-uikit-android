@@ -8,7 +8,7 @@ import androidx.annotation.Dimension
  * A style class for formatting prompt text with customizable appearance properties.
  * Provides fluent API for setting text color, appearance, background color, and size.
  */
-class PromptTextStyle {
+public class PromptTextStyle {
     private var color: Int = 0
     private var textAppearance: Typeface? = null
     private var backgroundColor: Int = 0
@@ -20,7 +20,7 @@ class PromptTextStyle {
      * @param color The color to set
      * @return This PromptTextStyle instance for method chaining
      */
-    fun setColor(@ColorInt color: Int): PromptTextStyle {
+    public fun setColor(@ColorInt color: Int): PromptTextStyle {
         this.color = color
         return this
     }
@@ -31,7 +31,7 @@ class PromptTextStyle {
      * @param textAppearance The typeface to set
      * @return This PromptTextStyle instance for method chaining
      */
-    fun setTextAppearance(textAppearance: Typeface?): PromptTextStyle {
+    public fun setTextAppearance(textAppearance: Typeface?): PromptTextStyle {
         this.textAppearance = textAppearance
         return this
     }
@@ -42,7 +42,7 @@ class PromptTextStyle {
      * @param backgroundColor The background color to set
      * @return This PromptTextStyle instance for method chaining
      */
-    fun setBackgroundColor(@ColorInt backgroundColor: Int): PromptTextStyle {
+    public fun setBackgroundColor(@ColorInt backgroundColor: Int): PromptTextStyle {
         this.backgroundColor = backgroundColor
         return this
     }
@@ -53,7 +53,7 @@ class PromptTextStyle {
      * @param size The text size to set
      * @return This PromptTextStyle instance for method chaining
      */
-    fun setTextSize(@Dimension size: Int): PromptTextStyle {
+    public fun setTextSize(@Dimension size: Int): PromptTextStyle {
         this.textSize = size
         return this
     }
@@ -63,26 +63,26 @@ class PromptTextStyle {
      *
      * @return The text color
      */
-    fun getColor(): Int = color
+    public fun getColor(): Int = color
 
     /**
      * Gets the text appearance (typeface).
      *
      * @return The typeface
      */
-    fun getTextAppearance(): Typeface? = textAppearance
+    public fun getTextAppearance(): Typeface? = textAppearance
 
     /**
      * Gets the background color.
      *
      * @return The background color
      */
-    fun getBackgroundColor(): Int = backgroundColor
+    public fun getBackgroundColor(): Int = backgroundColor
 
     /**
      * Gets the text size.
      *
      * @return The text size in pixels
      */
-    fun getTextSize(): Int = textSize
+    public fun getTextSize(): Int = textSize
 }

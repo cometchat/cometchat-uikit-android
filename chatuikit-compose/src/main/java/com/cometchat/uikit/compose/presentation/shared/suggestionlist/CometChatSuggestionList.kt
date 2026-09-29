@@ -31,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.compose.presentation.shared.formatters.SuggestionItem
 import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatShimmerConfig
@@ -129,7 +131,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerB
  * @see SuggestionItem Data model for suggestion items
  */
 @Composable
-fun CometChatSuggestionList(
+public fun CometChatSuggestionList(
     modifier: Modifier = Modifier,
     suggestions: List<SuggestionItem> = emptyList(),
     isLoading: Boolean = false,
@@ -139,6 +141,7 @@ fun CometChatSuggestionList(
     onItemClick: ((SuggestionItem) -> Unit)? = null,
     onScrollToBottom: (() -> Unit)? = null
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_suggestion_list)
     val listState = rememberLazyListState()
     
     // Detect scroll to bottom for pagination
@@ -181,7 +184,7 @@ fun CometChatSuggestionList(
                     )
                 } else Modifier
             )
-            .semantics { contentDescription = "Suggestion List" }
+            .semantics { contentDescription = cdHoist2 }
     ) {
         if (isLoading && suggestions.isEmpty()) {
             // Show shimmer loading state
@@ -253,6 +256,7 @@ private fun CometChatSuggestionListItem(
     showAvatar: Boolean,
     onClick: () -> Unit
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_suggestion, suggestion.name)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -263,7 +267,7 @@ private fun CometChatSuggestionListItem(
             .background(style.itemBackgroundColor)
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .semantics {
-                contentDescription = "Suggestion: ${suggestion.name}"
+                contentDescription = cdHoist1
                 role = Role.Button
             },
         verticalAlignment = Alignment.CenterVertically

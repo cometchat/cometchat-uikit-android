@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName
  * @param keywords List of keywords associated with this emoji (e.g., ["smile", "happy"])
  */
 @Immutable
-data class Emoji(
+public data class Emoji(
     @SerializedName("emoji")
     @Expose
     val emoji: String,
@@ -35,7 +35,7 @@ data class Emoji(
  * @param emojis List of emojis belonging to this category
  */
 @Immutable
-data class EmojiCategory(
+public data class EmojiCategory(
     @SerializedName("id")
     @Expose
     val id: String,

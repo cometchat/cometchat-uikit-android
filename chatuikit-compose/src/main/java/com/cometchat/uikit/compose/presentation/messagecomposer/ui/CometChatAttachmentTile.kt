@@ -115,7 +115,7 @@ private fun AttachmentUploadTile.isVideo(): Boolean =
  *   the size-limit message) — rejected tiles are not retryable, so tapping only explains the error.
  */
 @Composable
-fun CometChatAttachmentTile(
+public fun CometChatAttachmentTile(
     tile: AttachmentUploadTile,
     modifier: Modifier = Modifier,
     style: CometChatAttachmentTileStyle = CometChatAttachmentTileStyle.default(),

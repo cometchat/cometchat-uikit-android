@@ -21,15 +21,15 @@ import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextF
  * @property cursorPosition The current cursor position
  * @property activeFormatter The formatter that triggered the mention
  */
-data class ComposeMentionState(
+public data class ComposeMentionState(
     val isActive: Boolean = false,
     val query: String = "",
     val triggerIndex: Int = -1,
     val cursorPosition: Int = -1,
     val activeFormatter: CometChatTextFormatter? = null
 ) {
-    companion object {
-        val INACTIVE = ComposeMentionState()
+    public companion object {
+        public val INACTIVE: ComposeMentionState = ComposeMentionState()
     }
 }
 
@@ -41,7 +41,7 @@ data class ComposeMentionState(
  * @return The current mention detection state
  */
 @Composable
-fun rememberMentionDetectionState(
+public fun rememberMentionDetectionState(
     textFieldValue: TextFieldValue,
     textFormatters: List<CometChatTextFormatter>
 ): ComposeMentionState {
@@ -93,7 +93,7 @@ fun rememberMentionDetectionState(
  * @param textFormatters List of text formatters
  * @return The mention detection state
  */
-fun detectMention(
+public fun detectMention(
     text: String,
     cursorPosition: Int,
     textFormatters: List<CometChatTextFormatter>
@@ -126,7 +126,7 @@ fun detectMention(
  * @param mentionText The text to insert (e.g., "@username ")
  * @return New TextFieldValue with the mention inserted
  */
-fun insertMention(
+public fun insertMention(
     currentValue: TextFieldValue,
     mentionState: ComposeMentionState,
     mentionText: String

@@ -21,7 +21,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property heightRatio Ratio of shimmer height relative to the view height (1.0f = full height)
  */
 @Immutable
-data class CometChatShimmerConfig(
+public data class CometChatShimmerConfig(
     val baseColor: Color,
     val highlightColor: Color,
     val direction: ShimmerDirection,
@@ -41,52 +41,52 @@ data class CometChatShimmerConfig(
         require(heightRatio > 0f) { "Height ratio must be positive, was: $heightRatio" }
     }
 
-    companion object {
+    public companion object {
         /**
          * Default animation duration in milliseconds.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_ANIMATION_DURATION = 1000L
+        public const val DEFAULT_ANIMATION_DURATION: Long = 1000L
 
         /**
          * Default tilt angle in degrees.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_TILT = 20f
+        public const val DEFAULT_TILT: Float = 20f
 
         /**
          * Default intensity value.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_INTENSITY = 0f
+        public const val DEFAULT_INTENSITY: Float = 0f
 
         /**
          * Default dropOff value.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_DROP_OFF = 0.5f
+        public const val DEFAULT_DROP_OFF: Float = 0.5f
 
         /**
          * Default width ratio.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_WIDTH_RATIO = 1f
+        public const val DEFAULT_WIDTH_RATIO: Float = 1f
 
         /**
          * Default height ratio.
          * Matches chatuikit-kotlin CometChatShimmer default.
          */
-        const val DEFAULT_HEIGHT_RATIO = 1f
+        public const val DEFAULT_HEIGHT_RATIO: Float = 1f
 
         /**
          * Minimum allowed animation duration in milliseconds.
          */
-        const val MIN_ANIMATION_DURATION = 100L
+        public const val MIN_ANIMATION_DURATION: Long = 100L
 
         /**
          * Minimum allowed ratio value.
          */
-        const val MIN_RATIO = 0.1f
+        public const val MIN_RATIO: Float = 0.1f
 
         /**
          * Creates a default CometChatShimmerConfig with values sourced from CometChatTheme.
@@ -115,7 +115,7 @@ data class CometChatShimmerConfig(
          * @return A configured CometChatShimmerConfig instance
          */
         @Composable
-        fun default(
+        public fun default(
             baseColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             highlightColor: Color = CometChatTheme.colorScheme.backgroundColor2,
             direction: ShimmerDirection = ShimmerDirection.LEFT_TO_RIGHT,

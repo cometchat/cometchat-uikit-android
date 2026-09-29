@@ -11,18 +11,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.core.content.FileProvider
+import com.cometchat.uikit.core.utils.CometChatLogger
 import java.io.File
 import java.io.FileOutputStream
 
 /**
  * Media content types supported by the media selection utilities.
  */
-object MediaContentType {
-    const val IMAGE = "image"
-    const val VIDEO = "video"
-    const val AUDIO = "audio"
-    const val FILE = "file"
-    const val UNKNOWN = "unknown"
+public object MediaContentType {
+    public const val IMAGE: String = "image"
+    public const val VIDEO: String = "video"
+    public const val AUDIO: String = "audio"
+    public const val FILE: String = "file"
+    public const val UNKNOWN: String = "unknown"
 }
 
 /**
@@ -35,7 +36,7 @@ object MediaContentType {
  * @property mimeType The MIME type of the media
  * @property fileSize The size of the file in bytes
  */
-data class MediaSelectionResult(
+public data class MediaSelectionResult(
     val uri: Uri,
     val file: File?,
     val contentType: String,
@@ -50,7 +51,7 @@ data class MediaSelectionResult(
  * @param mimeType The MIME type to analyze
  * @return The detected content type (image, video, audio, file, or unknown)
  */
-fun detectContentType(mimeType: String?): String {
+public fun detectContentType(mimeType: String?): String {
     return when {
         mimeType == null -> MediaContentType.UNKNOWN
         mimeType.startsWith("image/") -> MediaContentType.IMAGE
@@ -67,7 +68,7 @@ fun detectContentType(mimeType: String?): String {
  * @param uri The URI to analyze
  * @return The MIME type or null if not determinable
  */
-fun getMimeType(context: Context, uri: Uri): String? {
+public fun getMimeType(context: Context, uri: Uri): String? {
     return if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
         context.contentResolver.getType(uri)
     } else {
@@ -83,7 +84,7 @@ fun getMimeType(context: Context, uri: Uri): String? {
  * @param uri The URI to analyze
  * @return The file name or a default name if not determinable
  */
-fun getFileName(context: Context, uri: Uri): String {
+public fun getFileName(context: Context, uri: Uri): String {
     var fileName = "unknown"
     
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -109,7 +110,7 @@ fun getFileName(context: Context, uri: Uri): String {
  * @param uri The URI to analyze
  * @return The file size in bytes or 0 if not determinable
  */
-fun getFileSize(context: Context, uri: Uri): Long {
+public fun getFileSize(context: Context, uri: Uri): Long {
     var size = 0L
     
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -138,7 +139,7 @@ fun getFileSize(context: Context, uri: Uri): Long {
  * @param fileName The name for the destination file
  * @return The created file or null if copy failed
  */
-fun copyUriToFile(context: Context, uri: Uri, fileName: String): File? {
+public fun copyUriToFile(context: Context, uri: Uri, fileName: String): File? {
     return try {
         val cacheDir = File(context.cacheDir, "media_selection")
         if (!cacheDir.exists()) {
@@ -155,7 +156,7 @@ fun copyUriToFile(context: Context, uri: Uri, fileName: String): File? {
         
         destinationFile
     } catch (e: Exception) {
-        e.printStackTrace()
+        CometChatLogger.e("MediaSelectionUtils", "media file operation failed", e)
         null
     }
 }
@@ -168,7 +169,7 @@ fun copyUriToFile(context: Context, uri: Uri, fileName: String): File? {
  * @param copyToCache Whether to copy the content to app cache
  * @return The MediaSelectionResult
  */
-fun createMediaSelectionResult(
+public fun createMediaSelectionResult(
     context: Context,
     uri: Uri,
     copyToCache: Boolean = true
@@ -202,7 +203,7 @@ fun createMediaSelectionResult(
  * @param extension The file extension (e.g., ".jpg")
  * @return Pair of the file and its content URI
  */
-fun createTempFileForCapture(
+public fun createTempFileForCapture(
     context: Context,
     prefix: String = "capture",
     extension: String = ".jpg"
@@ -216,13 +217,13 @@ fun createTempFileForCapture(
         val file = File.createTempFile(prefix, extension, cacheDir)
         val uri = FileProvider.getUriForFile(
             context,
-            "${context.packageName}.provider",
+            context.cometchatFileProviderAuthority,
             file
         )
         
         Pair(file, uri)
     } catch (e: Exception) {
-        e.printStackTrace()
+        CometChatLogger.e("MediaSelectionUtils", "media file operation failed", e)
         null
     }
 }
@@ -234,19 +235,19 @@ fun createTempFileForCapture(
  * several at once (used by the multi-attachment composer flow). Camera/video capture are always
  * single-shot.
  */
-class MediaSelectionState(
-    val launchImagePicker: () -> Unit,
-    val launchVideoPicker: () -> Unit,
-    val launchImageAndVideoPicker: () -> Unit,
-    val launchAudioPicker: () -> Unit,
-    val launchFilePicker: () -> Unit,
-    val launchCamera: () -> Unit,
-    val launchVideoCapture: () -> Unit,
-    val launchImagePickerMultiple: () -> Unit = {},
-    val launchVideoPickerMultiple: () -> Unit = {},
-    val launchImageAndVideoPickerMultiple: () -> Unit = {},
-    val launchAudioPickerMultiple: () -> Unit = {},
-    val launchFilePickerMultiple: () -> Unit = {}
+public class MediaSelectionState(
+    public val launchImagePicker: () -> Unit,
+    public val launchVideoPicker: () -> Unit,
+    public val launchImageAndVideoPicker: () -> Unit,
+    public val launchAudioPicker: () -> Unit,
+    public val launchFilePicker: () -> Unit,
+    public val launchCamera: () -> Unit,
+    public val launchVideoCapture: () -> Unit,
+    public val launchImagePickerMultiple: () -> Unit = {},
+    public val launchVideoPickerMultiple: () -> Unit = {},
+    public val launchImageAndVideoPickerMultiple: () -> Unit = {},
+    public val launchAudioPickerMultiple: () -> Unit = {},
+    public val launchFilePickerMultiple: () -> Unit = {}
 )
 
 /**
@@ -265,7 +266,7 @@ class MediaSelectionState(
  * @return MediaSelectionState with launcher functions
  */
 @Composable
-fun rememberMediaSelectionState(
+public fun rememberMediaSelectionState(
     maxSelection: Int = Int.MAX_VALUE,
     onImageSelected: ((MediaSelectionResult) -> Unit)? = null,
     onVideoSelected: ((MediaSelectionResult) -> Unit)? = null,
@@ -602,3 +603,13 @@ fun rememberMediaSelectionState(
         )
     }
 }
+
+/**
+ * ENG-38657 (T3): the single source of truth for this toolkit's FileProvider
+ * authority. Must match android:authorities in the manifest. Namespaced so it
+ * cannot collide with a host app's own provider or the compose toolkit's.
+ * (One legacy call site used ".fileprovider", which matched no declared
+ * provider at all and crashed when reached - fixed by this constant.)
+ */
+internal val android.content.Context.cometchatFileProviderAuthority: String
+    get() = "$packageName.cometchat.compose.provider"

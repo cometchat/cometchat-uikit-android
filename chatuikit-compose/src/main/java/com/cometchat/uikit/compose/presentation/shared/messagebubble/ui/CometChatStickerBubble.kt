@@ -21,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.cometchat.chat.models.CustomMessage
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatStickerBubbleStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
@@ -60,7 +62,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatStickerBubble(
+public fun CometChatStickerBubble(
     message: CustomMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -95,7 +97,7 @@ fun CometChatStickerBubble(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatStickerBubble(
+public fun CometChatStickerBubble(
     stickerUrl: String,
     stickerName: String? = null,
     modifier: Modifier = Modifier,
@@ -123,6 +125,7 @@ private fun StickerBubbleContent(
     onClick: (() -> Unit)?,
     onLongClick: (() -> Unit)? = null
 ) {
+    val stickerCd = stickerName ?: stringResource(R.string.cometchat_a11y_sticker)
     Box(
         modifier = modifier
             .width(240.dp)
@@ -134,7 +137,7 @@ private fun StickerBubbleContent(
                 onLongClick = onLongClick
             )
             .semantics {
-                contentDescription = stickerName ?: "Sticker"
+                contentDescription = stickerCd
             }
     ) {
         SubcomposeAsyncImage(
@@ -142,7 +145,7 @@ private fun StickerBubbleContent(
                 .data(stickerUrl)
                 .crossfade(true)
                 .build(),
-            contentDescription = stickerName ?: "Sticker",
+            contentDescription = stickerName ?: stringResource(R.string.cometchat_a11y_sticker),
             contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize(),
             loading = {

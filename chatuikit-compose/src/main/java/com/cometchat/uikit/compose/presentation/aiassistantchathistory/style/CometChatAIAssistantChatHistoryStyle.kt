@@ -19,7 +19,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * and [Painter] for icons.
  */
 @Immutable
-data class CometChatAIAssistantChatHistoryStyle(
+public data class CometChatAIAssistantChatHistoryStyle(
     // Component background
     val chatHistoryBackgroundColor: Color,
 
@@ -53,7 +53,7 @@ data class CometChatAIAssistantChatHistoryStyle(
     val deleteOptionTextColor: Color,
     val deleteOptionTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          *
@@ -65,7 +65,7 @@ data class CometChatAIAssistantChatHistoryStyle(
          *   bodyRegular (item, delete option)
          */
         @Composable
-        fun default(
+        public fun default(
             // Component background
             chatHistoryBackgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
 

@@ -26,12 +26,12 @@ import kotlin.math.tan
  * CompositionLocal for sharing shimmer brush across multiple composables.
  * When provided, all composables using [useShimmerBrush] will share the same animation.
  */
-val LocalShimmerBrush = compositionLocalOf<Brush?> { null }
+public val LocalShimmerBrush: androidx.compose.runtime.ProvidableCompositionLocal<Brush?> = compositionLocalOf<Brush?> { null }
 
 /**
  * CompositionLocal for sharing shimmer configuration across multiple composables.
  */
-val LocalShimmerConfig = compositionLocalOf<CometChatShimmerConfig?> { null }
+public val LocalShimmerConfig: androidx.compose.runtime.ProvidableCompositionLocal<CometChatShimmerConfig?> = compositionLocalOf<CometChatShimmerConfig?> { null }
 
 /**
  * Creates and remembers an animated shimmer brush.
@@ -45,7 +45,7 @@ val LocalShimmerConfig = compositionLocalOf<CometChatShimmerConfig?> { null }
  * @return Animated [Brush] for use with Modifier.background()
  */
 @Composable
-fun rememberShimmerBrush(
+public fun rememberShimmerBrush(
     config: CometChatShimmerConfig = CometChatShimmerConfig.default()
 ): Brush {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer_transition")
@@ -251,7 +251,7 @@ private fun offset(start: Float, end: Float, percent: Float): Float {
  * @param content Child composables that will share the animation
  */
 @Composable
-fun ProvideShimmerAnimation(
+public fun ProvideShimmerAnimation(
     config: CometChatShimmerConfig = CometChatShimmerConfig.default(),
     content: @Composable () -> Unit
 ) {
@@ -275,7 +275,7 @@ fun ProvideShimmerAnimation(
  * @return Shimmer [Brush] for use with Modifier.background()
  */
 @Composable
-fun useShimmerBrush(
+public fun useShimmerBrush(
     config: CometChatShimmerConfig? = null
 ): Brush {
     val sharedBrush = LocalShimmerBrush.current

@@ -24,7 +24,7 @@ import com.cometchat.uikit.compose.theme.CometChatTypography
  * @param typography Custom typography. If null, uses theme's typography
  */
 @Immutable
-data class DateStyle(
+public data class DateStyle(
     val backgroundColor: Color? = null,
     val borderColor: Color? = null,
     val borderWidth: Dp = 0.dp,
@@ -34,7 +34,7 @@ data class DateStyle(
     val textAlign: TextAlign = TextAlign.Center,
     val typography: CometChatTypography? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default DateStyle with values sourced from CometChatTheme.
          *
@@ -49,7 +49,7 @@ data class DateStyle(
          * @return A new DateStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color.Transparent,
             borderColor: Color? = null,
             borderWidth: Dp = 0.dp,

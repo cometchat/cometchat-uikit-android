@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 
 /**
  * Reusable error state composable for list components.
@@ -36,25 +38,27 @@ import androidx.compose.ui.unit.dp
  * @param subtitle Subtitle text to display
  */
 @Composable
-fun CometChatErrorState(
+public fun CometChatErrorState(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     style: CometChatErrorStateStyle = CometChatErrorStateStyle.default(),
     title: String = "Something went wrong",
     subtitle: String = "Unable to load data. Please try again."
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_error_2, title, subtitle)
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(style.backgroundColor)
             .padding(32.dp)
             .semantics {
-                contentDescription = "Error: $title. $subtitle"
+                contentDescription = cdHoist2
                 liveRegion = LiveRegionMode.Assertive
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_loading, style.retryButtonText)
         // Icon
         style.icon?.let { icon ->
             Icon(
@@ -96,7 +100,7 @@ fun CometChatErrorState(
             modifier = Modifier
                 .focusable()
                 .semantics {
-                    contentDescription = "${style.retryButtonText} loading"
+                    contentDescription = cdHoist1
                     role = Role.Button
                 }
         ) {

@@ -48,7 +48,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param popupMenuStyle Style configuration for the popup menu component
  */
 @Immutable
-data class CometChatMessageHeaderStyle(
+public data class CometChatMessageHeaderStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -94,7 +94,7 @@ data class CometChatMessageHeaderStyle(
     // Popup menu style
     val popupMenuStyle: CometChatPopupMenuStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -102,7 +102,7 @@ data class CometChatMessageHeaderStyle(
          * @return A new CometChatMessageHeaderStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = Color.Transparent,

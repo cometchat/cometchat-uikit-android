@@ -15,18 +15,18 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param textStyle Text style for the typing indicator
  */
 @Immutable
-data class TypingIndicatorStyle(
+public data class TypingIndicatorStyle(
     val textColor: Color,
     val textStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default TypingIndicatorStyle with values sourced from CometChatTheme.
          *
          * @return A new TypingIndicatorStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             textColor: Color = CometChatTheme.colorScheme.textColorHighlight,
             textStyle: TextStyle = CometChatTheme.typography.bodyRegular
         ): TypingIndicatorStyle = TypingIndicatorStyle(

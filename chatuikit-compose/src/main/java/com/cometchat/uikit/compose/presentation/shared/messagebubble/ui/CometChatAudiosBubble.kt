@@ -1,7 +1,6 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 
 import android.media.MediaMetadataRetriever
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,6 +52,7 @@ import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextF
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatAudiosBubbleStyle
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.AudioBubbleStateManager
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -89,7 +89,7 @@ private val audioDurationCache = ConcurrentHashMap<String, Long>()
  * @param onLongClick Callback when the bubble is long-pressed
  */
 @Composable
-fun CometChatAudiosBubble(
+public fun CometChatAudiosBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -236,7 +236,7 @@ private fun AudioAttachmentCard(
                         runCatching { retriever.release() }
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Duration preload failed: ${e.message}")
+                    CometChatLogger.e(TAG, "Duration preload failed: ${e.message}")
                     0L
                 }
             }
@@ -329,9 +329,9 @@ private fun AudioAttachmentCard(
                 isDownloading || isInitializing ->
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.5.dp, color = style.playIconTint)
                 playState == PlayState.PLAYING ->
-                    Icon(painter = painterResource(id = R.drawable.cometchat_ic_pause), contentDescription = "Pause", tint = style.playIconTint, modifier = Modifier.size(24.dp))
+                    Icon(painter = painterResource(id = R.drawable.cometchat_ic_pause), contentDescription = stringResource(R.string.cometchat_a11y_pause), tint = style.playIconTint, modifier = Modifier.size(24.dp))
                 else ->
-                    Icon(painter = painterResource(id = R.drawable.cometchat_play_icon), contentDescription = "Play", tint = style.playIconTint, modifier = Modifier.size(24.dp))
+                    Icon(painter = painterResource(id = R.drawable.cometchat_play_icon), contentDescription = stringResource(R.string.cometchat_a11y_play), tint = style.playIconTint, modifier = Modifier.size(24.dp))
             }
         }
 
@@ -367,7 +367,7 @@ private fun AudioAttachmentCard(
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_download_icon),
-                contentDescription = "Download audio",
+                contentDescription = stringResource(R.string.cometchat_a11y_download_audio),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onDownloadClick() },
@@ -421,7 +421,7 @@ private fun BrokenAttachmentCard(
         // File-card-like row: just the unsupported glyph + name (no track, no meta line).
         Image(
             painter = painterResource(id = R.drawable.cometchat_unsupported_file_icon),
-            contentDescription = attachment.fileName ?: "Unsupported attachment",
+            contentDescription = attachment.fileName ?: stringResource(R.string.cometchat_a11y_unsupported_attachment),
             modifier = Modifier.size(width = 26.dp, height = 32.dp)
         )
 
@@ -440,7 +440,7 @@ private fun BrokenAttachmentCard(
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_download_icon),
-                contentDescription = "Download attachment",
+                contentDescription = stringResource(R.string.cometchat_a11y_download_attachment),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onDownloadClick() },
@@ -567,7 +567,7 @@ private suspend fun downloadAudioFile(url: String, targetFile: File): String? = 
         connection.disconnect()
         if (tempFile.length() > 0 && tempFile.renameTo(targetFile)) targetFile.absolutePath else { tempFile.delete(); null }
     } catch (e: Exception) {
-        Log.e(TAG, "Download failed: ${e.message}")
+        CometChatLogger.e(TAG, "Download failed: ${e.message}")
         tempFile.delete()
         null
     }

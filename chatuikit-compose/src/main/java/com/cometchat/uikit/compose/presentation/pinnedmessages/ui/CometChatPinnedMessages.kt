@@ -85,7 +85,7 @@ import java.util.Locale
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatPinnedMessages(
+public fun CometChatPinnedMessages(
     modifier: Modifier = Modifier,
     user: User? = null,
     group: Group? = null,

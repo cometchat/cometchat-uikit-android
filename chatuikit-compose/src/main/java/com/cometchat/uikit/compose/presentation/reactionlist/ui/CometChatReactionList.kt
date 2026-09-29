@@ -86,7 +86,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * @param onError Callback invoked when an error occurs
  */
 @Composable
-fun CometChatReactionList(
+public fun CometChatReactionList(
     baseMessage: BaseMessage,
     modifier: Modifier = Modifier,
     viewModel: CometChatReactionListViewModel? = null,
@@ -341,13 +341,14 @@ private fun ReactionListAnimatedShimmer(
     style: CometChatReactionListStyle
 ) {
     ProvideShimmerAnimation {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_reactions_please_wait)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(style.backgroundColor)
                 .padding(horizontal = 16.dp)
                 .semantics {
-                    contentDescription = "Loading reactions, please wait"
+                    contentDescription = cdHoist1
                     liveRegion = LiveRegionMode.Polite
                 }
         ) {

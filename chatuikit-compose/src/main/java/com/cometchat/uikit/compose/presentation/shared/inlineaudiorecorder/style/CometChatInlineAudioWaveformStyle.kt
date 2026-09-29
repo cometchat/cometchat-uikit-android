@@ -38,7 +38,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param barCount Number of bars to display in the waveform
  */
 @Immutable
-data class CometChatInlineAudioWaveformStyle(
+public data class CometChatInlineAudioWaveformStyle(
     val barColor: Color,
     val recordingBarColor: Color,
     val playingBarColor: Color,
@@ -49,7 +49,7 @@ data class CometChatInlineAudioWaveformStyle(
     val barCornerRadius: Dp,
     val barCount: Int
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors are derived from the current theme.
@@ -68,7 +68,7 @@ data class CometChatInlineAudioWaveformStyle(
          * **Validates: Requirements 10.3, 10.4, 10.5** - Default values from CometChatTheme
          */
         @Composable
-        fun default(
+        public fun default(
             barColor: Color = CometChatTheme.colorScheme.neutralColor300,
             recordingBarColor: Color = CometChatTheme.colorScheme.primary,
             playingBarColor: Color = CometChatTheme.colorScheme.primary,

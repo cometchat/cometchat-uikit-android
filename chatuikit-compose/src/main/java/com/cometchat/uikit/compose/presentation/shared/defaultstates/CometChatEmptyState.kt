@@ -13,12 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 
 /**
  * Reusable empty state composable for list components.
@@ -30,19 +32,20 @@ import androidx.compose.ui.unit.dp
  * @param subtitle Subtitle text to display
  */
 @Composable
-fun CometChatEmptyState(
+public fun CometChatEmptyState(
     modifier: Modifier = Modifier,
     style: CometChatEmptyStateStyle = CometChatEmptyStateStyle.default(),
     title: String = "No Items",
     subtitle: String = "There are no items to display"
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_text, title, subtitle)
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(style.backgroundColor)
             .padding(32.dp)
             .semantics {
-                contentDescription = "$title. $subtitle"
+                contentDescription = cdHoist1
                 liveRegion = LiveRegionMode.Polite
             },
         horizontalAlignment = Alignment.CenterHorizontally,

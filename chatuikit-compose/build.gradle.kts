@@ -1,9 +1,13 @@
+import org.gradle.api.artifacts.ProjectDependency
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.roborazzi)
+    // no version: the root project loads the Dokka plugins on the classpath
+    id("org.jetbrains.dokka")
+    id("org.jetbrains.dokka-javadoc")
 }
 
 
@@ -58,6 +62,9 @@ android {
                 // Complete separation between unit tests and screenshot tests:
                 // - testDebugUnitTest: only unit tests (excludes *ScreenshotTest*)
                 // - recordRoborazziDebug / verifyRoborazziDebug: only screenshot tests
+                // Merging the two passes costs ~80min and leaks coroutine exceptions
+                // between classes that pass separately; they stay apart and contribute
+                // to one coverage report via separate .exec files.
                 val isRoborazziTask = project.gradle.startParameter.taskNames.any { taskName ->
                     taskName.lowercase().contains("roborazzi")
                 }
@@ -77,9 +84,11 @@ roborazzi {
 
 
 dependencies {
+    lintChecks(project(":lint-checks"))
     // Core module – exposed so consumers get ViewModels transitively (published artifact)
-    implementation(libs.chatuikit.core.android)
-    // implementation(project(":chatuikit-core"))
+    // ENG-38658 (A4): core types (ViewModels, UIState, UIKitConstants) appear in
+    // this toolkit's public signatures, so consumers must see core transitively.
+    api(libs.chatuikit.core.android)
 
     // CometChat SDK
     implementation(libs.chat.sdk.android)
@@ -154,4 +163,17 @@ dependencies {
     // Debug-only Compose tooling
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+// ENG-38655 (X2): every declaration must state its visibility explicitly
+kotlin {
+    explicitApi()
+}
+
+// ENG-38658 (X6): package the Dokka javadoc output as a -javadoc.jar for
+// publishing (wired into the publication by Track 2 / A2).
+val dokkaJavadocJar: TaskProvider<Jar> = tasks.register("dokkaJavadocJar", Jar::class) {
+    dependsOn(tasks.named("dokkaGeneratePublicationJavadoc"))
+    from(tasks.named("dokkaGeneratePublicationJavadoc").map { it.outputs })
+    archiveClassifier.set("javadoc")
 }

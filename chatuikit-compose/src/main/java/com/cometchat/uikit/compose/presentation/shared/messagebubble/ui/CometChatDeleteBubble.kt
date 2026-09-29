@@ -49,7 +49,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
  * @param text Custom text to display (defaults to "This message was deleted")
  */
 @Composable
-fun CometChatDeleteBubble(
+public fun CometChatDeleteBubble(
     message: BaseMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -71,7 +71,7 @@ fun CometChatDeleteBubble(
  * Useful for previews and testing.
  */
 @Composable
-fun CometChatDeleteBubble(
+public fun CometChatDeleteBubble(
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
     style: CometChatDeleteBubbleStyle = when (alignment) {
@@ -93,17 +93,18 @@ private fun DeleteBubbleContent(
     style: CometChatDeleteBubbleStyle,
     text: String
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_deleted_message)
     Row(
         modifier = modifier
             .padding(12.dp)
             .semantics {
-                contentDescription = "Deleted message"
+                contentDescription = cdHoist1
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = R.drawable.cometchat_ic_delete_bubble),
-            contentDescription = "Delete icon",
+            contentDescription = stringResource(R.string.cometchat_a11y_delete_icon),
             modifier = Modifier.size(16.dp),
             tint = style.iconTint
         )

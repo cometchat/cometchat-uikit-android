@@ -3,7 +3,7 @@ package com.cometchat.uikit.compose.presentation.shared.mediarecorder
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Handler
-import android.util.Log
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 /**
  * Enum representing the various states of audio recording.
@@ -65,9 +65,9 @@ internal fun startRecording(
         
         handler.postDelayed(timerRunnable, 0)
         
-        Log.d("MediaRecorder", "Recording started successfully")
+        CometChatLogger.d("MediaRecorder", "Recording started successfully")
     } catch (e: Exception) {
-        Log.e("MediaRecorder", "Recording preparation failed: ${e.message}")
+        CometChatLogger.e("MediaRecorder", "Recording preparation failed: ${e.message}")
         onStateChange(RecordingState.START)
         onRecordingChange(false)
     }
@@ -92,9 +92,9 @@ internal fun pauseRecording(
         onPauseTimeChange(System.currentTimeMillis() - startTime)
         handler.removeCallbacks(timerRunnable)
         
-        Log.d("MediaRecorder", "Recording paused")
+        CometChatLogger.d("MediaRecorder", "Recording paused")
     } catch (e: Exception) {
-        Log.e("MediaRecorder", "Failed to pause recording: ${e.message}")
+        CometChatLogger.e("MediaRecorder", "Failed to pause recording: ${e.message}")
     }
 }
 
@@ -117,9 +117,9 @@ internal fun resumeRecording(
         onStartTimeChange(System.currentTimeMillis() - pauseTime)
         handler.postDelayed(timerRunnable, 0)
         
-        Log.d("MediaRecorder", "Recording resumed")
+        CometChatLogger.d("MediaRecorder", "Recording resumed")
     } catch (e: Exception) {
-        Log.e("MediaRecorder", "Failed to resume recording: ${e.message}")
+        CometChatLogger.e("MediaRecorder", "Failed to resume recording: ${e.message}")
     }
 }
 
@@ -148,9 +148,9 @@ internal fun stopRecording(
         onRecorderChange(null)
         handler.removeCallbacks(timerRunnable)
         
-        Log.d("MediaRecorder", "Recording stopped")
+        CometChatLogger.d("MediaRecorder", "Recording stopped")
     } catch (e: Exception) {
-        Log.e("MediaRecorder", "Failed to stop recording: ${e.message}")
+        CometChatLogger.e("MediaRecorder", "Failed to stop recording: ${e.message}")
         // Even if stopping fails, clean up the state
         onStateChange(RecordingState.STOPPED)
         onRecordingChange(false)
@@ -184,5 +184,5 @@ internal fun deleteRecording(
     )
     
     onClose?.invoke()
-    Log.d("MediaRecorder", "Recording deleted")
+    CometChatLogger.d("MediaRecorder", "Recording deleted")
 }

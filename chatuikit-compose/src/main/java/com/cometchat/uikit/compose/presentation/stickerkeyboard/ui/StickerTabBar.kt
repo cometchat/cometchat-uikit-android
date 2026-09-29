@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.domain.model.StickerSet
 
@@ -108,6 +110,7 @@ private fun StickerTabItem(
     activeIndicatorColor: Color,
     onClick: () -> Unit
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_sticker_set, stickerSet.name)
     val context = LocalContext.current
 
     Column(
@@ -115,7 +118,7 @@ private fun StickerTabItem(
             .clickable(onClick = onClick)
             .padding(horizontal = 4.dp)
             .semantics {
-                contentDescription = "${stickerSet.name} sticker set"
+                contentDescription = cdHoist1
                 role = Role.Tab
                 selected = isSelected
             },

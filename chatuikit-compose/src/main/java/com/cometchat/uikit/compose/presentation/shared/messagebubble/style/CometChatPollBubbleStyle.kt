@@ -64,7 +64,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatPollBubbleStyle(
+public data class CometChatPollBubbleStyle(
     // Content-specific properties ONLY
     val titleTextColor: Color,
     val titleTextStyle: TextStyle,
@@ -111,7 +111,7 @@ data class CometChatPollBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default poll bubble style using CometChat theme tokens.
          *
@@ -146,7 +146,7 @@ data class CometChatPollBubbleStyle(
          * @return A new [CometChatPollBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             titleTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,
             titleTextStyle: TextStyle = CometChatTheme.typography.bodyMedium,
@@ -223,7 +223,7 @@ data class CometChatPollBubbleStyle(
          * @return A new [CometChatPollBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatPollBubbleStyle = default()
+        public fun incoming(): CometChatPollBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) poll messages.
@@ -235,7 +235,7 @@ data class CometChatPollBubbleStyle(
          * @return A new [CometChatPollBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatPollBubbleStyle = default(
+        public fun outgoing(): CometChatPollBubbleStyle = default(
             titleTextColor = CometChatTheme.colorScheme.colorWhite,
             optionTextColor = CometChatTheme.colorScheme.colorWhite,
             selectedRadioButtonStrokeColor = CometChatTheme.colorScheme.colorWhite,

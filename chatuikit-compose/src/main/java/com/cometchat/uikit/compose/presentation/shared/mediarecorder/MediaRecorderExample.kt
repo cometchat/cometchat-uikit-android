@@ -15,7 +15,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Example usage of CometChatMediaRecorder component
  */
 @Composable
-fun MediaRecorderExample(
+public fun MediaRecorderExample(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -55,7 +55,7 @@ fun MediaRecorderExample(
  */
 @Preview(showBackground = true)
 @Composable
-fun MediaRecorderExamplePreview() {
+public fun MediaRecorderExamplePreview() {
     CometChatTheme {
         MediaRecorderExample()
     }
@@ -65,7 +65,7 @@ fun MediaRecorderExamplePreview() {
  * Customized MediaRecorder with custom colors
  */
 @Composable
-fun CustomMediaRecorderExample(
+public fun CustomMediaRecorderExample(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -100,7 +100,7 @@ fun CustomMediaRecorderExample(
  */
 @Preview(showBackground = true)
 @Composable
-fun CustomMediaRecorderExamplePreview() {
+public fun CustomMediaRecorderExamplePreview() {
     CometChatTheme {
         Column(
             modifier = Modifier

@@ -14,7 +14,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Aligned with Java CometChatConfirmDialog implementation.
  */
 @Immutable
-data class CometChatDialogStyle(
+public data class CometChatDialogStyle(
     // Container styling
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -52,13 +52,13 @@ data class CometChatDialogStyle(
     val negativeButtonStrokeWidth: Dp,
     val negativeButtonCornerRadius: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Aligned with Java CometChatConfirmDialog default values.
          */
         @Composable
-        fun default(
+        public fun default(
             // Container
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 16.dp,

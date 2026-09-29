@@ -33,7 +33,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param avatarStyle Style configuration for the recipient's avatar
  */
 @Immutable
-data class CometChatOutgoingCallStyle(
+public data class CometChatOutgoingCallStyle(
     // Container styling
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -56,7 +56,7 @@ data class CometChatOutgoingCallStyle(
     // Avatar styling
     val avatarStyle: CometChatAvatarStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -76,7 +76,7 @@ data class CometChatOutgoingCallStyle(
          * @return A new CometChatOutgoingCallStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             cornerRadius: Dp = 0.dp,

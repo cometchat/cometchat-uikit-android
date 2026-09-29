@@ -28,7 +28,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param minWidth Minimum width for the popup menu
  */
 @Immutable
-data class CometChatPopupMenuStyle(
+public data class CometChatPopupMenuStyle(
     val elevation: Dp,
     val cornerRadius: Dp,
     val backgroundColor: Color,
@@ -42,7 +42,7 @@ data class CometChatPopupMenuStyle(
     val itemPaddingVertical: Dp,
     val minWidth: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatPopupMenuStyle with values sourced from CometChatTheme.
          *
@@ -61,7 +61,7 @@ data class CometChatPopupMenuStyle(
          * @return A new CometChatPopupMenuStyle instance with the specified or default values
          */
         @Composable
-        fun default(
+        public fun default(
             elevation: Dp = 8.dp,
             cornerRadius: Dp = 16.dp,
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,

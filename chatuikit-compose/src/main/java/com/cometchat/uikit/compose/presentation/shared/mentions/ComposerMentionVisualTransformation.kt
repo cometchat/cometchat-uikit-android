@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.VisualTransformation
  * @param mentionInsertionState The state holder containing tracked mentions and their styles
  * @param defaultMentionStyle The default style to apply to mentions without a specific style
  */
-class ComposerMentionVisualTransformation(
+public class ComposerMentionVisualTransformation(
     private val mentionInsertionState: ComposeMentionInsertionState,
     private val defaultMentionStyle: SpanStyle
 ) : VisualTransformation {
@@ -69,7 +69,7 @@ class ComposerMentionVisualTransformation(
  * 
  * @param transformations The list of transformations to combine
  */
-class CombinedVisualTransformation(
+public class CombinedVisualTransformation(
     private val transformations: List<VisualTransformation>
 ) : VisualTransformation {
 

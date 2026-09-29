@@ -11,7 +11,7 @@ import com.cometchat.chat.models.User
  * @param typingUsers List of users who are currently typing
  * @param isTyping Whether typing is currently active
  */
-data class TypingIndicator(
+public data class TypingIndicator(
     val typingUsers: List<User>,
     val isTyping: Boolean
 )

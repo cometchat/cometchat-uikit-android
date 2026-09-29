@@ -37,7 +37,7 @@ import com.cometchat.uikit.compose.presentation.shared.mentions.detectMention
  * @param mentionLimit Maximum number of mentions allowed per message (default: 10)
  */
 @Stable
-class MessageComposerMentionState(
+public class MessageComposerMentionState(
     private val textFormatters: List<CometChatTextFormatter>,
     private val mentionLimit: Int = DEFAULT_MENTION_LIMIT
 ) {
@@ -51,43 +51,43 @@ class MessageComposerMentionState(
      * Contains information about whether a mention is being typed,
      * the query string, trigger index, and active formatter.
      */
-    var mentionDetectionState by mutableStateOf(ComposeMentionState.INACTIVE)
+    public var mentionDetectionState: ComposeMentionState by mutableStateOf(ComposeMentionState.INACTIVE)
         private set
     
     /**
      * Whether the suggestion list should be visible.
      */
-    var isShowingSuggestions by mutableStateOf(false)
+    public var isShowingSuggestions: Boolean by mutableStateOf(false)
         private set
     
     /**
      * Current list of suggestion items to display.
      */
-    var suggestions by mutableStateOf<List<SuggestionItem>>(emptyList())
+    public var suggestions: List<SuggestionItem> by mutableStateOf<List<SuggestionItem>>(emptyList())
         private set
     
     /**
      * Whether suggestions are currently being loaded.
      */
-    var isLoadingSuggestions by mutableStateOf(false)
+    public var isLoadingSuggestions: Boolean by mutableStateOf(false)
         private set
     
     /**
      * Current query string for filtering suggestions.
      */
-    var currentQuery by mutableStateOf("")
+    public var currentQuery: String by mutableStateOf("")
         private set
     
     /**
      * Info message to display (e.g., mention limit warning).
      */
-    var infoMessage by mutableStateOf("")
+    public var infoMessage: String by mutableStateOf("")
         private set
     
     /**
      * Whether the info message should be visible.
      */
-    var isInfoMessageVisible by mutableStateOf(false)
+    public var isInfoMessageVisible: Boolean by mutableStateOf(false)
         private set
     
     /**
@@ -102,7 +102,7 @@ class MessageComposerMentionState(
      * Uses derivedStateOf for efficient recomposition - only recomposes
      * when the actual value changes, not on every state read.
      */
-    val isMentionLimitReached: Boolean by derivedStateOf {
+    public val isMentionLimitReached: Boolean by derivedStateOf {
         selectedMentionCount >= mentionLimit
     }
     
@@ -110,7 +110,7 @@ class MessageComposerMentionState(
      * Whether suggestions should be shown.
      * Combines multiple conditions using derivedStateOf for efficiency.
      */
-    val shouldShowSuggestions: Boolean by derivedStateOf {
+    public val shouldShowSuggestions: Boolean by derivedStateOf {
         isShowingSuggestions && 
         mentionDetectionState.isActive && 
         !isMentionLimitReached &&
@@ -120,14 +120,14 @@ class MessageComposerMentionState(
     /**
      * Number of remaining mentions allowed.
      */
-    val remainingMentions: Int by derivedStateOf {
+    public val remainingMentions: Int by derivedStateOf {
         (mentionLimit - selectedMentionCount).coerceAtLeast(0)
     }
     
     /**
      * Whether any mentions are currently selected.
      */
-    val hasMentions: Boolean by derivedStateOf {
+    public val hasMentions: Boolean by derivedStateOf {
         selectedMentionCount > 0
     }
     
@@ -143,7 +143,7 @@ class MessageComposerMentionState(
      * @param textFieldValue The current text field value
      * @param context The context for triggering search
      */
-    fun onTextFieldValueChange(textFieldValue: TextFieldValue, context: Context) {
+    public fun onTextFieldValueChange(textFieldValue: TextFieldValue, context: Context) {
         // Detect mention in the current text
         mentionDetectionState = detectMention(
             text = textFieldValue.text,
@@ -181,7 +181,7 @@ class MessageComposerMentionState(
      * 
      * @param newSuggestions The new list of suggestions
      */
-    fun updateSuggestions(newSuggestions: List<SuggestionItem>) {
+    public fun updateSuggestions(newSuggestions: List<SuggestionItem>) {
         suggestions = newSuggestions
         isLoadingSuggestions = false
     }
@@ -195,7 +195,7 @@ class MessageComposerMentionState(
      * @param context The context for notifying formatters
      * @return New TextFieldValue with the mention inserted
      */
-    fun onSuggestionSelected(
+    public fun onSuggestionSelected(
         currentValue: TextFieldValue,
         suggestionItem: SuggestionItem,
         mentionStyle: SpanStyle? = null,
@@ -246,7 +246,7 @@ class MessageComposerMentionState(
      * @param message The message being sent (will be modified)
      * @return The processed text ready for sending
      */
-    fun processBeforeSend(context: Context, text: String, message: BaseMessage): String {
+    public fun processBeforeSend(context: Context, text: String, message: BaseMessage): String {
         // Get processed text with underlying mention format
         val processedText = insertionState.getProcessedText(text)
         
@@ -270,7 +270,7 @@ class MessageComposerMentionState(
      * @param text The text to process
      * @return The processed text with mentions replaced
      */
-    fun getProcessedText(text: String): String {
+    public fun getProcessedText(text: String): String {
         return insertionState.getProcessedText(text)
     }
     
@@ -279,7 +279,7 @@ class MessageComposerMentionState(
      * 
      * @return List of currently selected suggestion items
      */
-    fun getSelectedSuggestionItems(): List<SuggestionItem> {
+    public fun getSelectedSuggestionItems(): List<SuggestionItem> {
         return insertionState.getSelectedSuggestionItems()
     }
     
@@ -288,20 +288,20 @@ class MessageComposerMentionState(
      * 
      * @return The underlying ComposeMentionInsertionState
      */
-    fun getInsertionState(): ComposeMentionInsertionState = insertionState
+    public fun getInsertionState(): ComposeMentionInsertionState = insertionState
     
     /**
      * Handles scroll to bottom in the suggestion list.
      * Used for pagination/loading more suggestions.
      */
-    fun onScrollToBottom() {
+    public fun onScrollToBottom() {
         mentionDetectionState.activeFormatter?.onScrollToBottom()
     }
     
     /**
      * Dismisses the suggestion list without clearing other state.
      */
-    fun dismissSuggestions() {
+    public fun dismissSuggestions() {
         isShowingSuggestions = false
         suggestions = emptyList()
         isLoadingSuggestions = false
@@ -314,7 +314,7 @@ class MessageComposerMentionState(
      * @param context Optional context for clearing formatter selected lists.
      *                If null, formatter lists won't be cleared.
      */
-    fun clear(context: Context? = null) {
+    public fun clear(context: Context? = null) {
         insertionState.clear()
         mentionDetectionState = ComposeMentionState.INACTIVE
         isShowingSuggestions = false
@@ -336,7 +336,7 @@ class MessageComposerMentionState(
     /**
      * Hides the info message.
      */
-    fun hideInfoMessage() {
+    public fun hideInfoMessage() {
         isInfoMessageVisible = false
         infoMessage = ""
     }
@@ -359,11 +359,11 @@ class MessageComposerMentionState(
         selectedMentionCount = insertionState.getSelectedSuggestionItems().size
     }
     
-    companion object {
+    public companion object {
         /**
          * Default maximum number of mentions allowed per message.
          */
-        const val DEFAULT_MENTION_LIMIT = 10
+        public const val DEFAULT_MENTION_LIMIT: Int = 10
     }
 }
 
@@ -387,7 +387,7 @@ class MessageComposerMentionState(
  * @return A remembered MessageComposerMentionState instance
  */
 @Composable
-fun rememberMessageComposerMentionState(
+public fun rememberMessageComposerMentionState(
     textFormatters: List<CometChatTextFormatter>,
     mentionLimit: Int = MessageComposerMentionState.DEFAULT_MENTION_LIMIT
 ): MessageComposerMentionState {
@@ -412,7 +412,7 @@ fun rememberMessageComposerMentionState(
  * @return A remembered MessageComposerMentionState instance
  */
 @Composable
-fun rememberMessageComposerMentionState(
+public fun rememberMessageComposerMentionState(
     key1: Any?,
     textFormatters: List<CometChatTextFormatter>,
     mentionLimit: Int = MessageComposerMentionState.DEFAULT_MENTION_LIMIT

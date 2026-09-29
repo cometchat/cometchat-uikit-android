@@ -34,6 +34,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -78,7 +79,7 @@ import com.cometchat.uikit.core.state.ConversationSummaryUIState
  * @param onCloseClick Callback when the close icon is clicked
  */
 @Composable
-fun CometChatAIConversationSummaryView(
+public fun CometChatAIConversationSummaryView(
     modifier: Modifier = Modifier,
     uiState: ConversationSummaryUIState = ConversationSummaryUIState.Idle,
     style: CometChatAIConversationSummaryStyle = CometChatAIConversationSummaryStyle.default(),
@@ -89,6 +90,7 @@ fun CometChatAIConversationSummaryView(
     summaryView: (@Composable (summary: String) -> Unit)? = null,
     onCloseClick: (() -> Unit)? = null
 ) {
+    val cdHoist4 = stringResource(R.string.cometchat_a11y_ai_conversation_summary)
     val context = LocalContext.current
     
     // Don't render anything in Idle state
@@ -120,7 +122,7 @@ fun CometChatAIConversationSummaryView(
                     )
                 } else Modifier
             )
-            .semantics { contentDescription = "AI Conversation Summary" }
+            .semantics { contentDescription = cdHoist4 }
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -188,6 +190,7 @@ private fun ConversationSummaryHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist3 = stringResource(R.string.cometchat_a11y_close_conversation_summary)
         Text(
             text = title,
             color = style.titleTextColor,
@@ -203,7 +206,7 @@ private fun ConversationSummaryHeader(
         
         Icon(
             painter = painterResource(id = R.drawable.cometchat_ic_close),
-            contentDescription = "Close conversation summary",
+            contentDescription = stringResource(R.string.cometchat_a11y_close_conversation_summary),
             tint = style.closeIconTint,
             modifier = Modifier
                 .size(24.dp)
@@ -212,7 +215,7 @@ private fun ConversationSummaryHeader(
                     role = Role.Button
                 )
                 .semantics {
-                    contentDescription = "Close conversation summary"
+                    contentDescription = cdHoist3
                     role = Role.Button
                 }
         )
@@ -248,6 +251,7 @@ private fun ConversationSummaryContent(
             )
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_summary, summary)
         Text(
             text = summary,
             color = style.itemTextColor,
@@ -255,7 +259,7 @@ private fun ConversationSummaryContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .semantics { contentDescription = "Summary: $summary" }
+                .semantics { contentDescription = cdHoist2 }
         )
     }
 }
@@ -275,13 +279,14 @@ private fun ConversationSummaryErrorView(
             .padding(bottom = 16.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_error, errorText)
         Text(
             text = errorText,
             color = style.errorStateTextColor,
             style = style.errorStateTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics {
-                contentDescription = "Error: $errorText"
+                contentDescription = cdHoist1
             }
         )
     }

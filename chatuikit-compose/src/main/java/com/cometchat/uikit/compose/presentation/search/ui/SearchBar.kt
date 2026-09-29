@@ -22,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.search.style.CometChatSearchStyle
 
 private const val DEFAULT_PLACEHOLDER = "Search"
@@ -34,7 +36,7 @@ private const val DEFAULT_PLACEHOLDER = "Search"
  * A composable search bar component with back, clear, and search icons.
  */
 @Composable
-fun SearchBar(
+public fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -53,11 +55,12 @@ fun SearchBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         style.backIcon?.let { icon ->
+            val cdHoist2 = stringResource(R.string.cometchat_a11y_back)
             IconButton(
                 onClick = { onBackPress?.invoke() },
                 modifier = Modifier
                     .size(24.dp)
-                    .semantics { contentDescription = "Back" }
+                    .semantics { contentDescription = cdHoist2 }
             ) {
                 Icon(
                     painter = icon,
@@ -141,7 +144,12 @@ private fun SearchInputField(
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
+                // Expose the placeholder as the field's accessible name — the visual placeholder
+                // Text above is not announced, so without this a screen reader reads the input
+                // as an unlabeled "edit box" (ENG-39110 a11y audit finding).
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = placeholder },
                 textStyle = style.searchBarTextStyle.copy(color = style.searchBarTextColor),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -157,11 +165,12 @@ private fun SearchInputField(
         if (value.isNotEmpty()) {
             Spacer(modifier = Modifier.width(8.dp))
             style.clearIcon?.let { icon ->
+                val cdHoist1 = stringResource(R.string.cometchat_a11y_clear_search)
                 IconButton(
                     onClick = onClear,
                     modifier = Modifier
                         .size(20.dp)
-                        .semantics { contentDescription = "Clear search" }
+                        .semantics { contentDescription = cdHoist1 }
                 ) {
                     Icon(
                         painter = icon,

@@ -19,7 +19,7 @@ import com.cometchat.uikit.core.formatter.RichTextSpanManager
  *
  * Supported: **bold**, _italic_, ~~strikethrough~~, `inline code`, ```code block```, <u>underline</u>
  */
-class CometChatRichTextFormatter : CometChatTextFormatter('\u0000') {
+public class CometChatRichTextFormatter : CometChatTextFormatter('\u0000') {
 
     private val spanManager = RichTextSpanManager()
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.domain.model.Sticker
 
@@ -91,6 +93,7 @@ private fun StickerGridItem(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val stickerGridCd = sticker.name.ifEmpty { stringResource(R.string.cometchat_a11y_sticker) }
 
     Box(
         modifier = Modifier
@@ -99,7 +102,7 @@ private fun StickerGridItem(
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .semantics {
-                contentDescription = sticker.name.ifEmpty { "Sticker" }
+                contentDescription = stickerGridCd
                 role = Role.Button
             },
         contentAlignment = Alignment.Center
@@ -109,7 +112,7 @@ private fun StickerGridItem(
                 .data(sticker.url)
                 .crossfade(true)
                 .build(),
-            contentDescription = sticker.name.ifEmpty { "Sticker" },
+            contentDescription = sticker.name.ifEmpty { stringResource(R.string.cometchat_a11y_sticker) },
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()

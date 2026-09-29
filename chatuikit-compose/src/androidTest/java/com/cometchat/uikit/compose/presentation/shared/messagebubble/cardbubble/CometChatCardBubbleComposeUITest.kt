@@ -136,7 +136,16 @@ class CometChatCardBubbleComposeUITest {
     @Test
     fun cardBubble_onCardAction_canBeProvided() {
         var callbackReceived = false
-        val message = MockFactory.createCardMessage(id = 7L, cardJson = null, text = "Action test")
+        // fallbackText must be nulled explicitly: MockFactory defaults it to "Card Message", and
+        // the bubble's empty-payload order is getFallbackText() -> getText() -> the resource. Left
+        // at the default the bubble renders "Card Message" and never the text asserted below.
+        // Same shape as cardBubble_withNullCardAndNullFallback_displaysTextPreview.
+        val message = MockFactory.createCardMessage(
+            id = 7L,
+            cardJson = null,
+            text = "Action test",
+            fallbackText = null
+        )
 
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://www.cometchat.com/docs/ui-kit/android/overview
+    about: Integration guides and API reference for the Android UI Kit
+  - name: Help Center
+    url: https://help.cometchat.com
+    about: View FAQs and create support tickets
+  - name: Product Updates & Feature Requests
+    url: https://updates.cometchat.com
+    about: View product updates & suggest features
+  - name: Report a security vulnerability
+    url: https://github.com/cometchat/cometchat-uikit-android/security/policy
+    about: Please do not open a public issue for security reports

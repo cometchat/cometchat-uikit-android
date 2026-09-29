@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.cometchat.uikit.compose.presentation.shared.interfaces.DateTimeFormatterCallback
+import com.cometchat.chat.core.ConversationsRequest
+import com.cometchat.chat.core.MessagesRequest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +59,7 @@ private val defaultSearchFilters = listOf(
  * pagination, and multiple view states.
  */
 @Composable
-fun CometChatSearch(
+public fun CometChatSearch(
     modifier: Modifier = Modifier,
     viewModel: CometChatSearchViewModel? = null,
     style: CometChatSearchStyle = CometChatSearchStyle.default(),
@@ -64,6 +67,34 @@ fun CometChatSearch(
     uid: String? = null,
     guid: String? = null,
     searchFilters: List<SearchFilter> = defaultSearchFilters,
+
+    /**
+     * Request builder scoping the conversation half of the search. Parity with
+     * chatuikit-kotlin's `setConversationsRequestBuilder`.
+     */
+    conversationsRequestBuilder: ConversationsRequest.ConversationsRequestBuilder? = null,
+
+    /**
+     * Request builder scoping the message half of the search. Parity with
+     * chatuikit-kotlin's `setMessagesRequestBuilder`.
+     */
+    messagesRequestBuilder: MessagesRequest.MessagesRequestBuilder? = null,
+
+    /** Overrides the search bar's placeholder. Parity with chatuikit-kotlin's setHintText. */
+    hintText: String? = null,
+    /** Hides the online/offline dot on user results. Parity with setHideUserStatus. */
+    hideUserStatus: Boolean = false,
+    /** Hides the private/protected group badge on group results. Parity with setHideGroupType. */
+    hideGroupType: Boolean = false,
+    /** Custom date/time formatting for result timestamps. Parity with setDateTimeFormatter. */
+    dateTimeFormatter: DateTimeFormatterCallback? = null,
+    /** Filter selected when the screen first composes. Parity with setInitialSearchFilter. */
+    initialSearchFilter: SearchFilter? = null,
+    /** Overrides the id and text of the "@All" mention entry in results. Both must be non-empty.
+     *  Parity with setMentionAllLabelId. Only applies to the default formatters. */
+    mentionAllLabelId: String? = null,
+    mentionAllLabel: String? = null,
+
     hideSearchBar: Boolean = false,
     hideFilterChips: Boolean = false,
     hideLoadingState: Boolean = false,
@@ -97,11 +128,15 @@ fun CometChatSearch(
     val context = LocalContext.current
 
     // Initialize default text formatters if none provided (matching reference Java behavior)
-    val effectiveTextFormatters = remember(textFormatters) {
+    val effectiveTextFormatters = remember(textFormatters, mentionAllLabelId, mentionAllLabel) {
         if (textFormatters.isEmpty()) {
             try {
                 val richTextFormatter = CometChatRichTextFormatter()
-                val mentionsFormatter = CometChatMentionsFormatter(context)
+                val mentionsFormatter = CometChatMentionsFormatter(context).apply {
+                    if (!mentionAllLabelId.isNullOrEmpty() && !mentionAllLabel.isNullOrEmpty()) {
+                        setMentionAllLabel(mentionAllLabelId, mentionAllLabel)
+                    }
+                }
                 listOf<CometChatTextFormatter>(richTextFormatter, mentionsFormatter)
             } catch (e: Exception) {
                 emptyList()
@@ -137,6 +172,19 @@ fun CometChatSearch(
         searchViewModel.setGuid(guid)
     }
 
+    // Select the initial filter once, on first composition.
+    LaunchedEffect(searchViewModel, initialSearchFilter) {
+        initialSearchFilter?.let { searchViewModel.toggleFilter(it) }
+    }
+
+    LaunchedEffect(conversationsRequestBuilder) {
+        conversationsRequestBuilder?.let { searchViewModel.setConversationsRequestBuilder(it) }
+    }
+
+    LaunchedEffect(messagesRequestBuilder) {
+        messagesRequestBuilder?.let { searchViewModel.setMessagesRequestBuilder(it) }
+    }
+
     LaunchedEffect(uiState, conversations, messages) {
         when (uiState) {
             is SearchUIState.Content -> {
@@ -165,7 +213,7 @@ fun CometChatSearch(
                     searchViewModel.searchConversationsAndMessages(newText, selectedFilters)
                 },
                 style = style,
-                placeholder = context.getString(R.string.cometchat_search),
+                placeholder = hintText ?: context.getString(R.string.cometchat_search),
                 onBackPress = onBackPress,
                 onSearch = { query ->
                     searchViewModel.searchConversationsAndMessages(query, selectedFilters)
@@ -245,6 +293,9 @@ fun CometChatSearch(
                     val hasFilterChipsOnly = selectedFilters.isNotEmpty() && searchText.isEmpty()
 
                     SearchListContent(
+                        dateTimeFormatter = dateTimeFormatter,
+                        hideUserStatus = hideUserStatus,
+                        hideGroupType = hideGroupType,
                         conversations = conversations,
                         messages = messages,
                         hasMoreConversations = hasMoreConversations,

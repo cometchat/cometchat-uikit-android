@@ -20,7 +20,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param textStyle Typography style for the initials text. If null, uses bodyBold from theme
  */
 @Immutable
-data class CometChatAvatarStyle(
+public data class CometChatAvatarStyle(
     val backgroundColor: Color? = null,
     val borderColor: Color? = null,
     val borderWidth: Dp = 0.dp,
@@ -28,7 +28,7 @@ data class CometChatAvatarStyle(
     val textColor: Color? = null,
     val textStyle: TextStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatAvatarStyle with values sourced from CometChatTheme.
          *
@@ -41,7 +41,7 @@ data class CometChatAvatarStyle(
          * @return A new CometChatAvatarStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.extendedPrimaryColor500,
             borderColor: Color? = null,
             borderWidth: Dp = 0.dp,
@@ -63,4 +63,4 @@ data class CometChatAvatarStyle(
  * Type alias for backward compatibility with code using AvatarStyle.
  */
 @Deprecated("Use CometChatAvatarStyle instead", ReplaceWith("CometChatAvatarStyle"))
-typealias AvatarStyle = CometChatAvatarStyle
+public typealias AvatarStyle = CometChatAvatarStyle

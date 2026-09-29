@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -29,14 +30,15 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Matches Figma: Campaigns - Loading State
  */
 @Composable
-fun NotificationFeedLoadingState(
+public fun NotificationFeedLoadingState(
     modifier: Modifier = Modifier
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_notifications)
     Column(
         modifier = modifier
             .fillMaxSize()
             .testTag("notification-feed-loading-state")
-            .semantics { contentDescription = "Loading notifications" },
+            .semantics { contentDescription = cdHoist1 },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -65,7 +67,7 @@ fun NotificationFeedLoadingState(
  * Uses shared CometChatEmptyState component with notification-specific styling.
  */
 @Composable
-fun NotificationFeedEmptyState(
+public fun NotificationFeedEmptyState(
     modifier: Modifier = Modifier
 ) {
     CometChatEmptyState(
@@ -92,7 +94,7 @@ fun NotificationFeedEmptyState(
  * Uses shared CometChatErrorState component with notification-specific styling.
  */
 @Composable
-fun NotificationFeedErrorState(
+public fun NotificationFeedErrorState(
     exception: CometChatException,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier

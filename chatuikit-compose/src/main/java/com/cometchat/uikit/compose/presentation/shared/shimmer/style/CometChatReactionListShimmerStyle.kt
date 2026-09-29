@@ -28,7 +28,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatS
  * @property shimmerConfig Shimmer animation configuration
  */
 @Immutable
-data class CometChatReactionListShimmerStyle(
+public data class CometChatReactionListShimmerStyle(
     val avatarSize: Dp,
     val nameHeight: Dp,
     val actionIconSize: Dp,
@@ -38,41 +38,41 @@ data class CometChatReactionListShimmerStyle(
     val contentSpacing: Dp,
     val shimmerConfig: CometChatShimmerConfig
 ) {
-    companion object {
+    public companion object {
         /**
          * Default avatar size matching chatuikit-kotlin shimmer_cometchat_reaction_list_items.xml.
          */
-        val DEFAULT_AVATAR_SIZE = 40.dp
+        public val DEFAULT_AVATAR_SIZE: androidx.compose.ui.unit.Dp = 40.dp
 
         /**
          * Default name height matching chatuikit-kotlin (20dp).
          */
-        val DEFAULT_NAME_HEIGHT = 20.dp
+        public val DEFAULT_NAME_HEIGHT: androidx.compose.ui.unit.Dp = 20.dp
 
         /**
          * Default action icon size matching chatuikit-kotlin (24dp).
          */
-        val DEFAULT_ACTION_ICON_SIZE = 24.dp
+        public val DEFAULT_ACTION_ICON_SIZE: androidx.compose.ui.unit.Dp = 24.dp
 
         /**
          * Default corner radius for rectangular placeholders.
          */
-        val DEFAULT_PLACEHOLDER_CORNER_RADIUS = 4.dp
+        public val DEFAULT_PLACEHOLDER_CORNER_RADIUS: androidx.compose.ui.unit.Dp = 4.dp
 
         /**
          * Default horizontal padding.
          */
-        val DEFAULT_HORIZONTAL_PADDING = 16.dp
+        public val DEFAULT_HORIZONTAL_PADDING: androidx.compose.ui.unit.Dp = 16.dp
 
         /**
          * Default vertical padding.
          */
-        val DEFAULT_VERTICAL_PADDING = 8.dp
+        public val DEFAULT_VERTICAL_PADDING: androidx.compose.ui.unit.Dp = 8.dp
 
         /**
          * Default spacing between elements.
          */
-        val DEFAULT_CONTENT_SPACING = 12.dp
+        public val DEFAULT_CONTENT_SPACING: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Creates a default CometChatReactionListShimmerStyle with values matching
@@ -89,7 +89,7 @@ data class CometChatReactionListShimmerStyle(
          * @return A configured CometChatReactionListShimmerStyle instance
          */
         @Composable
-        fun default(
+        public fun default(
             avatarSize: Dp = DEFAULT_AVATAR_SIZE,
             nameHeight: Dp = DEFAULT_NAME_HEIGHT,
             actionIconSize: Dp = DEFAULT_ACTION_ICON_SIZE,

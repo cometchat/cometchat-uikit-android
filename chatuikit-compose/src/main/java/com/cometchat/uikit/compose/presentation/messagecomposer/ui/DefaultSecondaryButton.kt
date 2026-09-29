@@ -12,9 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatMessageComposerStyle
 
 /**
@@ -30,12 +32,13 @@ import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatM
  * @param onClick Callback when the button is clicked
  */
 @Composable
-fun AnimatedAttachmentButton(
+public fun AnimatedAttachmentButton(
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false,
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     onClick: () -> Unit = {}
 ) {
+    val secondaryButtonCd = if (isExpanded) stringResource(R.string.cometchat_a11y_close_attachments) else stringResource(R.string.cometchat_a11y_open_attachments)
     val rotation by animateFloatAsState(
         targetValue = if (isExpanded) 45f else 0f,
         animationSpec = tween(
@@ -49,8 +52,8 @@ fun AnimatedAttachmentButton(
         onClick = onClick,
         modifier = modifier
             .size(40.dp)
-            .semantics { 
-                contentDescription = if (isExpanded) "Close attachments" else "Open attachments"
+            .semantics {
+                contentDescription = secondaryButtonCd
             }
     ) {
         style.attachmentIcon?.let { icon ->
@@ -80,7 +83,7 @@ fun AnimatedAttachmentButton(
  * @param onAttachmentClick Callback when the attachment button is clicked
  */
 @Composable
-fun DefaultSecondaryButton(
+public fun DefaultSecondaryButton(
     modifier: Modifier = Modifier,
     hideAttachmentButton: Boolean = false,
     hideVoiceRecordingButton: Boolean = false, // Kept for API compatibility, but not used here

@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -73,6 +74,7 @@ import java.text.SimpleDateFormat
  * @param hideGroupType Whether to hide group type indicators
  * @param hideReceipts Whether to hide message read receipts
  * @param hideSeparator Whether to hide item separators
+ * @param hidePinOption Whether to hide the pin/unpin conversation option
  * @param hideDeleteOption Whether to hide delete option in menu
  * @param hideLoadingState Whether to hide loading state
  * @param hideEmptyState Whether to hide empty state
@@ -107,7 +109,7 @@ import java.text.SimpleDateFormat
  * @param searchText Initial text for the search box
  */
 @Composable
-fun CometChatConversations(
+public fun CometChatConversations(
     modifier: Modifier = Modifier,
     conversationListViewModel: CometChatConversationsViewModel? = null,
     style: CometChatConversationsStyle = CometChatConversationsStyle.default(),
@@ -128,6 +130,7 @@ fun CometChatConversations(
     hideGroupType: Boolean = false,
     hideReceipts: Boolean = false,
     hideSeparator: Boolean = false,
+    hidePinOption: Boolean = false,
     hideDeleteOption: Boolean = false,
     hideLoadingState: Boolean = false,
     hideEmptyState: Boolean = false,
@@ -345,6 +348,7 @@ fun CometChatConversations(
                         hideGroupType = hideGroupType,
                         hideReceipts = hideReceipts,
                         hideSeparator = hideSeparator,
+                        hidePinOption = hidePinOption,
                         hideDeleteOption = hideDeleteOption,
                         dateTimeFormatter = dateTimeFormatter,
                         textFormatters = effectiveTextFormatters,
@@ -498,13 +502,14 @@ private fun ConversationListToolbar(
             actions = {
                 // Submit selection button
                 style.submitSelectionIcon?.let { icon ->
+                    val cdHoist1 = stringResource(R.string.cometchat_a11y_submit_selection_of_conversations, selectedCount)
                     Box(
                         modifier = Modifier
                             .size(48.dp)
                             .focusable()
                             .clickable { onSubmitSelection() }
                             .semantics { 
-                                contentDescription = "Submit selection of $selectedCount conversations"
+                                contentDescription = cdHoist1
                                 role = Role.Button
                             }
                     ) {

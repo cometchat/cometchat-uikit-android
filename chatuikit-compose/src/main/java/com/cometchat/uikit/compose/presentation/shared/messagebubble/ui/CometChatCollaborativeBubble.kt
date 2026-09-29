@@ -45,7 +45,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
 /**
  * Enum representing collaborative document types.
  */
-enum class CollaborativeType {
+public enum class CollaborativeType {
     DOCUMENT,
     WHITEBOARD
 }
@@ -74,7 +74,7 @@ enum class CollaborativeType {
  * @param onJoinClick Callback when the "Join" button is clicked with the document URL
  */
 @Composable
-fun CometChatCollaborativeBubble(
+public fun CometChatCollaborativeBubble(
     message: CustomMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -113,7 +113,7 @@ fun CometChatCollaborativeBubble(
  * @param onJoinClick Callback when the "Join" button is clicked with the document URL
  */
 @Composable
-fun CometChatCollaborativeBubble(
+public fun CometChatCollaborativeBubble(
     title: String,
     subtitle: String,
     type: CollaborativeType,
@@ -150,6 +150,7 @@ private fun CollaborativeBubbleContent(
     onJoinClick: ((String) -> Unit)?,
     onLongClick: (() -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_collaborative, type.name.lowercase(), title)
     val context = LocalContext.current
 
     // Default click handler that opens URL in browser
@@ -177,7 +178,7 @@ private fun CollaborativeBubbleContent(
                 onLongClick = onLongClick
             )
             .semantics {
-                contentDescription = "Collaborative ${type.name.lowercase()}: $title"
+                contentDescription = cdHoist1
             }
     ) {
         // Banner image at top (matching Kotlin layout - 136dp height)

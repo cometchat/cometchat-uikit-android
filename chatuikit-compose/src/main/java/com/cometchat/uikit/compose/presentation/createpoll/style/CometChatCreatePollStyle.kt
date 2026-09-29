@@ -53,7 +53,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param errorTextStyle Text style for error messages
  */
 @Immutable
-data class CometChatCreatePollStyle(
+public data class CometChatCreatePollStyle(
     // Container
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -109,14 +109,14 @@ data class CometChatCreatePollStyle(
     val errorTextColor: Color,
     val errorTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatCreatePollStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatCreatePollStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Container
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 0.dp,

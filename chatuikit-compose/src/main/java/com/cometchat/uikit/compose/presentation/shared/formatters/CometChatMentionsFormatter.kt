@@ -20,15 +20,16 @@ import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.formatters.style.CometChatMentionStyle
 import com.cometchat.uikit.compose.presentation.shared.formatters.style.PromptTextStyle
+import com.cometchat.uikit.core.utils.CometChatLogger
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.regex.Pattern
 
-class CometChatMentionsFormatter(
+public class CometChatMentionsFormatter(
     private val context: Context
 ) : CometChatTextFormatter('@') {
     
-    companion object {
+    public companion object {
         private const val TAG = "CometChatMentionsFormatter"
     }
     
@@ -73,8 +74,8 @@ class CometChatMentionsFormatter(
         initDefaultStyles()
     }
 
-    constructor(context: Context, trackingCharacter: Char) : this(context)
-    constructor(context: Context, trackingCharacter: Char, regexPattern: String) : this(context) {
+    public constructor(context: Context, trackingCharacter: Char) : this(context)
+    public constructor(context: Context, trackingCharacter: Char, regexPattern: String) : this(context) {
         pattern = Pattern.compile(regexPattern)
     }
 
@@ -126,20 +127,20 @@ class CometChatMentionsFormatter(
         conversationSelfTagStyle = incomingSelfStyle
     }
 
-    fun setMentionLimit(limit: Int) { localMentionLimit = limit }
-    fun setMentionsVisibility(visibility: UIKitConstants.MentionsVisibility) { mentionsVisibility = visibility }
-    fun setMentionsType(type: UIKitConstants.MentionsType) { mentionType = type }
-    fun setOnMentionClick(click: (Context, User) -> Unit) { onTagClick = click }
-    fun setOnMentionAllClick(click: () -> Unit) { mentionAllClick = click }
-    fun setDisableMentionAll(disable: Boolean) { disableMentionAll = disable }
-    fun setOutgoingBubbleSelfTagStyle(style: PromptTextStyle?) { outgoingBubbleSelfTagStyle = style }
-    fun setOutgoingBubbleTagStyle(style: PromptTextStyle?) { outgoingBubbleTagStyle = style }
-    fun setIncomingBubbleSelfTagStyle(style: PromptTextStyle?) { incomingBubbleSelfTagStyle = style }
-    fun setIncomingBubbleTagStyle(style: PromptTextStyle?) { incomingBubbleTagStyle = style }
-    fun setSelfTagStyle(style: PromptTextStyle?) { selfTagStyle = style }
-    fun setTagStyle(style: PromptTextStyle?) { tagStyle = style }
-    fun setConversationSelfTagStyle(style: PromptTextStyle?) { conversationSelfTagStyle = style }
-    fun setConversationTagStyle(style: PromptTextStyle?) { conversationTagStyle = style }
+    public fun setMentionLimit(limit: Int) { localMentionLimit = limit }
+    public fun setMentionsVisibility(visibility: UIKitConstants.MentionsVisibility) { mentionsVisibility = visibility }
+    public fun setMentionsType(type: UIKitConstants.MentionsType) { mentionType = type }
+    public fun setOnMentionClick(click: (Context, User) -> Unit) { onTagClick = click }
+    public fun setOnMentionAllClick(click: () -> Unit) { mentionAllClick = click }
+    public fun setDisableMentionAll(disable: Boolean) { disableMentionAll = disable }
+    public fun setOutgoingBubbleSelfTagStyle(style: PromptTextStyle?) { outgoingBubbleSelfTagStyle = style }
+    public fun setOutgoingBubbleTagStyle(style: PromptTextStyle?) { outgoingBubbleTagStyle = style }
+    public fun setIncomingBubbleSelfTagStyle(style: PromptTextStyle?) { incomingBubbleSelfTagStyle = style }
+    public fun setIncomingBubbleTagStyle(style: PromptTextStyle?) { incomingBubbleTagStyle = style }
+    public fun setSelfTagStyle(style: PromptTextStyle?) { selfTagStyle = style }
+    public fun setTagStyle(style: PromptTextStyle?) { tagStyle = style }
+    public fun setConversationSelfTagStyle(style: PromptTextStyle?) { conversationSelfTagStyle = style }
+    public fun setConversationTagStyle(style: PromptTextStyle?) { conversationTagStyle = style }
 
     /**
      * Sets the mention style for all contexts (bubbles, conversations, composer).
@@ -149,7 +150,7 @@ class CometChatMentionsFormatter(
      *
      * @param style The CometChatMentionStyle to apply across all mention contexts
      */
-    fun setMentionStyle(style: CometChatMentionStyle) {
+    public fun setMentionStyle(style: CometChatMentionStyle) {
         val promptStyle = style.toPromptTextStyle()
         val selfPromptStyle = style.toSelfPromptTextStyle()
         
@@ -176,7 +177,7 @@ class CometChatMentionsFormatter(
      *
      * @param style The CometChatMentionStyle to apply for incoming message bubbles
      */
-    fun setIncomingBubbleMentionStyle(style: CometChatMentionStyle) {
+    public fun setIncomingBubbleMentionStyle(style: CometChatMentionStyle) {
         // Note: In the formatter, LEFT alignment = outgoing style properties (sender's perspective)
         // and RIGHT alignment = incoming style properties. This matches the Java implementation.
         outgoingBubbleTagStyle = style.toPromptTextStyle()
@@ -191,7 +192,7 @@ class CometChatMentionsFormatter(
      *
      * @param style The CometChatMentionStyle to apply for outgoing message bubbles
      */
-    fun setOutgoingBubbleMentionStyle(style: CometChatMentionStyle) {
+    public fun setOutgoingBubbleMentionStyle(style: CometChatMentionStyle) {
         // Note: In the formatter, RIGHT alignment = incoming style properties (receiver's perspective)
         // and LEFT alignment = outgoing style properties. This matches the Java implementation.
         incomingBubbleTagStyle = style.toPromptTextStyle()
@@ -208,12 +209,12 @@ class CometChatMentionsFormatter(
      *
      * @param style The CometChatMentionStyle to apply for conversation previews
      */
-    fun setConversationsMentionStyle(style: CometChatMentionStyle) {
+    public fun setConversationsMentionStyle(style: CometChatMentionStyle) {
         conversationTagStyle = style.toPromptTextStyle()
         conversationSelfTagStyle = style.toSelfPromptTextStyle()
     }
 
-    fun setMentionAllLabel(labelId: String, labelText: String) {
+    public fun setMentionAllLabel(labelId: String, labelText: String) {
         if (labelId.isNotEmpty() && labelText.isNotEmpty()) {
             mentionAllLabelText = labelText
             mentionAllId = labelId
@@ -221,15 +222,15 @@ class CometChatMentionsFormatter(
         }
     }
 
-    fun setMentionAllInfoText(infoText: String) { mentionAllInfoText = infoText }
+    public fun setMentionAllInfoText(infoText: String) { mentionAllInfoText = infoText }
 
-    fun setGroupMembersRequestBuilder(callback: (Group) -> GroupMembersRequest.GroupMembersRequestBuilder) {
+    public fun setGroupMembersRequestBuilder(callback: (Group) -> GroupMembersRequest.GroupMembersRequestBuilder) {
         groupMembersRequestBuilderCallback = callback
         getGroup()?.let { groupMembersRequestBuilder = callback(it) }
         initializeGroupMemberRequestBuilder()
     }
 
-    fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) { usersRequestBuilder = builder }
+    public fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) { usersRequestBuilder = builder }
 
     private fun initializeGroupMemberRequestBuilder() {
         if (groupMembersRequestBuilder == null && groupId != null) {
@@ -258,7 +259,7 @@ class CometChatMentionsFormatter(
         }
     }
 
-    fun searchMentions(queryString: String) {
+    public fun searchMentions(queryString: String) {
         when (mentionType) {
             UIKitConstants.MentionsType.USERS -> searchUser(queryString)
             UIKitConstants.MentionsType.USERS_AND_GROUP_MEMBERS -> {
@@ -267,21 +268,21 @@ class CometChatMentionsFormatter(
         }
     }
 
-    fun searchUser(queryString: String) {
+    public fun searchUser(queryString: String) {
         initializeUserRequestBuilder()
         localSuggestionItemList.value = emptyList()
         usersRequest = usersRequestBuilder?.setSearchKeyword(queryString)?.build()
         fetchUsers()
     }
 
-    fun searchGroupMember(queryString: String) {
+    public fun searchGroupMember(queryString: String) {
         initializeGroupMemberRequestBuilder()
         groupMembersRequest = groupMembersRequestBuilder?.setSearchKeyword(queryString)?.build()
         localSuggestionItemList.value = emptyList()
         fetchGroupMembers()
     }
 
-    fun fetchUsers() {
+    public fun fetchUsers() {
         usersRequest?.fetchNext(object : CometChat.CallbackListener<List<User>>() {
             override fun onSuccess(users: List<User>) {
                 val suggestions = users.map { user ->
@@ -308,7 +309,7 @@ class CometChatMentionsFormatter(
         })
     }
 
-    fun fetchGroupMembers() {
+    public fun fetchGroupMembers() {
         groupMembersRequest?.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
             override fun onSuccess(groupMembers: List<GroupMember>) {
                 val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
@@ -367,22 +368,21 @@ class CometChatMentionsFormatter(
 
     override fun handlePreMessageSend(context: Context, baseMessage: BaseMessage) {
         val users = getMentionUsers()
-        android.util.Log.d(TAG, "handlePreMessageSend: setting mentionedUsers, count=${users.size}, users=${users.map { it.uid }}")
+        CometChatLogger.d(TAG, "handlePreMessageSend: setting mentionedUsers, count=${users.size}, users=${users.map { it.uid }}")
         baseMessage.mentionedUsers = users
-        android.util.Log.d(TAG, "handlePreMessageSend: after setting, mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
+        CometChatLogger.d(TAG, "handlePreMessageSend: after setting, mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
     }
 
-    fun getMentionUsers(): List<User> {
+    public fun getMentionUsers(): List<User> {
         val selectedList = getSelectedList()
-        android.util.Log.d(TAG, "getMentionUsers: selectedList.size=${selectedList.size}")
+        CometChatLogger.d(TAG, "getMentionUsers: selectedList.size=${selectedList.size}")
         return selectedList.mapNotNull { item ->
-            android.util.Log.d(TAG, "getMentionUsers: item.id=${item.id}, item.data=${item.data}")
+            CometChatLogger.d(TAG, "getMentionUsers: item.id=${item.id}, item.data=${item.data}")
             try {
                 val user = item.data?.let { User.fromJson(it.toString()) }
-                android.util.Log.d(TAG, "getMentionUsers: parsed user=${user?.uid}, name=${user?.name}")
                 user
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "getMentionUsers: failed to parse user from item.data", e)
+                CometChatLogger.e(TAG, "getMentionUsers: failed to parse user from item.data", e)
                 null
             }
         }
@@ -505,8 +505,7 @@ class CometChatMentionsFormatter(
         val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
         val replacements = mutableListOf<MentionReplacement>()
         
-        android.util.Log.d(TAG, "getBubbleSpan: originalText='$originalText', messageId=${baseMessage.id}, muid=${baseMessage.muid}")
-        android.util.Log.d(TAG, "getBubbleSpan: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
+        CometChatLogger.d(TAG, "getBubbleSpan: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
         
         if (!disableMentionAll) {
             val mentionAllMatcher = mentionAllPattern.matcher(originalText)
@@ -519,16 +518,14 @@ class CometChatMentionsFormatter(
         }
         
         val mentionedUsers = baseMessage.mentionedUsers
-        android.util.Log.d(TAG, "getBubbleSpan: mentionedUsers isNull=${mentionedUsers == null}, isEmpty=${mentionedUsers?.isEmpty()}")
+        CometChatLogger.d(TAG, "getBubbleSpan: mentionedUsers isNull=${mentionedUsers == null}, isEmpty=${mentionedUsers?.isEmpty()}")
         if (mentionedUsers != null && mentionedUsers.isNotEmpty()) {
             val matcher = pattern.matcher(originalText)
-            android.util.Log.d(TAG, "getBubbleSpan: pattern=$pattern, looking for matches in '$originalText'")
             while (matcher.find()) {
                 val userId = matcher.group(1)
-                android.util.Log.d(TAG, "getBubbleSpan: found match for userId='$userId' at ${matcher.start()}-${matcher.end()}")
+                CometChatLogger.d(TAG, "getBubbleSpan: found match for userId='$userId' at ${matcher.start()}-${matcher.end()}")
                 val user = mentionedUsers.find { it.uid == userId }
                 if (user != null) {
-                    android.util.Log.d(TAG, "getBubbleSpan: found user ${user.name} for userId=$userId")
                     val isSelf = user.uid == loggedInUser?.uid
                     replacements.add(MentionReplacement(
                         matcher.start(), matcher.end(),
@@ -536,11 +533,11 @@ class CometChatMentionsFormatter(
                         getMentionStyleForBubble(isSelf, alignment), isSelf
                     ))
                 } else {
-                    android.util.Log.d(TAG, "getBubbleSpan: user NOT found for userId=$userId in mentionedUsers")
+                    CometChatLogger.d(TAG, "getBubbleSpan: user NOT found for userId=$userId in mentionedUsers")
                 }
             }
         }
-        android.util.Log.d(TAG, "getBubbleSpan: total replacements=${replacements.size}")
+        CometChatLogger.d(TAG, "getBubbleSpan: total replacements=${replacements.size}")
         return buildStyledString(originalText, replacements)
     }
 
@@ -617,28 +614,28 @@ class CometChatMentionsFormatter(
      *
      * @return The maximum number of mentions allowed per message
      */
-    fun getMentionLimit(): Int = localMentionLimit
+    public fun getMentionLimit(): Int = localMentionLimit
 
     /**
      * Gets the mention all ID used for @all mentions.
      *
      * @return The mention all ID (default: "all")
      */
-    fun getMentionAllId(): String = mentionAllId
+    public fun getMentionAllId(): String = mentionAllId
 
     /**
      * Gets the mention all label text.
      *
      * @return The display label for mention all (e.g., "Notify All")
      */
-    fun getMentionAllLabelText(): String = mentionAllLabelText
+    public fun getMentionAllLabelText(): String = mentionAllLabelText
 
     /**
      * Checks if mention all is disabled.
      *
      * @return true if mention all is disabled, false otherwise
      */
-    fun isMentionAllDisabled(): Boolean = disableMentionAll
+    public fun isMentionAllDisabled(): Boolean = disableMentionAll
 
     /**
      * Converts a [PromptTextStyle] to a Compose [SpanStyle].
@@ -649,7 +646,7 @@ class CometChatMentionsFormatter(
      * @param promptTextStyle The PromptTextStyle to convert
      * @return A SpanStyle with equivalent styling
      */
-    fun toSpanStyle(promptTextStyle: PromptTextStyle?): SpanStyle {
+    public fun toSpanStyle(promptTextStyle: PromptTextStyle?): SpanStyle {
         if (promptTextStyle == null) return SpanStyle()
         return SpanStyle(
             color = if (promptTextStyle.getColor() != 0) Color(promptTextStyle.getColor()) else Color.Unspecified,
@@ -667,7 +664,7 @@ class CometChatMentionsFormatter(
      *
      * @return The SpanStyle for composer mentions
      */
-    fun getComposerMentionSpanStyle(): SpanStyle = toSpanStyle(tagStyle)
+    public fun getComposerMentionSpanStyle(): SpanStyle = toSpanStyle(tagStyle)
 
     /**
      * Gets the [SpanStyle] for self-mentions in the composer.
@@ -676,7 +673,7 @@ class CometChatMentionsFormatter(
      *
      * @return The SpanStyle for self-mentions in the composer
      */
-    fun getComposerSelfMentionSpanStyle(): SpanStyle = toSpanStyle(selfTagStyle)
+    public fun getComposerSelfMentionSpanStyle(): SpanStyle = toSpanStyle(selfTagStyle)
 
     /**
      * Gets the appropriate [SpanStyle] for a suggestion item based on whether it's a self-mention.
@@ -684,7 +681,7 @@ class CometChatMentionsFormatter(
      * @param suggestionItem The suggestion item to get the style for
      * @return The appropriate SpanStyle for the suggestion item
      */
-    fun getSpanStyleForSuggestionItem(suggestionItem: SuggestionItem): SpanStyle {
+    public fun getSpanStyleForSuggestionItem(suggestionItem: SuggestionItem): SpanStyle {
         val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
         val isSelf = suggestionItem.id == loggedInUser?.uid || suggestionItem.id == mentionAllId
         return if (isSelf) getComposerSelfMentionSpanStyle() else getComposerMentionSpanStyle()
@@ -695,14 +692,14 @@ class CometChatMentionsFormatter(
      *
      * @return true if the number of selected mentions equals or exceeds the limit
      */
-    fun isMentionLimitReached(): Boolean = getSelectedList().size >= localMentionLimit
+    public fun isMentionLimitReached(): Boolean = getSelectedList().size >= localMentionLimit
 
     /**
      * Gets the info message to display when the mention limit is reached.
      *
      * @return The info message string, or empty string if limit not reached
      */
-    fun getMentionLimitInfoMessage(): String {
+    public fun getMentionLimitInfoMessage(): String {
         return if (isMentionLimitReached()) {
             "You can mention up to $localMentionLimit times at a time"
         } else ""
@@ -713,7 +710,7 @@ class CometChatMentionsFormatter(
      *
      * Call this when the composer is cleared or when starting a new message.
      */
-    fun clearSuggestions() {
+    public fun clearSuggestions() {
         localSuggestionItemList.value = emptyList()
         setSuggestionItemList(emptyList())
     }
@@ -723,12 +720,12 @@ class CometChatMentionsFormatter(
      *
      * @return The PromptTextStyle for regular mentions, or null if not set
      */
-    fun getTagStyle(): PromptTextStyle? = tagStyle
+    public fun getTagStyle(): PromptTextStyle? = tagStyle
 
     /**
      * Gets the current self tag style for self-mentions.
      *
      * @return The PromptTextStyle for self-mentions, or null if not set
      */
-    fun getSelfTagStyle(): PromptTextStyle? = selfTagStyle
+    public fun getSelfTagStyle(): PromptTextStyle? = selfTagStyle
 }

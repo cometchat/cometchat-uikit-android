@@ -44,7 +44,7 @@ import androidx.core.content.ContextCompat
  * ```
  */
 @Composable
-fun rememberMultiplePermissionsState(
+public fun rememberMultiplePermissionsState(
     permissions: List<String>,
     onPermissionsResult: ((grantedPermissions: List<String>, deniedPermissions: List<String>) -> Unit)? = null
 ): ManagedMultiplePermissionsState {
@@ -84,39 +84,39 @@ fun rememberMultiplePermissionsState(
  * @property launchRequest Function to launch the permissions request
  */
 @Stable
-class ManagedMultiplePermissionsState(
-    val state: MultiplePermissionsState,
+public class ManagedMultiplePermissionsState(
+    public val state: MultiplePermissionsState,
     private val launchRequest: () -> Unit
 ) {
     /**
      * List of individual permission states
      */
-    val permissions: List<PermissionState> get() = state.permissions
+    public val permissions: List<PermissionState> get() = state.permissions
     
     /**
      * Whether all permissions are currently granted
      */
-    val allPermissionsGranted: Boolean get() = state.allPermissionsGranted
+    public val allPermissionsGranted: Boolean get() = state.allPermissionsGranted
     
     /**
      * Whether at least one permission requires showing rationale
      */
-    val shouldShowRationale: Boolean get() = state.shouldShowRationale
+    public val shouldShowRationale: Boolean get() = state.shouldShowRationale
     
     /**
      * List of granted permissions
      */
-    val grantedPermissions: List<String> get() = state.grantedPermissions
+    public val grantedPermissions: List<String> get() = state.grantedPermissions
     
     /**
      * List of denied permissions
      */
-    val deniedPermissions: List<String> get() = state.deniedPermissions
+    public val deniedPermissions: List<String> get() = state.deniedPermissions
     
     /**
      * Launches the permissions request dialog
      */
-    fun launchPermissionsRequest() {
+    public fun launchPermissionsRequest() {
         launchRequest()
     }
 }

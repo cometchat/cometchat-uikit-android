@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cometchat.cards.CometChatCardComposable
 import com.cometchat.cards.models.CometChatCardThemeMode
 import com.cometchat.chat.models.NotificationFeedItem
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.notificationfeed.style.CometChatNotificationFeedStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
 
@@ -44,7 +46,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param modifier Modifier for the card container
  */
 @Composable
-fun NotificationFeedItemCard(
+public fun NotificationFeedItemCard(
     item: NotificationFeedItem,
     style: CometChatNotificationFeedStyle,
     onItemVisible: (NotificationFeedItem) -> Unit,
@@ -53,6 +55,7 @@ fun NotificationFeedItemCard(
     onActionClick: (NotificationFeedItem, Map<String, Any>) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_notification_from, item.category ?: "unknown")
     var isVisible by remember { mutableStateOf(false) }
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
@@ -96,7 +99,7 @@ fun NotificationFeedItemCard(
             }
             .testTag("notification-feed-item-${item.id}")
             .semantics {
-                contentDescription = "Notification from ${item.category ?: "unknown"}"
+                contentDescription = cdHoist1
             },
         shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),

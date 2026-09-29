@@ -91,7 +91,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatOutgoingCallViewModel
  * Validates: Requirements 11.1-11.21
  */
 @Composable
-fun CometChatOutgoingCall(
+public fun CometChatOutgoingCall(
     call: Call,
     modifier: Modifier = Modifier,
     viewModel: CometChatOutgoingCallViewModel? = null,
@@ -206,6 +206,10 @@ fun CometChatOutgoingCall(
             recipientAvatar = null
         }
     }
+
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_avatar_of, recipientName)
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_calling, recipientName)
+    val cdHoist3 = stringResource(R.string.cometchat_a11y_outgoing_call_to, recipientName)
     
     // Get localized strings
     val callingText = stringResource(R.string.cometchat_calling) + " ..."
@@ -215,7 +219,7 @@ fun CometChatOutgoingCall(
         modifier = modifier
             .fillMaxSize()
             .semantics {
-                contentDescription = "Outgoing call to $recipientName"
+                contentDescription = cdHoist3
             },
         shape = RoundedCornerShape(style.cornerRadius),
         colors = CardDefaults.cardColors(
@@ -253,7 +257,7 @@ fun CometChatOutgoingCall(
                         modifier = Modifier
                             .fillMaxWidth()
                             .semantics {
-                                contentDescription = "Calling $recipientName"
+                                contentDescription = cdHoist2
                             }
                     )
                 }
@@ -296,7 +300,7 @@ fun CometChatOutgoingCall(
                             .size(120.dp) // cometchat_120dp = 120dp
                             .clip(CircleShape)
                             .semantics {
-                                contentDescription = "Avatar of $recipientName"
+                                contentDescription = cdHoist1
                             }
                     )
                 }

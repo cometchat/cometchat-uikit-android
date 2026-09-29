@@ -22,7 +22,7 @@ import com.cometchat.uikit.core.CometChatUIKit
  * Enum representing the context in which mentions are displayed.
  * Different contexts have different default styling.
  */
-enum class MentionDisplayContext {
+public enum class MentionDisplayContext {
     /** Incoming message bubble (messages from other users) */
     INCOMING_BUBBLE,
     /** Outgoing message bubble (messages sent by current user) */
@@ -77,21 +77,21 @@ enum class MentionDisplayContext {
  * @see MentionText Composable that uses this style
  * @see MentionDisplayContext Context enum for style selection
  */
-data class MentionTextStyle(
+public data class MentionTextStyle(
     val mentionTextColor: Color,
     val mentionBackgroundColor: Color = Color.Transparent,
     val selfMentionTextColor: Color = mentionTextColor,
     val selfMentionBackgroundColor: Color = mentionBackgroundColor,
     val mentionFontWeight: FontWeight = FontWeight.Medium
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style for incoming message bubbles.
          * Uses primary color for mentions with primary background at 20% opacity.
          * Requirement 26.11: Primary color, FontWeight.Medium, primary bg at 20% opacity.
          */
         @Composable
-        fun incomingBubble(): MentionTextStyle = MentionTextStyle(
+        public fun incomingBubble(): MentionTextStyle = MentionTextStyle(
             mentionTextColor = CometChatTheme.colorScheme.primary,
             mentionBackgroundColor = CometChatTheme.colorScheme.primary.copy(alpha = 0.2f),
             selfMentionTextColor = CometChatTheme.colorScheme.primary,
@@ -104,7 +104,7 @@ data class MentionTextStyle(
          * Uses white/light color for mentions on primary colored background.
          */
         @Composable
-        fun outgoingBubble(): MentionTextStyle = MentionTextStyle(
+        public fun outgoingBubble(): MentionTextStyle = MentionTextStyle(
             mentionTextColor = CometChatTheme.colorScheme.textColorWhite,
             mentionBackgroundColor = CometChatTheme.colorScheme.extendedPrimaryColor700,
             selfMentionTextColor = CometChatTheme.colorScheme.textColorWhite,
@@ -117,7 +117,7 @@ data class MentionTextStyle(
          * Uses highlight color for mentions.
          */
         @Composable
-        fun conversationPreview(): MentionTextStyle = MentionTextStyle(
+        public fun conversationPreview(): MentionTextStyle = MentionTextStyle(
             mentionTextColor = CometChatTheme.colorScheme.textColorHighlight,
             mentionBackgroundColor = Color.Transparent,
             selfMentionTextColor = CometChatTheme.colorScheme.textColorHighlight,
@@ -129,7 +129,7 @@ data class MentionTextStyle(
          * Creates a default style based on the display context.
          */
         @Composable
-        fun forContext(context: MentionDisplayContext): MentionTextStyle = when (context) {
+        public fun forContext(context: MentionDisplayContext): MentionTextStyle = when (context) {
             MentionDisplayContext.INCOMING_BUBBLE -> incomingBubble()
             MentionDisplayContext.OUTGOING_BUBBLE -> outgoingBubble()
             MentionDisplayContext.CONVERSATION_PREVIEW -> conversationPreview()
@@ -197,7 +197,7 @@ data class MentionTextStyle(
  * @see MentionDisplayContext Context enum for style selection
  */
 @Composable
-fun MentionText(
+public fun MentionText(
     text: String,
     mentionedUsers: List<User>,
     onMentionClick: (User) -> Unit,
@@ -287,7 +287,7 @@ fun MentionText(
  * @param overflow How to handle text overflow
  */
 @Composable
-fun MentionText(
+public fun MentionText(
     message: BaseMessage,
     onMentionClick: (User) -> Unit,
     modifier: Modifier = Modifier,
@@ -340,7 +340,7 @@ fun MentionText(
  * @param overflow How to handle text overflow
  */
 @Composable
-fun MentionText(
+public fun MentionText(
     annotatedText: AnnotatedString,
     onMentionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -432,14 +432,14 @@ private fun buildMentionAnnotatedStringFromText(
 /**
  * Extension function to check if a BaseMessage contains mentions.
  */
-fun BaseMessage.hasMentions(): Boolean {
+public fun BaseMessage.hasMentions(): Boolean {
     return !mentionedUsers.isNullOrEmpty()
 }
 
 /**
  * Extension function to check if the logged-in user is mentioned in a message.
  */
-fun BaseMessage.mentionsCurrentUser(): Boolean {
+public fun BaseMessage.mentionsCurrentUser(): Boolean {
     val loggedInUserId = CometChatUIKit.getLoggedInUser()?.uid ?: return false
     return mentionedUsers?.any { it.uid == loggedInUserId } == true
 }

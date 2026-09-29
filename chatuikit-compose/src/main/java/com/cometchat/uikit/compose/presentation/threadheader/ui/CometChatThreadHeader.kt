@@ -137,7 +137,7 @@ import java.text.SimpleDateFormat
  * @see BubbleFactory
  */
 @Composable
-fun CometChatThreadHeader(
+public fun CometChatThreadHeader(
     modifier: Modifier = Modifier,
     parentMessage: BaseMessage,
     viewModel: ThreadHeaderViewModel = viewModel(),
@@ -436,7 +436,7 @@ private fun ReplyCountBar(
  * renders as un-followed (bell-off), enabled.
  */
 @Composable
-fun ThreadSubscriptionBell(
+public fun ThreadSubscriptionBell(
     parentMessage: BaseMessage,
     isSubscribed: Boolean? = null,
     onSubscriptionToggle: ((Boolean) -> Unit)? = null

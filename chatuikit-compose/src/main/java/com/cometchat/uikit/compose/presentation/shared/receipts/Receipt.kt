@@ -4,7 +4,7 @@ package com.cometchat.uikit.compose.presentation.shared.receipts
  * Enum representing the receipt status of a message.
  * Mirrors the View-based Receipt enum.
  */
-enum class Receipt {
+public enum class Receipt {
     /**
      * The message has been sent.
      */

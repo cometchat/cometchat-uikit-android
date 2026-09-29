@@ -6,7 +6,7 @@ package com.cometchat.uikit.compose.presentation.shared.shimmer.config
  *
  * @property value The integer value matching the kotlin implementation
  */
-enum class ShimmerShape(val value: Int) {
+public enum class ShimmerShape(public val value: Int) {
     /**
      * Linear gradient shimmer effect.
      * Value: 0 (matches CometChatShimmer.Shape.LINEAR)
@@ -19,7 +19,7 @@ enum class ShimmerShape(val value: Int) {
      */
     RADIAL(1);
 
-    companion object {
+    public companion object {
         /**
          * Returns the ShimmerShape corresponding to the given integer value.
          * Defaults to LINEAR if the value doesn't match any shape.
@@ -27,7 +27,7 @@ enum class ShimmerShape(val value: Int) {
          * @param value The integer value to convert
          * @return The corresponding ShimmerShape
          */
-        fun fromValue(value: Int): ShimmerShape {
+        public fun fromValue(value: Int): ShimmerShape {
             return entries.find { it.value == value } ?: LINEAR
         }
     }

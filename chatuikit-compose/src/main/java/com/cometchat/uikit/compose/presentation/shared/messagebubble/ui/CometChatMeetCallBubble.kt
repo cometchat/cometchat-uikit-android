@@ -46,7 +46,7 @@ import java.util.Locale
 /**
  * Enum representing the type of meeting call.
  */
-enum class MeetCallType {
+public enum class MeetCallType {
     VOICE_INCOMING,
     VOICE_OUTGOING,
     VIDEO_INCOMING,
@@ -79,7 +79,7 @@ enum class MeetCallType {
  * @param onJoinClick Callback when the "Join" button is clicked with the session ID
  */
 @Composable
-fun CometChatMeetCallBubble(
+public fun CometChatMeetCallBubble(
     message: CustomMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -124,7 +124,7 @@ fun CometChatMeetCallBubble(
  * @param onJoinClick Callback when the "Join" button is clicked with the session ID
  */
 @Composable
-fun CometChatMeetCallBubble(
+public fun CometChatMeetCallBubble(
     title: String,
     subtitle: String,
     callType: MeetCallType,
@@ -384,7 +384,7 @@ private fun formatTimestamp(seconds: Long): String {
  * @param callType The meet call type
  * @return The drawable resource ID for the call type icon
  */
-fun getMeetCallTypeIcon(callType: MeetCallType): Int {
+public fun getMeetCallTypeIcon(callType: MeetCallType): Int {
     return when (callType) {
         MeetCallType.VOICE_INCOMING -> R.drawable.cometchat_ic_incoming_voice_call
         MeetCallType.VOICE_OUTGOING -> R.drawable.cometchat_ic_outgoing_voice_call
@@ -399,7 +399,7 @@ fun getMeetCallTypeIcon(callType: MeetCallType): Int {
  * @param callType The meet call type
  * @return True if the call is a video call
  */
-fun isVideoMeetCall(callType: MeetCallType): Boolean {
+public fun isVideoMeetCall(callType: MeetCallType): Boolean {
     return callType == MeetCallType.VIDEO_INCOMING || callType == MeetCallType.VIDEO_OUTGOING
 }
 
@@ -409,6 +409,6 @@ fun isVideoMeetCall(callType: MeetCallType): Boolean {
  * @param callType The meet call type
  * @return True if the call is incoming
  */
-fun isIncomingMeetCall(callType: MeetCallType): Boolean {
+public fun isIncomingMeetCall(callType: MeetCallType): Boolean {
     return callType == MeetCallType.VOICE_INCOMING || callType == MeetCallType.VIDEO_INCOMING
 }

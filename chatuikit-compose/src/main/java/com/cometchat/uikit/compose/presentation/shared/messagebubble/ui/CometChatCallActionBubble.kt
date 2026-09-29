@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -51,7 +52,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.isMis
  * @param style Style configuration for the bubble appearance (extends CometChatMessageBubbleStyle)
  */
 @Composable
-fun CometChatCallActionBubble(
+public fun CometChatCallActionBubble(
     message: Call,
     modifier: Modifier = Modifier,
     style: CometChatCallActionBubbleStyle = CometChatCallActionBubbleStyle.default()
@@ -87,7 +88,7 @@ fun CometChatCallActionBubble(
  * @param style Style configuration for the bubble appearance (extends CometChatMessageBubbleStyle)
  */
 @Composable
-fun CometChatCallActionBubble(
+public fun CometChatCallActionBubble(
     callType: CallType,
     isMissed: Boolean,
     statusText: String,
@@ -111,6 +112,7 @@ private fun CallActionBubbleContent(
     modifier: Modifier,
     style: CometChatCallActionBubbleStyle
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_call, statusText)
     val shape = RoundedCornerShape(style.cornerRadius)
 
     // Determine colors based on missed status
@@ -137,7 +139,7 @@ private fun CallActionBubbleContent(
             )
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics {
-                contentDescription = "Call: $statusText"
+                contentDescription = cdHoist1
             },
         contentAlignment = Alignment.Center
     ) {

@@ -22,14 +22,14 @@ import androidx.compose.ui.unit.dp
  * Validates: Requirement 15.6
  */
 @Immutable
-data class CometChatOngoingCallStyle(
+public data class CometChatOngoingCallStyle(
     val backgroundColor: Color,
     val progressIndicatorColor: Color,
     val cornerRadius: Dp,
     val strokeWidth: Dp,
     val strokeColor: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration with theme-based default values.
          *
@@ -46,7 +46,7 @@ data class CometChatOngoingCallStyle(
          * @return A new CometChatOngoingCallStyle instance with the specified values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color(0xFF141414), // cometchat_calling_background
             progressIndicatorColor: Color = Color.White,
             cornerRadius: Dp = 0.dp,

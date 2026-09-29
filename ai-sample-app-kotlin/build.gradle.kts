@@ -10,9 +10,10 @@ android {
     defaultConfig {
         applicationId = "com.cometchat.ai.sampleapp.kotlin"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
-        versionName = "6.0"
+        // ENG-38657 (B3): track the library release instead of drifting
+        versionName = System.getenv("LIBRARY_VERSION") ?: "6.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,7 +40,7 @@ android {
 dependencies {
     // CometChat v6 UIKit
     implementation(project(":chatuikit-kotlin"))
-    implementation(project(":chatuikit-core"))
+    implementation(libs.chatuikit.core.android)
 
     // CometChat Chat SDK
     implementation(libs.chat.sdk.android)

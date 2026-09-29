@@ -37,7 +37,7 @@ import com.cometchat.uikit.core.state.FilterChipState
  * @param modifier Modifier for the row container
  */
 @Composable
-fun NotificationFeedFilterChips(
+public fun NotificationFeedFilterChips(
     chips: List<FilterChipState>,
     style: CometChatNotificationFeedStyle,
     onChipClick: (String) -> Unit,

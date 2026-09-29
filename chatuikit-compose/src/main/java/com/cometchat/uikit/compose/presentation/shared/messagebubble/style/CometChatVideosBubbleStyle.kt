@@ -50,7 +50,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property captionTextStyle The text style for the caption
  */
 @Immutable
-data class CometChatVideosBubbleStyle(
+public data class CometChatVideosBubbleStyle(
     // Content-specific properties ONLY
     val tileCornerRadius: Dp,
     val gridSpacing: Dp,
@@ -93,7 +93,7 @@ data class CometChatVideosBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default videos bubble style using CometChat theme tokens.
          *
@@ -114,7 +114,7 @@ data class CometChatVideosBubbleStyle(
          * @return A new [CometChatVideosBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             tileCornerRadius: Dp = 8.dp,
             gridSpacing: Dp = 2.dp,
@@ -181,7 +181,7 @@ data class CometChatVideosBubbleStyle(
          * @return A new [CometChatVideosBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatVideosBubbleStyle = default()
+        public fun incoming(): CometChatVideosBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) multi-video messages.
@@ -193,7 +193,7 @@ data class CometChatVideosBubbleStyle(
          * @return A new [CometChatVideosBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatVideosBubbleStyle = default(
+        public fun outgoing(): CometChatVideosBubbleStyle = default(
             captionTextColor = Color.White
         )
     }

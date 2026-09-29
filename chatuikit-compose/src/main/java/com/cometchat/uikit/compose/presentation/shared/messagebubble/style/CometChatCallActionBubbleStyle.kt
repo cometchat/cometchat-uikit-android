@@ -27,7 +27,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * - [outgoing] for outgoing (right-aligned) messages
  */
 @Immutable
-data class CometChatCallActionBubbleStyle(
+public data class CometChatCallActionBubbleStyle(
     // Content-specific properties ONLY
     val textColor: Color,
     val textStyle: TextStyle,
@@ -63,9 +63,9 @@ data class CometChatCallActionBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             textColor: Color = CometChatTheme.colorScheme.textColorSecondary,
             textStyle: TextStyle = CometChatTheme.typography.caption1Regular,
@@ -110,10 +110,10 @@ data class CometChatCallActionBubbleStyle(
         )
 
         @Composable
-        fun incoming(): CometChatCallActionBubbleStyle = default()
+        public fun incoming(): CometChatCallActionBubbleStyle = default()
 
         @Composable
-        fun outgoing(): CometChatCallActionBubbleStyle = default(
+        public fun outgoing(): CometChatCallActionBubbleStyle = default(
             textColor = CometChatTheme.colorScheme.colorWhite,
             iconTint = CometChatTheme.colorScheme.colorWhite
         )

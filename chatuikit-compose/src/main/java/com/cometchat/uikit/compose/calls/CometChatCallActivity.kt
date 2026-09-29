@@ -41,9 +41,9 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * CometChatCallActivity.launchOutgoingCallScreen(context, call, null)
  * ```
  */
-class CometChatCallActivity : ComponentActivity() {
+public class CometChatCallActivity : ComponentActivity() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatCallActivity"
         private const val OUTGOING_CALL = "outgoing_call"
         private const val INCOMING_CALL = "incoming_call"
@@ -70,7 +70,7 @@ class CometChatCallActivity : ComponentActivity() {
          */
         @JvmStatic
         @Synchronized
-        fun launchOutgoingCallScreen(
+        public fun launchOutgoingCallScreen(
             context: Context,
             call: Call,
             style: CometChatOutgoingCallStyle? = null
@@ -98,7 +98,7 @@ class CometChatCallActivity : ComponentActivity() {
          * @param style Optional style configuration for the incoming call screen
          */
         @JvmStatic
-        fun launchIncomingCallScreen(
+        public fun launchIncomingCallScreen(
             context: Context,
             call: Call,
             style: CometChatIncomingCallStyle? = null
@@ -121,7 +121,7 @@ class CometChatCallActivity : ComponentActivity() {
          * @param callSettingsBuilder Optional call settings builder
          */
         @JvmStatic
-        fun launchConferenceCallScreen(
+        public fun launchConferenceCallScreen(
             context: Context,
             baseMessage: BaseMessage,
             callSettingsBuilder: CometChatCalls.SessionSettingsBuilder? = null

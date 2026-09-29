@@ -9,7 +9,7 @@ import com.cometchat.uikit.core.CometChatUIKit
 /**
  * Enum representing different call types for display in call action bubbles.
  */
-enum class CallType {
+public enum class CallType {
     AUDIO_INCOMING,
     AUDIO_OUTGOING,
     VIDEO_INCOMING,
@@ -24,7 +24,7 @@ enum class CallType {
  * @param call The Call object
  * @return The corresponding [CallType] enum value
  */
-fun getCallType(call: Call): CallType {
+public fun getCallType(call: Call): CallType {
     val loggedInUserId = CometChatUIKit.getLoggedInUser()?.uid
     val initiatorUid = (call.callInitiator as? User)?.uid
     return getCallType(call.type, call.callStatus, initiatorUid, loggedInUserId)
@@ -46,7 +46,7 @@ fun getCallType(call: Call): CallType {
  * @param loggedInUserId The UID of the currently logged-in user
  * @return The corresponding [CallType] enum value
  */
-fun getCallType(
+public fun getCallType(
     callType: String?,
     callStatus: String?,
     initiatorUid: String?,
@@ -90,7 +90,7 @@ fun getCallType(
  * @param callType The call type
  * @return True if the call was missed
  */
-fun isMissedCall(callType: CallType): Boolean {
+public fun isMissedCall(callType: CallType): Boolean {
     return callType == CallType.AUDIO_MISSED || callType == CallType.VIDEO_MISSED
 }
 
@@ -100,7 +100,7 @@ fun isMissedCall(callType: CallType): Boolean {
  * @param callType The call type
  * @return True if the call is a video call
  */
-fun isVideoCall(callType: CallType): Boolean {
+public fun isVideoCall(callType: CallType): Boolean {
     return callType == CallType.VIDEO_INCOMING || 
            callType == CallType.VIDEO_OUTGOING || 
            callType == CallType.VIDEO_MISSED
@@ -112,7 +112,7 @@ fun isVideoCall(callType: CallType): Boolean {
  * @param callType The call type
  * @return True if the call is incoming
  */
-fun isIncomingCall(callType: CallType): Boolean {
+public fun isIncomingCall(callType: CallType): Boolean {
     return callType == CallType.AUDIO_INCOMING || callType == CallType.VIDEO_INCOMING
 }
 
@@ -122,7 +122,7 @@ fun isIncomingCall(callType: CallType): Boolean {
  * @param callType The call type
  * @return The drawable resource ID for the call type icon
  */
-fun getCallTypeIcon(callType: CallType): Int {
+public fun getCallTypeIcon(callType: CallType): Int {
     return when (callType) {
         CallType.AUDIO_INCOMING -> R.drawable.cometchat_ic_incoming_voice_call
         CallType.AUDIO_OUTGOING -> R.drawable.cometchat_ic_outgoing_voice_call
@@ -139,7 +139,7 @@ fun getCallTypeIcon(callType: CallType): Int {
  * @param callType The call type
  * @return The display text for the call type
  */
-fun getCallTypeText(callType: CallType): String {
+public fun getCallTypeText(callType: CallType): String {
     return when (callType) {
         CallType.AUDIO_INCOMING -> "Incoming voice call"
         CallType.AUDIO_OUTGOING -> "Outgoing voice call"

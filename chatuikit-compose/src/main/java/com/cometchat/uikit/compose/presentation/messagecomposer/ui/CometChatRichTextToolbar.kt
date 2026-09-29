@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @param trailingToolbarContent Optional consumer content rendered at the trailing end of the toolbar, after the built-in buttons and a UIKit-owned divider. Emitted inside the toolbar [RowScope]; guarded so the zero-content path is identical to today.
  */
 @Composable
-fun CometChatRichTextToolbar(
+public fun CometChatRichTextToolbar(
     modifier: Modifier = Modifier,
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     activeFormats: Set<RichTextFormat> = emptySet(),
@@ -58,12 +59,13 @@ fun CometChatRichTextToolbar(
     onCloseClick: (() -> Unit)? = null,
     trailingToolbarContent: (@Composable RowScope.() -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_rich_text_toolbar)
     Row(
         modifier = modifier
             .background(style.richTextToolbarBackgroundColor)
             .horizontalScroll(rememberScrollState())
             .padding(horizontal = 8.dp, vertical = 4.dp)
-            .semantics { contentDescription = "Rich Text Toolbar" },
+            .semantics { contentDescription = cdHoist1 },
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Close button (only shown when onCloseClick is provided — used in multiline mode)
@@ -82,7 +84,7 @@ fun CometChatRichTextToolbar(
                 Icon(
                     painter = style.formattingToolbarCloseIcon
                         ?: painterResource(R.drawable.cometchat_ic_close),
-                    contentDescription = "Close formatting toolbar",
+                    contentDescription = stringResource(R.string.cometchat_a11y_close_formatting_toolbar),
                     tint = style.formattingToolbarCloseIconTint,
                     modifier = Modifier.size(24.dp)
                 )
@@ -93,7 +95,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.BOLD in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_bold),
-                contentDescription = "Bold",
+                contentDescription = stringResource(R.string.cometchat_a11y_bold),
                 isActive = RichTextFormat.BOLD in activeFormats,
                 isDisabled = RichTextFormat.BOLD in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -108,7 +110,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.ITALIC in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_italic),
-                contentDescription = "Italic",
+                contentDescription = stringResource(R.string.cometchat_a11y_italic),
                 isActive = RichTextFormat.ITALIC in activeFormats,
                 isDisabled = RichTextFormat.ITALIC in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -123,7 +125,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.UNDERLINE in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_underline),
-                contentDescription = "Underline",
+                contentDescription = stringResource(R.string.cometchat_a11y_underline),
                 isActive = RichTextFormat.UNDERLINE in activeFormats,
                 isDisabled = RichTextFormat.UNDERLINE in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -138,7 +140,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.STRIKETHROUGH in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_strikethrough),
-                contentDescription = "Strikethrough",
+                contentDescription = stringResource(R.string.cometchat_a11y_strikethrough),
                 isActive = RichTextFormat.STRIKETHROUGH in activeFormats,
                 isDisabled = RichTextFormat.STRIKETHROUGH in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -163,7 +165,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.LINK in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_link),
-                contentDescription = "Link",
+                contentDescription = stringResource(R.string.cometchat_a11y_link),
                 isActive = RichTextFormat.LINK in activeFormats,
                 isDisabled = RichTextFormat.LINK in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -178,7 +180,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.ORDERED_LIST in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_list_numbered),
-                contentDescription = "Numbered List",
+                contentDescription = stringResource(R.string.cometchat_a11y_numbered_list),
                 isActive = RichTextFormat.ORDERED_LIST in activeFormats,
                 isDisabled = RichTextFormat.ORDERED_LIST in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -193,7 +195,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.BULLET_LIST in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_list_bullet),
-                contentDescription = "Bullet List",
+                contentDescription = stringResource(R.string.cometchat_a11y_bullet_list),
                 isActive = RichTextFormat.BULLET_LIST in activeFormats,
                 isDisabled = RichTextFormat.BULLET_LIST in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -218,7 +220,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.BLOCKQUOTE in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_quote),
-                contentDescription = "Blockquote",
+                contentDescription = stringResource(R.string.cometchat_a11y_blockquote),
                 isActive = RichTextFormat.BLOCKQUOTE in activeFormats,
                 isDisabled = RichTextFormat.BLOCKQUOTE in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -233,7 +235,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.INLINE_CODE in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_code),
-                contentDescription = "Inline Code",
+                contentDescription = stringResource(R.string.cometchat_a11y_inline_code),
                 isActive = RichTextFormat.INLINE_CODE in activeFormats,
                 isDisabled = RichTextFormat.INLINE_CODE in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,
@@ -248,7 +250,7 @@ fun CometChatRichTextToolbar(
         if (RichTextFormat.CODE_BLOCK in enabledFormats) {
             FormatButton(
                 icon = painterResource(R.drawable.cometchat_ic_format_code_block),
-                contentDescription = "Code Block",
+                contentDescription = stringResource(R.string.cometchat_a11y_code_block),
                 isActive = RichTextFormat.CODE_BLOCK in activeFormats,
                 isDisabled = RichTextFormat.CODE_BLOCK in disabledFormats,
                 activeTint = style.richTextToolbarActiveIconTint,

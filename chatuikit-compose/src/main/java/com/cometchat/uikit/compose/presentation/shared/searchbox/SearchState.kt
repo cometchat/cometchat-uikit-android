@@ -4,7 +4,7 @@ package com.cometchat.uikit.compose.presentation.shared.searchbox
  * Enum representing the search state events.
  * Mirrors the View-based SearchState annotation.
  */
-enum class SearchState {
+public enum class SearchState {
     /**
      * Search filter applied - user has entered search text.
      */

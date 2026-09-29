@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SeekableWaveform(
+public fun SeekableWaveform(
     amplitudes: List<Float>,
     progress: Float,
     playedColor: Color,

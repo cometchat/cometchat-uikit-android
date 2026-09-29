@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -80,7 +81,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.getFi
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatFileBubble(
+public fun CometChatFileBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -118,7 +119,7 @@ fun CometChatFileBubble(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatFileBubble(
+public fun CometChatFileBubble(
     attachments: List<Attachment>,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -134,11 +135,12 @@ fun CometChatFileBubble(
     onDownloadAllClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_file_message_with_file_s, attachments.size)
     Column(
         modifier = modifier
             .width(240.dp)
             .semantics {
-                contentDescription = "File message with ${attachments.size} file(s)"
+                contentDescription = cdHoist1
             }
     ) {
         when {
@@ -277,7 +279,7 @@ private fun SingleFileItem(
         ) {
             Icon(
                 painter = painterResource(id = fileIcon),
-                contentDescription = "File type: ${fileType.name}",
+                contentDescription = stringResource(R.string.cometchat_a11y_file_type, fileType.name),
                 modifier = Modifier.size(style.fileIconSize - 14.dp),
                 tint = androidx.compose.ui.graphics.Color.Unspecified
             )
@@ -310,7 +312,7 @@ private fun SingleFileItem(
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_download_icon),
-                contentDescription = "Download file",
+                contentDescription = stringResource(R.string.cometchat_a11y_download_file),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(onClick = onDownloadClick),

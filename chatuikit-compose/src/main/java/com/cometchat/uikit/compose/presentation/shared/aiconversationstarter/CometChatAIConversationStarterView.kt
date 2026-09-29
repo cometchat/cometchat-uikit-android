@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -70,7 +71,7 @@ import com.cometchat.uikit.core.state.ConversationStarterUIState
  * @param onClick Callback when a conversation starter is clicked
  */
 @Composable
-fun CometChatAIConversationStarterView(
+public fun CometChatAIConversationStarterView(
     modifier: Modifier = Modifier,
     uiState: ConversationStarterUIState = ConversationStarterUIState.Idle,
     style: CometChatAIConversationStarterStyle = CometChatAIConversationStarterStyle.default(),
@@ -80,6 +81,7 @@ fun CometChatAIConversationStarterView(
     itemView: (@Composable (starter: String, position: Int) -> Unit)? = null,
     onClick: ((starter: String, position: Int) -> Unit)? = null
 ) {
+    val cdHoist3 = stringResource(R.string.cometchat_a11y_ai_conversation_starters)
     val context = LocalContext.current
     
     // Don't render anything in Idle state
@@ -109,7 +111,7 @@ fun CometChatAIConversationStarterView(
                     )
                 } else Modifier
             )
-            .semantics { contentDescription = "AI Conversation Starters" }
+            .semantics { contentDescription = cdHoist3 }
     ) {
         when (uiState) {
             is ConversationStarterUIState.Loading -> {
@@ -200,6 +202,7 @@ private fun ConversationStarterItem(
     style: CometChatAIConversationStarterStyle,
     onClick: ((starter: String, position: Int) -> Unit)?
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_conversation_starter, starter)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,7 +227,7 @@ private fun ConversationStarterItem(
             )
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .semantics {
-                contentDescription = "Conversation starter: $starter"
+                contentDescription = cdHoist2
                 role = Role.Button
             }
     ) {
@@ -252,13 +255,14 @@ private fun ConversationStarterErrorView(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_error, errorText)
         Text(
             text = errorText,
             color = style.errorStateTextColor,
             style = style.errorStateTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics {
-                contentDescription = "Error: $errorText"
+                contentDescription = cdHoist1
             }
         )
     }

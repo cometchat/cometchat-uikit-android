@@ -36,6 +36,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -82,7 +83,7 @@ import com.cometchat.uikit.core.state.SmartRepliesUIState
  * @param onCloseClick Callback when the close icon is clicked
  */
 @Composable
-fun CometChatAISmartRepliesView(
+public fun CometChatAISmartRepliesView(
     modifier: Modifier = Modifier,
     uiState: SmartRepliesUIState = SmartRepliesUIState.Idle,
     style: CometChatAISmartRepliesStyle = CometChatAISmartRepliesStyle.default(),
@@ -94,6 +95,7 @@ fun CometChatAISmartRepliesView(
     onClick: ((reply: String, position: Int) -> Unit)? = null,
     onCloseClick: (() -> Unit)? = null
 ) {
+    val cdHoist4 = stringResource(R.string.cometchat_a11y_ai_smart_replies)
     val context = LocalContext.current
     
     // Don't render anything in Idle state
@@ -124,7 +126,7 @@ fun CometChatAISmartRepliesView(
                     )
                 } else Modifier
             )
-            .semantics { contentDescription = "AI Smart Replies" }
+            .semantics { contentDescription = cdHoist4 }
     ) {
         // Header with title and close icon
         SmartRepliesHeader(
@@ -188,6 +190,7 @@ private fun SmartRepliesHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist3 = stringResource(R.string.cometchat_a11y_close_smart_replies)
         Text(
             text = title,
             color = style.titleTextColor,
@@ -200,13 +203,13 @@ private fun SmartRepliesHeader(
             modifier = Modifier
                 .size(24.dp)
                 .semantics {
-                    contentDescription = "Close smart replies"
+                    contentDescription = cdHoist3
                     role = Role.Button
                 }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.cometchat_ic_close),
-                contentDescription = "Close",
+                contentDescription = stringResource(R.string.cometchat_a11y_close),
                 tint = style.closeIconTint,
                 modifier = Modifier.size(20.dp)
             )
@@ -262,6 +265,7 @@ private fun SmartReplyItem(
     style: CometChatAISmartRepliesStyle,
     onClick: ((reply: String, position: Int) -> Unit)?
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_smart_reply, reply)
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(style.itemCornerRadius))
@@ -284,7 +288,7 @@ private fun SmartReplyItem(
             )
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .semantics {
-                contentDescription = "Smart reply: $reply"
+                contentDescription = cdHoist2
                 role = Role.Button
             }
     ) {
@@ -312,13 +316,14 @@ private fun SmartRepliesErrorView(
             .padding(horizontal = 12.dp, vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_error, errorText)
         Text(
             text = errorText,
             color = style.errorStateTextColor,
             style = style.errorStateTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics {
-                contentDescription = "Error: $errorText"
+                contentDescription = cdHoist1
             }
         )
     }

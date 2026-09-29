@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.shimmer.style.CometChatListItemShimmerStyle
 import com.cometchat.uikit.compose.presentation.shared.shimmer.ui.CometChatListItemShimmer
 import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.ProvideShimmerAnimation
@@ -54,20 +56,21 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.ProvideShim
  * @param style Style configuration for the component, including shimmer animation settings
  */
 @Composable
-fun CometChatLoadingState(
+public fun CometChatLoadingState(
     modifier: Modifier = Modifier,
     style: CometChatLoadingStateStyle = CometChatLoadingStateStyle.default()
 ) {
     // Provide shared animation state for all shimmer items
     // This ensures all placeholders animate in sync
     ProvideShimmerAnimation(config = style.shimmerConfig) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_please_wait)
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(style.backgroundColor)
                 .padding(horizontal = 16.dp)
                 .semantics {
-                    contentDescription = "Loading, please wait"
+                    contentDescription = cdHoist1
                     liveRegion = LiveRegionMode.Polite
                 }
         ) {

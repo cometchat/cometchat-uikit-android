@@ -76,7 +76,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatCallLogsViewModel
  * @param onEmpty Callback when the call logs list is empty
  */
 @Composable
-fun CometChatCallLogs(
+public fun CometChatCallLogs(
     modifier: Modifier = Modifier,
     viewModel: CometChatCallLogsViewModel? = null,
     callLogRequestBuilder: CallLogRequest.CallLogRequestBuilder? = null,

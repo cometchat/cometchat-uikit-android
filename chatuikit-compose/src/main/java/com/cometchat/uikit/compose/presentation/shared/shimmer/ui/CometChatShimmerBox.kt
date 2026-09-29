@@ -63,7 +63,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerB
  * @param accessibilityLabel Content description for accessibility. Defaults to "Loading placeholder"
  */
 @Composable
-fun CometChatShimmerBox(
+public fun CometChatShimmerBox(
     modifier: Modifier = Modifier,
     width: Dp = 100.dp,
     height: Dp = 16.dp,

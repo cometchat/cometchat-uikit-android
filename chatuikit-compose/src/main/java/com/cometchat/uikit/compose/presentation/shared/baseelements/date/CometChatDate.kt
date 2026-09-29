@@ -43,6 +43,15 @@ import java.util.Locale
  * @param datePattern SimpleDateFormat pattern for full dates (default: "dd MMM yyyy")
  * @param dayPattern SimpleDateFormat pattern for day names (default: "EEE")
  * @param timePattern SimpleDateFormat pattern for time (default: the device 12/24-hour setting)
+ * @param dateFormat Optional SimpleDateFormat overriding [datePattern]. Parity with
+ *   chatuikit-kotlin's `setDateFormat`.
+ * @param dayFormat Optional SimpleDateFormat overriding [dayPattern]. Parity with
+ *   chatuikit-kotlin's `setDayFormat`.
+ * @param timeFormat Optional SimpleDateFormat overriding [timePattern]. Parity with
+ *   chatuikit-kotlin's `setTimeFormat`.
+ * @param customDateFormat Optional formatter taking the raw timestamp and returning the whole
+ *   display string. Takes precedence over [pattern]. Parity with chatuikit-kotlin's
+ *   `setCustomDateFormat`.
  * @param customDateString Optional custom string to display instead of formatted timestamp
  * @param transparentBackground If true, background will be transparent with no border/padding
  * @param style Styling configuration for the date. Use DateStyle.default() for theme-based defaults
@@ -101,13 +110,17 @@ import java.util.Locale
  * ```
  */
 @Composable
-fun CometChatDate(
+public fun CometChatDate(
     modifier: Modifier = Modifier,
     timestamp: Long = 0,
     pattern: Pattern? = null,
     datePattern: String = "dd MMM yyyy",
     dayPattern: String = "EEE",
     timePattern: String = defaultTimePattern(),
+    dateFormat: SimpleDateFormat? = null,
+    dayFormat: SimpleDateFormat? = null,
+    timeFormat: SimpleDateFormat? = null,
+    customDateFormat: ((Long) -> String)? = null,
     customDateString: String? = null,
     transparentBackground: Boolean = true,
     style: DateStyle = DateStyle.default(),
@@ -118,14 +131,15 @@ fun CometChatDate(
     
     // Create SimpleDateFormat instances with remembered locale
     val locale = remember { Locale.getDefault() }
-    val simpleDateFormat = remember(datePattern, locale) {
-        SimpleDateFormat(datePattern, locale)
+    // An explicitly supplied SimpleDateFormat wins over the pattern string.
+    val simpleDateFormat = remember(datePattern, locale, dateFormat) {
+        dateFormat ?: SimpleDateFormat(datePattern, locale)
     }
-    val simpleDayFormat = remember(dayPattern, locale) {
-        SimpleDateFormat(dayPattern, locale)
+    val simpleDayFormat = remember(dayPattern, locale, dayFormat) {
+        dayFormat ?: SimpleDateFormat(dayPattern, locale)
     }
-    val simpleTimeFormat = remember(timePattern, locale) {
-        SimpleDateFormat(timePattern, locale)
+    val simpleTimeFormat = remember(timePattern, locale, timeFormat) {
+        timeFormat ?: SimpleDateFormat(timePattern, locale)
     }
     
     // Use style values directly - defaults are now in DateStyle.default()
@@ -138,9 +152,13 @@ fun CometChatDate(
     val txtStyle = style.textStyle ?: typography.caption1Regular
     
     // Calculate the date text to display
-    val dateText = remember(timestamp, pattern, customDateString, datePattern, dayPattern, timePattern) {
+    val dateText = remember(
+        timestamp, pattern, customDateString, customDateFormat,
+        simpleDateFormat, simpleDayFormat, simpleTimeFormat
+    ) {
         when {
             customDateString != null && customDateString.isNotEmpty() -> customDateString
+            timestamp != 0L && customDateFormat != null -> customDateFormat(timestamp)
             timestamp != 0L && pattern != null -> {
                 when (pattern) {
                     Pattern.TIME -> getTime(
@@ -333,7 +351,7 @@ private fun getDayDateTime(
  * ```
  */
 @Composable
-fun CometChatDate(
+public fun CometChatDate(
     modifier: Modifier = Modifier,
     date: Date,
     pattern: Pattern? = null,

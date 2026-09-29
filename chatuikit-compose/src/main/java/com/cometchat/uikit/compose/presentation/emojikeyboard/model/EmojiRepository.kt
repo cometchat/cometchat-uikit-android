@@ -1,7 +1,7 @@
 package com.cometchat.uikit.compose.presentation.emojikeyboard.model
 
 import android.content.Context
-import android.util.Log
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.IOException
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
  * Singleton that loads and caches emoji data from the bundled `emoji.json` asset.
  * Direct port of `EmojiKeyboardUtils` from the non-Compose chatuikit module.
  */
-object EmojiRepository {
+public object EmojiRepository {
 
     private const val TAG = "EmojiRepository"
 
@@ -24,7 +24,7 @@ object EmojiRepository {
      *
      * @param context Android context used to access the assets directory
      */
-    fun loadAndSaveEmojis(context: Context) {
+    public fun loadAndSaveEmojis(context: Context) {
         if (emojiCategories == null || emojiCategories!!.isEmpty()) {
             Thread {
                 val categories = mutableListOf<EmojiCategory>()
@@ -39,7 +39,7 @@ object EmojiRepository {
                     }
                     emojiCategories = categories
                 } catch (e: Exception) {
-                    Log.e(TAG, e.toString())
+                    CometChatLogger.e(TAG, e.toString())
                 }
             }.start()
         }
@@ -48,7 +48,7 @@ object EmojiRepository {
     /**
      * Returns the cached list of emoji categories, or null if not yet loaded.
      */
-    fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
+    public fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
 
     private fun loadJSONFromAsset(context: Context): String? {
         var json: String? = null
@@ -65,12 +65,12 @@ object EmojiRepository {
             }
             json = String(buffer, StandardCharsets.UTF_8)
         } catch (e: Exception) {
-            Log.e(TAG, e.message ?: e.toString())
+            CometChatLogger.e(TAG, e.message ?: e.toString())
         } finally {
             try {
                 inputStream?.close()
             } catch (e: IOException) {
-                Log.e(TAG, e.message ?: e.toString())
+                CometChatLogger.e(TAG, e.message ?: e.toString())
             }
         }
         return json

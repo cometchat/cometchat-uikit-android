@@ -17,7 +17,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Mirrors the styling capabilities of the View-based CometChatSearchBox.
  */
 @Immutable
-data class CometChatSearchBoxStyle(
+public data class CometChatSearchBoxStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -41,12 +41,12 @@ data class CometChatSearchBoxStyle(
     // Padding
     val contentPadding: PaddingValues
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             strokeColor: Color = Color.Transparent,
             strokeWidth: Dp = 0.dp,

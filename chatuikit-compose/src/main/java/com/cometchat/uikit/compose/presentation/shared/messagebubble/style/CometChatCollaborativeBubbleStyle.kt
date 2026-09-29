@@ -56,7 +56,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatCollaborativeBubbleStyle(
+public data class CometChatCollaborativeBubbleStyle(
     // Content-specific properties ONLY
     val titleTextColor: Color,
     val titleTextStyle: TextStyle,
@@ -96,7 +96,7 @@ data class CometChatCollaborativeBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default collaborative bubble style using CometChat theme tokens.
          *
@@ -124,7 +124,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @return A new [CometChatCollaborativeBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             titleTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,
             titleTextStyle: TextStyle = CometChatTheme.typography.bodyMedium,
@@ -185,7 +185,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @return A new [CometChatCollaborativeBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatCollaborativeBubbleStyle = default(
+        public fun incoming(): CometChatCollaborativeBubbleStyle = default(
             separatorColor = CometChatTheme.colorScheme.strokeColorDark
         )
 
@@ -198,7 +198,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @return A new [CometChatCollaborativeBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatCollaborativeBubbleStyle = default(
+        public fun outgoing(): CometChatCollaborativeBubbleStyle = default(
             titleTextColor = CometChatTheme.colorScheme.colorWhite,
             subtitleTextColor = CometChatTheme.colorScheme.colorWhite,
             iconTint = CometChatTheme.colorScheme.colorWhite,

@@ -23,7 +23,7 @@ import com.cometchat.uikit.compose.theme.CometChatTypography
  * @param typography Custom typography. If null, uses theme's typography
  */
 @Immutable
-data class BadgeCountStyle(
+public data class BadgeCountStyle(
     val backgroundColor: Color? = null,
     val borderColor: Color? = null,
     val borderWidth: Dp = 0.dp,
@@ -33,7 +33,7 @@ data class BadgeCountStyle(
     val size: Dp = 24.dp,
     val typography: CometChatTypography? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default BadgeCountStyle with values sourced from CometChatTheme.
          *
@@ -48,7 +48,7 @@ data class BadgeCountStyle(
          * @return A new BadgeCountStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.primary,
             borderColor: Color? = null,
             borderWidth: Dp = 0.dp,

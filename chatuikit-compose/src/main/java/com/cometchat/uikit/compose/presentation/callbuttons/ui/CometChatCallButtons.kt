@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -32,6 +33,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.callbuttons.style.CallButtonStyle
 import com.cometchat.uikit.compose.presentation.callbuttons.style.CometChatCallButtonsStyle
 import com.cometchat.uikit.core.factory.CometChatCallButtonsViewModelFactory
@@ -60,7 +62,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatCallButtonsViewModel
  * @param onError Callback when an error occurs
  */
 @Composable
-fun CometChatCallButtons(
+public fun CometChatCallButtons(
     modifier: Modifier = Modifier,
     viewModel: CometChatCallButtonsViewModel? = null,
     style: CometChatCallButtonsStyle = CometChatCallButtonsStyle.default(),
@@ -164,7 +166,7 @@ fun CometChatCallButtons(
                 text = voiceButtonText,
                 showText = buttonTextVisibility == View.VISIBLE,
                 showIcon = buttonIconVisibility == View.VISIBLE,
-                contentDescription = "Voice Call",
+                contentDescription = stringResource(R.string.cometchat_a11y_voice_call),
                 onClick = {
                     if (onVoiceCallClick != null) {
                         onVoiceCallClick.invoke(
@@ -185,7 +187,7 @@ fun CometChatCallButtons(
                 text = videoButtonText,
                 showText = buttonTextVisibility == View.VISIBLE,
                 showIcon = buttonIconVisibility == View.VISIBLE,
-                contentDescription = "Video Call",
+                contentDescription = stringResource(R.string.cometchat_a11y_video_call),
                 onClick = {
                     if (onVideoCallClick != null) {
                         onVideoCallClick.invoke(

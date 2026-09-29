@@ -93,7 +93,7 @@ import org.commonmark.node.Node
  * @param aiStreamService Optional AI stream service instance for streaming lifecycle management
  */
 @Composable
-fun CometChatAIAssistantBubble(
+public fun CometChatAIAssistantBubble(
     modifier: Modifier = Modifier,
     streamMessage: StreamMessage? = null,
     aiAssistantMessage: AIAssistantMessage? = null,

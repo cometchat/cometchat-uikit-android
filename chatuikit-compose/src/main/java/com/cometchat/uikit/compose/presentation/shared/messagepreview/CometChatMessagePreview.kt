@@ -23,11 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.CardMessage
@@ -59,11 +62,13 @@ import com.cometchat.uikit.core.formatter.MarkdownRenderer
  * @param onClick Callback when the preview area is tapped
  */
 @Composable
-fun CometChatMessagePreview(
+public fun CometChatMessagePreview(
     message: BaseMessage,
     modifier: Modifier = Modifier,
     style: CometChatMessagePreviewStyle = CometChatMessagePreviewStyle.default(),
     showCloseIcon: Boolean = true,
+    hideMessageIcon: Boolean = false,
+    maxWidth: Dp? = null,
     textFormatters: List<CometChatTextFormatter> = emptyList(),
     alignment: UIKitConstants.MessageBubbleAlignment = UIKitConstants.MessageBubbleAlignment.LEFT,
     onCloseClick: (() -> Unit)? = null,
@@ -90,10 +95,13 @@ fun CometChatMessagePreview(
         resolveMessageContent(context, message, textFormatters, alignment)
     }
 
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_message_preview, title, subtitle.text)
+
     val shape = RoundedCornerShape(style.cornerRadius)
 
     Row(
         modifier = modifier
+            .then(if (maxWidth != null) Modifier.widthIn(max = maxWidth) else Modifier)
             .height(IntrinsicSize.Min)
             .then(
                 if (style.strokeWidth > 0.dp) {
@@ -112,7 +120,7 @@ fun CometChatMessagePreview(
                 }
             )
             .semantics {
-                contentDescription = "Message preview: $title - ${subtitle.text}"
+                contentDescription = cdHoist1
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -148,7 +156,7 @@ fun CometChatMessagePreview(
                 if (showCloseIcon && onCloseClick != null) {
                     Icon(
                         painter = painterResource(id = R.drawable.cometchat_ic_close),
-                        contentDescription = "Close preview",
+                        contentDescription = stringResource(R.string.cometchat_a11y_close_preview),
                         tint = style.closeIconTint,
                         modifier = Modifier
                             .size(16.dp)
@@ -161,7 +169,7 @@ fun CometChatMessagePreview(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (iconRes != null) {
+                if (iconRes != null && !hideMessageIcon) {
                     Icon(
                         painter = painterResource(id = iconRes),
                         contentDescription = null,

@@ -33,7 +33,7 @@ import com.cometchat.uikit.core.models.AttachmentUploadTile
  * @param onRejectedTile Invoked when a rejected tile is tapped (surface the SDK rejection reason).
  */
 @Composable
-fun CometChatAttachmentTray(
+public fun CometChatAttachmentTray(
     tiles: List<AttachmentUploadTile>,
     modifier: Modifier = Modifier,
     style: CometChatAttachmentTrayStyle = CometChatAttachmentTrayStyle.default(),

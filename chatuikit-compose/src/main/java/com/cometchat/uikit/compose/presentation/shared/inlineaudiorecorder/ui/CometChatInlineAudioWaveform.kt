@@ -13,8 +13,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.style.CometChatInlineAudioWaveformStyle
 
 /**
@@ -43,7 +45,7 @@ import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.style
  * @param onSeek Callback when user taps or drags on waveform (progress 0.0 to 1.0)
  */
 @Composable
-fun CometChatInlineAudioWaveform(
+public fun CometChatInlineAudioWaveform(
     modifier: Modifier = Modifier,
     amplitudes: List<Float> = emptyList(),
     progress: Float = 0f,
@@ -57,6 +59,11 @@ fun CometChatInlineAudioWaveform(
     // Prepare amplitudes for display
     // During recording: show most recent amplitudes (new bars on right)
     // During playback: show stored amplitudes
+    val inlineWaveformCd = when {
+        isRecording -> stringResource(R.string.cometchat_a11y_waveform_recording_amplitude)
+        isPlaying -> stringResource(R.string.cometchat_a11y_waveform_playback_progress)
+        else -> stringResource(R.string.cometchat_a11y_audio_waveform)
+    }
     val displayAmplitudes = remember(amplitudes, style.barCount) {
         prepareAmplitudesForDisplay(amplitudes, style.barCount)
     }
@@ -93,11 +100,7 @@ fun CometChatInlineAudioWaveform(
                 }
             )
             .semantics {
-                contentDescription = when {
-                    isRecording -> "Audio waveform showing recording amplitude"
-                    isPlaying -> "Audio waveform showing playback progress"
-                    else -> "Audio waveform"
-                }
+                contentDescription = inlineWaveformCd
             }
     ) {
         val canvasWidth = size.width
@@ -223,7 +226,7 @@ private fun prepareAmplitudesForDisplay(amplitudes: List<Float>, barCount: Int):
  * @param maxHeight Maximum bar height in pixels
  * @return Calculated bar height in pixels, clamped to [minHeight, maxHeight]
  */
-fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
+public fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
     val height = minHeight + (amplitude * (maxHeight - minHeight))
     return height.coerceIn(minHeight, maxHeight)
 }
@@ -240,7 +243,7 @@ fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Fl
  * @param durationMs Total duration in milliseconds
  * @return Seek position in milliseconds, clamped to [0, durationMs]
  */
-fun calculateSeekPosition(tapX: Float, waveformWidth: Float, durationMs: Long): Long {
+public fun calculateSeekPosition(tapX: Float, waveformWidth: Float, durationMs: Long): Long {
     if (waveformWidth <= 0f || durationMs <= 0L) return 0L
     val progress = (tapX / waveformWidth).coerceIn(0f, 1f)
     return (progress * durationMs).toLong().coerceIn(0L, durationMs)
@@ -253,7 +256,7 @@ fun calculateSeekPosition(tapX: Float, waveformWidth: Float, durationMs: Long): 
  * @param durationMs Total duration in milliseconds
  * @return Progress value (0.0 to 1.0)
  */
-fun calculateProgress(positionMs: Long, durationMs: Long): Float {
+public fun calculateProgress(positionMs: Long, durationMs: Long): Float {
     if (durationMs <= 0L) return 0f
     return (positionMs.toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
 }

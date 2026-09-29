@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
  * @param onLongClick Callback invoked with the emoji unicode string on long-press
  */
 @Composable
-fun CometChatEmojiKeyboard(
+public fun CometChatEmojiKeyboard(
     modifier: Modifier = Modifier,
     style: CometChatEmojiKeyboardStyle = CometChatEmojiKeyboardStyle.default(),
     onClick: ((String) -> Unit)? = null,

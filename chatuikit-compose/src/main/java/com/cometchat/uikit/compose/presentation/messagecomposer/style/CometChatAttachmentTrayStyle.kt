@@ -21,16 +21,16 @@ import androidx.compose.ui.unit.dp
  * @property tileSpacing Horizontal gap between tiles.
  */
 @Immutable
-data class CometChatAttachmentTrayStyle(
+public data class CometChatAttachmentTrayStyle(
     val backgroundColor: Color,
     val contentPadding: PaddingValues,
     val tileSpacing: Dp
 ) {
-    companion object {
+    public companion object {
 
         /** Creates a default tray style using CometChat theme tokens. */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = Color.Transparent,
             contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
             tileSpacing: Dp = 8.dp

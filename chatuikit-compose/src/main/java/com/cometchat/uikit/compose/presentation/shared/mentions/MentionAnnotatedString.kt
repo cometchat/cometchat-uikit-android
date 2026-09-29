@@ -15,7 +15,7 @@ import java.util.regex.Pattern
  * @property isSelf Whether this mention refers to the current logged-in user
  * @property isMentionAll Whether this is a "mention all" (@all) mention
  */
-data class MentionRange(
+public data class MentionRange(
     val start: Int,
     val end: Int,
     val userId: String,
@@ -30,7 +30,7 @@ data class MentionRange(
  * @property displayText The text with mention patterns replaced by display names
  * @property mentions List of MentionRange objects representing each mention
  */
-data class ParsedMentionsResult(
+public data class ParsedMentionsResult(
     val displayText: String,
     val mentions: List<MentionRange>
 )
@@ -48,7 +48,7 @@ data class ParsedMentionsResult(
  * @param selfMentionStyle Optional SpanStyle for self-mentions (defaults to mentionStyle if null)
  * @return AnnotatedString with styled mentions and "MENTION" annotations
  */
-fun buildMentionAnnotatedString(
+public fun buildMentionAnnotatedString(
     text: String,
     mentions: List<MentionRange>,
     mentionStyle: SpanStyle,
@@ -100,7 +100,7 @@ fun buildMentionAnnotatedString(
  * @param trackingCharacter The character used for mentions (default: '@')
  * @return ParsedMentionsResult containing the display text and list of MentionRange objects
  */
-fun parseMentionsFromText(
+public fun parseMentionsFromText(
     text: String,
     mentionedUsers: Map<String, String>,
     loggedInUserId: String? = null,
@@ -203,9 +203,9 @@ fun parseMentionsFromText(
 /**
  * Annotation tag used for regular user mentions.
  */
-const val MENTION_TAG = "MENTION"
+public const val MENTION_TAG: String = "MENTION"
 
 /**
  * Annotation tag used for "mention all" mentions.
  */
-const val MENTION_ALL_TAG = "MENTION_ALL"
+public const val MENTION_ALL_TAG: String = "MENTION_ALL"

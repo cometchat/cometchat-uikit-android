@@ -34,7 +34,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property errorIconTint The tint color of the error icon
  */
 @Immutable
-data class CometChatAIAssistantBubbleStyle(
+public data class CometChatAIAssistantBubbleStyle(
     val backgroundColor: Color,
     val textColor: Color,
     val textStyle: TextStyle,
@@ -48,7 +48,7 @@ data class CometChatAIAssistantBubbleStyle(
     val errorTextStyle: TextStyle = TextStyle.Default,
     val errorIconTint: Color = Color.Unspecified
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default AI assistant bubble style using CometChat theme tokens.
          *
@@ -67,7 +67,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @return A new [CometChatAIAssistantBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Transparent by default so the inner AI bubble never paints over the outer
             // message-bubble wrapper. The wrapper controls the visible color: transparent
             // in 1:1 agent chats, and the filled incoming color in groups (matches the
@@ -117,7 +117,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @return A new [CometChatAIAssistantBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(
+        public fun incoming(
             // Transparent so the outer message-bubble wrapper controls the visible color
             // (transparent in 1:1 agent chats, filled incoming color in groups).
             backgroundColor: Color = Color.Transparent,
@@ -165,7 +165,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @return A new [CometChatAIAssistantBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(
+        public fun outgoing(
             // Transparent so the outer message-bubble wrapper controls the visible color.
             backgroundColor: Color = Color.Transparent,
             textColor: Color = CometChatTheme.colorScheme.textColorPrimary,

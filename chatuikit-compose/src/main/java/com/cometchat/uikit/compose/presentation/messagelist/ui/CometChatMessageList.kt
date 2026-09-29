@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.CompositionLocalProvider
+import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatFileProviderAuthority
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.ui.LocalEnableMultipleAttachments
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.ui.batchId
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import android.widget.Toast
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.MessagesRequest
+import com.cometchat.chat.core.ReactionsRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.FlagReason
@@ -96,6 +98,7 @@ import com.cometchat.uikit.core.state.MessageFlagState
 import com.cometchat.uikit.core.state.MessageListUIState
 import com.cometchat.uikit.core.state.SmartRepliesUIState
 import com.cometchat.uikit.core.utils.AgentChatDetector
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.utils.PinSaveUtils
 import com.cometchat.uikit.core.utils.MessageOptionsUtils
@@ -431,7 +434,7 @@ import java.util.Locale
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CometChatMessageList(
+public fun CometChatMessageList(
     modifier: Modifier = Modifier,
     viewModel: CometChatMessageListViewModel? = null,
     style: CometChatMessageListStyle = CometChatMessageListStyle.default(),
@@ -454,6 +457,7 @@ fun CometChatMessageList(
     startFromUnreadMessages: Boolean = false,
     unreadMessageThreshold: Int = 30,
     disableSoundForMessages: Boolean = false,
+    customSoundForMessages: Int? = null,
     disableReceipt: Boolean = false,
 
     /**
@@ -469,6 +473,8 @@ fun CometChatMessageList(
     hideErrorState: Boolean = false,
     hideAvatar: Boolean = false,
     hideReceipts: Boolean = false,
+    /** Hides reactions rendered under message bubbles. Parity with setReactionVisibility. */
+    hideReactions: Boolean = false,
     hideGroupActionMessages: Boolean = false,
     hideDateSeparator: Boolean = false,
     
@@ -517,6 +523,24 @@ fun CometChatMessageList(
      * to provide quick overviews of the conversation.
      */
     enableConversationSummary: Boolean = false,
+
+    /**
+     * Keywords that gate smart-reply fetching. When non-empty, smart replies are only
+     * requested for messages containing at least one of these keywords (case-insensitive).
+     * An empty list — the default — means every message triggers a fetch.
+     *
+     * Parity with chatuikit-kotlin's `setSmartRepliesKeywords`.
+     */
+    smartRepliesKeywords: List<String> = emptyList(),
+
+    /**
+     * Delay in milliseconds before smart replies are fetched after a message arrives.
+     * A later message inside the window resets the timer. `null` keeps the ViewModel
+     * default of 10000 ms.
+     *
+     * Parity with chatuikit-kotlin's `setSmartRepliesDelayDuration`.
+     */
+    smartRepliesDelayDuration: Int? = null,
 
     /**
      * Style configuration for the AI conversation starter view.
@@ -573,9 +597,31 @@ fun CometChatMessageList(
     
     // Reaction list style
     reactionListStyle: CometChatReactionListStyle = CometChatReactionListStyle.default(),
+
+    /**
+     * Request builder used by the reaction list sheet opened from a message's reactions.
+     * Without it the sheet always queries with the default limit.
+     *
+     * Parity with chatuikit-kotlin's `setReactionsRequestBuilder`.
+     */
+    reactionsRequestBuilder: ReactionsRequest.ReactionsRequestBuilder? = null,
     
     // Text formatters
     textFormatters: List<CometChatTextFormatter>? = null,
+
+    /**
+     * Suppresses the "@All" entry in the mention suggestion list. Only applied to the default
+     * formatter — a caller-supplied [textFormatters] list is used as given.
+     * Parity with chatuikit-kotlin's setDisableMentionAll.
+     */
+    disableMentionAll: Boolean = false,
+
+    /**
+     * Overrides the id and display text of the "@All" mention entry. Both must be non-empty to take
+     * effect. Parity with chatuikit-kotlin's setMentionAllLabelId.
+     */
+    mentionAllLabelId: String? = null,
+    mentionAllLabel: String? = null,
 
     // Date/time formatting (parity with chatuikit-kotlin's setTimeFormat / setDateFormat /
     // setDateTimeFormatter)
@@ -604,6 +650,19 @@ fun CometChatMessageList(
 
     /** Custom composable for the "New Messages" separator above the first unread message. */
     newMessagesSeparatorView: (@Composable () -> Unit)? = null,
+
+    /**
+     * Pinned view above the message list, outside the scrolling area.
+     * Parity with chatuikit-kotlin's `setHeaderView`, which adds the view to a container
+     * sibling of the RecyclerView rather than to the list itself.
+     */
+    listHeaderView: (@Composable () -> Unit)? = null,
+
+    /**
+     * Pinned view below the message list, outside the scrolling area.
+     * Parity with chatuikit-kotlin's `setFooterView`.
+     */
+    listFooterView: (@Composable () -> Unit)? = null,
     
     // Quick reactions
     quickReactions: List<String> = listOf("👍", "❤️", "😂", "😮", "😢", "🙏"),
@@ -678,6 +737,7 @@ fun CometChatMessageList(
      */
     loadLastAgentConversation: Boolean = false
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_message_list)
     // ========================================
     // State Management (Task 39)
     // ========================================
@@ -767,9 +827,17 @@ fun CometChatMessageList(
     // Create default text formatters if none provided.
     // Matches kotlin reference's processMentionsFormatter(): creates a CometChatMentionsFormatter
     // and uses it as the default formatter list for text message rendering.
-    val effectiveTextFormatters = textFormatters ?: remember(context) {
-        listOf(CometChatMentionsFormatter(context))
-    }
+    val effectiveTextFormatters = textFormatters
+        ?: remember(context, disableMentionAll, mentionAllLabelId, mentionAllLabel) {
+            listOf(
+                CometChatMentionsFormatter(context).apply {
+                    setDisableMentionAll(disableMentionAll)
+                    if (!mentionAllLabelId.isNullOrEmpty() && !mentionAllLabel.isNullOrEmpty()) {
+                        setMentionAllLabel(mentionAllLabelId, mentionAllLabel)
+                    }
+                }
+            )
+        }
 
     // Bubble timestamps: an explicit timeFormat wins over the device 12/24-hour default, and
     // dateTimeFormatter.time() wins over both. The bubble renderers take a plain
@@ -1177,12 +1245,15 @@ fun CometChatMessageList(
         vm.setStartFromUnreadMessages(startFromUnreadMessages)
         vm.setUnreadThreshold(unreadMessageThreshold)
         vm.setDisableSoundForMessages(disableSoundForMessages)
+        customSoundForMessages?.let { vm.setCustomSoundForMessages(it) }
         vm.setLoadLastAgentConversation(loadLastAgentConversation)
-        
+
         // AI feature controls
         vm.setEnableConversationStarter(enableConversationStarter)
         vm.setEnableSmartReplies(enableSmartReplies)
         vm.setEnableConversationSummary(enableConversationSummary)
+        vm.setSmartReplyKeywords(smartRepliesKeywords)
+        smartRepliesDelayDuration?.let { vm.setSmartRepliesDelay(it) }
         
         when {
             user != null -> {
@@ -1578,9 +1649,13 @@ fun CometChatMessageList(
     
     val shape = RoundedCornerShape(style.cornerRadius)
     
+    Column(modifier = modifier.fillMaxSize()) {
+        listHeaderView?.invoke()
+
     Box(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
             .background(color = style.backgroundColor, shape = shape)
             .then(
                 if (style.strokeWidth > 0.dp) {
@@ -1589,7 +1664,7 @@ fun CometChatMessageList(
                     Modifier
                 }
             )
-            .semantics { contentDescription = "Message list" }
+            .semantics { contentDescription = cdHoist1 }
     ) {
         when (uiState) {
             // Loading state — skip for main agent conversations without loadLastAgentConversation
@@ -1874,6 +1949,7 @@ fun CometChatMessageList(
                                             isGroupConversation = isGroupConversation,
                                             isAgentChat = isAgentChat,
                                             hideReceipts = hideReceipts,
+                                            hideReactions = hideReactions,
                                             hideGroupActionMessages = hideGroupActionMessages,
                                             hideModerationView = hideModerationView,
                                             timeStampAlignment = timeStampAlignment,
@@ -2096,6 +2172,9 @@ fun CometChatMessageList(
                 }
             }
         }
+    }
+
+        listFooterView?.invoke()
     }
 
     // Delete confirmation dialog
@@ -2361,6 +2440,7 @@ fun CometChatMessageList(
             CometChatReactionList(
                 baseMessage = reactionListMessage!!,
                 selectedReaction = reactionListSelectedEmoji,
+                reactionsRequestBuilder = reactionsRequestBuilder,
                 style = reactionListStyle,
                 modifier = Modifier.fillMaxHeight(0.5f),
                 onEmpty = {
@@ -2512,7 +2592,7 @@ private fun shareMessage(
                     context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.cometchat_share)))
                 }
             } catch (e: Exception) {
-                android.util.Log.e("CometChatMessageList", "Share failed: ${e.message}")
+                CometChatLogger.e("CometChatMessageList", "Share failed: ${e.message}")
             }
         }
         message is MediaMessage && 
@@ -2551,7 +2631,7 @@ private fun shareMessage(
                         }
                     }
                 } catch (e: Exception) {
-                    android.util.Log.e("CometChatMessageList", "Failed to share image: ${e.message}")
+                    CometChatLogger.e("CometChatMessageList", "Failed to share image: ${e.message}")
                 }
             }
         }
@@ -2593,7 +2673,7 @@ private fun shareMessage(
                     // Share the file on the main thread
                     kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                         try {
-                            val authority = "${context.packageName}.provider"
+                            val authority = context.cometchatFileProviderAuthority
                             val fileUri = androidx.core.content.FileProvider.getUriForFile(context, authority, file)
                             
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -2605,11 +2685,11 @@ private fun shareMessage(
                                 Intent.createChooser(shareIntent, context.getString(R.string.cometchat_share))
                             )
                         } catch (e: Exception) {
-                            android.util.Log.e("CometChatMessageList", "Failed to share file: ${e.message}")
+                            CometChatLogger.e("CometChatMessageList", "Failed to share file: ${e.message}")
                         }
                     }
                 } catch (e: Exception) {
-                    android.util.Log.e("CometChatMessageList", "Failed to download and share media: ${e.message}")
+                    CometChatLogger.e("CometChatMessageList", "Failed to download and share media: ${e.message}")
                 }
             }
         }

@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.SharedFlow
  * @param hideGroupType Whether to hide group type indicators
  * @param hideReceipts Whether to hide message read receipts
  * @param hideSeparator Whether to hide item separators
+ * @param hidePinOption Whether to hide the pin/unpin option in menu
  * @param hideDeleteOption Whether to hide delete option in menu
  * @param dateTimeFormatter Custom date/time formatter callback
  * @param textFormatters List of text formatters for message preview
@@ -84,6 +85,7 @@ internal fun ConversationListContent(
     hideGroupType: Boolean,
     hideReceipts: Boolean,
     hideSeparator: Boolean,
+    hidePinOption: Boolean,
     hideDeleteOption: Boolean,
     dateTimeFormatter: DateTimeFormatterCallback?,
     textFormatters: List<CometChatTextFormatter>,
@@ -167,6 +169,7 @@ internal fun ConversationListContent(
                 context = context,
                 conversation = conversation,
                 style = style,
+                hidePinOption = hidePinOption,
                 hideDeleteOption = hideDeleteOption,
                 options = options,
                 addOptions = addOptions,
@@ -307,6 +310,7 @@ private fun buildMenuItems(
     context: Context,
     conversation: Conversation,
     style: CometChatConversationsStyle,
+    hidePinOption: Boolean,
     hideDeleteOption: Boolean,
     options: ((Context, Conversation) -> List<MenuItem>)?,
     addOptions: ((Context, Conversation) -> List<MenuItem>)?,
@@ -324,7 +328,10 @@ private fun buildMenuItems(
     // Pin Conversation feature flag. Non-destructive — keeps default (neutral) styling.
     // System-pinned conversations (pinned via the REST API, pinnedBy = "app_system") are not
     // user-controllable, so neither pin nor unpin is offered for them.
-    if (com.cometchat.uikit.core.CometChatUIKit.isPinConversationEnabled() && !conversation.isSystemPinned) {
+    if (!hidePinOption &&
+        com.cometchat.uikit.core.CometChatUIKit.isPinConversationEnabled() &&
+        !conversation.isSystemPinned
+    ) {
         val isPinned = conversation.isPinned
         menuItems.add(
             MenuItem(

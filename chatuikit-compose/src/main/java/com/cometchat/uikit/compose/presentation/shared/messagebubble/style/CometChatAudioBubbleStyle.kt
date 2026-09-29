@@ -51,7 +51,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatAudioBubbleStyle(
+public data class CometChatAudioBubbleStyle(
     // Content-specific properties ONLY
     val playIconTint: Color,
     val pauseIconTint: Color,
@@ -91,7 +91,7 @@ data class CometChatAudioBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default audio bubble style using CometChat theme tokens.
          *
@@ -114,7 +114,7 @@ data class CometChatAudioBubbleStyle(
          * @return A new [CometChatAudioBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             playIconTint: Color = CometChatTheme.colorScheme.primary,
             pauseIconTint: Color = CometChatTheme.colorScheme.primary,
             buttonBackgroundColor: Color = Color.White,
@@ -171,7 +171,7 @@ data class CometChatAudioBubbleStyle(
          * @return A new [CometChatAudioBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatAudioBubbleStyle = default()
+        public fun incoming(): CometChatAudioBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) audio messages.
@@ -183,7 +183,7 @@ data class CometChatAudioBubbleStyle(
          * @return A new [CometChatAudioBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatAudioBubbleStyle = default(
+        public fun outgoing(): CometChatAudioBubbleStyle = default(
             playedBarColor = Color.White,
             unplayedBarColor = Color.White.copy(alpha = 0.5f),
             durationTextColor = Color.White,

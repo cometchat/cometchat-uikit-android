@@ -277,6 +277,8 @@ internal fun SelectionCheckbox(
     } else {
         context.getString(R.string.cometchat_not_selected)
     }
+    val itemStateDescription =
+        context.getString(R.string.cometchat_a11y_item_with_state, memberName, selectionStateDescription)
     
     Box(
         modifier = Modifier
@@ -298,7 +300,7 @@ internal fun SelectionCheckbox(
                 selected = isSelected
                 stateDescription = selectionStateDescription
                 contentDescription = if (memberName.isNotEmpty()) {
-                    "$memberName, $selectionStateDescription"
+                    itemStateDescription
                 } else {
                     selectionStateDescription
                 }
@@ -373,7 +375,7 @@ internal fun SelectionCheckbox(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatGroupMemberListItem(
+public fun CometChatGroupMemberListItem(
     member: GroupMember,
     onItemClick: (GroupMember) -> Unit,
     modifier: Modifier = Modifier,

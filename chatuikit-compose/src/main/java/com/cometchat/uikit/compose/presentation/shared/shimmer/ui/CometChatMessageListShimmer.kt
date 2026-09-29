@@ -15,8 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.shimmer.style.CometChatMessageListShimmerStyle
 import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerBrush
 
@@ -58,10 +60,11 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.utils.useShimmerB
  *              Defaults to [CometChatMessageListShimmerStyle.default]
  */
 @Composable
-fun CometChatMessageListShimmer(
+public fun CometChatMessageListShimmer(
     modifier: Modifier = Modifier,
     style: CometChatMessageListShimmerStyle = CometChatMessageListShimmerStyle.default()
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_loading_messages)
     // Use shared shimmer brush for synchronized animation across all bubbles
     val brush = useShimmerBrush(style.shimmerConfig)
 
@@ -78,7 +81,7 @@ fun CometChatMessageListShimmer(
             .fillMaxSize()
             .padding(horizontal = style.horizontalPadding)
             .semantics {
-                contentDescription = "Loading messages"
+                contentDescription = cdHoist1
             }
     ) {
         repeat(style.itemCount) { index ->

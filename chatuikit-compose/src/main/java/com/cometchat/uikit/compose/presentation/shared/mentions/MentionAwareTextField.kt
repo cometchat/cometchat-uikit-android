@@ -82,7 +82,7 @@ import com.cometchat.uikit.core.mentions.SelectedMention
  * @see SelectedMention Data class representing a selected mention
  * @see insertMentionIntoState Helper function to insert mentions
  */
-class MentionTextFieldState(
+public class MentionTextFieldState(
     initialText: String = ""
 ) {
     private val selectedMentions = mutableListOf<SelectedMention>()
@@ -90,7 +90,7 @@ class MentionTextFieldState(
     /**
      * Current text field value with text and selection.
      */
-    var textFieldValue by mutableStateOf(TextFieldValue(initialText))
+    public var textFieldValue: TextFieldValue by mutableStateOf(TextFieldValue(initialText))
         private set
     
     /**
@@ -100,7 +100,7 @@ class MentionTextFieldState(
      * @param newValue The new text field value
      * @return The adjusted text field value with valid cursor position
      */
-    fun updateTextFieldValue(newValue: TextFieldValue): TextFieldValue {
+    public fun updateTextFieldValue(newValue: TextFieldValue): TextFieldValue {
         val adjustedValue = validateAndAdjustCursor(newValue)
         textFieldValue = adjustedValue
         return adjustedValue
@@ -110,7 +110,7 @@ class MentionTextFieldState(
      * Sets the text field value directly without cursor validation.
      * Use this for programmatic updates where cursor position is already valid.
      */
-    fun setValueDirectly(value: TextFieldValue) {
+    public fun setValueDirectly(value: TextFieldValue) {
         textFieldValue = value
     }
     
@@ -154,7 +154,7 @@ class MentionTextFieldState(
      * @param newValue The new text field value
      * @return Pair of (adjusted TextFieldValue, deleted mention or null)
      */
-    fun handleTextChange(
+    public fun handleTextChange(
         oldValue: TextFieldValue,
         newValue: TextFieldValue
     ): Pair<TextFieldValue, SelectedMention?> {
@@ -218,7 +218,7 @@ class MentionTextFieldState(
     /**
      * Adds a mention to the tracking list.
      */
-    fun addMention(mention: SelectedMention) {
+    public fun addMention(mention: SelectedMention) {
         // Remove any existing mention with the same ID
         selectedMentions.removeAll { it.id == mention.id }
         selectedMentions.add(mention)
@@ -227,26 +227,26 @@ class MentionTextFieldState(
     /**
      * Removes a mention by ID.
      */
-    fun removeMention(id: String) {
+    public fun removeMention(id: String) {
         selectedMentions.removeAll { it.id == id }
     }
     
     /**
      * Gets all selected mentions.
      */
-    fun getMentions(): List<SelectedMention> = selectedMentions.toList()
+    public fun getMentions(): List<SelectedMention> = selectedMentions.toList()
     
     /**
      * Clears all mentions.
      */
-    fun clearMentions() {
+    public fun clearMentions() {
         selectedMentions.clear()
     }
     
     /**
      * Clears all state (text and mentions).
      */
-    fun clear() {
+    public fun clear() {
         textFieldValue = TextFieldValue("")
         selectedMentions.clear()
     }
@@ -301,14 +301,14 @@ class MentionTextFieldState(
     /**
      * Checks if a position is inside a mention.
      */
-    fun isPositionInMention(position: Int): Boolean {
+    public fun isPositionInMention(position: Int): Boolean {
         return selectedMentions.any { position > it.spanStart && position < it.spanEnd }
     }
     
     /**
      * Gets the mention at a specific position.
      */
-    fun getMentionAt(position: Int): SelectedMention? {
+    public fun getMentionAt(position: Int): SelectedMention? {
         return selectedMentions.find { position in it.spanStart..it.spanEnd }
     }
     
@@ -320,7 +320,7 @@ class MentionTextFieldState(
      * @param loggedInUserId The logged-in user's ID for identifying self-mentions
      * @return AnnotatedString with styled mentions
      */
-    fun buildAnnotatedString(
+    public fun buildAnnotatedString(
         mentionStyle: SpanStyle,
         selfMentionStyle: SpanStyle? = null,
         loggedInUserId: String? = null
@@ -354,7 +354,7 @@ class MentionTextFieldState(
     /**
      * Gets the processed text for sending, replacing prompt text with underlying text.
      */
-    fun getProcessedText(): String {
+    public fun getProcessedText(): String {
         var result = textFieldValue.text
         
         // Sort mentions by position in reverse order to maintain correct indices during replacement
@@ -378,7 +378,7 @@ class MentionTextFieldState(
  * @param initialText Initial text content
  */
 @Composable
-fun rememberMentionTextFieldState(
+public fun rememberMentionTextFieldState(
     initialText: String = ""
 ): MentionTextFieldState {
     return remember { MentionTextFieldState(initialText) }
@@ -392,7 +392,7 @@ fun rememberMentionTextFieldState(
  * @param selfMentionStyle Optional style for self-mentions
  * @param loggedInUserId The logged-in user's ID for identifying self-mentions
  */
-class MentionVisualTransformation(
+public class MentionVisualTransformation(
     private val state: MentionTextFieldState,
     private val mentionStyle: SpanStyle,
     private val selfMentionStyle: SpanStyle? = null,
@@ -485,7 +485,7 @@ class MentionVisualTransformation(
  * @see insertMentionIntoState Helper function to insert mentions
  */
 @Composable
-fun MentionAwareTextField(
+public fun MentionAwareTextField(
     state: MentionTextFieldState,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -572,7 +572,7 @@ fun MentionAwareTextField(
  * @param underlyingText The text to use when processing (e.g., "<@uid:123>")
  * @return The updated TextFieldValue
  */
-fun insertMentionIntoState(
+public fun insertMentionIntoState(
     state: MentionTextFieldState,
     mentionState: ComposeMentionState,
     id: String,

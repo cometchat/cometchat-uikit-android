@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -60,6 +61,7 @@ import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.style.CometChatInlineAudioRecorderStyle
 import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.utils.InlineAudioRecorderCallback
 import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.utils.InlineAudioRecorderManager
+import com.cometchat.uikit.compose.presentation.shared.inlineaudiorecorder.utils.InlineAudioRecorderManagerRegistry
 import com.cometchat.uikit.compose.presentation.shared.permission.PermissionType
 import com.cometchat.uikit.compose.presentation.shared.permission.getPermissionsForType
 import com.cometchat.uikit.compose.presentation.shared.permission.rememberMultiplePermissionsState
@@ -112,7 +114,7 @@ private enum class DismissDirection {
  * @param controlsView Custom view for the control buttons
  */
 @Composable
-fun CometChatInlineAudioRecorder(
+public fun CometChatInlineAudioRecorder(
     modifier: Modifier = Modifier,
     viewModel: CometChatInlineAudioRecorderViewModel = viewModel(),
     style: CometChatInlineAudioRecorderStyle = CometChatInlineAudioRecorderStyle.default(),
@@ -135,8 +137,15 @@ fun CometChatInlineAudioRecorder(
     val filePath = state.filePath
     val errorMessage = state.errorMessage
     
-    // Create InlineAudioRecorderManager
-    val recorderManager = remember { InlineAudioRecorderManager(context) }
+    // Share ONE recording engine across every recorder bound to this (shared) ViewModel. If the
+    // host composes the recording UI more than once under the same ViewModel, all instances reuse
+    // this manager, so only one microphone capture runs and the duplicates' auto-start is a no-op.
+    // See InlineAudioRecorderManagerRegistry (ENG-39525).
+    val recorderManager = remember(viewModel) {
+        InlineAudioRecorderManagerRegistry.acquire(viewModel) {
+            InlineAudioRecorderManager(context.applicationContext)
+        }
+    }
     
     // Set up InlineAudioRecorderManager callback
     LaunchedEffect(recorderManager) {
@@ -255,8 +264,11 @@ fun CometChatInlineAudioRecorder(
     // **Validates: Requirements 13.1, 13.2, 13.3, 13.4, 13.5, 13.6**
     DisposableEffect(Unit) {
         onDispose {
-            recorderManager.release()
-            viewModel.release()
+            // Drop this instance's reference. The registry releases the shared manager only when
+            // the last recorder using it leaves composition; release the shared ViewModel then too.
+            if (InlineAudioRecorderManagerRegistry.release(viewModel)) {
+                viewModel.release()
+            }
         }
     }
     
@@ -329,6 +341,14 @@ fun CometChatInlineAudioRecorder(
             shrinkTowards = Alignment.Top
         ) + fadeOut(animationSpec = tween(durationMillis = 200))
     ) {
+        val inlineRecorderCd = when (status) {
+            InlineAudioRecorderStatus.RECORDING -> stringResource(R.string.cometchat_a11y_recording_in_progress_elapsed, displayTime)
+            InlineAudioRecorderStatus.PAUSED -> stringResource(R.string.cometchat_a11y_recording_paused_at, displayTime)
+            InlineAudioRecorderStatus.COMPLETED -> stringResource(R.string.cometchat_a11y_recording_complete_duration, displayTime)
+            InlineAudioRecorderStatus.PLAYING -> stringResource(R.string.cometchat_a11y_playing_recording_time, displayTime)
+            InlineAudioRecorderStatus.ERROR -> stringResource(R.string.cometchat_a11y_recording_error_msg, errorMessage ?: "")
+            else -> stringResource(R.string.cometchat_a11y_audio_recorder)
+        }
         val containerModifier = modifier
             .fillMaxWidth()
             .graphicsLayer {
@@ -348,14 +368,7 @@ fun CometChatInlineAudioRecorder(
             )
             .padding(12.dp)  // Figma: 12dp padding inside compose box (same as MessageComposer)
             .semantics {
-                contentDescription = when (status) {
-                    InlineAudioRecorderStatus.RECORDING -> "Recording in progress, $displayTime elapsed"
-                    InlineAudioRecorderStatus.PAUSED -> "Recording paused at $displayTime"
-                    InlineAudioRecorderStatus.COMPLETED -> "Recording complete, $displayTime duration"
-                    InlineAudioRecorderStatus.PLAYING -> "Playing recording, $displayTime"
-                    InlineAudioRecorderStatus.ERROR -> "Recording error: $errorMessage"
-                    else -> "Audio recorder"
-                }
+                contentDescription = inlineRecorderCd
             }
         
         when (status) {
@@ -382,6 +395,7 @@ fun CometChatInlineAudioRecorder(
                         modifier = containerModifier,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val cdHoist11 = stringResource(R.string.cometchat_a11y_duration, displayTime)
                         // Delete button (always visible)
                         // **Validates: Requirements 9.1, 9.2**
                         DeleteButton(
@@ -481,7 +495,7 @@ fun CometChatInlineAudioRecorder(
                             modifier = Modifier
                                 .width(48.dp)
                                 .semantics {
-                                    contentDescription = "Duration: $displayTime"
+                                    contentDescription = cdHoist11
                                 }
                         )
                         
@@ -556,6 +570,7 @@ private fun DeleteButton(
     style: CometChatInlineAudioRecorderStyle,
     onClick: () -> Unit
 ) {
+    val cdHoist10 = stringResource(R.string.cometchat_a11y_delete_recording)
     Box(
         modifier = Modifier
             .size(24.dp)
@@ -567,7 +582,7 @@ private fun DeleteButton(
                 onClick = onClick
             )
             .semantics {
-                contentDescription = "Delete recording"
+                contentDescription = cdHoist10
                 role = Role.Button
             },
         contentAlignment = Alignment.Center
@@ -604,6 +619,7 @@ private fun RecordPlayButton(
             PulsingRecordIndicator(style = style)
         }
         InlineAudioRecorderStatus.PAUSED, InlineAudioRecorderStatus.COMPLETED -> {
+            val cdHoist9 = stringResource(R.string.cometchat_a11y_play_recording)
             // Play button
             // **Validates: Requirements 9.5**
             Box(
@@ -617,7 +633,7 @@ private fun RecordPlayButton(
                         onClick = onPlayClick
                     )
                     .semantics {
-                        contentDescription = "Play recording"
+                        contentDescription = cdHoist9
                         role = Role.Button
                     },
                 contentAlignment = Alignment.Center
@@ -631,6 +647,7 @@ private fun RecordPlayButton(
             }
         }
         InlineAudioRecorderStatus.PLAYING -> {
+            val cdHoist8 = stringResource(R.string.cometchat_a11y_pause_playback)
             // Pause button
             // **Validates: Requirements 9.6**
             Box(
@@ -644,7 +661,7 @@ private fun RecordPlayButton(
                         onClick = onPlayClick
                     )
                     .semantics {
-                        contentDescription = "Pause playback"
+                        contentDescription = cdHoist8
                         role = Role.Button
                     },
                 contentAlignment = Alignment.Center
@@ -670,6 +687,7 @@ private fun RecordPlayButton(
  */
 @Composable
 private fun PulsingRecordIndicator(style: CometChatInlineAudioRecorderStyle) {
+    val cdHoist7 = stringResource(R.string.cometchat_a11y_recording_in_progress)
     val infiniteTransition = rememberInfiniteTransition(label = "recordingPulse")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -685,7 +703,7 @@ private fun PulsingRecordIndicator(style: CometChatInlineAudioRecorderStyle) {
         modifier = Modifier
             .size(24.dp)
             .semantics {
-                contentDescription = "Recording in progress"
+                contentDescription = cdHoist7
             },
         contentAlignment = Alignment.Center
     ) {
@@ -720,6 +738,7 @@ private fun PauseMicButton(
             // Pause button (only if pause/resume is supported)
             // **Validates: Requirements 9.7, 9.8**
             if (isPauseResumeSupported) {
+                val cdHoist6 = stringResource(R.string.cometchat_a11y_pause_recording)
                 Box(
                     modifier = Modifier
                         .size(24.dp)
@@ -731,7 +750,7 @@ private fun PauseMicButton(
                             onClick = onPauseClick
                         )
                         .semantics {
-                            contentDescription = "Pause recording"
+                            contentDescription = cdHoist6
                             role = Role.Button
                         },
                     contentAlignment = Alignment.Center
@@ -749,6 +768,7 @@ private fun PauseMicButton(
             }
         }
         InlineAudioRecorderStatus.PAUSED -> {
+            val cdHoist5 = stringResource(R.string.cometchat_a11y_resume_recording)
             // Mic/Resume button
             // **Validates: Requirements 9.9**
             Box(
@@ -762,7 +782,7 @@ private fun PauseMicButton(
                         onClick = onResumeClick
                     )
                     .semantics {
-                        contentDescription = "Resume recording"
+                        contentDescription = cdHoist5
                         role = Role.Button
                     },
                 contentAlignment = Alignment.Center
@@ -792,13 +812,14 @@ private fun PauseMicButton(
  */
 @Composable
 private fun DisabledMicButton(style: CometChatInlineAudioRecorderStyle) {
+    val cdHoist4 = stringResource(R.string.cometchat_a11y_microphone_disabled)
     Box(
         modifier = Modifier
             .size(24.dp)
             .clip(CircleShape)
             .background(style.micButtonBackgroundColor)
             .semantics {
-                contentDescription = "Microphone (disabled)"
+                contentDescription = cdHoist4
             },
         contentAlignment = Alignment.Center
     ) {
@@ -821,6 +842,7 @@ private fun SendButton(
     style: CometChatInlineAudioRecorderStyle,
     onClick: () -> Unit
 ) {
+    val cdHoist3 = stringResource(R.string.cometchat_a11y_send_recording)
     // Use Card for consistent styling with MessageComposer send button
     androidx.compose.material3.Card(
         modifier = Modifier
@@ -832,7 +854,7 @@ private fun SendButton(
                 onClick = onClick
             )
             .semantics {
-                contentDescription = "Send recording"
+                contentDescription = cdHoist3
                 role = Role.Button
             },
         shape = CircleShape,
@@ -871,6 +893,8 @@ private fun ErrorStateContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_error, errorMessage)
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_retry)
         // Error icon
         Icon(
             painter = painterResource(id = R.drawable.cometchat_ic_alert_circle),
@@ -887,7 +911,7 @@ private fun ErrorStateContent(
             modifier = Modifier
                 .weight(1f)
                 .semantics {
-                    contentDescription = "Error: $errorMessage"
+                    contentDescription = cdHoist2
                 }
         )
         
@@ -903,7 +927,7 @@ private fun ErrorStateContent(
                 )
                 .padding(horizontal = 12.dp, vertical = 6.dp)
                 .semantics {
-                    contentDescription = "Retry"
+                    contentDescription = cdHoist1
                     role = Role.Button
                 }
         ) {
@@ -925,7 +949,7 @@ private fun ErrorStateContent(
  * @param permissionState The permission state to check
  * @return true if recording started successfully
  */
-fun startInlineRecording(
+public fun startInlineRecording(
     viewModel: CometChatInlineAudioRecorderViewModel,
     recorderManager: InlineAudioRecorderManager
 ): Boolean {

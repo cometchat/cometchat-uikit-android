@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -110,7 +111,7 @@ internal fun ReactionHeaderTabs(
                 isActive = activeTabIndex == tabIndex,
                 onClick = { onTabSelected(tabIndex, reactionCount.reaction) },
                 style = style,
-                contentDescription = "${reactionCount.reaction}, ${reactionCount.count} reactions"
+                contentDescription = stringResource(R.string.cometchat_a11y_reactions, reactionCount.reaction, reactionCount.count)
             )
         }
     }

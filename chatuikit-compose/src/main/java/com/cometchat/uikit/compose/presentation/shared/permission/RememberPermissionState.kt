@@ -37,7 +37,7 @@ import androidx.core.content.ContextCompat
  * ```
  */
 @Composable
-fun rememberPermissionState(
+public fun rememberPermissionState(
     permission: String,
     onPermissionResult: ((Boolean) -> Unit)? = null
 ): ManagedPermissionState {
@@ -79,29 +79,29 @@ fun rememberPermissionState(
  * @property launchRequest Function to launch the permission request
  */
 @Stable
-class ManagedPermissionState(
-    val state: PermissionState,
+public class ManagedPermissionState(
+    public val state: PermissionState,
     private val launchRequest: () -> Unit
 ) {
     /**
      * The permission identifier
      */
-    val permission: String get() = state.permission
+    public val permission: String get() = state.permission
     
     /**
      * Whether the permission is currently granted
      */
-    val hasPermission: Boolean get() = state.hasPermission
+    public val hasPermission: Boolean get() = state.hasPermission
     
     /**
      * Whether we should show rationale for requesting this permission
      */
-    val shouldShowRationale: Boolean get() = state.shouldShowRationale
+    public val shouldShowRationale: Boolean get() = state.shouldShowRationale
     
     /**
      * Launches the permission request dialog
      */
-    fun launchPermissionRequest() {
+    public fun launchPermissionRequest() {
         launchRequest()
     }
 }

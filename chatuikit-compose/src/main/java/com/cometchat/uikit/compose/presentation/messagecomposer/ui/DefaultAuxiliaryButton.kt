@@ -7,9 +7,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatMessageComposerStyle
 
 /**
@@ -33,7 +35,7 @@ import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatM
  * @param onVoiceRecordClick Callback when the voice recording button is clicked
  */
 @Composable
-fun DefaultAuxiliaryButton(
+public fun DefaultAuxiliaryButton(
     modifier: Modifier = Modifier,
     hideRichTextToggle: Boolean = true,
     hideStickersButton: Boolean = false,
@@ -53,16 +55,17 @@ fun DefaultAuxiliaryButton(
     ) {
         // 1. Rich Text Toggle button (first, matching chatuikit-kotlin order)
         if (!hideRichTextToggle) {
+            val cdHoist4 = stringResource(R.string.cometchat_a11y_format_text)
             IconButton(
                 onClick = onRichTextToggleClick,
                 modifier = Modifier
                     .size(40.dp)
-                    .semantics { contentDescription = "Format Text" }
+                    .semantics { contentDescription = cdHoist4 }
             ) {
                 style.richTextToggleIcon?.let { icon ->
                     Icon(
                         painter = icon,
-                        contentDescription = if (isRichTextToolbarExpanded) "Hide formatting options" else "Show formatting options",
+                        contentDescription = if (isRichTextToolbarExpanded) stringResource(R.string.cometchat_a11y_hide_formatting_options) else stringResource(R.string.cometchat_a11y_show_formatting_options),
                         tint = if (isRichTextToolbarExpanded) style.richTextToggleIconActiveTint else style.richTextToggleIconTint,
                         modifier = Modifier.size(24.dp)
                     )
@@ -72,6 +75,7 @@ fun DefaultAuxiliaryButton(
 
         // 2. Sticker/Emoji button — icon swaps to filled variant when sticker keyboard is open
         if (!hideStickersButton) {
+            val cdHoist3 = stringResource(R.string.cometchat_a11y_stickers)
             val visualState = resolveStickerVisualState(isStickerKeyboardOpen)
             val stickerIcon = if (visualState == StickerButtonVisualState.ACTIVE) style.stickerActiveIcon else style.stickerIcon
             val stickerTint = if (visualState == StickerButtonVisualState.ACTIVE) style.stickerActiveIconTint else style.stickerIconTint
@@ -79,12 +83,12 @@ fun DefaultAuxiliaryButton(
                 onClick = onStickerClick,
                 modifier = Modifier
                     .size(40.dp)
-                    .semantics { contentDescription = "Stickers" }
+                    .semantics { contentDescription = cdHoist3 }
             ) {
                 stickerIcon?.let { icon ->
                     Icon(
                         painter = icon,
-                        contentDescription = if (isStickerKeyboardOpen) "Close stickers" else "Open stickers",
+                        contentDescription = if (isStickerKeyboardOpen) stringResource(R.string.cometchat_a11y_close_stickers) else stringResource(R.string.cometchat_a11y_open_stickers),
                         tint = stickerTint,
                         modifier = Modifier.size(24.dp)
                     )
@@ -94,16 +98,17 @@ fun DefaultAuxiliaryButton(
 
         // 3. AI button
         if (!hideAIButton) {
+            val cdHoist2 = stringResource(R.string.cometchat_a11y_ai_assistant)
             IconButton(
                 onClick = onAIClick,
                 modifier = Modifier
                     .size(40.dp)
-                    .semantics { contentDescription = "AI Assistant" }
+                    .semantics { contentDescription = cdHoist2 }
             ) {
                 style.aiIcon?.let { icon ->
                     Icon(
                         painter = icon,
-                        contentDescription = "Open AI options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_open_ai_options),
                         tint = style.aiIconTint,
                         modifier = Modifier.size(24.dp)
                     )
@@ -113,16 +118,17 @@ fun DefaultAuxiliaryButton(
 
         // 4. Voice Recording button (last, matching chatuikit-kotlin order)
         if (!hideVoiceRecordingButton) {
+            val cdHoist1 = stringResource(R.string.cometchat_a11y_voice_recording)
             IconButton(
                 onClick = onVoiceRecordClick,
                 modifier = Modifier
                     .size(40.dp)
-                    .semantics { contentDescription = "Voice Recording" }
+                    .semantics { contentDescription = cdHoist1 }
             ) {
                 style.voiceRecordingIcon?.let { icon ->
                     Icon(
                         painter = icon,
-                        contentDescription = "Record voice message",
+                        contentDescription = stringResource(R.string.cometchat_a11y_record_voice_message),
                         tint = style.voiceRecordingIconTint,
                         modifier = Modifier.size(24.dp)
                     )

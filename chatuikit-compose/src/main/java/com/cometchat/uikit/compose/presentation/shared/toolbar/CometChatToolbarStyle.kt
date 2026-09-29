@@ -16,7 +16,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Contains all visual styling properties for the toolbar component.
  */
 @Immutable
-data class CometChatToolbarStyle(
+public data class CometChatToolbarStyle(
     // Background
     val backgroundColor: Color,
     
@@ -51,12 +51,12 @@ data class CometChatToolbarStyle(
     val selectionCountTextColor: Color,
     val selectionCountTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             titleTextColor: Color = CometChatTheme.colorScheme.textColorPrimary,
             titleTextStyle: TextStyle = CometChatTheme.typography.heading2Bold,

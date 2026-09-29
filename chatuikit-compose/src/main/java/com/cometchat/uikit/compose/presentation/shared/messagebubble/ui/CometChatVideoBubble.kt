@@ -1,6 +1,5 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +46,7 @@ import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextF
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatVideoBubbleStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 private const val TAG = "CometChatVideoBubble"
 
@@ -88,7 +88,7 @@ private const val MAX_VISIBLE_ITEMS = 4
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatVideoBubble(
+public fun CometChatVideoBubble(
     message: MediaMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -119,13 +119,13 @@ fun CometChatVideoBubble(
     }
 
     // Debug logging
-    Log.d(TAG, "=== CometChatVideoBubble Debug ===")
-    Log.d(TAG, "Message ID: ${message.id}")
-    Log.d(TAG, "Attachments count: ${attachments.size}")
-    Log.d(TAG, "Local file path: $localFilePath")
-    Log.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
-    Log.d(TAG, "Attachment URL: ${attachments.firstOrNull()?.fileUrl}")
-    Log.d(TAG, "Metadata: ${message.metadata}")
+    CometChatLogger.d(TAG, "=== CometChatVideoBubble Debug ===")
+    CometChatLogger.d(TAG, "Message ID: ${message.id}")
+    CometChatLogger.d(TAG, "Attachments count: ${attachments.size}")
+    CometChatLogger.d(TAG, "Local file path: $localFilePath")
+    CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
+    CometChatLogger.d(TAG, "Attachment URL: ${attachments.firstOrNull()?.fileUrl}")
+    CometChatLogger.d(TAG, "Metadata: ${message.metadata}")
 
     CometChatVideoBubbleContent(
         attachments = attachments,
@@ -160,7 +160,7 @@ fun CometChatVideoBubble(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatVideoBubble(
+public fun CometChatVideoBubble(
     attachments: List<Attachment>,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -209,12 +209,13 @@ private fun CometChatVideoBubbleContent(
     alignment: UIKitConstants.MessageBubbleAlignment = UIKitConstants.MessageBubbleAlignment.LEFT,
     textFormatters: List<CometChatTextFormatter> = emptyList()
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_video_message_with_video_s, attachments.size)
     Column(
         modifier = modifier
             .width(240.dp)
             .padding(start = 4.dp, top = 4.dp, end = 4.dp)
             .semantics {
-                contentDescription = "Video message with ${attachments.size} video(s)"
+                contentDescription = cdHoist2
             }
     ) {
         when {
@@ -242,12 +243,12 @@ private fun CometChatVideoBubbleContent(
                 // Fallback: if thumbnail URL fails (403), retry with attachment URL
                 val fallbackUrl = if (localFilePath == null && thumbnailUrl != null) attachmentUrl else null
                 
-                Log.d(TAG, "=== SingleVideoView URL Resolution ===")
-                Log.d(TAG, "Local file path: $localFilePath")
-                Log.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
-                Log.d(TAG, "Attachment URL: $attachmentUrl")
-                Log.d(TAG, "Effective URL: $effectiveUrl")
-                Log.d(TAG, "Fallback URL: $fallbackUrl")
+                CometChatLogger.d(TAG, "=== SingleVideoView URL Resolution ===")
+                CometChatLogger.d(TAG, "Local file path: $localFilePath")
+                CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
+                CometChatLogger.d(TAG, "Attachment URL: $attachmentUrl")
+                CometChatLogger.d(TAG, "Effective URL: $effectiveUrl")
+                CometChatLogger.d(TAG, "Fallback URL: $fallbackUrl")
                 
                 SingleVideoView(
                     url = effectiveUrl,
@@ -421,7 +422,7 @@ private fun SingleVideoView(
     var useFallback by remember(url) { mutableStateOf(false) }
     val effectiveUrl = if (useFallback && !fallbackUrl.isNullOrEmpty()) fallbackUrl else url
     
-    Log.d(TAG, "SingleVideoView loading URL: $effectiveUrl (useFallback=$useFallback)")
+    CometChatLogger.d(TAG, "SingleVideoView loading URL: $effectiveUrl (useFallback=$useFallback)")
     
     Box(
         modifier = Modifier
@@ -441,18 +442,18 @@ private fun SingleVideoView(
                 .data(effectiveUrl)
                 .crossfade(true)
                 .listener(
-                    onStart = { Log.d(TAG, "Coil: Started loading: $effectiveUrl") },
-                    onSuccess = { _, _ -> Log.d(TAG, "Coil: Successfully loaded: $effectiveUrl") },
+                    onStart = { CometChatLogger.d(TAG, "Coil: Started loading: $effectiveUrl") },
+                    onSuccess = { _, _ -> CometChatLogger.d(TAG, "Coil: Successfully loaded: $effectiveUrl") },
                     onError = { _, result ->
-                        Log.e(TAG, "Coil: Failed to load: $effectiveUrl, error: ${result.throwable}")
+                        CometChatLogger.e(TAG, "Coil: Failed to load: $effectiveUrl, error: ${result.throwable}")
                         if (!useFallback && !fallbackUrl.isNullOrEmpty()) {
-                            Log.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
+                            CometChatLogger.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
                             useFallback = true
                         }
                     }
                 )
                 .build(),
-            contentDescription = "Video thumbnail",
+            contentDescription = stringResource(R.string.cometchat_a11y_video_thumbnail),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             loading = {
@@ -469,7 +470,7 @@ private fun SingleVideoView(
             error = {
                 // Only show error if fallback also failed or no fallback available
                 if (useFallback || fallbackUrl.isNullOrEmpty()) {
-                    Log.e(TAG, "SubcomposeAsyncImage error state for URL: $effectiveUrl (fallback exhausted)")
+                    CometChatLogger.e(TAG, "SubcomposeAsyncImage error state for URL: $effectiveUrl (fallback exhausted)")
                     VideoErrorPlaceholder(style = style)
                 }
             }
@@ -672,7 +673,7 @@ private fun GridVideoItem(
                 .data(getVideoThumbnailUrl(attachment))
                 .crossfade(true)
                 .build(),
-            contentDescription = "Video ${index + 1}",
+            contentDescription = stringResource(R.string.cometchat_a11y_video, index + 1),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             loading = {
@@ -730,6 +731,7 @@ private fun PlayButtonOverlay(
     modifier: Modifier = Modifier,
     isSmall: Boolean = false
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_play_video)
     val size = if (isSmall) 36.dp else 56.dp
     val iconSize = if (isSmall) 20.dp else 28.dp
 
@@ -740,7 +742,7 @@ private fun PlayButtonOverlay(
             .background(style.playIconBackgroundColor)
             .clickable(onClick = onClick)
             .semantics {
-                contentDescription = "Play video"
+                contentDescription = cdHoist1
             },
         contentAlignment = Alignment.Center
     ) {
@@ -766,7 +768,7 @@ private fun VideoErrorPlaceholder(style: CometChatVideoBubbleStyle) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.cometchat_ic_video_outlined),
-            contentDescription = "Video unavailable",
+            contentDescription = stringResource(R.string.cometchat_a11y_video_unavailable),
             tint = CometChatTheme.colorScheme.iconTintTertiary,
             modifier = Modifier.size(48.dp)
         )
@@ -776,7 +778,7 @@ private fun VideoErrorPlaceholder(style: CometChatVideoBubbleStyle) {
 /**
  * Data class representing grid configuration for video layout.
  */
-data class VideoGridConfig(
+public data class VideoGridConfig(
     val columns: Int,
     val rows: Int,
     val showMore: Boolean,
@@ -789,7 +791,7 @@ data class VideoGridConfig(
  * @param attachmentCount The number of video attachments
  * @return [VideoGridConfig] with the appropriate layout configuration
  */
-fun calculateVideoGridLayout(attachmentCount: Int): VideoGridConfig {
+public fun calculateVideoGridLayout(attachmentCount: Int): VideoGridConfig {
     return when {
         attachmentCount == 1 -> VideoGridConfig(columns = 1, rows = 1, showMore = false)
         attachmentCount == 2 -> VideoGridConfig(columns = 2, rows = 1, showMore = false)

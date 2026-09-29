@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.shared.views.popupmenu.CometChatPopupMenuStyle
 import com.cometchat.uikit.compose.shared.views.popupmenu.MenuItem
 import com.cometchat.uikit.compose.shared.views.popupmenu.PopupMenuItem
@@ -43,7 +45,7 @@ import com.cometchat.uikit.compose.shared.views.popupmenu.PopupMenuItem
 /**
  * Enum defining the position of the popup menu relative to the anchor view.
  */
-enum class PopupPosition {
+public enum class PopupPosition {
     /** Show popup above the anchor view */
     ABOVE,
     /** Show popup below the anchor view */
@@ -124,13 +126,13 @@ private class AboveAnchorPositionProvider(
  *     onMenuItemClick = { id, name -> println("Clicked: $name") }
  * ) {
  *     IconButton(onClick = { expanded = true }) {
- *         Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+ *         Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cometchat_a11y_menu))
  *     }
  * }
  * ```
  */
 @Composable
-fun CometChatPopupMenu(
+public fun CometChatPopupMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     menuItems: List<MenuItem>,

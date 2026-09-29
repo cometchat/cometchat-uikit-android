@@ -17,6 +17,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.contentDescription
@@ -26,7 +27,9 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.search.style.CometChatSearchStyle
+import com.cometchat.uikit.compose.presentation.shared.interfaces.DateTimeFormatterCallback
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
 
 private const val LOAD_MORE_THRESHOLD = 5
@@ -35,7 +38,7 @@ private const val LOAD_MORE_THRESHOLD = 5
  * A composable that displays the search results content with conversations and messages sections.
  */
 @Composable
-fun SearchListContent(
+public fun SearchListContent(
     conversations: List<Conversation>,
     messages: List<BaseMessage>,
     hasMoreConversations: Boolean,
@@ -54,6 +57,9 @@ fun SearchListContent(
     conversationSubtitleView: (@Composable (Conversation) -> Unit)? = null,
     conversationTrailingView: (@Composable (Conversation) -> Unit)? = null,
     textFormatters: List<CometChatTextFormatter> = emptyList(),
+    dateTimeFormatter: DateTimeFormatterCallback? = null,
+    hideUserStatus: Boolean = false,
+    hideGroupType: Boolean = false,
     uid: String? = null,
     guid: String? = null,
     textMessageItemView: (@Composable (TextMessage) -> Unit)? = null,
@@ -63,6 +69,7 @@ fun SearchListContent(
     documentMessageItemView: (@Composable (MediaMessage) -> Unit)? = null,
     linkMessageItemView: (@Composable (TextMessage) -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_search_results_conversations_messages, conversations.size, messages.size)
     val listState = rememberLazyListState()
 
     val totalItems = conversations.size + messages.size +
@@ -100,7 +107,7 @@ fun SearchListContent(
             .fillMaxSize()
             .background(style.backgroundColor)
             .semantics {
-                contentDescription = "Search results: ${conversations.size} conversations, ${messages.size} messages"
+                contentDescription = cdHoist1
                 collectionInfo = CollectionInfo(
                     rowCount = totalItems,
                     columnCount = 1
@@ -129,6 +136,9 @@ fun SearchListContent(
                         onClick = onConversationClick,
                         style = style.conversationItemStyle,
                         textFormatters = textFormatters,
+                        dateTimeFormatter = dateTimeFormatter,
+                        hideUserStatus = hideUserStatus,
+                        hideGroupType = hideGroupType,
                         leadingView = conversationLeadingView,
                         titleView = conversationTitleView,
                         subtitleView = conversationSubtitleView,

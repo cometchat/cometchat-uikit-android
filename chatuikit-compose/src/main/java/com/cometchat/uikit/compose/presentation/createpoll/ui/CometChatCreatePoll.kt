@@ -87,7 +87,7 @@ import kotlin.math.roundToInt
  * @param onBackPress Callback invoked when back button is pressed
  */
 @Composable
-fun CometChatCreatePoll(
+public fun CometChatCreatePoll(
     modifier: Modifier = Modifier,
     style: CometChatCreatePollStyle = CometChatCreatePollStyle.default(),
     // Toolbar
@@ -326,6 +326,7 @@ private fun DraggablePollOptionItem(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist4 = stringResource(R.string.cometchat_a11y_poll_option, index + 1)
         // Option input field
         BasicTextField(
             value = value,
@@ -375,7 +376,7 @@ private fun DraggablePollOptionItem(
                     }
                 }
                 .semantics {
-                    contentDescription = "Poll option ${index + 1}"
+                    contentDescription = cdHoist4
                 },
             textStyle = style.optionTextStyle.copy(color = style.optionTextColor),
             cursorBrush = SolidColor(style.optionTextColor),
@@ -396,6 +397,7 @@ private fun DraggablePollOptionItem(
         
         // Drag handle icon (visible only when option has text) - same as Kotlin
         if (showDragHandle) {
+            val cdHoist3 = stringResource(R.string.cometchat_a11y_drag_handle_for_option, index + 1)
             Spacer(modifier = Modifier.width(8.dp))
             
             Icon(
@@ -405,7 +407,7 @@ private fun DraggablePollOptionItem(
                 modifier = Modifier
                     .size(24.dp)
                     .semantics {
-                        contentDescription = "Drag handle for option ${index + 1}"
+                        contentDescription = cdHoist3
                     }
             )
         }
@@ -428,6 +430,7 @@ private fun CreatePollToolbar(
             .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cdHoist2 = stringResource(R.string.cometchat_a11y_go_back_from_create_poll)
         // Back button (back arrow icon, matching Kotlin)
         Icon(
             painter = painterResource(id = R.drawable.cometchat_ic_back),
@@ -438,7 +441,7 @@ private fun CreatePollToolbar(
                 .clickable(enabled = onBackPress != null) { onBackPress?.invoke() }
                 .semantics {
                     role = Role.Button
-                    contentDescription = "Go back from create poll"
+                    contentDescription = cdHoist2
                 }
         )
 
@@ -462,6 +465,7 @@ private fun QuestionInput(
     onValueChange: (String) -> Unit,
     style: CometChatCreatePollStyle
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_poll_question_input)
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -478,7 +482,7 @@ private fun QuestionInput(
             )
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .semantics {
-                contentDescription = "Poll question input"
+                contentDescription = cdHoist1
             },
         textStyle = style.questionTextStyle.copy(color = style.questionTextColor),
         cursorBrush = SolidColor(style.questionTextColor),
@@ -507,6 +511,13 @@ private fun SubmitButton(
     style: CometChatCreatePollStyle,
     onClick: () -> Unit
 ) {
+    val createPollButtonCd = if (isLoading) {
+        stringResource(R.string.cometchat_a11y_creating_poll)
+    } else if (isEnabled) {
+        stringResource(R.string.cometchat_a11y_send_poll)
+    } else {
+        stringResource(R.string.cometchat_a11y_send_poll_disabled)
+    }
     val backgroundColor = if (isEnabled) {
         style.submitButtonBackgroundColor
     } else {
@@ -527,13 +538,7 @@ private fun SubmitButton(
             .padding(vertical = 12.dp)
             .semantics {
                 role = Role.Button
-                contentDescription = if (isLoading) {
-                    "Creating poll, please wait"
-                } else if (isEnabled) {
-                    "Send poll"
-                } else {
-                    "Send poll button disabled"
-                }
+                contentDescription = createPollButtonCd
             },
         contentAlignment = Alignment.Center
     ) {

@@ -40,6 +40,6 @@ import com.cometchat.uikit.core.viewmodel.CometChatThreadHeaderViewModel
  * @see CometChatThreadHeaderViewModel
  * @see com.cometchat.uikit.compose.presentation.threadheader.ui.CometChatThreadHeader
  */
-class ThreadHeaderViewModel(
+public class ThreadHeaderViewModel(
     enableListeners: Boolean = true
 ) : CometChatThreadHeaderViewModel(enableListeners)

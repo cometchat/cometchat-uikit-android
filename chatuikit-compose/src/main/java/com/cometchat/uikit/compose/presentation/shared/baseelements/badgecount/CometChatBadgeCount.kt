@@ -63,7 +63,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * ```
  */
 @Composable
-fun CometChatBadgeCount(
+public fun CometChatBadgeCount(
     modifier: Modifier = Modifier,
     count: Int = 0,
     style: BadgeCountStyle = BadgeCountStyle.default()

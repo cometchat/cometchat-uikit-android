@@ -14,7 +14,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Contains all visual styling properties for the empty state component.
  */
 @Immutable
-data class CometChatEmptyStateStyle(
+public data class CometChatEmptyStateStyle(
     val backgroundColor: Color,
     val icon: Painter?,
     val iconTint: Color,
@@ -24,13 +24,13 @@ data class CometChatEmptyStateStyle(
     val subtitleTextColor: Color,
     val subtitleTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             icon: Painter? = null,
             iconTint: Color = CometChatTheme.colorScheme.iconTintSecondary,

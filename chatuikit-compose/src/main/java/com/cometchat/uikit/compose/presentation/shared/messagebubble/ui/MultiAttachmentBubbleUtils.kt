@@ -95,7 +95,7 @@ internal val MULTI_ATTACHMENT_BUBBLE_WIDTH = 240.dp
  * the deprecated single-attachment bubbles (`false`). Provided by CometChatMessageList from its
  * `enableMultipleAttachments` prop and read by InternalContentRenderer.
  */
-val LocalEnableMultipleAttachments = staticCompositionLocalOf { true }
+public val LocalEnableMultipleAttachments: androidx.compose.runtime.ProvidableCompositionLocal<Boolean> = staticCompositionLocalOf { true }
 
 /**
  * True when the message's timestamp/receipt row is hidden below the bubble (non-last message of a
@@ -282,6 +282,11 @@ internal fun MediaBubbleContent(
     alignment: UIKitConstants.MessageBubbleAlignment = UIKitConstants.MessageBubbleAlignment.LEFT,
     textFormatters: List<CometChatTextFormatter> = emptyList()
 ) {
+    val bubbleDescription = stringResource(
+        R.string.cometchat_a11y_media_message_with_items,
+        if (isVideo) stringResource(R.string.cometchat_a11y_video_label) else stringResource(R.string.cometchat_a11y_image),
+        attachments.size
+    )
     Column(
         modifier = modifier
             .width(MULTI_ATTACHMENT_BUBBLE_WIDTH)
@@ -293,7 +298,7 @@ internal fun MediaBubbleContent(
                 end = 5.dp,
                 bottom = if (LocalTimestampHidden.current) 4.dp else 0.dp
             )
-            .semantics { contentDescription = "${if (isVideo) "Video" else "Image"} message with ${attachments.size} item(s)" }
+            .semantics { contentDescription = bubbleDescription }
     ) {
         MediaGrid(attachments, style, isVideo, onMediaClick, onMoreClick, onLongClick, firstTileThumbnailUrl)
         MultiAttachmentCaption(
@@ -502,7 +507,7 @@ private fun MediaTile(
         if (isBroken) {
             Image(
                 painter = painterResource(id = R.drawable.cometchat_unsupported_file_icon),
-                contentDescription = attachment.fileName ?: "Unsupported attachment",
+                contentDescription = attachment.fileName ?: stringResource(R.string.cometchat_a11y_unsupported_attachment),
                 modifier = Modifier
                     .size(width = 36.dp, height = 44.dp)
                     .align(Alignment.Center)
@@ -521,7 +526,7 @@ private fun MediaTile(
         } else {
             AsyncImage(
                 model = previewUrl ?: attachment.fileUrl ?: "",
-                contentDescription = attachment.fileName ?: "Image",
+                contentDescription = attachment.fileName ?: stringResource(R.string.cometchat_a11y_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(width, height)
             )
@@ -637,14 +642,14 @@ private fun VideoTileContent(
             // Extension-generated thumbnail — the retriever still runs above for the duration.
             AsyncImage(
                 model = thumbnailUrl,
-                contentDescription = "Video",
+                contentDescription = stringResource(R.string.cometchat_a11y_video_2),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
         } else meta?.thumbnail?.let { bmp ->
             Image(
                 bitmap = bmp,
-                contentDescription = "Video",
+                contentDescription = stringResource(R.string.cometchat_a11y_video_2),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -662,7 +667,7 @@ private fun VideoTileContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.cometchat_play_icon),
-                    contentDescription = "Play",
+                    contentDescription = stringResource(R.string.cometchat_a11y_play),
                     tint = style.playIconTint,
                     modifier = Modifier.size(24.dp)
                 )

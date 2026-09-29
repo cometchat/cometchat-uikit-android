@@ -15,7 +15,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Style configuration for an individual call button (voice or video).
  */
 @Immutable
-data class CallButtonStyle(
+public data class CallButtonStyle(
     val icon: Painter?,
     val iconTint: Color,
     val iconSize: Dp,
@@ -33,17 +33,17 @@ data class CallButtonStyle(
  * Contains styles for both voice and video call buttons, plus layout configuration.
  */
 @Immutable
-data class CometChatCallButtonsStyle(
+public data class CometChatCallButtonsStyle(
     val voiceCallButtonStyle: CallButtonStyle,
     val videoCallButtonStyle: CallButtonStyle,
     val marginBetweenButtons: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration using CometChatTheme tokens.
          */
         @Composable
-        fun default(
+        public fun default(
             // Voice call button defaults
             voiceCallIcon: Painter? = painterResource(R.drawable.cometchat_ic_call_voice),
             voiceCallIconTint: Color = CometChatTheme.colorScheme.iconTintPrimary,

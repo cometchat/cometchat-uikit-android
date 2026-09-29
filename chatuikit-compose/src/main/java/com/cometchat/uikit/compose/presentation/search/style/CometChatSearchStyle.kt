@@ -34,7 +34,7 @@ private object SearchStyleConstants {
  * Immutable style configuration for CometChatSearch component.
  */
 @Immutable
-data class CometChatSearchStyle(
+public data class CometChatSearchStyle(
     val backgroundColor: Color,
     val searchBarBackgroundColor: Color,
     val searchBarStrokeColor: Color,
@@ -74,9 +74,9 @@ data class CometChatSearchStyle(
     val loadingStateStyle: CometChatLoadingStateStyle,
     val initialStateStyle: CometChatEmptyStateStyle
 ) {
-    companion object {
+    public companion object {
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             searchBarBackgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             searchBarStrokeColor: Color = CometChatTheme.colorScheme.strokeColorDark,

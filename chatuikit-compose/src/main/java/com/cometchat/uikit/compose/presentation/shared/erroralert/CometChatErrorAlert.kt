@@ -40,7 +40,7 @@ import kotlinx.coroutines.delay
  * @param displayDurationMillis How long the alert stays before auto-dismissing.
  */
 @Composable
-fun CometChatErrorAlert(
+public fun CometChatErrorAlert(
     message: String?,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,

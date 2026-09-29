@@ -65,6 +65,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -170,7 +171,7 @@ private fun applyRenderScriptBlur(context: android.content.Context, sourceBitmap
  * @param messageBubbleContent Composable slot for the read-only message bubble preview
  */
 @Composable
-fun CometChatMessagePopupMenu(
+public fun CometChatMessagePopupMenu(
     message: BaseMessage,
     menuItems: List<CometChatMessageOption>,
     quickReactions: List<String> = DEFAULT_REACTIONS,
@@ -488,7 +489,7 @@ private fun QuickReactionsCard(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.cometchat_add_reaction),
-                    contentDescription = "Add reaction",
+                    contentDescription = stringResource(R.string.cometchat_a11y_add_reaction),
                     tint = CometChatTheme.colorScheme.iconTintSecondary,
                     modifier = Modifier
                         .padding(4.dp)
@@ -563,6 +564,7 @@ private fun OptionListCard(
                 modifier = Modifier
                     .height(0.dp)
                     .clipToBounds()
+                    .clearAndSetSemantics { }
                     .onSizeChanged { anchorWidthPx = it.width }
             ) {
                 Column {

@@ -50,9 +50,9 @@ import com.cometchat.uikit.core.viewmodel.CometChatOngoingCallViewModel
  * )
  * ```
  */
-class CometChatOngoingCallActivity : ComponentActivity() {
+public class CometChatOngoingCallActivity : ComponentActivity() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatOngoingCallActivity"
 
         // Intent extras
@@ -82,7 +82,7 @@ class CometChatOngoingCallActivity : ComponentActivity() {
          * @param style Optional style configuration for the ongoing call screen
          */
         @JvmStatic
-        fun launchOngoingCallActivity(
+        public fun launchOngoingCallActivity(
             context: Context,
             sessionId: String,
             callType: String,
@@ -202,12 +202,25 @@ class CometChatOngoingCallActivity : ComponentActivity() {
             }
         }
         
-        // Handle back press to enter PIP mode (Requirement 9.1)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                enterPipMode()
-            }
-        })
+        // ENG-38657 (T5): on API 31+ the system auto-enters PiP on the back
+        // gesture (setAutoEnterEnabled), so predictive back keeps working; the
+        // manual interceptor below - which disables predictive back - is only
+        // registered where auto-enter is unavailable.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val pipMetrics = resources.displayMetrics
+            setPictureInPictureParams(
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(pipMetrics.widthPixels, pipMetrics.heightPixels))
+                    .setAutoEnterEnabled(true)
+                    .build()
+            )
+        } else {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    enterPipMode()
+                }
+            })
+        }
     }
 
     /**

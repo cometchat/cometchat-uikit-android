@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  *
  * Provides helper methods for formatting call information and determining call states.
  */
-object CallsUtils {
+public object CallsUtils {
 
     /**
      * Safely gets the logged-in user, returning null if SDK is not initialized (preview mode).
@@ -36,7 +36,7 @@ object CallsUtils {
      * @param showSeparator Whether to include the ": " separator
      * @return Caller name with separator or empty string
      */
-    fun getCallerName(context: Context, call: Call, showSeparator: Boolean = true): String {
+    public fun getCallerName(context: Context, call: Call, showSeparator: Boolean = true): String {
         val separator = if (showSeparator) ": " else ""
         
         return if (call.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
@@ -58,7 +58,7 @@ object CallsUtils {
      * @param call The Call object
      * @return True if call was initiated by current user, false otherwise
      */
-    fun isCallInitiatedByMe(call: Call): Boolean {
+    public fun isCallInitiatedByMe(call: Call): Boolean {
         val initiator = call.callInitiator as? User
         val loggedInUser = getLoggedInUserSafe()
         return loggedInUser != null && initiator?.uid == loggedInUser.uid
@@ -70,7 +70,7 @@ object CallsUtils {
      * @param call The Call object
      * @return True if video call, false if audio call
      */
-    fun isVideoCall(call: Call): Boolean {
+    public fun isVideoCall(call: Call): Boolean {
         return call.type == CometChatConstants.CALL_TYPE_VIDEO
     }
 
@@ -82,7 +82,7 @@ object CallsUtils {
      * @param call The Call object
      * @return Formatted call status string
      */
-    fun getCallStatus(context: Context, call: Call): String {
+    public fun getCallStatus(context: Context, call: Call): String {
         if (call.receiverType != CometChatConstants.RECEIVER_TYPE_USER) {
             return ""
         }
@@ -139,7 +139,7 @@ object CallsUtils {
      * @param call The Call object
      * @return True if it's a missed call, false otherwise
      */
-    fun isMissedCall(call: Call): Boolean {
+    public fun isMissedCall(call: Call): Boolean {
         if (call.receiverType != CometChatConstants.RECEIVER_TYPE_USER) {
             return false
         }

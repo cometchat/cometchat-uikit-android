@@ -36,7 +36,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param endIconTint Default tint color for end icons in option rows
  */
 @Immutable
-data class CometChatMessagePopupMenuStyle(
+public data class CometChatMessagePopupMenuStyle(
     val backgroundColor: Color = Color.Unspecified,
     val cornerRadius: Dp = 0.dp,
     val elevation: Dp = 0.dp,
@@ -47,7 +47,7 @@ data class CometChatMessagePopupMenuStyle(
     val startIconTint: Color = Color.Unspecified,
     val endIconTint: Color = Color.Unspecified
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default [CometChatMessagePopupMenuStyle] using [CometChatTheme] tokens.
          *
@@ -61,7 +61,7 @@ data class CometChatMessagePopupMenuStyle(
          * @return A new [CometChatMessagePopupMenuStyle] instance with theme defaults
          */
         @Composable
-        fun default(): CometChatMessagePopupMenuStyle = CometChatMessagePopupMenuStyle(
+        public fun default(): CometChatMessagePopupMenuStyle = CometChatMessagePopupMenuStyle(
             backgroundColor = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius = 16.dp,
             elevation = 8.dp,

@@ -18,7 +18,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * including container, chip, remark field, and button styling.
  */
 @Immutable
-data class CometChatFlagMessageDialogStyle(
+public data class CometChatFlagMessageDialogStyle(
     // Dialog styling
     val backgroundColor: Color,
     val borderRadius: Dp,
@@ -79,14 +79,14 @@ data class CometChatFlagMessageDialogStyle(
     // Progress indicator styling
     val progressIndicatorColor: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          *
          * Default values match the Java CometChatFlagMessage implementation.
          */
         @Composable
-        fun default(
+        public fun default(
             // Dialog styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             borderRadius: Dp = 16.dp,

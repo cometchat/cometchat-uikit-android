@@ -49,7 +49,7 @@ import com.cometchat.uikit.compose.R
  * @param actions Optional composable for action buttons (used when selectionMode is false)
  */
 @Composable
-fun CometChatToolbar(
+public fun CometChatToolbar(
     title: String,
     modifier: Modifier = Modifier,
     style: CometChatToolbarStyle = CometChatToolbarStyle.default(),

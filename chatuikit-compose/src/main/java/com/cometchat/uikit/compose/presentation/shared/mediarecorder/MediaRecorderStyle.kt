@@ -65,7 +65,7 @@ import com.cometchat.uikit.compose.theme.CometChatTypography
  * @param typography Custom typography. If null, uses theme's typography
  */
 @Immutable
-data class MediaRecorderStyle(
+public data class MediaRecorderStyle(
     // Container styling
     val backgroundColor: Color? = null,
     val strokeWidth: Dp = 1.dp,

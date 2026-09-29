@@ -101,7 +101,7 @@ import kotlinx.coroutines.delay
  * @param onSearchChange Callback when search query changes (after debounce)
  */
 @Composable
-fun CometChatGroups(
+public fun CometChatGroups(
     modifier: Modifier = Modifier,
     viewModel: CometChatGroupsViewModel? = null,
     groupsRequestBuilder: GroupsRequest.GroupsRequestBuilder? = null,

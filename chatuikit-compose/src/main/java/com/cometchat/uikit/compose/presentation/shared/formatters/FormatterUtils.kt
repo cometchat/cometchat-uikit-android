@@ -4,12 +4,13 @@ import android.content.Context
 import androidx.compose.ui.text.AnnotatedString
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 /**
  * Utility class for formatting text with multiple formatters.
  * Applies a list of formatters sequentially to a given text.
  */
-object FormatterUtils {
+public object FormatterUtils {
     private const val TAG = "FormatterUtils"
 
     /**
@@ -24,7 +25,7 @@ object FormatterUtils {
      * @param formatters The list of formatters to apply sequentially
      * @return The formatted AnnotatedString after applying all formatters
      */
-    fun getFormattedText(
+    public fun getFormattedText(
         context: Context,
         baseMessage: BaseMessage,
         formattingType: UIKitConstants.FormattingType,
@@ -34,13 +35,12 @@ object FormatterUtils {
     ): AnnotatedString {
         if (text.isEmpty()) return AnnotatedString(text)
 
-        android.util.Log.d(TAG, "getFormattedText: text='$text', messageId=${baseMessage.id}, muid=${baseMessage.muid}")
-        android.util.Log.d(TAG, "getFormattedText: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
-        android.util.Log.d(TAG, "getFormattedText: formatters count=${formatters.size}")
+        CometChatLogger.d(TAG, "getFormattedText: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
+        CometChatLogger.d(TAG, "getFormattedText: formatters count=${formatters.size}")
 
         var formattedText: AnnotatedString = AnnotatedString(text)
         for (textFormatter in formatters) {
-            android.util.Log.d(TAG, "getFormattedText: applying formatter ${textFormatter.javaClass.simpleName}")
+            CometChatLogger.d(TAG, "getFormattedText: applying formatter ${textFormatter.javaClass.simpleName}")
             formattedText = textFormatter.prepareMessageString(
                 context,
                 baseMessage,
@@ -48,10 +48,8 @@ object FormatterUtils {
                 alignment,
                 formattingType
             )
-            android.util.Log.d(TAG, "getFormattedText: formatter result='${formattedText.text}'")
         }
 
-        android.util.Log.d(TAG, "getFormattedText: final result='${formattedText.text}'")
         return formattedText
     }
 }

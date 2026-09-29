@@ -50,7 +50,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param micButtonBackgroundColor Background color for the mic button
  */
 @Immutable
-data class CometChatInlineAudioRecorderStyle(
+public data class CometChatInlineAudioRecorderStyle(
     // Container styling
     val backgroundColor: Color,
     val border: BorderStroke?,
@@ -88,7 +88,7 @@ data class CometChatInlineAudioRecorderStyle(
     val micButtonIconColor: Color,
     val micButtonBackgroundColor: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors and typography are derived from the current theme.
@@ -105,7 +105,7 @@ data class CometChatInlineAudioRecorderStyle(
          * **Validates: Requirements 10.9** - Default values from CometChatTheme
          */
         @Composable
-        fun default(
+        public fun default(
             // Container - matches MessageComposer compose box styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             border: BorderStroke? = BorderStroke(1.dp, CometChatTheme.colorScheme.strokeColorLight),

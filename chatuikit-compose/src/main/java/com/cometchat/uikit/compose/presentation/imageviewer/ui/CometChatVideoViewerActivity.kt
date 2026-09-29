@@ -6,13 +6,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
 import com.cometchat.uikit.compose.R
+import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatFileProviderAuthority
+import com.cometchat.uikit.core.utils.CometChatLogger
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -25,7 +26,7 @@ import java.net.URL
  * player), constrained within the system bar insets, with download (save to device) and share
  * actions.
  */
-class CometChatVideoViewerActivity : ComponentActivity() {
+public class CometChatVideoViewerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +61,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
      */
     private fun downloadVideo(url: String, fileName: String) {
         if (url.isEmpty()) {
-            Log.e(TAG, "Cannot download video, url is empty")
+            CometChatLogger.e(TAG, "Cannot download video, url is empty")
             return
         }
         try {
@@ -75,7 +76,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
             (getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
             Toast.makeText(this, R.string.cometchat_downloading, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to download video: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to download video: ${e.message}")
         }
     }
 
@@ -84,7 +85,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
      */
     private fun shareVideo(url: String, fileName: String, mimeType: String) {
         if (url.isEmpty() || fileName.isEmpty() || mimeType.isEmpty()) {
-            Log.e(TAG, "Cannot share video, url or mimeType or filename is empty")
+            CometChatLogger.e(TAG, "Cannot share video, url or mimeType or filename is empty")
             return
         }
 
@@ -99,7 +100,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
                     val connection = URL(url).openConnection() as HttpURLConnection
                     connection.connect()
                     if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                        Log.e(TAG, "Failed to download video: HTTP ${connection.responseCode}")
+                        CometChatLogger.e(TAG, "Failed to download video: HTTP ${connection.responseCode}")
                         return@Thread
                     }
                     connection.inputStream.use { input ->
@@ -111,7 +112,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
 
                 runOnUiThread {
                     try {
-                        val uri = FileProvider.getUriForFile(this, "$packageName.provider", file)
+                        val uri = FileProvider.getUriForFile(this, cometchatFileProviderAuthority, file)
                         val shareIntent = Intent(Intent.ACTION_SEND).apply {
                             putExtra(Intent.EXTRA_STREAM, uri)
                             type = mimeType
@@ -119,11 +120,11 @@ class CometChatVideoViewerActivity : ComponentActivity() {
                         }
                         startActivity(Intent.createChooser(shareIntent, null))
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to share video: ${e.message}")
+                        CometChatLogger.e(TAG, "Failed to share video: ${e.message}")
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to download video for sharing: ${e.message}")
+                CometChatLogger.e(TAG, "Failed to download video for sharing: ${e.message}")
             }
         }.start()
     }
@@ -134,7 +135,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
         overridePendingTransition(0, R.anim.cometchat_fade_out_fast)
     }
 
-    companion object {
+    public companion object {
         private const val EXTRA_VIDEO_URL = "extra_video_url"
         private const val EXTRA_FILE_NAME = "extra_file_name"
         private const val EXTRA_MIME_TYPE = "extra_mime_type"
@@ -152,7 +153,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
          * @param fileName Filename for the downloaded file (used in download/share)
          * @param mimeType MIME type of the video (e.g., video/mp4)
          */
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             videoUrl: String,
             fileName: String,
@@ -169,7 +170,7 @@ class CometChatVideoViewerActivity : ComponentActivity() {
          * @param mimeTypes MIME types parallel to [videoUrls]
          * @param startIndex Index of the video to show first
          */
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             videoUrls: List<String>,
             fileNames: List<String>,

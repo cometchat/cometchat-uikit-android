@@ -74,41 +74,41 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property meetCallBubbleStyle Optional style override for meet/call bubble content
  */
 @Immutable
-open class CometChatMessageBubbleStyle(
-    open val backgroundColor: Color,
-    open val cornerRadius: Dp,
-    open val strokeWidth: Dp,
-    open val strokeColor: Color,
-    open val padding: PaddingValues,
-    open val senderNameTextColor: Color,
-    open val senderNameTextStyle: TextStyle,
-    open val threadIndicatorTextColor: Color,
-    open val threadIndicatorTextStyle: TextStyle,
-    open val threadIndicatorIconTint: Color,
-    open val timestampTextColor: Color,
-    open val timestampTextStyle: TextStyle,
+open public class CometChatMessageBubbleStyle(
+    open public val backgroundColor: Color,
+    open public val cornerRadius: Dp,
+    open public val strokeWidth: Dp,
+    open public val strokeColor: Color,
+    open public val padding: PaddingValues,
+    open public val senderNameTextColor: Color,
+    open public val senderNameTextStyle: TextStyle,
+    open public val threadIndicatorTextColor: Color,
+    open public val threadIndicatorTextStyle: TextStyle,
+    open public val threadIndicatorIconTint: Color,
+    open public val timestampTextColor: Color,
+    open public val timestampTextStyle: TextStyle,
     // Sub-component style references
-    open val dateStyle: DateStyle? = null,
-    open val messageReceiptStyle: CometChatReceiptsStyle? = null,
-    open val avatarStyle: CometChatAvatarStyle? = null,
-    open val reactionStyle: CometChatReactionStyle? = null,
-    open val mentionStyle: CometChatMentionStyle? = null,
-    open val moderationViewStyle: CometChatModerationViewStyle? = null,
-    open val aiAssistantBubbleStyle: CometChatAIAssistantBubbleStyle? = null,
-    open val messagePreviewStyle: CometChatMessagePreviewStyle? = null,
+    open public val dateStyle: DateStyle? = null,
+    open public val messageReceiptStyle: CometChatReceiptsStyle? = null,
+    open public val avatarStyle: CometChatAvatarStyle? = null,
+    open public val reactionStyle: CometChatReactionStyle? = null,
+    open public val mentionStyle: CometChatMentionStyle? = null,
+    open public val moderationViewStyle: CometChatModerationViewStyle? = null,
+    open public val aiAssistantBubbleStyle: CometChatAIAssistantBubbleStyle? = null,
+    open public val messagePreviewStyle: CometChatMessagePreviewStyle? = null,
     // Per-bubble-type style references
-    open val textBubbleStyle: CometChatTextBubbleStyle? = null,
-    open val imageBubbleStyle: CometChatImageBubbleStyle? = null,
-    open val videoBubbleStyle: CometChatVideoBubbleStyle? = null,
-    open val fileBubbleStyle: CometChatFileBubbleStyle? = null,
-    open val audioBubbleStyle: CometChatAudioBubbleStyle? = null,
-    open val deleteBubbleStyle: CometChatDeleteBubbleStyle? = null,
-    open val stickerBubbleStyle: CometChatStickerBubbleStyle? = null,
-    open val pollBubbleStyle: CometChatPollBubbleStyle? = null,
-    open val collaborativeBubbleStyle: CometChatCollaborativeBubbleStyle? = null,
-    open val meetCallBubbleStyle: CometChatMeetCallBubbleStyle? = null
+    open public val textBubbleStyle: CometChatTextBubbleStyle? = null,
+    open public val imageBubbleStyle: CometChatImageBubbleStyle? = null,
+    open public val videoBubbleStyle: CometChatVideoBubbleStyle? = null,
+    open public val fileBubbleStyle: CometChatFileBubbleStyle? = null,
+    open public val audioBubbleStyle: CometChatAudioBubbleStyle? = null,
+    open public val deleteBubbleStyle: CometChatDeleteBubbleStyle? = null,
+    open public val stickerBubbleStyle: CometChatStickerBubbleStyle? = null,
+    open public val pollBubbleStyle: CometChatPollBubbleStyle? = null,
+    open public val collaborativeBubbleStyle: CometChatCollaborativeBubbleStyle? = null,
+    open public val meetCallBubbleStyle: CometChatMeetCallBubbleStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default message bubble style using CometChat theme tokens.
          *
@@ -145,7 +145,7 @@ open class CometChatMessageBubbleStyle(
          * @return A new [CometChatMessageBubbleStyle] instance
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor2,
             cornerRadius: Dp = 12.dp,
             strokeWidth: Dp = 0.dp,
@@ -217,7 +217,7 @@ open class CometChatMessageBubbleStyle(
          * @return A new [CometChatMessageBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(
+        public fun incoming(
             messagePreviewStyle: CometChatMessagePreviewStyle? = null
         ): CometChatMessageBubbleStyle = default(
             backgroundColor = CometChatTheme.colorScheme.backgroundColor4,
@@ -233,7 +233,7 @@ open class CometChatMessageBubbleStyle(
          * @return A new [CometChatMessageBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(
+        public fun outgoing(
             messagePreviewStyle: CometChatMessagePreviewStyle? = null
         ): CometChatMessageBubbleStyle {
             val timestampColor = Color.White.copy(alpha = 0.8f)

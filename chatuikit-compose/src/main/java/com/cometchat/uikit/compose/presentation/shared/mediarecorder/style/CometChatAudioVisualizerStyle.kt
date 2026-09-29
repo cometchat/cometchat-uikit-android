@@ -35,7 +35,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param chunkCount Number of bars to display in the visualizer
  */
 @Immutable
-data class CometChatAudioVisualizerStyle(
+public data class CometChatAudioVisualizerStyle(
     val chunkColor: Color,
     val barColor: Color,
     val activeBarColor: Color,
@@ -46,7 +46,7 @@ data class CometChatAudioVisualizerStyle(
     val chunkCornerRadius: Dp,
     val chunkCount: Int
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Matches Figma design specifications for the Voice Record Element.
@@ -62,7 +62,7 @@ data class CometChatAudioVisualizerStyle(
          * - chunkCount: 45 (matching Figma waveform bar count)
          */
         @Composable
-        fun default(
+        public fun default(
             chunkColor: Color = CometChatTheme.colorScheme.primary,
             barColor: Color = CometChatTheme.colorScheme.primary.copy(alpha = 0.2f),
             activeBarColor: Color = CometChatTheme.colorScheme.primary,

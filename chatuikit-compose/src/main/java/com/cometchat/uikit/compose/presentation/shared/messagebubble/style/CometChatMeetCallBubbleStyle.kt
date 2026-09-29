@@ -54,7 +54,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatMeetCallBubbleStyle(
+public data class CometChatMeetCallBubbleStyle(
     // Content-specific properties ONLY
     val callIconTint: Color,
     val iconBackgroundColor: Color,
@@ -92,7 +92,7 @@ data class CometChatMeetCallBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default meet call bubble style using CometChat theme tokens.
          *
@@ -118,7 +118,7 @@ data class CometChatMeetCallBubbleStyle(
          * @return A new [CometChatMeetCallBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             callIconTint: Color = CometChatTheme.colorScheme.primary,
             iconBackgroundColor: Color = CometChatTheme.colorScheme.colorWhite,
@@ -175,7 +175,7 @@ data class CometChatMeetCallBubbleStyle(
          * @return A new [CometChatMeetCallBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatMeetCallBubbleStyle = default(
+        public fun incoming(): CometChatMeetCallBubbleStyle = default(
             separatorColor = CometChatTheme.colorScheme.strokeColorDark
         )
 
@@ -189,7 +189,7 @@ data class CometChatMeetCallBubbleStyle(
          * @return A new [CometChatMeetCallBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatMeetCallBubbleStyle = default(
+        public fun outgoing(): CometChatMeetCallBubbleStyle = default(
             titleTextColor = CometChatTheme.colorScheme.colorWhite,
             subtitleTextColor = CometChatTheme.colorScheme.colorWhite,
             joinButtonTextColor = CometChatTheme.colorScheme.colorWhite

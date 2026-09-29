@@ -25,18 +25,18 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property textStyle Text style of the message.
  */
 @Immutable
-data class CometChatErrorAlertStyle(
+public data class CometChatErrorAlertStyle(
     val backgroundColor: Color,
     val contentColor: Color,
     val closeIconTint: Color,
     val cornerRadius: Dp,
     val textStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
 
         /** Creates a default error alert style using CometChat theme tokens (error red / white). */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.errorColor,
             contentColor: Color = CometChatTheme.colorScheme.colorWhite,
             closeIconTint: Color = CometChatTheme.colorScheme.colorWhite,

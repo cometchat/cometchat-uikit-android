@@ -61,7 +61,7 @@ import androidx.compose.ui.window.DialogProperties
  * @param onDismiss Callback invoked when dialog is dismissed
  */
 @Composable
-fun CometChatDialog(
+public fun CometChatDialog(
     title: String,
     message: String,
     positiveButtonText: String,
@@ -270,7 +270,7 @@ private fun DialogButton(
     )
 )
 @Composable
-fun CometChatDialog(
+public fun CometChatDialog(
     title: String,
     message: String,
     confirmButtonText: String,

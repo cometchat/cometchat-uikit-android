@@ -70,6 +70,8 @@ import androidx.compose.ui.window.DialogProperties
  * @param hideTitle Whether to hide the title (default false)
  * @param hideSubtitle Whether to hide the subtitle (default false)
  * @param hideIcon Whether to hide the icon section (default false)
+ * @param hideIconBackground Whether to drop the circular surface behind the icon, drawing the
+ *   icon on the dialog background instead. Parity with chatuikit-kotlin's hideIconBackground.
  * @param hidePositiveButton Whether to hide the positive button (default false)
  * @param hideNegativeButton Whether to hide the negative button (default false)
  * @param showPositiveButtonProgress Whether to show progress indicator on positive button
@@ -84,7 +86,7 @@ import androidx.compose.ui.window.DialogProperties
  * @param onDismiss Callback invoked when dialog is dismissed
  */
 @Composable
-fun CometChatConfirmDialog(
+public fun CometChatConfirmDialog(
     title: String,
     subtitle: String,
     positiveButtonText: String,
@@ -94,6 +96,7 @@ fun CometChatConfirmDialog(
     hideTitle: Boolean = false,
     hideSubtitle: Boolean = false,
     hideIcon: Boolean = false,
+    hideIconBackground: Boolean = false,
     hidePositiveButton: Boolean = false,
     hideNegativeButton: Boolean = false,
     showPositiveButtonProgress: Boolean = false,
@@ -140,7 +143,8 @@ fun CometChatConfirmDialog(
                     Surface(
                         modifier = Modifier.size(style.iconBackgroundSize),
                         shape = CircleShape,
-                        color = style.iconBackgroundColor
+                        color = if (hideIconBackground) Color.Transparent
+                                else style.iconBackgroundColor
                     ) {
                         Box(
                             modifier = Modifier.size(style.iconBackgroundSize),

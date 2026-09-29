@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +39,13 @@ class CometChatRichTextToolbarTrailingContentTest {
             }
         }
 
-        composeTestRule.onNodeWithText("TRAILING_MARKER").assertIsDisplayed()
+        // The toolbar is a Row with .horizontalScroll(), and the trailing slot renders last —
+        // after the divider and all ten FormatButtons, since enabledFormats defaults to every
+        // RichTextFormat. That is wider than the emulator viewport, so the marker is composed
+        // and in the semantics tree but sits off the right edge, and assertIsDisplayed() asks
+        // for visibility rather than existence. Scroll to it first: that still proves the slot
+        // renders real, reachable content, where assertExists() alone would not.
+        composeTestRule.onNodeWithText("TRAILING_MARKER").performScrollTo().assertIsDisplayed()
     }
 
     @Test

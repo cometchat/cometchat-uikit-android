@@ -27,12 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 
 /**
  * CometChatSearchBox displays a search input field with customizable icons and styling.
@@ -51,7 +53,7 @@ import androidx.compose.ui.unit.dp
  * @param onClear Callback when clear button is clicked
  */
 @Composable
-fun CometChatSearchBox(
+public fun CometChatSearchBox(
     modifier: Modifier = Modifier,
     style: CometChatSearchBoxStyle = CometChatSearchBoxStyle.default(),
     text: String = "",
@@ -67,6 +69,8 @@ fun CometChatSearchBox(
     val interactionSource = remember { MutableInteractionSource() }
     
     val shape = RoundedCornerShape(style.cornerRadius)
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_search_conversations)
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_search_conversations_tap_to_open_search)
     
     val containerModifier = modifier
         .fillMaxWidth()
@@ -89,12 +93,12 @@ fun CometChatSearchBox(
                         onClick = onClick
                     )
                     .semantics { 
-                        contentDescription = "Search conversations, tap to open search"
+                        contentDescription = cdHoist2
                         role = Role.Button
                     }
             } else {
                 Modifier.semantics { 
-                    contentDescription = "Search conversations" 
+                    contentDescription = cdHoist1 
                 }
             }
         )
@@ -108,7 +112,7 @@ fun CometChatSearchBox(
         style.startIcon?.let { icon ->
             Icon(
                 painter = icon,
-                contentDescription = "Search",
+                contentDescription = stringResource(R.string.cometchat_a11y_search),
                 tint = style.startIconTint,
                 modifier = Modifier
                     .padding(end = 4.dp)
@@ -169,7 +173,7 @@ fun CometChatSearchBox(
         if (internalText.isNotEmpty() && style.endIcon != null) {
             Icon(
                 painter = style.endIcon,
-                contentDescription = "Clear search",
+                contentDescription = stringResource(R.string.cometchat_a11y_clear_search),
                 tint = style.endIconTint,
                 modifier = Modifier
                     .padding(start = 4.dp)

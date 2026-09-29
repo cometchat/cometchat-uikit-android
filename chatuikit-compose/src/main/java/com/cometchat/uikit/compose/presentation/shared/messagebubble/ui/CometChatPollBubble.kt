@@ -1,6 +1,5 @@
 package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,6 +57,7 @@ import com.cometchat.uikit.core.models.PollOption
 import com.cometchat.uikit.core.models.VoterInfo
 import com.cometchat.uikit.core.models.calculateVotePercentage
 import com.cometchat.uikit.core.models.extractPollData
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -71,8 +71,8 @@ import org.json.JSONObject
  * - Highlighting of the user's selected option
  *
  * The poll displays differently based on whether the user has voted:
- * - **Before voting**: Shows unselected radio buttons for each option
- * - **After voting**: Shows progress bars with vote percentages and counts
+ * - **Before voting**: Shows an unselected radio button and an empty progress track per option
+ * - **After voting**: Fills each progress track and shows vote percentages and voter counts
  *
  * Example usage:
  * ```kotlin
@@ -94,7 +94,7 @@ import org.json.JSONObject
  *               If null, the default behavior submits the vote to CometChat.
  */
 @Composable
-fun CometChatPollBubble(
+public fun CometChatPollBubble(
     message: CustomMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -138,12 +138,12 @@ fun CometChatPollBubble(
                         
                         override fun onError(e: CometChatException?) {
                             // Log error but don't crash
-                            Log.e("CometChatPollBubble", "Failed to submit vote: ${e?.message}")
+                            CometChatLogger.e("CometChatPollBubble", "Failed to submit vote: ${e?.message}")
                         }
                     }
                 )
             } catch (e: Exception) {
-                Log.e("CometChatPollBubble", "Error submitting vote: ${e.message}")
+                CometChatLogger.e("CometChatPollBubble", "Error submitting vote: ${e.message}")
             }
         }
     }
@@ -180,12 +180,13 @@ fun CometChatPollBubble(
  * @param onVote Callback when a poll option is clicked with the option index (1-indexed)
  */
 @Composable
-fun CometChatPollBubble(
+public fun CometChatPollBubble(
     pollData: PollData,
     modifier: Modifier = Modifier,
     style: CometChatPollBubbleStyle = CometChatPollBubbleStyle.default(),
     onVote: ((Int) -> Unit)? = null
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_poll, pollData.question)
     val shape = RoundedCornerShape(style.cornerRadius)
     
     // Determine if user has voted (any option is selected)
@@ -198,7 +199,7 @@ fun CometChatPollBubble(
             .width(240.dp)
             .padding(start = 12.dp, top = 12.dp, end = 12.dp)
             .semantics {
-                contentDescription = "Poll: ${pollData.question}"
+                contentDescription = cdHoist2
             }
     ) {
         // Poll question (title)
@@ -247,6 +248,7 @@ private fun CometChatPollBubbleContent(
     onVote: (CustomMessage, String, Int) -> Unit,
     onLongClick: (() -> Unit)? = null
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_poll, pollData.question)
     val shape = RoundedCornerShape(style.cornerRadius)
     
     // Determine if user has voted (any option is selected)
@@ -278,7 +280,7 @@ private fun CometChatPollBubbleContent(
             )
             .padding(start = 12.dp, top = 12.dp, end = 12.dp)
             .semantics {
-                contentDescription = "Poll: ${pollData.question}"
+                contentDescription = cdHoist1
             }
     ) {
         // Poll question (title)
@@ -324,8 +326,8 @@ private fun CometChatPollBubbleContent(
  * A composable that displays a single poll option item.
  *
  * This component renders differently based on whether the user has voted:
- * - **Before voting**: Shows a radio button (unselected) with option text
- * - **After voting**: Shows a progress bar with percentage and vote count
+ * - **Before voting**: Shows a radio button (unselected), the option text, and an empty progress track
+ * - **After voting**: Fills the progress track and shows the percentage and vote count
  *
  * @param option The poll option data
  * @param totalVotes The total number of votes in the poll
@@ -347,8 +349,20 @@ internal fun PollOptionItem(
         calculateVotePercentage(option.voteCount, totalVotes)
     }
     
+    val pollOptionCd = buildString {
+        append(stringResource(R.string.cometchat_a11y_poll_option_text, option.text))
+        if (hasUserVoted || option.voteCount > 0) {
+            append(stringResource(R.string.cometchat_a11y_poll_option_stats, percentage.toString(), option.voteCount.toString()))
+            if (option.isSelected) {
+                append(stringResource(R.string.cometchat_a11y_poll_your_vote))
+            }
+        }
+    }
+
+    // Always reflect the real share (0f when there are no votes yet) so the track is
+    // drawn at 0% before anyone votes, matching the Kotlin poll bubble.
     val animatedProgress by animateFloatAsState(
-        targetValue = if (hasUserVoted || option.voteCount > 0) percentage / 100f else 0f,
+        targetValue = percentage / 100f,
         animationSpec = tween(durationMillis = 300),
         label = "progress"
     )
@@ -364,15 +378,7 @@ internal fun PollOptionItem(
                 enabled = !isLoading
             ) { onClick() }
             .semantics {
-                contentDescription = buildString {
-                    append("Option: ${option.text}")
-                    if (hasUserVoted || option.voteCount > 0) {
-                        append(", $percentage percent, ${option.voteCount} votes")
-                        if (option.isSelected) {
-                            append(", your vote")
-                        }
-                    }
-                }
+                contentDescription = pollOptionCd
             }
     ) {
         Row(
@@ -409,8 +415,9 @@ internal fun PollOptionItem(
             }
         }
 
-        // Custom rounded progress bar (shown when there are votes or user has voted)
-        if (hasUserVoted || option.voteCount > 0) {
+        // Custom rounded progress bar. Always drawn (at 0% before anyone votes) so a
+        // freshly sent poll matches the Kotlin poll bubble instead of showing bare rows.
+        run {
             Spacer(modifier = Modifier.height(4.dp))
             val progressColor = if (option.isSelected) style.progressColor
                 else style.progressColor.copy(alpha = 0.6f)
@@ -598,7 +605,7 @@ private fun PollErrorBubble(
  * @param onVote Callback when a poll option is clicked with the option index (1-indexed)
  */
 @Composable
-fun CometChatPollBubble(
+public fun CometChatPollBubble(
     question: String,
     options: List<PollOption>,
     totalVotes: Int,

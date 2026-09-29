@@ -32,7 +32,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param size Size of the status indicator
  */
 @Immutable
-data class CometChatStatusIndicatorStyle(
+public data class CometChatStatusIndicatorStyle(
     val strokeWidth: Dp,
     val strokeColor: Color,
     val cornerRadius: Dp,
@@ -42,14 +42,14 @@ data class CometChatStatusIndicatorStyle(
     val protectedGroupIcon: Painter?,
     val size: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatStatusIndicatorStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatStatusIndicatorStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             strokeWidth: Dp = 2.dp,
             strokeColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 8.dp,

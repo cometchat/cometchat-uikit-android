@@ -29,7 +29,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param itemStyle Style configuration for individual reaction list items
  */
 @Immutable
-data class CometChatReactionListStyle(
+public data class CometChatReactionListStyle(
     val backgroundColor: Color,
     val strokeColor: Color,
     val strokeWidth: Dp,
@@ -44,14 +44,14 @@ data class CometChatReactionListStyle(
     val separatorHeight: Dp,
     val itemStyle: CometChatReactionListItemStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatReactionListStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatReactionListStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = CometChatTheme.colorScheme.strokeColorLight,
             strokeWidth: Dp = 2.dp,

@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
@@ -40,7 +41,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * - Rounded corners 16dp, backgroundColor1 background
  */
 @Composable
-fun CometChatLinkPopupDialog(
+public fun CometChatLinkPopupDialog(
     url: String,
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     onEdit: () -> Unit = {},
@@ -51,6 +52,7 @@ fun CometChatLinkPopupDialog(
     val uriHandler = LocalUriHandler.current
 
     Dialog(onDismissRequest = onDismiss) {
+        val cdHoist1 = stringResource(R.string.cometchat_a11y_link_popup_dialog)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +61,7 @@ fun CometChatLinkPopupDialog(
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(24.dp)
-                .semantics { contentDescription = "Link Popup Dialog" }
+                .semantics { contentDescription = cdHoist1 }
         ) {
             // Title: "Link"
             Text(

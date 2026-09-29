@@ -57,6 +57,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatVideosBubbleStyle
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.mergeWithBase
 import com.cometchat.uikit.compose.theme.CometChatTheme
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 /**
  * Special key used for deleted messages in factory lookup.
@@ -235,7 +236,7 @@ internal fun buildFactoryKey(message: BaseMessage): String {
  * @see BubbleFactory.getBubbleStyle
  */
 @Composable
-fun CometChatMessageBubble(
+public fun CometChatMessageBubble(
     message: BaseMessage,
     alignment: UIKitConstants.MessageBubbleAlignment,
     modifier: Modifier = Modifier,
@@ -324,7 +325,7 @@ fun CometChatMessageBubble(
                 try {
                     factory.onDispose(message)
                 } catch (e: Exception) {
-                    android.util.Log.e(
+                    CometChatLogger.e(
                         "CometChatMessageBubble",
                         "Factory onDispose threw for message ${message.id}: ${e.message}",
                         e
@@ -477,7 +478,7 @@ fun CometChatMessageBubble(
     }
     
     // Debug logging - trace leading view resolution
-    android.util.Log.d("AvatarVisibility", "CometChatMessageBubble - Message: ${message.id}, alignment: $alignment, shouldShowDefaultAvatar: $shouldShowDefaultAvatar, hasCustomLeadingView: ${leadingView != null}, hasFactory: ${factory != null}, resolvedLeading is null: ${resolvedLeading == null}")
+    CometChatLogger.d("AvatarVisibility", "CometChatMessageBubble - Message: ${message.id}, alignment: $alignment, shouldShowDefaultAvatar: $shouldShowDefaultAvatar, hasCustomLeadingView: ${leadingView != null}, hasFactory: ${factory != null}, resolvedLeading is null: ${resolvedLeading == null}")
 
     // Compute showTime values based on timeStampAlignment:
     // - When TOP: show time in header, hide in status info
@@ -664,10 +665,20 @@ fun CometChatMessageBubble(
             }
 
             // Main bubble content
+            // Pin the bubble card and the reaction footer to the message side, mirroring the
+            // Kotlin bubble XML's `android:gravity="end"` (right) / start (left). Without this the
+            // Column defaults to Alignment.Start, so a reaction row wider than the text widens the
+            // right-anchored column leftward and drags the outgoing text bubble left with it
+            // (ENG-39506: "text shifts left after adding reactions", visible on outgoing bubbles).
             Column(
                 modifier = Modifier
                     .weight(1f, fill = false)
-                    .padding(horizontal = 4.dp)
+                    .padding(horizontal = 4.dp),
+                horizontalAlignment = when (alignment) {
+                    UIKitConstants.MessageBubbleAlignment.LEFT -> Alignment.Start
+                    UIKitConstants.MessageBubbleAlignment.RIGHT -> Alignment.End
+                    UIKitConstants.MessageBubbleAlignment.CENTER -> Alignment.CenterHorizontally
+                }
             ) {
             // Header view (sender name) - outside the bubble
             resolvedHeader?.invoke()

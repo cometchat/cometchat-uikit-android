@@ -10,8 +10,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.mediarecorder.style.CometChatAudioVisualizerStyle
 
 /**
@@ -45,13 +47,14 @@ import com.cometchat.uikit.compose.presentation.shared.mediarecorder.style.Comet
  * @param progress Playback progress (0.0 to 1.0) for showing active/inactive bars
  */
 @Composable
-fun CometChatAudioVisualizer(
+public fun CometChatAudioVisualizer(
     modifier: Modifier = Modifier,
     amplitude: Float = 0f,
     style: CometChatAudioVisualizerStyle = CometChatAudioVisualizerStyle.default(),
     isAnimating: Boolean = true,
     progress: Float = 0f
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_audio_visualizer_showing_recording_amplitude)
     // Clamp amplitude to valid range [0.0, 1.0]
     val clampedAmplitude = amplitude.coerceIn(0f, 1f)
     val clampedProgress = progress.coerceIn(0f, 1f)
@@ -69,7 +72,7 @@ fun CometChatAudioVisualizer(
             .fillMaxWidth()
             .height(style.chunkMaxHeight)
             .semantics {
-                contentDescription = "Audio visualizer showing recording amplitude"
+                contentDescription = cdHoist1
             }
     ) {
         val canvasWidth = size.width
@@ -210,7 +213,7 @@ private fun getStaticBarAmplitude(barIndex: Int, totalBars: Int): Float {
  * @param maxHeight Maximum bar height in pixels
  * @return Calculated bar height in pixels, clamped to [minHeight, maxHeight]
  */
-fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
+public fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
     val height = minHeight + (amplitude * (maxHeight - minHeight))
     return height.coerceIn(minHeight, maxHeight)
 }
@@ -226,7 +229,7 @@ fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Fl
  *
  * @param size Number of amplitude values to store (typically matches chunk count)
  */
-class AmplitudeHistory(private val size: Int = 20) {
+public class AmplitudeHistory(private val size: Int = 20) {
     private val history = FloatArray(size) { 0f }
     private var index = 0
     
@@ -236,7 +239,7 @@ class AmplitudeHistory(private val size: Int = 20) {
      *
      * @param amplitude The amplitude value to add
      */
-    fun add(amplitude: Float) {
+    public fun add(amplitude: Float) {
         history[index] = amplitude.coerceIn(0f, 1f)
         index = (index + 1) % size
     }
@@ -249,7 +252,7 @@ class AmplitudeHistory(private val size: Int = 20) {
      * @param barIndex The index of the bar (0 to size-1)
      * @return The smoothed amplitude value for this bar
      */
-    fun getSmoothedAmplitude(barIndex: Int): Float {
+    public fun getSmoothedAmplitude(barIndex: Int): Float {
         // Calculate the history index for this bar
         // This creates a wave effect where each bar shows a different
         // point in the amplitude history
@@ -260,7 +263,7 @@ class AmplitudeHistory(private val size: Int = 20) {
     /**
      * Clears all amplitude history, resetting all values to 0.
      */
-    fun clear() {
+    public fun clear() {
         history.fill(0f)
         index = 0
     }

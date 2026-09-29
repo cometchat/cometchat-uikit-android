@@ -30,7 +30,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatS
  * @property shimmerConfig Shimmer animation configuration
  */
 @Immutable
-data class CometChatMessageListShimmerStyle(
+public data class CometChatMessageListShimmerStyle(
     val itemCount: Int,
     val bubbleCornerRadius: Dp,
     val minBubbleWidth: Float,
@@ -47,41 +47,41 @@ data class CometChatMessageListShimmerStyle(
         require(minBubbleWidth <= maxBubbleWidth) { "minBubbleWidth must be <= maxBubbleWidth" }
     }
 
-    companion object {
+    public companion object {
         /**
          * Default number of message bubble placeholders.
          */
-        const val DEFAULT_ITEM_COUNT = 10
+        public const val DEFAULT_ITEM_COUNT: Int = 10
 
         /**
          * Default corner radius for bubble placeholders.
          */
-        val DEFAULT_BUBBLE_CORNER_RADIUS = 12.dp
+        public val DEFAULT_BUBBLE_CORNER_RADIUS: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Default minimum bubble width as fraction of available width.
          */
-        const val DEFAULT_MIN_BUBBLE_WIDTH = 0.3f
+        public const val DEFAULT_MIN_BUBBLE_WIDTH: Float = 0.3f
 
         /**
          * Default maximum bubble width as fraction of available width.
          */
-        const val DEFAULT_MAX_BUBBLE_WIDTH = 0.7f
+        public const val DEFAULT_MAX_BUBBLE_WIDTH: Float = 0.7f
 
         /**
          * Default bubble height matching chatuikit-kotlin (53dp).
          */
-        val DEFAULT_BUBBLE_HEIGHT = 53.dp
+        public val DEFAULT_BUBBLE_HEIGHT: androidx.compose.ui.unit.Dp = 53.dp
 
         /**
          * Default vertical padding between bubbles.
          */
-        val DEFAULT_VERTICAL_PADDING = 3.dp
+        public val DEFAULT_VERTICAL_PADDING: androidx.compose.ui.unit.Dp = 3.dp
 
         /**
          * Default horizontal padding for the message list.
          */
-        val DEFAULT_HORIZONTAL_PADDING = 3.dp
+        public val DEFAULT_HORIZONTAL_PADDING: androidx.compose.ui.unit.Dp = 3.dp
 
         /**
          * Creates a default CometChatMessageListShimmerStyle with values matching
@@ -98,7 +98,7 @@ data class CometChatMessageListShimmerStyle(
          * @return A configured CometChatMessageListShimmerStyle instance
          */
         @Composable
-        fun default(
+        public fun default(
             itemCount: Int = DEFAULT_ITEM_COUNT,
             bubbleCornerRadius: Dp = DEFAULT_BUBBLE_CORNER_RADIUS,
             minBubbleWidth: Float = DEFAULT_MIN_BUBBLE_WIDTH,

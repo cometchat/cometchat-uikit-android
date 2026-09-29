@@ -40,7 +40,7 @@ import com.cometchat.uikit.compose.presentation.shared.shimmer.config.CometChatS
  * @property shimmerConfig Shimmer animation configuration
  */
 @Immutable
-data class CometChatListItemShimmerStyle(
+public data class CometChatListItemShimmerStyle(
     val avatarSize: Dp,
     val avatarShape: Shape,
     val titleWidth: Float,
@@ -62,66 +62,66 @@ data class CometChatListItemShimmerStyle(
         require(subtitleWidth in 0f..1f) { "subtitleWidth must be between 0 and 1, was: $subtitleWidth" }
     }
 
-    companion object {
+    public companion object {
         /**
          * Default avatar size matching chatuikit-kotlin shimmer_list_base.xml.
          */
-        val DEFAULT_AVATAR_SIZE = 48.dp
+        public val DEFAULT_AVATAR_SIZE: androidx.compose.ui.unit.Dp = 48.dp
 
         /**
          * Default title width as fraction of available width.
          */
-        const val DEFAULT_TITLE_WIDTH = 0.6f
+        public const val DEFAULT_TITLE_WIDTH: Float = 0.6f
 
         /**
          * Default title height.
          */
-        val DEFAULT_TITLE_HEIGHT = 16.dp
+        public val DEFAULT_TITLE_HEIGHT: androidx.compose.ui.unit.Dp = 16.dp
 
         /**
          * Default subtitle width as fraction of available width.
          */
-        const val DEFAULT_SUBTITLE_WIDTH = 0.8f
+        public const val DEFAULT_SUBTITLE_WIDTH: Float = 0.8f
 
         /**
          * Default subtitle height.
          */
-        val DEFAULT_SUBTITLE_HEIGHT = 12.dp
+        public val DEFAULT_SUBTITLE_HEIGHT: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Default trailing placeholder width.
          */
-        val DEFAULT_TRAILING_WIDTH = 60.dp
+        public val DEFAULT_TRAILING_WIDTH: androidx.compose.ui.unit.Dp = 60.dp
 
         /**
          * Default trailing placeholder height.
          */
-        val DEFAULT_TRAILING_HEIGHT = 22.dp
+        public val DEFAULT_TRAILING_HEIGHT: androidx.compose.ui.unit.Dp = 22.dp
 
         /**
          * Default corner radius for rectangular placeholders.
          */
-        val DEFAULT_PLACEHOLDER_CORNER_RADIUS = 4.dp
+        public val DEFAULT_PLACEHOLDER_CORNER_RADIUS: androidx.compose.ui.unit.Dp = 4.dp
 
         /**
          * Default horizontal padding.
          */
-        val DEFAULT_HORIZONTAL_PADDING = 16.dp
+        public val DEFAULT_HORIZONTAL_PADDING: androidx.compose.ui.unit.Dp = 16.dp
 
         /**
          * Default vertical padding.
          */
-        val DEFAULT_VERTICAL_PADDING = 12.dp
+        public val DEFAULT_VERTICAL_PADDING: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Default spacing between avatar and content.
          */
-        val DEFAULT_CONTENT_SPACING = 12.dp
+        public val DEFAULT_CONTENT_SPACING: androidx.compose.ui.unit.Dp = 12.dp
 
         /**
          * Default spacing between title and subtitle.
          */
-        val DEFAULT_TITLE_SUBTITLE_SPACING = 8.dp
+        public val DEFAULT_TITLE_SUBTITLE_SPACING: androidx.compose.ui.unit.Dp = 8.dp
 
         /**
          * Creates a default CometChatListItemShimmerStyle with values matching
@@ -145,7 +145,7 @@ data class CometChatListItemShimmerStyle(
          * @return A configured CometChatListItemShimmerStyle instance
          */
         @Composable
-        fun default(
+        public fun default(
             avatarSize: Dp = DEFAULT_AVATAR_SIZE,
             avatarShape: Shape = CircleShape,
             titleWidth: Float = DEFAULT_TITLE_WIDTH,

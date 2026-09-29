@@ -9,7 +9,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 
 @Composable
-fun rememberActivityResultLauncher(
+public fun rememberActivityResultLauncher(
     onActivityResult: ((resultCode: Int, data: Intent?) -> Unit)? = null
 ): ManagedActivityResultLauncher {
     val launcher = rememberLauncherForActivityResult(
@@ -31,7 +31,7 @@ fun rememberActivityResultLauncher(
  * @property launchIntent Function to launch an activity with an intent
  */
 @Stable
-class ManagedActivityResultLauncher(
+public class ManagedActivityResultLauncher(
     private val launchIntent: (Intent) -> Unit
 ) {
     /**
@@ -39,7 +39,7 @@ class ManagedActivityResultLauncher(
      *
      * @param intent The intent to launch the activity with
      */
-    fun launch(intent: Intent) {
+    public fun launch(intent: Intent) {
         launchIntent(intent)
     }
 }
@@ -69,7 +69,7 @@ class ManagedActivityResultLauncher(
  * ```
  */
 @Composable
-fun <I, O> rememberCustomActivityResultLauncher(
+public fun <I, O> rememberCustomActivityResultLauncher(
     contract: ActivityResultContract<I, O>,
     onResult: (O) -> Unit
 ): (I) -> Unit {

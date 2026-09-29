@@ -49,7 +49,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @see CometChatTheme
  */
 @Immutable
-data class CometChatThreadHeaderStyle(
+public data class CometChatThreadHeaderStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -65,7 +65,7 @@ data class CometChatThreadHeaderStyle(
     val incomingMessageBubbleStyle: CometChatMessageBubbleStyle?,
     val outgoingMessageBubbleStyle: CometChatMessageBubbleStyle?
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -73,7 +73,7 @@ data class CometChatThreadHeaderStyle(
          * @return A new CometChatThreadHeaderStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor3,
             strokeColor: Color = Color.Transparent,

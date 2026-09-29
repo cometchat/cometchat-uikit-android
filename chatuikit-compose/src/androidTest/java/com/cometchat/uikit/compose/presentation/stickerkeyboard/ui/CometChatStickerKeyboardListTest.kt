@@ -19,12 +19,14 @@ import com.cometchat.uikit.core.domain.model.Sticker
 import com.cometchat.uikit.core.domain.model.StickerSet
 import com.cometchat.uikit.core.domain.usecase.GetStickersUseCase
 import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.whenever
 
 /**
@@ -47,6 +49,20 @@ class CometChatStickerKeyboardListTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    /**
+     * A use case whose invoke() never completes, pinning the ViewModel in Loading.
+     *
+     * awaitCancellation() genuinely suspends. The previous
+     * `runBlocking { CompletableDeferred<Unit>().await() }` BLOCKED the calling thread, and
+     * invoke() runs in viewModelScope (Dispatchers.Main.immediate) — so on a device it parked the
+     * UI thread forever. The instrumentation run stalled, and CI's hang watchdog wiped the
+     * emulator, costing the shard ~30 tests that never ran.
+     */
+    private fun neverCompletingUseCase(): GetStickersUseCase =
+        mock<GetStickersUseCase>().stub {
+            onBlocking { invoke() } doSuspendableAnswer { awaitCancellation() }
+        }
 
     // ==================== Helper Methods ====================
 
@@ -136,16 +152,11 @@ class CometChatStickerKeyboardListTest {
 
     @Test
     fun loadingStateDisplaysShimmer() {
-        // Use a ViewModel that stays in loading state
-        val getStickersUseCase: GetStickersUseCase = mock()
-        runBlocking {
-            whenever(getStickersUseCase.invoke()).thenAnswer {
-                // Suspend indefinitely to keep in Loading state
-                runBlocking { CompletableDeferred<Unit>().await() }
-                Result.success(emptyList<StickerSet>())
-            }
-        }
-        val viewModel = CometChatStickerKeyboardViewModel(getStickersUseCase)
+        // The loading state draws CometChatShimmerBox, a rememberInfiniteTransition.
+        // With the default auto-advancing clock the composition never reports idle, so
+        // waitForIdle() below would spin forever.
+        composeTestRule.mainClock.autoAdvance = false
+        val viewModel = CometChatStickerKeyboardViewModel(neverCompletingUseCase())
 
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {
@@ -205,14 +216,7 @@ class CometChatStickerKeyboardListTest {
 
     @Test
     fun customLoadingViewReplacesDefault() {
-        val getStickersUseCase: GetStickersUseCase = mock()
-        runBlocking {
-            whenever(getStickersUseCase.invoke()).thenAnswer {
-                runBlocking { CompletableDeferred<Unit>().await() }
-                Result.success(emptyList<StickerSet>())
-            }
-        }
-        val viewModel = CometChatStickerKeyboardViewModel(getStickersUseCase)
+        val viewModel = CometChatStickerKeyboardViewModel(neverCompletingUseCase())
 
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {
@@ -301,14 +305,7 @@ class CometChatStickerKeyboardListTest {
 
     @Test
     fun hideLoadingStatePreventsLoadingDisplay() {
-        val getStickersUseCase: GetStickersUseCase = mock()
-        runBlocking {
-            whenever(getStickersUseCase.invoke()).thenAnswer {
-                runBlocking { CompletableDeferred<Unit>().await() }
-                Result.success(emptyList<StickerSet>())
-            }
-        }
-        val viewModel = CometChatStickerKeyboardViewModel(getStickersUseCase)
+        val viewModel = CometChatStickerKeyboardViewModel(neverCompletingUseCase())
 
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {

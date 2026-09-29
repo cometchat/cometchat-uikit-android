@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.ongoingcall.style.CometChatOngoingCallStyle
 import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.models.OngoingCallEvent
@@ -63,7 +65,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatOngoingCallViewModel
  * Validates: Requirements 15.1, 15.2, 15.3, 15.4, 15.5
  */
 @Composable
-fun CometChatOngoingCall(
+public fun CometChatOngoingCall(
     sessionId: String,
     callType: String,
     modifier: Modifier = Modifier,
@@ -74,6 +76,7 @@ fun CometChatOngoingCall(
     onCallEnded: (() -> Unit)? = null,
     onError: ((CometChatException) -> Unit)? = null
 ) {
+    val cdHoist2 = stringResource(R.string.cometchat_a11y_ongoing_call)
     val context = LocalContext.current
 
     // Track if call has been started to prevent multiple starts
@@ -145,7 +148,7 @@ fun CometChatOngoingCall(
         modifier = modifier
             .fillMaxSize()
             .semantics {
-                contentDescription = "Ongoing call"
+                contentDescription = cdHoist2
             },
         shape = RoundedCornerShape(style.cornerRadius),
         colors = CardDefaults.cardColors(
@@ -163,12 +166,13 @@ fun CometChatOngoingCall(
         ) {
             // Show CircularProgressIndicator for Loading state (Requirement 15.3)
             if (isLoading) {
+                val cdHoist1 = stringResource(R.string.cometchat_a11y_connecting_to_call)
                 CircularProgressIndicator(
                     color = style.progressIndicatorColor,
                     modifier = Modifier
                         .size(48.dp)
                         .semantics {
-                            contentDescription = "Connecting to call"
+                            contentDescription = cdHoist1
                         }
                 )
             }

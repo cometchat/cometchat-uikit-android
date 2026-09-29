@@ -19,7 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.imageviewer.style.CometChatImageViewerStyle
 
 /**
@@ -60,7 +62,7 @@ internal fun ToolbarOverlay(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.cometchat_a11y_back),
                     tint = style.iconTintColor
                 )
             }
@@ -68,14 +70,14 @@ internal fun ToolbarOverlay(
             IconButton(onClick = onDownloadClick) {
                 Icon(
                     painter = painterResource(style.downloadIcon),
-                    contentDescription = "Download",
+                    contentDescription = stringResource(R.string.cometchat_a11y_download),
                     tint = style.iconTintColor
                 )
             }
             IconButton(onClick = onShareClick) {
                 Icon(
                     painter = painterResource(style.shareIcon),
-                    contentDescription = "Share",
+                    contentDescription = stringResource(R.string.cometchat_a11y_share),
                     tint = style.iconTintColor
                 )
             }

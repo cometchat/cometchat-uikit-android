@@ -6,7 +6,7 @@ package com.cometchat.uikit.compose.presentation.shared.shimmer.config
  *
  * @property value The integer value matching the kotlin implementation
  */
-enum class ShimmerDirection(val value: Int) {
+public enum class ShimmerDirection(public val value: Int) {
     /**
      * Shimmer animation travels from left to right.
      * Value: 0 (matches CometChatShimmer.Direction.LEFT_TO_RIGHT)
@@ -31,7 +31,7 @@ enum class ShimmerDirection(val value: Int) {
      */
     BOTTOM_TO_TOP(3);
 
-    companion object {
+    public companion object {
         /**
          * Returns the ShimmerDirection corresponding to the given integer value.
          * Defaults to LEFT_TO_RIGHT if the value doesn't match any direction.
@@ -39,7 +39,7 @@ enum class ShimmerDirection(val value: Int) {
          * @param value The integer value to convert
          * @return The corresponding ShimmerDirection
          */
-        fun fromValue(value: Int): ShimmerDirection {
+        public fun fromValue(value: Int): ShimmerDirection {
             return entries.find { it.value == value } ?: LEFT_TO_RIGHT
         }
     }

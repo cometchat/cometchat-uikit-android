@@ -74,13 +74,15 @@ private object ConversationItemDimens {
  * A composable that displays a conversation search result item.
  */
 @Composable
-fun SearchConversationItem(
+public fun SearchConversationItem(
     conversation: Conversation,
     onClick: (Conversation) -> Unit,
     modifier: Modifier = Modifier,
     style: SearchConversationItemStyle = SearchConversationItemStyle.default(),
     dateTimeFormatter: DateTimeFormatterCallback? = null,
     textFormatters: List<CometChatTextFormatter> = emptyList(),
+    hideUserStatus: Boolean = false,
+    hideGroupType: Boolean = false,
     leadingView: (@Composable (Conversation) -> Unit)? = null,
     titleView: (@Composable (Conversation) -> Unit)? = null,
     subtitleView: (@Composable (Conversation) -> Unit)? = null,
@@ -108,7 +110,12 @@ fun SearchConversationItem(
         if (leadingView != null) {
             leadingView(conversation)
         } else {
-            DefaultLeadingView(conversation = conversation, style = style)
+            DefaultLeadingView(
+                conversation = conversation,
+                style = style,
+                hideUserStatus = hideUserStatus,
+                hideGroupType = hideGroupType
+            )
         }
 
         Spacer(modifier = Modifier.width(ConversationItemDimens.leadingSpacer))
@@ -145,7 +152,9 @@ fun SearchConversationItem(
 @Composable
 private fun DefaultLeadingView(
     conversation: Conversation,
-    style: SearchConversationItemStyle
+    style: SearchConversationItemStyle,
+    hideUserStatus: Boolean = false,
+    hideGroupType: Boolean = false
 ) {
     Box(
         modifier = Modifier.size(AVATAR_SIZE.dp),
@@ -159,7 +168,11 @@ private fun DefaultLeadingView(
         )
 
         val statusIndicator = getStatusIndicator(conversation)
-        if (statusIndicator != StatusIndicator.OFFLINE) {
+        val isGroupType = statusIndicator == StatusIndicator.PRIVATE_GROUP ||
+            statusIndicator == StatusIndicator.PROTECTED_GROUP ||
+            statusIndicator == StatusIndicator.PUBLIC_GROUP
+        val suppressed = if (isGroupType) hideGroupType else hideUserStatus
+        if (statusIndicator != StatusIndicator.OFFLINE && !suppressed) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

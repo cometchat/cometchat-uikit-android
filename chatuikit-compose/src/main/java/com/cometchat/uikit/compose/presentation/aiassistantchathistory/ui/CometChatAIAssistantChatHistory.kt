@@ -33,6 +33,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.chat.models.BaseMessage
+import com.cometchat.chat.models.Group
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.aiassistantchathistory.style.CometChatAIAssistantChatHistoryStyle
 import com.cometchat.uikit.compose.presentation.shared.defaultstates.CometChatEmptyState
@@ -55,6 +57,8 @@ import com.cometchat.uikit.core.viewmodel.CometChatAIAssistantChatHistoryViewMod
  * and manages lifecycle via [DisposableEffect] for listener registration/cleanup.
  *
  * @param modifier Modifier applied to the root container
+ * @param user Scopes the history to a user conversation. Parity with chatuikit-kotlin's setUser.
+ * @param group Scopes the history to a group conversation. Parity with chatuikit-kotlin's setGroup.
  * @param viewModel The ViewModel managing chat history state (optional, creates default if not provided)
  * @param style Style configuration for the component
  * @param onCloseClick Callback invoked when the header close icon is tapped
@@ -68,8 +72,10 @@ import com.cometchat.uikit.core.viewmodel.CometChatAIAssistantChatHistoryViewMod
  * @param addOptions Function to append additional popup menu options after the default delete option
  */
 @Composable
-fun CometChatAIAssistantChatHistory(
+public fun CometChatAIAssistantChatHistory(
     modifier: Modifier = Modifier,
+    user: User? = null,
+    group: Group? = null,
     viewModel: CometChatAIAssistantChatHistoryViewModel = viewModel(
         factory = CometChatAIAssistantChatHistoryViewModelFactory()
     ),
@@ -90,6 +96,12 @@ fun CometChatAIAssistantChatHistory(
     val context = LocalContext.current
 
     // Collect ViewModel StateFlows
+    // Scope the history before the first load, mirroring the View kit's setUser/setGroup.
+    LaunchedEffect(viewModel, user?.uid, group?.guid) {
+        user?.let { viewModel.setUser(it) }
+        group?.let { viewModel.setGroup(it) }
+    }
+
     val uiState by viewModel.uiState.collectAsState()
     val messages by viewModel.messages.collectAsState()
     val hasMore by viewModel.hasMore.collectAsState()

@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * @see rememberCometChatGroupMembersState
  */
 @Stable
-class CometChatGroupMembersState {
+public class CometChatGroupMembersState {
 
     // Internal ViewModel reference - set when wired to CometChatGroupMembers
     private var viewModel: CometChatGroupMembersViewModel? = null
@@ -64,7 +64,7 @@ class CometChatGroupMembersState {
      * val selectedMembers by groupMembersState.selectedMembersFlow.collectAsStateWithLifecycle()
      * ```
      */
-    val selectedMembersFlow: StateFlow<Map<String, GroupMember>>
+    public val selectedMembersFlow: StateFlow<Map<String, GroupMember>>
         get() = viewModel?.selectedMembers ?: emptyFlow
 
     /**
@@ -78,7 +78,7 @@ class CometChatGroupMembersState {
      *         - No members are selected
      *         - The state holder is not yet wired to a ViewModel
      */
-    fun getSelectedMembers(): List<GroupMember> {
+    public fun getSelectedMembers(): List<GroupMember> {
         return viewModel?.selectedMembers?.value?.values?.toList() ?: emptyList()
     }
 
@@ -117,6 +117,6 @@ class CometChatGroupMembersState {
  * @return A remembered CometChatGroupMembersState instance
  */
 @Composable
-fun rememberCometChatGroupMembersState(): CometChatGroupMembersState {
+public fun rememberCometChatGroupMembersState(): CometChatGroupMembersState {
     return remember { CometChatGroupMembersState() }
 }

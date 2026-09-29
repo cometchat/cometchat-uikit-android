@@ -37,7 +37,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 /**
  * Permission types supported by the CometChat permission handler.
  */
-enum class PermissionType {
+public enum class PermissionType {
     CAMERA,
     MICROPHONE,
     STORAGE,
@@ -51,7 +51,7 @@ enum class PermissionType {
  * @param type The permission type
  * @return List of Android permission strings
  */
-fun getPermissionsForType(type: PermissionType): List<String> {
+public fun getPermissionsForType(type: PermissionType): List<String> {
     return when (type) {
         PermissionType.CAMERA -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -77,11 +77,10 @@ fun getPermissionsForType(type: PermissionType): List<String> {
         }
         PermissionType.STORAGE -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                listOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.READ_MEDIA_AUDIO
-                )
+                // ENG-38657 (T6): the system Photo Picker needs no runtime
+                // permission, and READ_MEDIA_* is undeclared in the library
+                // manifests (requesting it is silently auto-denied).
+                emptyList()
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
             } else {
@@ -93,11 +92,7 @@ fun getPermissionsForType(type: PermissionType): List<String> {
         }
         PermissionType.CAMERA_AND_STORAGE -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                listOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
-                )
+                listOf(Manifest.permission.CAMERA) // T6: media side needs no permission on 33+
             } else {
                 listOf(
                     Manifest.permission.CAMERA,
@@ -108,10 +103,7 @@ fun getPermissionsForType(type: PermissionType): List<String> {
         }
         PermissionType.MICROPHONE_AND_STORAGE -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                listOf(
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.READ_MEDIA_AUDIO
-                )
+                listOf(Manifest.permission.RECORD_AUDIO) // T6: media side needs no permission on 33+
             } else {
                 listOf(
                     Manifest.permission.RECORD_AUDIO,
@@ -130,7 +122,7 @@ fun getPermissionsForType(type: PermissionType): List<String> {
  * @return String resource ID for the warning message
  */
 @Composable
-fun getPermissionWarningMessage(type: PermissionType): String {
+public fun getPermissionWarningMessage(type: PermissionType): String {
     return when (type) {
         PermissionType.CAMERA -> stringResource(R.string.cometchat_camera_permission_warning)
         PermissionType.MICROPHONE -> stringResource(R.string.cometchat_microphone_permission_warning)
@@ -168,7 +160,7 @@ fun getPermissionWarningMessage(type: PermissionType): String {
  * ```
  */
 @Composable
-fun CometChatPermissionHandler(
+public fun CometChatPermissionHandler(
     permissionType: PermissionType,
     onPermissionGranted: () -> Unit,
     onPermissionDenied: (() -> Unit)? = null,
@@ -230,7 +222,7 @@ fun CometChatPermissionHandler(
  * @param onOpenSettings Callback when the user wants to open app settings
  */
 @Composable
-fun PermissionRationaleDialog(
+public fun PermissionRationaleDialog(
     permissionType: PermissionType,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
@@ -305,7 +297,7 @@ fun PermissionRationaleDialog(
  *
  * @param context The context to use for launching the intent
  */
-fun openAppSettings(context: Context) {
+public fun openAppSettings(context: Context) {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
         data = Uri.fromParts("package", context.packageName, null)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -320,7 +312,7 @@ fun openAppSettings(context: Context) {
  * @param permission The permission to check
  * @return true if permission is granted, false otherwise
  */
-fun isPermissionGranted(context: Context, permission: String): Boolean {
+public fun isPermissionGranted(context: Context, permission: String): Boolean {
     return androidx.core.content.ContextCompat.checkSelfPermission(
         context,
         permission
@@ -334,6 +326,6 @@ fun isPermissionGranted(context: Context, permission: String): Boolean {
  * @param type The permission type to check
  * @return true if all permissions are granted, false otherwise
  */
-fun arePermissionsGranted(context: Context, type: PermissionType): Boolean {
+public fun arePermissionsGranted(context: Context, type: PermissionType): Boolean {
     return getPermissionsForType(type).all { isPermissionGranted(context, it) }
 }

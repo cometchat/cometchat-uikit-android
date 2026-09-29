@@ -28,8 +28,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cometchat.chat.models.NotificationFeedItem
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.notificationfeed.style.CometChatNotificationFeedStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.state.TimestampGroup
@@ -50,7 +52,7 @@ import com.cometchat.uikit.core.state.TimestampGroup
  * @param modifier Modifier for the list container
  */
 @Composable
-fun NotificationFeedList(
+public fun NotificationFeedList(
     groupedItems: List<TimestampGroup>,
     isLoadingMore: Boolean,
     hasMorePages: Boolean,
@@ -164,7 +166,7 @@ fun NotificationFeedList(
                     ) {
                         Icon(
                             painter = androidx.compose.ui.res.painterResource(id = com.cometchat.uikit.compose.R.drawable.cometchat_ic_retry),
-                            contentDescription = "Retry",
+                            contentDescription = stringResource(R.string.cometchat_a11y_retry),
                             tint = CometChatTheme.colorScheme.errorColor,
                             modifier = Modifier
                                 .size(32.dp)

@@ -17,7 +17,7 @@ import androidx.compose.ui.text.TextStyle
  * @param textStyle Optional text style for the menu item. If null, uses global style
  * @param onClick Optional callback invoked when the menu item is clicked
  */
-data class MenuItem(
+public data class MenuItem(
     val id: String,
     val name: String,
     val startIcon: Painter? = null,
@@ -28,7 +28,7 @@ data class MenuItem(
     val textStyle: TextStyle? = null,
     val onClick: (() -> Unit)? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a simple MenuItem with just id, name, and optional click handler.
          *
@@ -37,7 +37,7 @@ data class MenuItem(
          * @param onClick Optional callback invoked when the menu item is clicked
          * @return A new MenuItem instance with minimal configuration
          */
-        fun simple(
+        public fun simple(
             id: String,
             name: String,
             onClick: (() -> Unit)? = null
@@ -57,7 +57,7 @@ data class MenuItem(
          * @param onClick Optional callback invoked when the menu item is clicked
          * @return A new MenuItem instance with icon configuration
          */
-        fun withIcons(
+        public fun withIcons(
             id: String,
             name: String,
             startIcon: Painter? = null,

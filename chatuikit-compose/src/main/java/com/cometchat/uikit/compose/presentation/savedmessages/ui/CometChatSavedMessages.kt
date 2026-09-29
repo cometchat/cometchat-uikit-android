@@ -75,9 +75,10 @@ import com.cometchat.uikit.core.viewmodel.CometChatSavedMessagesViewModel
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatSavedMessages(
+public fun CometChatSavedMessages(
     modifier: Modifier = Modifier,
     viewModel: CometChatSavedMessagesViewModel? = null,
+    textFormatters: List<CometChatTextFormatter>? = null,
     onBackClick: () -> Unit = {},
     onMessageClick: (BaseMessage) -> Unit = {}
 ) {
@@ -115,11 +116,10 @@ fun CometChatSavedMessages(
     val messages by vm.messages.collectAsState()
     val uiState by vm.uiState.collectAsState()
 
-    // Default mentions formatter so subtitle previews style mentions exactly like the
-    // Conversations list item (same pipeline, same formatter).
-    val textFormatters: List<CometChatTextFormatter> = remember(context) {
-        listOf(CometChatMentionsFormatter(context))
-    }
+    // Caller-supplied formatters win; otherwise a default mentions formatter so subtitle previews
+    // style mentions exactly like the Conversations list item (same pipeline, same formatter).
+    val effectiveTextFormatters: List<CometChatTextFormatter> =
+        textFormatters ?: remember(context) { listOf(CometChatMentionsFormatter(context)) }
 
     // The row whose long-press options menu is open, and the row awaiting unsave confirmation.
     var menuTarget by remember { mutableStateOf<BaseMessage?>(null) }
@@ -175,7 +175,7 @@ fun CometChatSavedMessages(
                         items(items = messages, key = { it.id }) { message ->
                             SavedMessageRow(
                                 message = message,
-                                textFormatters = textFormatters,
+                                textFormatters = effectiveTextFormatters,
                                 onClick = onMessageClick,
                                 // Long-press opens the one-item options menu; picking "Unsave"
                                 // then raises the confirm dialog (same flow as the View kit).

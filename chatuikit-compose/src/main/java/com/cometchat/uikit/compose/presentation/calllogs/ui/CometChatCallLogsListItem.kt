@@ -271,7 +271,7 @@ internal fun DefaultTrailingView(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CometChatCallLogsListItem(
+public fun CometChatCallLogsListItem(
     callLog: CallLog,
     modifier: Modifier = Modifier,
     style: CometChatCallLogsListItemStyle = CometChatCallLogsListItemStyle.default(),

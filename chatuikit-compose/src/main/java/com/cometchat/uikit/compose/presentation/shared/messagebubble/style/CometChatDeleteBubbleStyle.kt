@@ -49,7 +49,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property threadIndicatorIconTint The tint color of thread indicator icon (inherited from parent)
  */
 @Immutable
-data class CometChatDeleteBubbleStyle(
+public data class CometChatDeleteBubbleStyle(
     // Content-specific properties ONLY
     val textColor: Color,
     val textStyle: TextStyle,
@@ -81,7 +81,7 @@ data class CometChatDeleteBubbleStyle(
     timestampTextColor = timestampTextColor,
     timestampTextStyle = timestampTextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default delete bubble style using CometChat theme tokens.
          *
@@ -101,7 +101,7 @@ data class CometChatDeleteBubbleStyle(
          * @return A new [CometChatDeleteBubbleStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             // Content-specific defaults (keep theme-based values)
             textColor: Color = CometChatTheme.colorScheme.textColorSecondary,
             textStyle: TextStyle = CometChatTheme.typography.bodyRegular.copy(fontStyle = FontStyle.Italic),
@@ -146,7 +146,7 @@ data class CometChatDeleteBubbleStyle(
          * @return A new [CometChatDeleteBubbleStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(): CometChatDeleteBubbleStyle = default()
+        public fun incoming(): CometChatDeleteBubbleStyle = default()
 
         /**
          * Creates a style for outgoing (right-aligned) deleted messages.
@@ -157,7 +157,7 @@ data class CometChatDeleteBubbleStyle(
          * @return A new [CometChatDeleteBubbleStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(): CometChatDeleteBubbleStyle = default(
+        public fun outgoing(): CometChatDeleteBubbleStyle = default(
             textColor = CometChatTheme.colorScheme.colorWhite.copy(alpha = 0.7f),
             iconTint = CometChatTheme.colorScheme.colorWhite.copy(alpha = 0.7f)
         )

@@ -7,7 +7,7 @@ package com.cometchat.uikit.compose.presentation.messagecomposer.ui
  * the sticker keyboard is open or closed. Each state maps to a unique
  * icon variant and tint color pair.
  */
-enum class StickerButtonVisualState {
+public enum class StickerButtonVisualState {
     /**
      * Sticker keyboard is open — filled icon with active/highlight tint.
      */
@@ -32,6 +32,6 @@ enum class StickerButtonVisualState {
  * @param isStickerKeyboardOpen whether the sticker keyboard is currently visible
  * @return the visual state that should be applied to the sticker button
  */
-fun resolveStickerVisualState(isStickerKeyboardOpen: Boolean): StickerButtonVisualState {
+public fun resolveStickerVisualState(isStickerKeyboardOpen: Boolean): StickerButtonVisualState {
     return if (isStickerKeyboardOpen) StickerButtonVisualState.ACTIVE else StickerButtonVisualState.INACTIVE
 }

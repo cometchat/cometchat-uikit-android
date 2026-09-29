@@ -3,13 +3,14 @@ package com.cometchat.uikit.compose.presentation.messagecomposer.ui
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.util.Log
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draganddrop.toAndroidDragEvent
+import androidx.compose.ui.res.stringResource
+import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatFileProviderAuthority
 import com.cometchat.uikit.compose.presentation.shared.mediaselection.createMediaSelectionResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedContent
@@ -42,6 +43,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.rememberCoroutineScope
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,6 +59,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -219,7 +222,7 @@ import java.io.File
  */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun CometChatMessageComposer(
+public fun CometChatMessageComposer(
     modifier: Modifier = Modifier,
     // Data configuration
     user: User? = null,
@@ -246,6 +249,8 @@ fun CometChatMessageComposer(
     hideSendButton: Boolean = false,
     hideAuxiliaryButton: Boolean = false,
     hideStickersButton: Boolean = false,
+    /** Hides the reply/message preview panel above the input. Parity with setHideMessagePreview. */
+    hideMessagePreview: Boolean = false,
     // Rich text formatting - toolbar visible below text input when enabled
     enableRichTextFormatting: Boolean = false,
     // Composer layout mode - controls single-row vs two-row layout
@@ -301,6 +306,19 @@ fun CometChatMessageComposer(
      *         `false` or `null` to execute default document picker behavior.
      */
     onDocumentClick: (() -> Boolean)? = null,
+    /** Fires when the attachment button is tapped. Return true to suppress the attachment popup.
+     *  Parity with chatuikit-kotlin's setOnAttachmentClick. */
+    onAttachmentClick: (() -> Boolean)? = null,
+    /** Fires when the voice-recording button is tapped. Return true to suppress recording mode.
+     *  Parity with chatuikit-kotlin's setOnVoiceRecordingClick. */
+    onVoiceRecordingClick: (() -> Boolean)? = null,
+    /** Fires when the AI button is tapped. Return true to suppress the default AI sheet.
+     *  Parity with chatuikit-kotlin's setOnAIClick. */
+    onAIClick: (() -> Boolean)? = null,
+    /** Fires when the sticker button is tapped, distinct from [onStickerSelected] which fires on
+     *  picking a sticker. Return true to suppress the sticker keyboard.
+     *  Parity with chatuikit-kotlin's setOnStickerClick. */
+    onStickerClick: (() -> Boolean)? = null,
     // Sticker keyboard
     /**
      * Style configuration for the sticker keyboard.
@@ -679,6 +697,10 @@ fun CometChatMessageComposer(
     LaunchedEffect(segmentController.pendingFocusSegmentId, segmentVersion) {
         val pendingId = segmentController.consumePendingFocus()
         if (pendingId != null) {
+            // Wait for the segment to be laid out before focusing it. Requesting focus in
+            // the same frame reaches CoreTextField before its TextLayoutResult exists, and
+            // notifyFocusedRect then throws on the restored cursor offset.
+            withFrameNanos { }
             focusRequesters[pendingId]?.requestFocus()
         }
     }
@@ -788,7 +810,7 @@ fun CometChatMessageComposer(
             stageResultsAs(results, null)
             true
         } catch (e: Exception) {
-            Log.e("CometChatMessageComposer", "Failed to stage clipboard media: ${e.message}")
+            CometChatLogger.e("CometChatMessageComposer", "Failed to stage clipboard media: ${e.message}")
             false
         }
     }
@@ -1062,6 +1084,7 @@ fun CometChatMessageComposer(
             .fillMaxWidth()
             .onGloballyPositioned { composerWidthPx = it.size.width }
     ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_message_composer)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -1087,7 +1110,7 @@ fun CometChatMessageComposer(
                 },
                 target = mediaDropTarget
             )
-            .semantics { contentDescription = "Message Composer" }
+            .semantics { contentDescription = cdHoist1 }
     ) {
         // Header view slot
         headerView?.invoke()
@@ -1246,7 +1269,7 @@ fun CometChatMessageComposer(
             }
 
             // Reply preview panel (inside compose box for integrated appearance)
-            replyMessage?.let { message ->
+            replyMessage?.takeUnless { hideMessagePreview }?.let { message ->
                 if (replyPreviewView != null) {
                     replyPreviewView(message) {
                         composerViewModel.clearReplyMessage()
@@ -1465,8 +1488,16 @@ fun CometChatMessageComposer(
                         hideVoiceRecordingButton = effectiveHideVoiceRecordingButton,
                         isAttachmentPopupExpanded = showAttachmentPopup,
                         style = style,
-                        onAttachmentClick = { showAttachmentPopup = !showAttachmentPopup },
-                        onVoiceRecordClick = { composerViewModel.startRecordingMode() }
+                        onAttachmentClick = {
+                            if (onAttachmentClick?.invoke() != true) {
+                                showAttachmentPopup = !showAttachmentPopup
+                            }
+                        },
+                        onVoiceRecordClick = {
+                            if (onVoiceRecordingClick?.invoke() != true) {
+                                composerViewModel.startRecordingMode()
+                            }
+                        }
                     )
                 }
                 } // End of inner Row for center alignment
@@ -1597,13 +1628,15 @@ fun CometChatMessageComposer(
                         isStickerKeyboardOpen = showStickerKeyboard,
                         style = style,
                         onStickerClick = {
-                            if (!showStickerKeyboard) {
-                                // Opening sticker panel — hide the software keyboard first
-                                keyboardController?.hide()
+                            if (onStickerClick?.invoke() != true) {
+                                if (!showStickerKeyboard) {
+                                    // Opening sticker panel — hide the software keyboard first
+                                    keyboardController?.hide()
+                                }
+                                showStickerKeyboard = !showStickerKeyboard
                             }
-                            showStickerKeyboard = !showStickerKeyboard
                         },
-                        onAIClick = { showAISheet = true },
+                        onAIClick = { if (onAIClick?.invoke() != true) showAISheet = true },
                         onVoiceRecordClick = { /* handled below */ }
                     )
 
@@ -1619,7 +1652,11 @@ fun CometChatMessageComposer(
                             hideAIButton = true,
                             hideVoiceRecordingButton = false,
                             style = style,
-                            onVoiceRecordClick = { composerViewModel.startRecordingMode() }
+                            onVoiceRecordClick = {
+                                if (onVoiceRecordingClick?.invoke() != true) {
+                                    composerViewModel.startRecordingMode()
+                                }
+                            }
                         )
                     }
                 }
@@ -1769,7 +1806,7 @@ fun CometChatMessageComposer(
                         disabledFormats = effectiveDisabledFormats,
                         enabledFormats = enabledFormats,
                         onFormatClick = { format ->
-                            android.util.Log.d("SegmentDebug", "onFormatClick: format=$format, isTypingInCode=${segmentController.isTypingInCode}, focusedSegmentId=${segmentController.focusedSegmentId}")
+                            CometChatLogger.d("SegmentDebug", "onFormatClick: format=$format, isTypingInCode=${segmentController.isTypingInCode}, focusedSegmentId=${segmentController.focusedSegmentId}")
                             
                             // If no segment is focused, focus the first normal segment
                             if (segmentController.focusedSegment == null) {
@@ -1788,7 +1825,7 @@ fun CometChatMessageComposer(
                             when {
                                 // Case 1: Tapping CODE_BLOCK while inside a Code segment → extract cursor paragraph
                                 format == RichTextFormat.CODE_BLOCK && focusedSeg is ComposerSegment.Code -> {
-                                    android.util.Log.d("SegmentDebug", "onFormatClick: extracting paragraph from code block (deselect), cursor=${focusedSeg.cursorPosition}")
+                                    CometChatLogger.d("SegmentDebug", "onFormatClick: extracting paragraph from code block (deselect), cursor=${focusedSeg.cursorPosition}")
                                     segmentController.extractParagraphFromCodeBlock(focusedSeg.cursorPosition, null)
                                 }
                                 // Case 2: Tapping a line format (blockquote/list) while inside a Code segment
@@ -1796,12 +1833,12 @@ fun CometChatMessageComposer(
                                 focusedSeg is ComposerSegment.Code && format in setOf(
                                     RichTextFormat.BULLET_LIST, RichTextFormat.ORDERED_LIST, RichTextFormat.BLOCKQUOTE
                                 ) -> {
-                                    android.util.Log.d("SegmentDebug", "onFormatClick: extracting paragraph from code block with format=$format, cursor=${focusedSeg.cursorPosition}")
+                                    CometChatLogger.d("SegmentDebug", "onFormatClick: extracting paragraph from code block with format=$format, cursor=${focusedSeg.cursorPosition}")
                                     segmentController.extractParagraphFromCodeBlock(focusedSeg.cursorPosition, format)
                                 }
                                 // Case 3: Tapping CODE_BLOCK while in a Normal segment → convert cursor paragraph to code
                                 format == RichTextFormat.CODE_BLOCK && focusedSeg is ComposerSegment.Normal -> {
-                                    android.util.Log.d("SegmentDebug", "onFormatClick: convertCursorParagraphToCodeBlock")
+                                    CometChatLogger.d("SegmentDebug", "onFormatClick: convertCursorParagraphToCodeBlock")
                                     segmentController.convertCursorParagraphToCodeBlock()
                                 }
                                 // Case 4: Tapping any format while in a Normal segment → toggle format
@@ -2056,17 +2093,14 @@ private fun handleSend(
 ) {
     // Serialize all segments to markdown via the controller
     val markdownText = segmentController.toMarkdown()
-    android.util.Log.d("MessageComposer", "handleSend: markdownText='$markdownText', length=${markdownText.length}")
-    android.util.Log.d("MessageComposer", "handleSend: mentionInsertionState=${mentionInsertionState != null}, mentionCount=${mentionInsertionState?.getMentionsManager()?.getMentions()?.size ?: 0}")
+    CometChatLogger.d("MessageComposer", "handleSend: mentionInsertionState=${mentionInsertionState != null}, mentionCount=${mentionInsertionState?.getMentionsManager()?.getMentions()?.size ?: 0}")
 
     // Process mentions on the markdown text
     var textToSend = markdownText
     if (mentionInsertionState != null) {
         textToSend = mentionInsertionState.getProcessedText(markdownText)
-        android.util.Log.d("MessageComposer", "handleSend: textToSend after mention processing='$textToSend', length=${textToSend.length}")
     }
 
-    android.util.Log.d("MessageComposer", "handleSend: final textToSend='$textToSend'")
 
     // Multi-attachment send: the staged attachments go out as a single media message with the
     // current text as caption (which may be blank). Takes precedence over a plain text send.
@@ -2953,7 +2987,7 @@ private fun openStagedAttachmentPreview(
                     local == null -> tile.attachment?.fileUrl?.let(android.net.Uri::parse)
                     local.startsWith("/") -> File(local).takeIf { it.exists() }?.let {
                         androidx.core.content.FileProvider.getUriForFile(
-                            context, "${context.packageName}.provider", it
+                            context, context.cometchatFileProviderAuthority, it
                         )
                     } ?: tile.attachment?.fileUrl?.let(android.net.Uri::parse)
                     else -> android.net.Uri.parse(local)
@@ -2970,7 +3004,7 @@ private fun openStagedAttachmentPreview(
             else -> Unit
         }
     } catch (e: Exception) {
-        Log.e("CometChatMessageComposer", "Failed to open staged attachment preview: ${e.message}")
+        CometChatLogger.e("CometChatMessageComposer", "Failed to open staged attachment preview: ${e.message}")
     }
 }
 

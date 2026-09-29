@@ -114,7 +114,7 @@ import java.text.SimpleDateFormat
  * @see CometChatMessageComposer
  */
 @Composable
-fun CometChatThreadScreen(
+public fun CometChatThreadScreen(
     modifier: Modifier = Modifier,
     parentMessage: BaseMessage,
     // User/Group context - provide one

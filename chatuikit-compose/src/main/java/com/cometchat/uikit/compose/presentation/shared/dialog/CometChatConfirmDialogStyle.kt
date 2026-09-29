@@ -19,7 +19,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * including container, icon, title, subtitle, and button styling.
  */
 @Immutable
-data class CometChatConfirmDialogStyle(
+public data class CometChatConfirmDialogStyle(
     // Container styling
     val backgroundColor: Color,
     val cornerRadius: Dp,
@@ -58,7 +58,7 @@ data class CometChatConfirmDialogStyle(
     val negativeButtonStrokeWidth: Dp,
     val negativeButtonCornerRadius: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * 
@@ -71,7 +71,7 @@ data class CometChatConfirmDialogStyle(
          * - Negative button: primary text on white background with dark stroke
          */
         @Composable
-        fun default(
+        public fun default(
             // Container
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             cornerRadius: Dp = 16.dp,
@@ -144,7 +144,7 @@ data class CometChatConfirmDialogStyle(
          * Uses error color for the positive button to indicate destructive action.
          */
         @Composable
-        fun deleteConfirmation(
+        public fun deleteConfirmation(
             icon: Painter? = null
         ): CometChatConfirmDialogStyle = default(
             icon = icon,

@@ -33,7 +33,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property messageIconTint The tint color of the message type icon
  */
 @Immutable
-data class CometChatMessagePreviewStyle(
+public data class CometChatMessagePreviewStyle(
     val backgroundColor: Color,
     val strokeWidth: Dp,
     val cornerRadius: Dp,
@@ -47,7 +47,7 @@ data class CometChatMessagePreviewStyle(
     val closeIconTint: Color,
     val messageIconTint: Color
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default message preview style using CometChat theme tokens.
          *
@@ -66,7 +66,7 @@ data class CometChatMessagePreviewStyle(
          * @return A new [CometChatMessagePreviewStyle] instance with default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor2,
             strokeWidth: Dp = 0.dp,
             cornerRadius: Dp = 0.dp,
@@ -104,7 +104,7 @@ data class CometChatMessagePreviewStyle(
          * @return A new [CometChatMessagePreviewStyle] configured for incoming messages
          */
         @Composable
-        fun incoming(
+        public fun incoming(
             backgroundColor: Color = CometChatTheme.colorScheme.neutralColor400,
             strokeWidth: Dp = 0.dp,
             cornerRadius: Dp = 8.dp,
@@ -141,7 +141,7 @@ data class CometChatMessagePreviewStyle(
          * @return A new [CometChatMessagePreviewStyle] configured for outgoing messages
          */
         @Composable
-        fun outgoing(
+        public fun outgoing(
             backgroundColor: Color = CometChatTheme.colorScheme.extendedPrimaryColor800,
             strokeWidth: Dp = 0.dp,
             cornerRadius: Dp = 8.dp,

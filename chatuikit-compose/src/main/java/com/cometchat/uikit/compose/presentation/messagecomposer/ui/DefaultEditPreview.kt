@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -46,13 +47,14 @@ import com.cometchat.uikit.core.formatter.MarkdownRenderer
  * @param onClose Callback when the close button is clicked
  */
 @Composable
-fun DefaultEditPreview(
+public fun DefaultEditPreview(
     modifier: Modifier = Modifier,
     message: BaseMessage,
     textFormatters: List<CometChatTextFormatter> = emptyList(),
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     onClose: () -> Unit = {}
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_edit_preview)
     val context = LocalContext.current
     
     // Run formatter pipeline to resolve mention tokens (e.g., <@uid:userId> -> @userName),
@@ -114,7 +116,7 @@ fun DefaultEditPreview(
                 } else Modifier
             )
             .padding(8.dp)
-            .semantics { contentDescription = "Edit Preview" },
+            .semantics { contentDescription = cdHoist1 },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -149,7 +151,7 @@ fun DefaultEditPreview(
             style.editPreviewCloseIcon?.let { icon ->
                 Icon(
                     painter = icon,
-                    contentDescription = "Close edit preview",
+                    contentDescription = stringResource(R.string.cometchat_a11y_close_edit_preview),
                     tint = style.editPreviewCloseIconTint,
                     modifier = Modifier.size(20.dp)
                 )

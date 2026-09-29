@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -90,7 +91,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
  * @param onVoiceCallClick Callback for voice call button click (overrides default CometChatCallButtons behavior)
  */
 @Composable
-fun CometChatMessageHeader(
+public fun CometChatMessageHeader(
     modifier: Modifier = Modifier,
     // Data configuration - provide either user or group
     user: User? = null,
@@ -189,12 +190,13 @@ fun CometChatMessageHeader(
     ) {
         // Back button
         if (!hideBackButton) {
+            val cdHoist1 = stringResource(R.string.cometchat_a11y_back)
             IconButton(
                 onClick = {
                     onBackPress?.invoke()
                 },
                 modifier = Modifier.semantics {
-                    contentDescription = "Back"
+                    contentDescription = cdHoist1
                     role = Role.Button
                 }
             ) {
@@ -521,7 +523,7 @@ private fun DefaultAuxiliaryView(
                 IconButton(onClick = { onNewChatClick?.invoke() }) {
                     Icon(
                         painter = icon,
-                        contentDescription = "New chat",
+                        contentDescription = stringResource(R.string.cometchat_a11y_new_chat),
                         tint = style.newChatIconTint
                     )
                 }
@@ -534,7 +536,7 @@ private fun DefaultAuxiliaryView(
                 IconButton(onClick = { onChatHistoryClick?.invoke() }) {
                     Icon(
                         painter = icon,
-                        contentDescription = "Chat history",
+                        contentDescription = stringResource(R.string.cometchat_a11y_chat_history),
                         tint = style.chatHistoryIconTint
                     )
                 }

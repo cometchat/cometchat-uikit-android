@@ -49,7 +49,7 @@ internal val UNSET_PADDING: PaddingValues = object : PaddingValues {
  * @return A new instance of [T] with sentinel CommonProperties replaced by [base] values.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : CometChatMessageBubbleStyle> mergeWithBase(
+public fun <T : CometChatMessageBubbleStyle> mergeWithBase(
     bubbleStyle: T,
     base: CometChatMessageBubbleStyle
 ): T {

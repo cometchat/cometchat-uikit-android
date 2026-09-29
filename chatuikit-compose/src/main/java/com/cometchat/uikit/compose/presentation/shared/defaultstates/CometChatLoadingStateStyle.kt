@@ -26,7 +26,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property shimmerConfig Configuration for shimmer animation (colors, direction, duration, etc.)
  */
 @Immutable
-data class CometChatLoadingStateStyle(
+public data class CometChatLoadingStateStyle(
     val backgroundColor: Color,
     val itemCount: Int,
     val avatarSize: Dp,
@@ -41,7 +41,7 @@ data class CometChatLoadingStateStyle(
     val shimmerColor: Color
         get() = shimmerConfig.baseColor
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
@@ -61,7 +61,7 @@ data class CometChatLoadingStateStyle(
          * @return A configured CometChatLoadingStateStyle instance
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             shimmerColor: Color? = null,
             itemCount: Int = 8,

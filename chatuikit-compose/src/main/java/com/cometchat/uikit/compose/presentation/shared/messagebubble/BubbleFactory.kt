@@ -56,7 +56,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  *
  * @see CometChatMessageBubbleStyle
  */
-interface BubbleFactory {
+public interface BubbleFactory {
 
     // ========================================
     // Self-Describing Identity
@@ -65,12 +65,12 @@ interface BubbleFactory {
     /**
      * Returns the message category this factory handles (e.g., "message", "custom", "call").
      */
-    fun getCategory(): String
+    public fun getCategory(): String
 
     /**
      * Returns the message type this factory handles (e.g., "text", "image", "polls").
      */
-    fun getType(): String
+    public fun getType(): String
 
     // ========================================
     // Bubble View (Optional - complete replacement)
@@ -110,7 +110,7 @@ interface BubbleFactory {
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      * @return Composable lambda that renders the complete bubble, or null to use standard bubble
      */
-    fun getBubbleView(
+    public fun getBubbleView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
     ): (@Composable () -> Unit)? = null
@@ -146,7 +146,7 @@ interface BubbleFactory {
      * @param textFormatters Text formatters for mentions, markdown, and custom text transformations
      * @return Composable lambda that renders the content view
      */
-    fun getContentView(
+    public fun getContentView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -167,7 +167,7 @@ interface BubbleFactory {
      * @param alignment The bubble alignment
      * @return Custom style or null for alignment-based defaults
      */
-    fun getBubbleStyle(
+    public fun getBubbleStyle(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
     ): CometChatMessageBubbleStyle? = null
@@ -184,7 +184,7 @@ interface BubbleFactory {
      * @param style The resolved bubble style
      * @return Composable lambda or null if no leading view
      */
-    fun getLeadingView(
+    public fun getLeadingView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle
@@ -203,7 +203,7 @@ interface BubbleFactory {
      * @param showTime Whether to show timestamp in header
      * @return Composable lambda or null if no header view
      */
-    fun getHeaderView(
+    public fun getHeaderView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -222,7 +222,7 @@ interface BubbleFactory {
      * @param style The resolved bubble style
      * @return Composable lambda or null if no reply view
      */
-    fun getReplyView(
+    public fun getReplyView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle
@@ -241,7 +241,7 @@ interface BubbleFactory {
      * @param hideModerationView Whether to hide the moderation indicator
      * @return Composable lambda or null if no bottom view
      */
-    fun getBottomView(
+    public fun getBottomView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -261,7 +261,7 @@ interface BubbleFactory {
      * @param showTime Whether to show timestamp
      * @return Composable lambda or null if no status info view
      */
-    fun getStatusInfoView(
+    public fun getStatusInfoView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -281,7 +281,7 @@ interface BubbleFactory {
      * @param onThreadRepliesClick Callback when thread indicator is clicked
      * @return Composable lambda or null if no thread view
      */
-    fun getThreadView(
+    public fun getThreadView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -303,7 +303,7 @@ interface BubbleFactory {
      * @param onAddMoreReactionsClick Callback when add reaction button is clicked
      * @return Composable lambda or null if no footer view
      */
-    fun getFooterView(
+    public fun getFooterView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         style: CometChatMessageBubbleStyle,
@@ -322,7 +322,7 @@ interface BubbleFactory {
      *
      * @param message The message whose bubble is being disposed
      */
-    fun onDispose(message: BaseMessage) {
+    public fun onDispose(message: BaseMessage) {
         // Default: no-op
     }
 }

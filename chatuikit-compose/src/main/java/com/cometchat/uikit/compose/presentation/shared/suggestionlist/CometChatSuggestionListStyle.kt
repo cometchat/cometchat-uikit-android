@@ -29,7 +29,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @property separatorHeight Height of the separator
  */
 @Immutable
-data class CometChatSuggestionListStyle(
+public data class CometChatSuggestionListStyle(
     val backgroundColor: Color,
     val strokeColor: Color,
     val strokeWidth: Dp,
@@ -46,12 +46,12 @@ data class CometChatSuggestionListStyle(
     val separatorColor: Color,
     val separatorHeight: Dp
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatSuggestionListStyle using CometChatTheme colors.
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = CometChatTheme.colorScheme.borderColorLight,
             strokeWidth: Dp = 1.dp,

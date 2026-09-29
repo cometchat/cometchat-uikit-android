@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -75,7 +76,7 @@ private object ChipDimens {
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SearchFilterChips(
+public fun SearchFilterChips(
     filters: List<SearchFilter>,
     selectedFilters: Set<SearchFilter>,
     onFilterToggle: (SearchFilter) -> Unit,
@@ -140,6 +141,11 @@ private fun FilterChipCard(
     
     val shape = RoundedCornerShape(style.filterChipCornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
+    val chipDescription = stringResource(
+        R.string.cometchat_a11y_filter,
+        label,
+        if (isSelected) stringResource(R.string.cometchat_a11y_selected_suffix) else ""
+    )
 
     // ChipCard styling (MaterialCardView equivalent)
     // Apply minimum height to ensure consistent sizing across devices
@@ -160,7 +166,7 @@ private fun FilterChipCard(
             .semantics {
                 role = Role.Checkbox
                 selected = isSelected
-                contentDescription = "$label filter${if (isSelected) ", selected" else ""}"
+                contentDescription = chipDescription
             },
         iconRes = iconRes,
         label = label,

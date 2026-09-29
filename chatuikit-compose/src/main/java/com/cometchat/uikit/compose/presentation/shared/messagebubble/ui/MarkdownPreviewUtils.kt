@@ -44,7 +44,7 @@ private const val BLOCKQUOTE_ANNOTATION_TAG = "BLOCKQUOTE"
  * Adds annotations for inline code and blockquote so [FormattedPreviewText]
  * can draw backgrounds/borders/stripes matching the bubble's visual style.
  */
-fun buildPreviewAnnotatedString(
+public fun buildPreviewAnnotatedString(
     segments: List<MarkdownRenderer.RenderedSegment>,
     textColor: Color,
     linkColor: Color,
@@ -133,7 +133,7 @@ fun buildPreviewAnnotatedString(
  * - Links → plain display text only
  * - Lists → only first item shown
  */
-fun buildReplyPreviewAnnotatedString(
+public fun buildReplyPreviewAnnotatedString(
     segments: List<MarkdownRenderer.RenderedSegment>,
     textColor: Color
 ): AnnotatedString = buildAnnotatedString {
@@ -220,7 +220,7 @@ fun buildReplyPreviewAnnotatedString(
  * - Blockquotes: left stripe + background fill (like BlockquoteBubble)
  */
 @Composable
-fun FormattedPreviewText(
+public fun FormattedPreviewText(
     text: AnnotatedString,
     style: TextStyle,
     modifier: Modifier = Modifier,

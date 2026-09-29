@@ -27,7 +27,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param errorStateTextStyle Text style for error state message
  */
 @Immutable
-data class CometChatStickerKeyboardStyle(
+public data class CometChatStickerKeyboardStyle(
     val backgroundColor: Color,
     val separatorColor: Color,
     val tabIconSize: Dp,
@@ -40,14 +40,14 @@ data class CometChatStickerKeyboardStyle(
     val errorStateTextColor: Color,
     val errorStateTextStyle: TextStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatStickerKeyboardStyle with values sourced from CometChatTheme.
          *
          * @return A new CometChatStickerKeyboardStyle instance with theme-based default values
          */
         @Composable
-        fun default(
+        public fun default(
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             separatorColor: Color = CometChatTheme.colorScheme.strokeColorDefault,
             tabIconSize: Dp = 36.dp,

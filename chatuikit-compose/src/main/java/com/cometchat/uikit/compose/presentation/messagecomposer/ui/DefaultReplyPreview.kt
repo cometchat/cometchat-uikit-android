@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -53,13 +54,14 @@ import com.cometchat.uikit.core.formatter.MarkdownRenderer
  * @param onClose Callback when the close button is clicked
  */
 @Composable
-fun DefaultReplyPreview(
+public fun DefaultReplyPreview(
     modifier: Modifier = Modifier,
     message: BaseMessage,
     textFormatters: List<CometChatTextFormatter> = emptyList(),
     style: CometChatMessageComposerStyle = CometChatMessageComposerStyle.default(),
     onClose: () -> Unit = {}
 ) {
+    val cdHoist1 = stringResource(R.string.cometchat_a11y_reply_preview)
     val context = LocalContext.current
     
     // Get sender name - show "You" if it's the logged-in user (matching Java logic)
@@ -159,7 +161,7 @@ fun DefaultReplyPreview(
                 } else Modifier
             )
             .padding(8.dp)
-            .semantics { contentDescription = "Reply Preview" },
+            .semantics { contentDescription = cdHoist1 },
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Colored separator bar
@@ -207,7 +209,7 @@ fun DefaultReplyPreview(
             style.messagePreviewCloseIcon?.let { icon ->
                 Icon(
                     painter = icon,
-                    contentDescription = "Close reply preview",
+                    contentDescription = stringResource(R.string.cometchat_a11y_close_reply_preview),
                     tint = style.messagePreviewCloseIconTint,
                     modifier = Modifier.size(20.dp)
                 )
