@@ -11,7 +11,7 @@ import org.json.JSONObject
  * @property name The display name of the voter
  * @property avatarUrl The URL to the voter's avatar image (nullable)
  */
-data class VoterInfo(
+public data class VoterInfo(
     val uid: String,
     val name: String,
     val avatarUrl: String?
@@ -26,7 +26,7 @@ data class VoterInfo(
  * @property voters List of voter information (up to 3 voters for display)
  * @property isSelected Whether the logged-in user has selected this option
  */
-data class PollOption(
+public data class PollOption(
     val id: String,
     val text: String,
     val voteCount: Int,
@@ -42,7 +42,7 @@ data class PollOption(
  * @property options List of poll options with their voting information
  * @property totalVotes The total number of votes cast in this poll
  */
-data class PollData(
+public data class PollData(
     val id: String,
     val question: String,
     val options: List<PollOption>,
@@ -101,7 +101,7 @@ private object PollJsonFields {
  * @param message The CustomMessage containing poll data
  * @return PollData if extraction is successful, null otherwise
  */
-fun extractPollData(message: CustomMessage): PollData? {
+public fun extractPollData(message: CustomMessage): PollData? {
     return try {
         val customData = message.customData ?: return null
         
@@ -231,7 +231,7 @@ private fun getPollResults(message: CustomMessage): JSONObject? {
  * @param message The CustomMessage containing poll data
  * @return The 1-indexed position of the voted option, or 0 if the user hasn't voted
  */
-fun getUserVotedOption(message: CustomMessage): Int {
+public fun getUserVotedOption(message: CustomMessage): Int {
     val pollData = extractPollData(message) ?: return 0
     
     for ((index, option) in pollData.options.withIndex()) {
@@ -250,7 +250,7 @@ fun getUserVotedOption(message: CustomMessage): Int {
  * @param totalVotes The total number of votes in the poll
  * @return The percentage as an integer (0-100), or 0 if totalVotes is 0
  */
-fun calculateVotePercentage(voteCount: Int, totalVotes: Int): Int {
+public fun calculateVotePercentage(voteCount: Int, totalVotes: Int): Int {
     return if (totalVotes > 0) {
         Math.round((voteCount.toFloat() * 100) / totalVotes)
     } else {
@@ -263,7 +263,7 @@ fun calculateVotePercentage(voteCount: Int, totalVotes: Int): Int {
  *
  * @return true if the message contains poll data, false otherwise
  */
-fun CustomMessage.isPollMessage(): Boolean {
+public fun CustomMessage.isPollMessage(): Boolean {
     return try {
         val customData = this.customData ?: return false
         customData.has(PollJsonFields.QUESTION) && customData.has(PollJsonFields.OPTIONS)

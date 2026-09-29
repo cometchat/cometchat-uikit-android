@@ -10,14 +10,14 @@ import com.cometchat.chat.core.GroupsRequest
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface GroupsRepository {
+public interface GroupsRepository {
     
     /**
      * Fetches groups based on the provided request configuration.
      * @param request The configured GroupsRequest with pagination and filters
      * @return Result containing list of groups or error
      */
-    suspend fun fetchGroups(request: GroupsRequest): Result<List<Group>>
+    suspend public fun fetchGroups(request: GroupsRequest): Result<List<Group>>
     
     /**
      * Joins a group.
@@ -26,7 +26,7 @@ interface GroupsRepository {
      * @param password Optional password for password-protected groups
      * @return Result containing the joined group or error
      */
-    suspend fun joinGroup(
+    suspend public fun joinGroup(
         groupId: String,
         groupType: String,
         password: String? = null
@@ -36,5 +36,5 @@ interface GroupsRepository {
      * Checks if there are more groups to fetch (pagination).
      * @return true if more groups are available
      */
-    fun hasMoreGroups(): Boolean
+    public fun hasMoreGroups(): Boolean
 }

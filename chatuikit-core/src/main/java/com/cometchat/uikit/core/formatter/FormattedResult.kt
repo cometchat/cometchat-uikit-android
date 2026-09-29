@@ -8,7 +8,7 @@ package com.cometchat.uikit.core.formatter
  * @param newSelectionStart The new cursor selection start position
  * @param newSelectionEnd The new cursor selection end position
  */
-data class FormattedResult(
+public data class FormattedResult(
     val text: String,
     val newSelectionStart: Int,
     val newSelectionEnd: Int

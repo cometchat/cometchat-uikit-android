@@ -6,12 +6,12 @@ import com.cometchat.chat.core.Call
  * Sealed class hierarchy representing all call-related events.
  * Provides type-safe event handling for call state changes.
  */
-sealed class CometChatCallEvent {
+sealed public class CometChatCallEvent {
     /**
      * Event emitted when an outgoing call is initiated.
      * @param call The outgoing call
      */
-    data class OutgoingCall(
+    public data class OutgoingCall(
         val call: Call
     ) : CometChatCallEvent()
 
@@ -19,7 +19,7 @@ sealed class CometChatCallEvent {
      * Event emitted when a call is accepted.
      * @param call The accepted call
      */
-    data class CallAccepted(
+    public data class CallAccepted(
         val call: Call
     ) : CometChatCallEvent()
 
@@ -27,7 +27,7 @@ sealed class CometChatCallEvent {
      * Event emitted when a call is rejected.
      * @param call The rejected call
      */
-    data class CallRejected(
+    public data class CallRejected(
         val call: Call
     ) : CometChatCallEvent()
 
@@ -35,7 +35,7 @@ sealed class CometChatCallEvent {
      * Event emitted when a call ends.
      * @param call The ended call
      */
-    data class CallEnded(
+    public data class CallEnded(
         val call: Call
     ) : CometChatCallEvent()
 }

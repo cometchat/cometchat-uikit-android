@@ -1,5 +1,7 @@
 package com.cometchat.uikit.core.formatter
 
+import com.cometchat.uikit.core.utils.CometChatLogger
+
 /**
  * Manages an ordered list of [ComposerSegment]s (normal rich text + code blocks).
  * Mirrors the Flutter SegmentComposerController architecture.
@@ -9,10 +11,10 @@ package com.cometchat.uikit.core.formatter
  *
  * Platform-agnostic — shared by Jetpack Compose and Kotlin XML UI kits.
  */
-class SegmentComposerController {
+public class SegmentComposerController {
 
-    interface Listener {
-        fun onSegmentsChanged()
+    public interface Listener {
+        public fun onSegmentsChanged()
     }
 
     private var listener: Listener? = null
@@ -20,10 +22,10 @@ class SegmentComposerController {
     private val _segments = mutableListOf<ComposerSegment>()
 
     /** Read-only view of current segments. */
-    val segments: List<ComposerSegment> get() = _segments.toList()
+    public val segments: List<ComposerSegment> get() = _segments.toList()
 
     /** ID of the currently focused segment (managed by UI layer). */
-    var focusedSegmentId: String? = null
+    public var focusedSegmentId: String? = null
         private set
 
     /**
@@ -31,42 +33,42 @@ class SegmentComposerController {
      * Used for deferred focus (e.g., after code block exit when the target
      * normal segment might be hidden and needs a rebuild to become visible).
      */
-    var pendingFocusSegmentId: String? = null
+    public var pendingFocusSegmentId: String? = null
         private set
 
     init {
         _segments.add(ComposerSegment.Normal(id = genId()))
     }
 
-    fun setListener(listener: Listener?) { this.listener = listener }
+    public fun setListener(listener: Listener?) { this.listener = listener }
     private fun genId(): String = "seg${nextId++}"
     private fun notifyChanged() { listener?.onSegmentsChanged() }
 
     // ==================== Focus ====================
 
-    fun setFocusedSegment(segmentId: String) { focusedSegmentId = segmentId }
+    public fun setFocusedSegment(segmentId: String) { focusedSegmentId = segmentId }
 
     /**
      * Requests focus on a segment by setting both [focusedSegmentId] and [pendingFocusSegmentId].
      * The UI layer consumes [pendingFocusSegmentId] to actually move keyboard focus.
      */
-    fun focusSegment(segmentId: String) {
+    public fun focusSegment(segmentId: String) {
         focusedSegmentId = segmentId
         pendingFocusSegmentId = segmentId
         notifyChanged()
     }
 
     /** Clears the pending focus after the UI has consumed it. */
-    fun consumePendingFocus(): String? {
+    public fun consumePendingFocus(): String? {
         val id = pendingFocusSegmentId
         pendingFocusSegmentId = null
         return id
     }
 
-    val focusedSegment: ComposerSegment?
+    public val focusedSegment: ComposerSegment?
         get() = _segments.find { it.id == focusedSegmentId }
 
-    val isTypingInCode: Boolean
+    public val isTypingInCode: Boolean
         get() = focusedSegment is ComposerSegment.Code
 
     // ==================== Code Block Operations ====================
@@ -77,7 +79,7 @@ class SegmentComposerController {
      * Should be called after text changes in a Normal segment.
      * Returns true if a code block was inserted.
      */
-    fun detectAndInsertCodeBlockShortcut(): Boolean {
+    public fun detectAndInsertCodeBlockShortcut(): Boolean {
         val focused = focusedSegment as? ComposerSegment.Normal ?: return false
         val controller = focused.controller
         if (controller.detectTripleBacktickShortcut()) {
@@ -97,7 +99,7 @@ class SegmentComposerController {
      * Must be called BEFORE detectAndInsertCodeBlockShortcut() so that pasting
      * ```code``` is handled as a full code block, not as a ``` shortcut.
      */
-    fun detectAndConvertPastedCodeBlocks(): Boolean {
+    public fun detectAndConvertPastedCodeBlocks(): Boolean {
         val focused = focusedSegment as? ComposerSegment.Normal ?: return false
         val idx = _segments.indexOf(focused)
         if (idx < 0) return false
@@ -160,7 +162,7 @@ class SegmentComposerController {
         return true
     }
 
-    fun toggleCodeBlock() {
+    public fun toggleCodeBlock() {
         when (val focused = focusedSegment) {
             is ComposerSegment.Code -> removeCodeSegment(focused)
             is ComposerSegment.Normal -> insertCodeBlock()
@@ -173,18 +175,16 @@ class SegmentComposerController {
      * Strips line format prefixes ("> ", "- ", "N. ") before inserting.
      * The Normal segment is cleared completely — no text remains in it.
      */
-    fun convertAllToCodeBlock() {
+    public fun convertAllToCodeBlock() {
         val focusedIdx = _segments.indexOfFirst { it.id == focusedSegmentId }
         val idx = if (focusedIdx >= 0) focusedIdx else _segments.size - 1
         val current = _segments.getOrNull(idx) as? ComposerSegment.Normal ?: return
 
         val fullText = current.controller.state.text
-        android.util.Log.d("SegmentDebug", "convertAllToCodeBlock: focusedIdx=$focusedIdx, idx=$idx, segmentCount=${_segments.size}")
-        android.util.Log.d("SegmentDebug", "convertAllToCodeBlock: fullText='${fullText.take(100)}', length=${fullText.length}")
-        android.util.Log.d("SegmentDebug", "convertAllToCodeBlock: segments=${_segments.map { when(it) { is ComposerSegment.Normal -> "Normal(${it.id}, text='${it.controller.state.text.take(30)}')" ; is ComposerSegment.Code -> "Code(${it.id}, text='${it.text.take(30)}')" } }}")
+        CometChatLogger.d("SegmentDebug", "convertAllToCodeBlock: focusedIdx=$focusedIdx, idx=$idx, segmentCount=${_segments.size}")
         
         if (fullText.isEmpty()) {
-            android.util.Log.d("SegmentDebug", "convertAllToCodeBlock: fullText is empty, falling back to insertCodeBlock")
+            CometChatLogger.d("SegmentDebug", "convertAllToCodeBlock: fullText is empty, falling back to insertCodeBlock")
             insertCodeBlock()
             return
         }
@@ -221,7 +221,7 @@ class SegmentComposerController {
      * Strips line format prefixes from the extracted paragraph.
      * Remaining text stays in the Normal segment(s).
      */
-    fun convertCursorParagraphToCodeBlock() {
+    public fun convertCursorParagraphToCodeBlock() {
         val focused = focusedSegment as? ComposerSegment.Normal ?: return
         val idx = _segments.indexOf(focused)
         if (idx < 0) return
@@ -229,7 +229,7 @@ class SegmentComposerController {
         val fullText = focused.controller.state.text
         val cursorPos = focused.controller.state.selectionStart
 
-        android.util.Log.d("SegmentDebug", "convertCursorParagraph: cursorPos=$cursorPos, textLen=${fullText.length}")
+        CometChatLogger.d("SegmentDebug", "convertCursorParagraph: cursorPos=$cursorPos, textLen=${fullText.length}")
 
         // Check if text has any line format prefixes (blockquote/list)
         val hasLineFormats = fullText.lines().any { line ->
@@ -239,7 +239,7 @@ class SegmentComposerController {
 
         // If no line formats or single paragraph, convert ALL text to code block
         if (!hasLineFormats || !fullText.contains('\n')) {
-            android.util.Log.d("SegmentDebug", "convertCursorParagraph: no line formats or single para, converting all")
+            CometChatLogger.d("SegmentDebug", "convertCursorParagraph: no line formats or single para, converting all")
             convertAllToCodeBlock()
             return
         }
@@ -272,7 +272,6 @@ class SegmentComposerController {
 
         val strippedParagraph = stripLineFormatPrefixes(paragraph)
 
-        android.util.Log.d("SegmentDebug", "convertCursorParagraph: before='${textBefore.take(30)}', para='${strippedParagraph.take(30)}', after='${textAfter.take(30)}'")
 
         val newSegments = mutableListOf<ComposerSegment>()
         for (i in 0 until idx) newSegments.add(_segments[i])
@@ -313,13 +312,13 @@ class SegmentComposerController {
      * @param cursorPosition The cursor position within the code block text
      * @param applyFormat Optional line format to apply to the extracted paragraph (null = plain text)
      */
-    fun extractParagraphFromCodeBlock(cursorPosition: Int, applyFormat: RichTextFormat? = null) {
+    public fun extractParagraphFromCodeBlock(cursorPosition: Int, applyFormat: RichTextFormat? = null) {
         val focused = focusedSegment as? ComposerSegment.Code ?: return
         val idx = _segments.indexOf(focused)
         if (idx < 0) return
 
         val fullText = focused.text
-        android.util.Log.d("SegmentDebug", "extractParagraph: cursorPos=$cursorPosition, textLen=${fullText.length}, applyFormat=$applyFormat")
+        CometChatLogger.d("SegmentDebug", "extractParagraph: cursorPos=$cursorPosition, textLen=${fullText.length}, applyFormat=$applyFormat")
 
         // Find the paragraph boundaries at cursor position
         val safeCursor = cursorPosition.coerceIn(0, fullText.length)
@@ -333,7 +332,6 @@ class SegmentComposerController {
         val paragraph = fullText.substring(paraStart, paraEnd)
         val textAfter = if (paraEnd < fullText.length) fullText.substring(paraEnd + 1) else ""
 
-        android.util.Log.d("SegmentDebug", "extractParagraph: before='${textBefore.take(30)}', para='${paragraph.take(30)}', after='${textAfter.take(30)}'")
 
         // Apply line format prefix if requested
         val formattedParagraph = when (applyFormat) {
@@ -372,7 +370,7 @@ class SegmentComposerController {
         // Add remaining segments after the original code block
         for (i in (idx + 1) until _segments.size) newSegments.add(_segments[i])
 
-        android.util.Log.d("SegmentDebug", "extractParagraph: result=${newSegments.size} segments")
+        CometChatLogger.d("SegmentDebug", "extractParagraph: result=${newSegments.size} segments")
 
         _segments.clear()
         _segments.addAll(newSegments)
@@ -393,7 +391,7 @@ class SegmentComposerController {
      *
      * Invariant: there is ALWAYS a normal segment before and after every code segment.
      */
-    fun insertCodeBlock() {
+    public fun insertCodeBlock() {
         val focusedIdx = _segments.indexOfFirst { it.id == focusedSegmentId }
         val idx = if (focusedIdx >= 0) focusedIdx else _segments.size - 1
         val current = _segments.getOrNull(idx)
@@ -477,7 +475,7 @@ class SegmentComposerController {
      * Also restores any consumed mention spans that were stored when the
      * code block was originally created.
      */
-    fun removeCodeSegment(segment: ComposerSegment.Code) {
+    public fun removeCodeSegment(segment: ComposerSegment.Code) {
         val idx = _segments.indexOf(segment)
         if (idx < 0) return
 
@@ -551,14 +549,14 @@ class SegmentComposerController {
     }
 
     /** Backspace on empty code block → remove it. Returns true if handled. */
-    fun handleBackspaceOnEmptyCodeBlock(segment: ComposerSegment.Code): Boolean {
+    public fun handleBackspaceOnEmptyCodeBlock(segment: ComposerSegment.Code): Boolean {
         if (segment.text.isNotEmpty()) return false
         removeCodeSegment(segment)
         return true
     }
 
     /** Backspace on empty normal segment → focus previous code segment. Returns true if handled. */
-    fun handleBackspaceOnEmptyNormalSegment(segment: ComposerSegment.Normal): Boolean {
+    public fun handleBackspaceOnEmptyNormalSegment(segment: ComposerSegment.Normal): Boolean {
         if (segment.controller.state.text.isNotEmpty()) return false
         val idx = _segments.indexOf(segment)
         if (idx < 0) return false
@@ -588,7 +586,7 @@ class SegmentComposerController {
      * at the end and exits the code block.
      * Returns true if exit was triggered.
      */
-    fun handleCodeTextChanged(segment: ComposerSegment.Code, newText: String): Boolean {
+    public fun handleCodeTextChanged(segment: ComposerSegment.Code, newText: String): Boolean {
         segment.text = newText
         if (!newText.endsWith("\n\n")) return false
 
@@ -614,7 +612,7 @@ class SegmentComposerController {
     // ==================== Formatting ====================
 
     /** Active formats. Code segments return {CODE_BLOCK} so toolbar highlights it. */
-    val activeFormats: Set<RichTextFormat>
+    public val activeFormats: Set<RichTextFormat>
         get() = when (val focused = focusedSegment) {
             is ComposerSegment.Normal -> focused.controller.state.activeFormats
             is ComposerSegment.Code -> setOf(RichTextFormat.CODE_BLOCK)
@@ -622,7 +620,7 @@ class SegmentComposerController {
         }
 
     /** Disabled formats. Code → inline formats disabled, line formats stay enabled. */
-    val toolbarDisabledFormats: Set<RichTextFormat>
+    public val toolbarDisabledFormats: Set<RichTextFormat>
         get() = if (isTypingInCode) {
             // Inside code block: disable inline formats but keep CODE_BLOCK (to deselect),
             // and keep line formats (BULLET_LIST, ORDERED_LIST, BLOCKQUOTE) enabled
@@ -645,7 +643,7 @@ class SegmentComposerController {
     // ==================== Content Queries ====================
 
     /** True if any segment has content. Code block existence = content (per spec). */
-    val hasContent: Boolean
+    public val hasContent: Boolean
         get() = _segments.any { segment ->
             when (segment) {
                 is ComposerSegment.Normal -> segment.controller.state.text.isNotBlank()
@@ -653,13 +651,13 @@ class SegmentComposerController {
             }
         }
 
-    val hasCodeBlocks: Boolean
+    public val hasCodeBlocks: Boolean
         get() = _segments.any { it is ComposerSegment.Code }
 
     // ==================== Serialization ====================
 
     /** Serializes all segments to markdown. Empty segments skipped. */
-    fun toMarkdown(): String {
+    public fun toMarkdown(): String {
         val parts = mutableListOf<String>()
         for (segment in _segments) {
             when (segment) {
@@ -678,7 +676,7 @@ class SegmentComposerController {
         return parts.joinToString("\n")
     }
 
-    fun toPlainText(): String {
+    public fun toPlainText(): String {
         return _segments.mapNotNull { segment ->
             when (segment) {
                 is ComposerSegment.Normal -> segment.controller.state.text.takeIf { it.isNotEmpty() }
@@ -690,7 +688,7 @@ class SegmentComposerController {
     // ==================== Lifecycle ====================
 
     /** Resets to a single empty normal segment. ID counter NOT reset (per spec). */
-    fun clear() {
+    public fun clear() {
         _segments.clear()
         val newNormal = ComposerSegment.Normal(id = genId())
         _segments.add(newNormal)

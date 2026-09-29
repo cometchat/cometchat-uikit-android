@@ -11,12 +11,12 @@ import androidx.annotation.RawRes
  *
  * @param context The application context.
  */
-class OutgoingAudioManager(private val context: Context) {
+public class OutgoingAudioManager(private val context: Context) {
     
     /**
      * Type of outgoing audio.
      */
-    enum class Type {
+    public enum class Type {
         /**
          * Audio for in-communication mode (during call).
          */
@@ -36,7 +36,7 @@ class OutgoingAudioManager(private val context: Context) {
      * @param type The type of outgoing audio.
      * @param rawId The raw resource ID of the audio file to play.
      */
-    fun start(type: Type, @RawRes rawId: Int) {
+    public fun start(type: Type, @RawRes rawId: Int) {
         stop()
         
         try {
@@ -63,7 +63,7 @@ class OutgoingAudioManager(private val context: Context) {
     /**
      * Stops the outgoing audio playback.
      */
-    fun stop() {
+    public fun stop() {
         try {
             mediaPlayer?.stop()
             mediaPlayer?.release()

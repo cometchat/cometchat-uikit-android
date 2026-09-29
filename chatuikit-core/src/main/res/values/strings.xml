@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">chatuikit-core</string>
+    <string name="app_name" translatable="false">chatuikit-core</string>
 
     <!-- Message option strings -->
     <string name="cometchat_reply_uppercase" translatable="true">Reply In Thread</string>

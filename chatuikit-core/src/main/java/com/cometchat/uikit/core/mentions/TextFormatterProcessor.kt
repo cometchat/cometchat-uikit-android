@@ -13,7 +13,7 @@ import com.cometchat.chat.models.BaseMessage
  * 2. Replace spans with their underlying text representation
  * 3. Prepare the final message text for the SDK
  */
-object TextFormatterProcessor {
+public object TextFormatterProcessor {
 
     /**
      * Result of text processing.
@@ -21,7 +21,7 @@ object TextFormatterProcessor {
      * @property processedText The text after processing all formatters
      * @property originalText The original text before processing
      */
-    data class ProcessingResult(
+    public data class ProcessingResult(
         val processedText: String,
         val originalText: String
     )
@@ -36,7 +36,7 @@ object TextFormatterProcessor {
      * @param spanToUnderlyingMap Map of span positions to underlying text
      * @return ProcessingResult with the processed text
      */
-    fun processSpans(
+    public fun processSpans(
         text: String,
         spanToUnderlyingMap: Map<IntRange, String>
     ): ProcessingResult {
@@ -67,7 +67,7 @@ object TextFormatterProcessor {
      * @param promptToUnderlyingMap Map of prompt text to underlying text
      * @return ProcessingResult with the processed text
      */
-    fun processPrompts(
+    public fun processPrompts(
         text: String,
         promptToUnderlyingMap: Map<String, String>
     ): ProcessingResult {
@@ -90,20 +90,20 @@ object TextFormatterProcessor {
 /**
  * Interface for text formatter processing callbacks.
  */
-interface TextFormatterProcessorCallback {
+public interface TextFormatterProcessorCallback {
     /**
      * Called before processing formatters.
      * 
      * @param text The original text
      */
-    fun onBeforeProcessing(text: String)
+    public fun onBeforeProcessing(text: String)
 
     /**
      * Called after processing formatters.
      * 
      * @param result The processing result
      */
-    fun onAfterProcessing(result: TextFormatterProcessor.ProcessingResult)
+    public fun onAfterProcessing(result: TextFormatterProcessor.ProcessingResult)
 }
 
 /**
@@ -112,13 +112,13 @@ interface TextFormatterProcessorCallback {
  * This class coordinates the processing of multiple text formatters
  * and provides hooks for pre and post processing.
  */
-class TextFormatterProcessingManager {
+public class TextFormatterProcessingManager {
     private var callback: TextFormatterProcessorCallback? = null
 
     /**
      * Sets the processing callback.
      */
-    fun setCallback(callback: TextFormatterProcessorCallback?) {
+    public fun setCallback(callback: TextFormatterProcessorCallback?) {
         this.callback = callback
     }
 
@@ -129,7 +129,7 @@ class TextFormatterProcessingManager {
      * @param promptToUnderlyingMap Map of prompt text to underlying text
      * @return The processed text
      */
-    fun process(
+    public fun process(
         text: String,
         promptToUnderlyingMap: Map<String, String>
     ): String {
@@ -149,7 +149,7 @@ class TextFormatterProcessingManager {
      * @param spanToUnderlyingMap Map of span positions to underlying text
      * @return The processed text
      */
-    fun processWithSpans(
+    public fun processWithSpans(
         text: String,
         spanToUnderlyingMap: Map<IntRange, String>
     ): String {

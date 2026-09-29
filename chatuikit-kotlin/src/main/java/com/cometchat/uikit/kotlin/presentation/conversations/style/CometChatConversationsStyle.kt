@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatConversations component.
  */
-data class CometChatConversationsStyle(
+public data class CometChatConversationsStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -101,14 +101,14 @@ data class CometChatConversationsStyle(
     // Item style
     val itemStyle: CometChatConversationListItemStyle = CometChatConversationListItemStyle()
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatConversationsStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatConversationsStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatConversationsStyle {
+        public fun default(context: Context): CometChatConversationsStyle {
             return extractFromThemeStyle(context, R.attr.cometchatConversationsStyle)
         }
 
@@ -157,7 +157,7 @@ data class CometChatConversationsStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatConversationsStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConversationsStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConversationsStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

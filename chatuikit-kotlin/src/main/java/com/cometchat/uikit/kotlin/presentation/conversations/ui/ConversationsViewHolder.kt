@@ -23,17 +23,17 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  * - bindView() is called during bind operations with conversation data
  * - Custom views replace default views when listeners are set
  */
-class ConversationsViewHolder(
-    val conversationListItem: CometChatConversationListItem
+public class ConversationsViewHolder(
+    public val conversationListItem: CometChatConversationListItem
 ) : RecyclerView.ViewHolder(conversationListItem) {
 
-    companion object {
+    public companion object {
         private val TAG = ConversationsViewHolder::class.java.simpleName
 
         /**
          * Creates a new ConversationsViewHolder with CometChatConversationListItem as the row view.
          */
-        fun create(parent: ViewGroup): ConversationsViewHolder {
+        public fun create(parent: ViewGroup): ConversationsViewHolder {
             val context = parent.context
             val conversationListItem = CometChatConversationListItem(context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -79,7 +79,7 @@ class ConversationsViewHolder(
      * 
      * This ensures proper restoration when custom views are removed.
      */
-    fun createCustomViews(
+    public fun createCustomViews(
         itemViewListener: ConversationsViewHolderListener?,
         leadingViewListener: ConversationsViewHolderListener?,
         titleViewListener: ConversationsViewHolderListener?,
@@ -192,7 +192,7 @@ class ConversationsViewHolder(
      * 1. Sets the conversation on CometChatConversationListItem (renders default data)
      * 2. Calls bindView() on all non-null listeners (allows custom views to update)
      */
-    fun bind(
+    public fun bind(
         conversation: Conversation,
         conversationList: List<Conversation>,
         position: Int,
@@ -284,7 +284,7 @@ class ConversationsViewHolder(
      * @deprecated Use bind() method which applies style automatically
      */
     @Deprecated("Use bind() method which applies style automatically")
-    fun applyStyles(style: CometChatConversationListItemStyle) {
+    public fun applyStyles(style: CometChatConversationListItemStyle) {
         conversationListItem.setStyle(style)
     }
 }

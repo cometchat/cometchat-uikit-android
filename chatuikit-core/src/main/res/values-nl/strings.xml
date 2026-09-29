@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Kopiëren</string>
+    <string name="cometchat_delete" translatable="true">Verwijderen</string>
+    <string name="cometchat_edit" translatable="true">Bewerken</string>
+    <string name="cometchat_info" translatable="true">"Info"</string>
+    <string name="cometchat_mark_unread" translatable="true">Markeren als ongelezen</string>
+    <string name="cometchat_message_privately" translatable="true">Privébericht sturen</string>
+    <string name="cometchat_pin" translatable="true">Bericht vastzetten</string>
+    <string name="cometchat_reply" translatable="true">Beantwoorden</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Beantwoorden in thread</string>
+    <string name="cometchat_report" translatable="true">Rapporteren</string>
+    <string name="cometchat_save" translatable="true">Bericht opslaan</string>
+    <string name="cometchat_share" translatable="true">Delen</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Abonneren op thread</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Abonnement op thread opzeggen</string>
+    <string name="cometchat_translate" translatable="true">Vertalen</string>
+    <string name="cometchat_unpin" translatable="true">Bericht losmaken</string>
+    <string name="cometchat_unsave" translatable="true">Bericht uit opgeslagen verwijderen</string>
+</resources>

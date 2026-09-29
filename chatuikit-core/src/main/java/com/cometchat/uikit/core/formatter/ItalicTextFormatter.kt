@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  * Applies italic formatting to selected text by wrapping it with underscores.
  * Renders preview with StyleSpan(Typeface.ITALIC).
  */
-class ItalicTextFormatter : RichTextFormatter {
+public class ItalicTextFormatter : RichTextFormatter {
     
     override val formatType: RichTextFormat = RichTextFormat.ITALIC
     override val markdownPrefix: String = "_"

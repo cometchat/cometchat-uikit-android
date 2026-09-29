@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
  * @param searchUsersUseCase Use case for searching users
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatUsersViewModel(
+open public class CometChatUsersViewModel(
     private val fetchUsersUseCase: FetchUsersUseCase,
     private val searchUsersUseCase: SearchUsersUseCase,
     private val enableListeners: Boolean = true
@@ -41,11 +41,11 @@ open class CometChatUsersViewModel(
     
     // UI State
     private val _uiState = MutableStateFlow<UsersUIState>(UsersUIState.Loading)
-    val uiState: StateFlow<UsersUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<UsersUIState> = _uiState.asStateFlow()
     
     // Users list
     private val _users = MutableStateFlow<List<User>>(emptyList())
-    val users: StateFlow<List<User>> = _users.asStateFlow()
+    public val users: StateFlow<List<User>> = _users.asStateFlow()
     
     // Fetching state - prevents concurrent fetches
     private var isFetching = false
@@ -61,11 +61,11 @@ open class CometChatUsersViewModel(
     
     // Selection state
     private val _selectedUsers = MutableStateFlow<Set<User>>(emptySet())
-    val selectedUsers: StateFlow<Set<User>> = _selectedUsers.asStateFlow()
+    public val selectedUsers: StateFlow<Set<User>> = _selectedUsers.asStateFlow()
     
     // Scroll to top event - emits when list should scroll to top
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
-    val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+    public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
     
     // Configuration
     private var usersRequest: UsersRequest? = null
@@ -102,7 +102,7 @@ open class CometChatUsersViewModel(
      * Uses client's request builder if set, otherwise creates a default one.
      * Prevents concurrent fetches using isFetching flag.
      */
-    fun fetchUsers() {
+    public fun fetchUsers() {
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
         
@@ -154,7 +154,7 @@ open class CometChatUsersViewModel(
      * Refreshes the user list from the beginning.
      * Clears existing data and fetches fresh.
      */
-    fun refreshList() {
+    public fun refreshList() {
         // Reset pagination state for fresh fetch
         hasMoreData = true
         isFetching = false
@@ -203,7 +203,7 @@ open class CometChatUsersViewModel(
      *
      * @param keyword The search keyword (null or empty to reset)
      */
-    fun searchUsers(keyword: String?) {
+    public fun searchUsers(keyword: String?) {
         // Cancel any pending search job (debouncing)
         searchJob?.cancel()
         
@@ -265,7 +265,7 @@ open class CometChatUsersViewModel(
     /**
      * Selects or deselects a user based on selection mode.
      */
-    fun selectUser(user: User, mode: UIKitConstants.SelectionMode) {
+    public fun selectUser(user: User, mode: UIKitConstants.SelectionMode) {
         when (mode) {
             UIKitConstants.SelectionMode.SINGLE -> {
                 _selectedUsers.value = setOf(user)
@@ -288,19 +288,19 @@ open class CometChatUsersViewModel(
     /**
      * Clears all selected users.
      */
-    fun clearSelection() {
+    public fun clearSelection() {
         _selectedUsers.value = emptySet()
     }
     
     /**
      * Returns the list of currently selected users.
      */
-    fun getSelectedUsers(): List<User> = _selectedUsers.value.toList()
+    public fun getSelectedUsers(): List<User> = _selectedUsers.value.toList()
     
     /**
      * Checks if a user is selected.
      */
-    fun isSelected(user: User): Boolean = 
+    public fun isSelected(user: User): Boolean = 
         _selectedUsers.value.any { it.uid == user.uid }
     
     /**
@@ -308,7 +308,7 @@ open class CometChatUsersViewModel(
      *
      * @param builder The custom request builder provided by the client
      */
-    fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) {
+    public fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) {
         usersRequestBuilder = builder
         usersRequest = builder.build()
     }
@@ -318,7 +318,7 @@ open class CometChatUsersViewModel(
      *
      * @param builder The custom request builder for search
      */
-    fun setSearchRequestBuilder(builder: UsersRequest.UsersRequestBuilder?) {
+    public fun setSearchRequestBuilder(builder: UsersRequest.UsersRequestBuilder?) {
         searchUsersRequestBuilder = builder
     }
     
@@ -344,7 +344,7 @@ open class CometChatUsersViewModel(
     /**
      * Moves a user to the top of the list.
      */
-    fun moveUserToTop(user: User) {
+    public fun moveUserToTop(user: User) {
         val currentList = _users.value.toMutableList()
         val index = currentList.indexOfFirst { it.uid == user.uid }
         if (index >= 0) {
@@ -361,7 +361,7 @@ open class CometChatUsersViewModel(
     /**
      * Updates a user in the list.
      */
-    fun updateUser(user: User) {
+    public fun updateUser(user: User) {
         val currentList = _users.value.toMutableList()
         val index = currentList.indexOfFirst { it.uid == user.uid }
         if (index >= 0) {
@@ -373,7 +373,7 @@ open class CometChatUsersViewModel(
     /**
      * Removes a user from the list.
      */
-    fun removeUser(user: User) {
+    public fun removeUser(user: User) {
         val currentList = _users.value.toMutableList()
         val index = currentList.indexOfFirst { it.uid == user.uid }
         if (index >= 0) {
@@ -389,7 +389,7 @@ open class CometChatUsersViewModel(
     /**
      * Adds a user to the top of the list.
      */
-    fun addUserToTop(user: User) {
+    public fun addUserToTop(user: User) {
         val currentList = _users.value.toMutableList()
         if (!currentList.any { it.uid == user.uid }) {
             currentList.add(0, user)
@@ -403,9 +403,9 @@ open class CometChatUsersViewModel(
     
     // ==================== ListOperations Implementation ====================
     
-    override fun addItem(item: User) = listDelegate.addItem(item)
+    override fun addItem(item: User): Unit = listDelegate.addItem(item)
     
-    override fun addItems(items: List<User>) = listDelegate.addItems(items)
+    override fun addItems(items: List<User>): Unit = listDelegate.addItems(items)
     
     override fun removeItem(item: User): Boolean = listDelegate.removeItem(item)
     
@@ -414,7 +414,7 @@ open class CometChatUsersViewModel(
     override fun updateItem(item: User, predicate: (User) -> Boolean): Boolean = 
         listDelegate.updateItem(item, predicate)
     
-    override fun clearItems() = listDelegate.clearItems()
+    override fun clearItems(): Unit = listDelegate.clearItems()
     
     override fun getItems(): List<User> = listDelegate.getItems()
     
@@ -422,9 +422,9 @@ open class CometChatUsersViewModel(
     
     override fun getItemCount(): Int = listDelegate.getItemCount()
     
-    override fun moveItemToTop(item: User) = listDelegate.moveItemToTop(item)
+    override fun moveItemToTop(item: User): Unit = listDelegate.moveItemToTop(item)
     
-    override fun batch(operations: ListOperationsBatchScope<User>.() -> Unit) = 
+    override fun batch(operations: ListOperationsBatchScope<User>.() -> Unit): Unit = 
         listDelegate.batch(operations)
     
     // ==================== Listeners ====================

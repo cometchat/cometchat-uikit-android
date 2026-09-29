@@ -12,7 +12,7 @@ package com.cometchat.uikit.core.mentions
  * - Tracks cursor position for mention insertion
  * - Handles multiple mentions in the same message
  */
-class MentionDetector(
+public class MentionDetector(
     private val trackingCharacter: Char = '@'
 ) {
     /**
@@ -23,14 +23,14 @@ class MentionDetector(
      * @property triggerIndex The index of the tracking character in the text
      * @property cursorPosition The current cursor position
      */
-    data class MentionDetectionResult(
+    public data class MentionDetectionResult(
         val isActive: Boolean,
         val query: String,
         val triggerIndex: Int,
         val cursorPosition: Int
     ) {
-        companion object {
-            val INACTIVE = MentionDetectionResult(
+        public companion object {
+            public val INACTIVE: MentionDetectionResult = MentionDetectionResult(
                 isActive = false,
                 query = "",
                 triggerIndex = -1,
@@ -56,7 +56,7 @@ class MentionDetector(
      * @param cursorPosition The current cursor position
      * @return MentionDetectionResult with detection status and query
      */
-    fun detectMention(text: String, cursorPosition: Int): MentionDetectionResult {
+    public fun detectMention(text: String, cursorPosition: Int): MentionDetectionResult {
         if (text.isEmpty() || cursorPosition <= 0 || cursorPosition > text.length) {
             return MentionDetectionResult.INACTIVE
         }
@@ -116,12 +116,12 @@ class MentionDetector(
     /**
      * Checks if the given character is the tracking character.
      */
-    fun isTrackingCharacter(char: Char): Boolean = char == trackingCharacter
+    public fun isTrackingCharacter(char: Char): Boolean = char == trackingCharacter
 
     /**
      * Gets the tracking character.
      */
-    fun getTrackingCharacter(): Char = trackingCharacter
+    public fun getTrackingCharacter(): Char = trackingCharacter
 
     /**
      * Calculates the text range to replace when inserting a mention.
@@ -130,7 +130,7 @@ class MentionDetector(
      * @param detectionResult The mention detection result
      * @return Pair of (startIndex, endIndex) for replacement
      */
-    fun getReplacementRange(text: String, detectionResult: MentionDetectionResult): Pair<Int, Int> {
+    public fun getReplacementRange(text: String, detectionResult: MentionDetectionResult): Pair<Int, Int> {
         if (!detectionResult.isActive) {
             return Pair(-1, -1)
         }
@@ -144,7 +144,7 @@ class MentionDetector(
  * This class maintains the state of mention detection and provides
  * methods to update and query the state.
  */
-class MentionDetectionState(
+public class MentionDetectionState(
     private val detector: MentionDetector = MentionDetector()
 ) {
     private var currentResult: MentionDetector.MentionDetectionResult = 
@@ -157,7 +157,7 @@ class MentionDetectionState(
      * @param cursorPosition The current cursor position
      * @return The updated detection result
      */
-    fun update(text: String, cursorPosition: Int): MentionDetector.MentionDetectionResult {
+    public fun update(text: String, cursorPosition: Int): MentionDetector.MentionDetectionResult {
         currentResult = detector.detectMention(text, cursorPosition)
         return currentResult
     }
@@ -165,39 +165,39 @@ class MentionDetectionState(
     /**
      * Gets the current detection result.
      */
-    fun getCurrentResult(): MentionDetector.MentionDetectionResult = currentResult
+    public fun getCurrentResult(): MentionDetector.MentionDetectionResult = currentResult
 
     /**
      * Checks if a mention is currently active.
      */
-    fun isActive(): Boolean = currentResult.isActive
+    public fun isActive(): Boolean = currentResult.isActive
 
     /**
      * Gets the current search query.
      */
-    fun getQuery(): String = currentResult.query
+    public fun getQuery(): String = currentResult.query
 
     /**
      * Gets the trigger index.
      */
-    fun getTriggerIndex(): Int = currentResult.triggerIndex
+    public fun getTriggerIndex(): Int = currentResult.triggerIndex
 
     /**
      * Resets the detection state.
      */
-    fun reset() {
+    public fun reset() {
         currentResult = MentionDetector.MentionDetectionResult.INACTIVE
     }
 
     /**
      * Gets the replacement range for inserting a mention.
      */
-    fun getReplacementRange(text: String): Pair<Int, Int> {
+    public fun getReplacementRange(text: String): Pair<Int, Int> {
         return detector.getReplacementRange(text, currentResult)
     }
 
     /**
      * Gets the tracking character.
      */
-    fun getTrackingCharacter(): Char = detector.getTrackingCharacter()
+    public fun getTrackingCharacter(): Char = detector.getTrackingCharacter()
 }

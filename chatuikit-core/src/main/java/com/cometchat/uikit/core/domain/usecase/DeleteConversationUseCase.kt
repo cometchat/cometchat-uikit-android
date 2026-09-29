@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.ConversationListRepository
  * 
  * @param repository The repository to perform deletion
  */
-open class DeleteConversationUseCase(
+open public class DeleteConversationUseCase(
     private val repository: ConversationListRepository
 ) {
     /**
@@ -22,7 +22,7 @@ open class DeleteConversationUseCase(
      * @param conversation The conversation to delete
      * @return Result indicating success or failure
      */
-    open suspend operator fun invoke(conversation: Conversation): Result<Unit> {
+    open suspend operator public fun invoke(conversation: Conversation): Result<Unit> {
         val conversationWith = when (conversation.conversationType) {
             CometChatConstants.CONVERSATION_TYPE_USER -> {
                 (conversation.conversationWith as? User)?.uid

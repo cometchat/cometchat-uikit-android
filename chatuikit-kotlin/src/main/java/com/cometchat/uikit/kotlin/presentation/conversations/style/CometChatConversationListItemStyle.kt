@@ -19,7 +19,7 @@ import com.cometchat.uikit.kotlin.shared.formatters.style.CometChatMentionStyle
 /**
  * Style configuration for CometChatConversationListItem component.
  */
-data class CometChatConversationListItemStyle(
+public data class CometChatConversationListItemStyle(
     // Background
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val selectedBackgroundColor: Int = 0,
@@ -50,11 +50,11 @@ data class CometChatConversationListItemStyle(
     // Mention style for @mentions in conversation subtitles
     val mentionStyle: CometChatMentionStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatConversationsStyle.
          */
-        fun default(context: Context): CometChatConversationListItemStyle {
+        public fun default(context: Context): CometChatConversationListItemStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -77,7 +77,7 @@ data class CometChatConversationListItemStyle(
             }
         }
 
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConversationListItemStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConversationListItemStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

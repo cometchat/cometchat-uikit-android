@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Kopyala</string>
+    <string name="cometchat_delete" translatable="true">Sil</string>
+    <string name="cometchat_edit" translatable="true">Düzenle</string>
+    <string name="cometchat_info" translatable="true">"Bilgi"</string>
+    <string name="cometchat_mark_unread" translatable="true">Okunmadı olarak işaretle</string>
+    <string name="cometchat_message_privately" translatable="true">Özel mesaj gönder</string>
+    <string name="cometchat_pin" translatable="true">Mesajı Sabitle</string>
+    <string name="cometchat_reply" translatable="true">Yanıtla</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Konu içinde yanıtla</string>
+    <string name="cometchat_report" translatable="true">Bildir</string>
+    <string name="cometchat_save" translatable="true">Mesajı Kaydet</string>
+    <string name="cometchat_share" translatable="true">Paylaş</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Konuya abone ol</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Konu aboneliğinden çık</string>
+    <string name="cometchat_translate" translatable="true">Çevir</string>
+    <string name="cometchat_unpin" translatable="true">Mesajın Sabitlemesini Kaldır</string>
+    <string name="cometchat_unsave" translatable="true">Mesajın Kaydını Kaldır</string>
+</resources>

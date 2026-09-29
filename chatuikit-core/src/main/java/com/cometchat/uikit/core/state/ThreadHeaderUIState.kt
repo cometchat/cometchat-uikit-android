@@ -12,13 +12,13 @@ import com.cometchat.chat.models.BaseMessage
  *
  * @see com.cometchat.uikit.core.viewmodel.ThreadHeaderViewModel
  */
-sealed class ThreadHeaderUIState {
+sealed public class ThreadHeaderUIState {
 
     /**
      * Loading state - displayed while initializing the thread header.
      * This is the initial state before the parent message is set.
      */
-    object Loading : ThreadHeaderUIState()
+    public object Loading : ThreadHeaderUIState()
 
     /**
      * Content state - displayed when the parent message is available.
@@ -27,7 +27,7 @@ sealed class ThreadHeaderUIState {
      * @param parentMessage The BaseMessage that started the thread conversation
      * @param replyCount The number of replies in the thread
      */
-    data class Content(
+    public data class Content(
         val parentMessage: BaseMessage,
         val replyCount: Int
     ) : ThreadHeaderUIState()
@@ -39,5 +39,5 @@ sealed class ThreadHeaderUIState {
      *
      * @param exception The CometChatException that caused the error
      */
-    data class Error(val exception: CometChatException) : ThreadHeaderUIState()
+    public data class Error(val exception: CometChatException) : ThreadHeaderUIState()
 }

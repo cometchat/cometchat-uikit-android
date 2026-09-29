@@ -11,14 +11,14 @@ import com.cometchat.chat.models.Reaction
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface ReactionListRepository {
+public interface ReactionListRepository {
 
     /**
      * Fetches reactions based on the provided request configuration.
      * @param request The configured ReactionsRequest with pagination and filters
      * @return Result containing list of Reaction objects or error
      */
-    suspend fun fetchReactions(request: ReactionsRequest): Result<List<Reaction>>
+    suspend public fun fetchReactions(request: ReactionsRequest): Result<List<Reaction>>
 
     /**
      * Removes a reaction from a message.
@@ -26,5 +26,5 @@ interface ReactionListRepository {
      * @param emoji The emoji reaction to remove
      * @return Result containing the updated BaseMessage or error
      */
-    suspend fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
+    suspend public fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
 }

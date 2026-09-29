@@ -8,28 +8,28 @@ import com.cometchat.chat.models.NotificationFeedItem
  * Sealed class representing UI states for the notification feed screen.
  * Used by the ViewModel to communicate current state to the UI.
  */
-sealed class NotificationFeedUIState {
+sealed public class NotificationFeedUIState {
     /**
      * Loading state - displayed while fetching initial feed items.
      */
-    object Loading : NotificationFeedUIState()
+    public object Loading : NotificationFeedUIState()
 
     /**
      * Empty state - displayed when no feed items exist (after successful fetch).
      */
-    object Empty : NotificationFeedUIState()
+    public object Empty : NotificationFeedUIState()
 
     /**
      * Error state - displayed when fetching fails.
      * @param exception The exception that caused the error
      */
-    data class Error(val exception: CometChatException) : NotificationFeedUIState()
+    public data class Error(val exception: CometChatException) : NotificationFeedUIState()
 
     /**
      * Content state - displayed when feed items are available.
      * @param groupedItems The feed items grouped by timestamp
      */
-    data class Content(val groupedItems: List<TimestampGroup>) : NotificationFeedUIState()
+    public data class Content(val groupedItems: List<TimestampGroup>) : NotificationFeedUIState()
 }
 
 /**
@@ -39,7 +39,7 @@ sealed class NotificationFeedUIState {
  * @param label Display label (e.g., "Today", "Yesterday", "Monday", "Jan 15, 2025")
  * @param items Feed items within this group, ordered newest to oldest
  */
-data class TimestampGroup(
+public data class TimestampGroup(
     val label: String,
     val items: List<NotificationFeedItem>
 )
@@ -52,7 +52,7 @@ data class TimestampGroup(
  * @param isActive Whether this chip is currently selected
  * @param unreadCount Badge count (0 = no badge displayed)
  */
-data class FilterChipState(
+public data class FilterChipState(
     val id: String,
     val label: String,
     val isActive: Boolean,

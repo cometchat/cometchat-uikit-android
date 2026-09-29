@@ -15,7 +15,7 @@ import com.cometchat.chat.models.User
  * @param typingUsers List of users who are currently typing
  * @param isTyping Whether typing is currently active (true if typingUsers is not empty)
  */
-data class TypingIndicator(
+public data class TypingIndicator(
     val typingUsers: List<User>,
     val isTyping: Boolean = typingUsers.isNotEmpty()
 ) {
@@ -26,11 +26,11 @@ data class TypingIndicator(
     val firstTypingUser: User?
         get() = typingUsers.firstOrNull()
 
-    companion object {
+    public companion object {
         /**
          * Creates a TypingIndicator from a single SDK TypingIndicator.
          */
-        fun fromSdkIndicator(indicator: com.cometchat.chat.models.TypingIndicator?): TypingIndicator? {
+        public fun fromSdkIndicator(indicator: com.cometchat.chat.models.TypingIndicator?): TypingIndicator? {
             if (indicator == null) return null
             val sender = indicator.sender ?: return null
             return TypingIndicator(
@@ -43,7 +43,7 @@ data class TypingIndicator(
          * Creates a TypingIndicator from multiple SDK TypingIndicators.
          * Used when multiple users are typing in a group conversation.
          */
-        fun fromSdkIndicators(indicators: List<com.cometchat.chat.models.TypingIndicator>): TypingIndicator? {
+        public fun fromSdkIndicators(indicators: List<com.cometchat.chat.models.TypingIndicator>): TypingIndicator? {
             if (indicators.isEmpty()) return null
             val typingUsers = indicators.mapNotNull { it.sender }
             if (typingUsers.isEmpty()) return null

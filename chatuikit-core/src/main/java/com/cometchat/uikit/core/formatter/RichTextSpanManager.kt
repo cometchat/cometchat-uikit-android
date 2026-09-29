@@ -7,12 +7,12 @@ package com.cometchat.uikit.core.formatter
  *
  * This is the core engine — platform-agnostic, shared by Jetpack Compose and Kotlin XML UI kits.
  */
-class RichTextSpanManager {
+public class RichTextSpanManager {
 
     private val _spans = mutableListOf<RichTextSpan>()
 
     /** Read-only snapshot of current spans, sorted by start position. */
-    val spans: List<RichTextSpan> get() = _spans.toList()
+    public val spans: List<RichTextSpan> get() = _spans.toList()
 
     // ==================== Link URL Storage ====================
 
@@ -23,10 +23,10 @@ class RichTextSpanManager {
     private val _linkUrlMap = mutableMapOf<Int, String>()
 
     /** Read-only snapshot of link URL map. */
-    val linkUrlMap: Map<Int, String> get() = _linkUrlMap.toMap()
+    public val linkUrlMap: Map<Int, String> get() = _linkUrlMap.toMap()
 
     /** Stores a URL for a link span starting at [start]. */
-    fun setLinkUrl(start: Int, url: String) {
+    public fun setLinkUrl(start: Int, url: String) {
         _linkUrlMap[start] = url
     }
 
@@ -34,7 +34,7 @@ class RichTextSpanManager {
      * Returns the URL for the LINK span that contains [position], or null if
      * the position is not inside a link span or no URL is stored.
      */
-    fun getLinkUrlAt(position: Int): String? {
+    public fun getLinkUrlAt(position: Int): String? {
         val linkSpan = findLinkSpanAt(position) ?: return null
         return _linkUrlMap[linkSpan.start]
     }
@@ -42,7 +42,7 @@ class RichTextSpanManager {
     /**
      * Returns the LINK span that contains [position], or null.
      */
-    fun findLinkSpanAt(position: Int): RichTextSpan? {
+    public fun findLinkSpanAt(position: Int): RichTextSpan? {
         return _spans.firstOrNull { span ->
             RichTextFormat.LINK in span.formats && span.contains(position)
         }
@@ -51,7 +51,7 @@ class RichTextSpanManager {
     /**
      * Removes the URL entry for a link span starting at [start].
      */
-    fun removeLinkUrl(start: Int) {
+    public fun removeLinkUrl(start: Int) {
         _linkUrlMap.remove(start)
     }
 
@@ -60,7 +60,7 @@ class RichTextSpanManager {
     /**
      * Adds a format to the given range. Handles overlapping spans by splitting and merging.
      */
-    fun addFormat(start: Int, end: Int, format: RichTextFormat) {
+    public fun addFormat(start: Int, end: Int, format: RichTextFormat) {
         if (start >= end) return
 
         val newSpans = mutableListOf<RichTextSpan>()
@@ -108,7 +108,7 @@ class RichTextSpanManager {
     /**
      * Removes a format from the given range. Splits spans at boundaries if needed.
      */
-    fun removeFormat(start: Int, end: Int, format: RichTextFormat) {
+    public fun removeFormat(start: Int, end: Int, format: RichTextFormat) {
         if (start >= end) return
 
         val newSpans = mutableListOf<RichTextSpan>()
@@ -143,7 +143,7 @@ class RichTextSpanManager {
     /**
      * Returns all formats active at the given cursor position.
      */
-    fun getFormatsAt(position: Int): Set<RichTextFormat> {
+    public fun getFormatsAt(position: Int): Set<RichTextFormat> {
         val formats = mutableSetOf<RichTextFormat>()
         for (span in _spans) {
             if (span.contains(position)) {
@@ -157,7 +157,7 @@ class RichTextSpanManager {
      * Returns formats that are active across the entire given range.
      * A format is "active" only if every character in the range has that format.
      */
-    fun getFormatsInRange(start: Int, end: Int): Set<RichTextFormat> {
+    public fun getFormatsInRange(start: Int, end: Int): Set<RichTextFormat> {
         if (start >= end) return emptySet()
 
         // Collect all formats that appear anywhere in the range
@@ -203,7 +203,7 @@ class RichTextSpanManager {
      * - Spans that contain the position (start < position < end): extended (end += length)
      * - Spans starting at or after the position: shifted right
      */
-    fun onTextInserted(position: Int, length: Int) {
+    public fun onTextInserted(position: Int, length: Int) {
         if (length <= 0) return
 
         // Shift link URL map keys that are at or after the insertion point
@@ -246,7 +246,7 @@ class RichTextSpanManager {
      * Inline code is a single-line format — it should end before the newline.
      * The span is trimmed to end at [newlinePosition] (the position of the \n character).
      */
-    fun splitInlineCodeAtNewline(newlinePosition: Int) {
+    public fun splitInlineCodeAtNewline(newlinePosition: Int) {
         val newSpans = mutableListOf<RichTextSpan>()
         for (span in _spans) {
             if (RichTextFormat.INLINE_CODE in span.formats &&
@@ -265,7 +265,7 @@ class RichTextSpanManager {
      * Adjusts spans when text is deleted from [start] to [end].
      * Spans within the deletion are removed. Overlapping spans are trimmed.
      */
-    fun onTextDeleted(start: Int, end: Int) {
+    public fun onTextDeleted(start: Int, end: Int) {
         if (start >= end) return
         val deleteLength = end - start
 
@@ -316,7 +316,7 @@ class RichTextSpanManager {
      * Inline formats wrap text with markers. Line-based formats (lists, blockquote)
      * are already stored as line prefixes in the text, so they pass through as-is.
      */
-    fun toMarkdown(plainText: String): String {
+    public fun toMarkdown(plainText: String): String {
         if (_spans.isEmpty()) return plainText
 
         // Build a list of "events" (format open/close) sorted by position
@@ -392,7 +392,7 @@ class RichTextSpanManager {
      * Parses markdown text into plain text + spans.
      * Returns a Pair of (plainText, list of spans).
      */
-    fun fromMarkdown(markdown: String): Pair<String, List<RichTextSpan>> {
+    public fun fromMarkdown(markdown: String): Pair<String, List<RichTextSpan>> {
         val plainBuilder = StringBuilder()
         val parsedSpans = mutableListOf<RichTextSpan>()
 
@@ -485,7 +485,7 @@ class RichTextSpanManager {
      * Normalizes spans: removes empty spans, sorts by start, merges adjacent spans
      * with identical format sets.
      */
-    fun normalize() {
+    public fun normalize() {
         // Remove empty spans
         _spans.removeAll { it.isEmpty || it.formats.isEmpty() }
         // Sort by start
@@ -505,7 +505,7 @@ class RichTextSpanManager {
     }
 
     /** Removes all spans. */
-    fun clear() {
+    public fun clear() {
         _spans.clear()
         _linkUrlMap.clear()
     }

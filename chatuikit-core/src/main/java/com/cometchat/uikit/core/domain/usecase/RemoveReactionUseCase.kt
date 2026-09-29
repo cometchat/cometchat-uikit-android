@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.ReactionListRepository
  *
  * @param repository The repository to remove reactions through
  */
-open class RemoveReactionUseCase(
+open public class RemoveReactionUseCase(
     private val repository: ReactionListRepository
 ) {
     /**
@@ -25,7 +25,7 @@ open class RemoveReactionUseCase(
      * @param emoji The emoji reaction to remove (e.g., "👍", "❤️")
      * @return Result containing the updated BaseMessage on success, or error on failure
      */
-    open suspend operator fun invoke(messageId: Long, emoji: String): Result<BaseMessage> {
+    open suspend operator public fun invoke(messageId: Long, emoji: String): Result<BaseMessage> {
         return repository.removeReaction(messageId, emoji)
     }
 }

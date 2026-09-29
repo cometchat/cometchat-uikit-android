@@ -103,8 +103,23 @@ class MessageListRealtimeFilterTest : FunSpec({
         receiverType = CometChatConstants.RECEIVER_TYPE_USER
     )
 
-    beforeTest {
+    // Main is installed once for the whole spec, not per test. The VM fires
+    // CometChatEvents.emitMessageEvent, which launches on the bus's own Default-dispatcher scope —
+    // a launch advanceUntilIdle() cannot see. With a per-test resetMain() that stray launch could
+    // resume this spec's Main-bound collectors AFTER Main was torn down, crashing on
+    // "Dispatchers.Main was accessed when the platform dispatcher was absent" and pinning the
+    // leaked exception on the NEXT test's runTest (UncaughtExceptionsBeforeTest).
+    beforeSpec {
         Dispatchers.setMain(testDispatcher)
+    }
+
+    afterSpec {
+        // Let any still-queued bus emissions run while Main is still installed.
+        Thread.sleep(100)
+        Dispatchers.resetMain()
+    }
+
+    beforeTest {
         logMock = Mockito.mockStatic(Log::class.java)
         cometChatMock = Mockito.mockStatic(CometChat::class.java)
         repository = mock()
@@ -117,7 +132,6 @@ class MessageListRealtimeFilterTest : FunSpec({
     afterTest {
         cometChatMock.close()
         logMock.close()
-        Dispatchers.resetMain()
     }
 
     // ==================== The filter is enforced in real time ====================

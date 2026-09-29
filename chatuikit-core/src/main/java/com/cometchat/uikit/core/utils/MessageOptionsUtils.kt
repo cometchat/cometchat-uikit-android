@@ -29,7 +29,7 @@ import com.cometchat.uikit.core.domain.model.CometChatMessageOption
  * - MESSAGE_PRIVATELY: Only if in group and not my message
  * - REPLY, SHARE, COPY, TRANSLATE: Always included when present in the default map
  */
-object MessageOptionsUtils {
+public object MessageOptionsUtils {
 
     /**
      * Default options for media messages (image/video/audio/file).
@@ -165,7 +165,7 @@ object MessageOptionsUtils {
      * @return List of option IDs for the message type. For custom messages or unknown types,
      *         returns common options that apply to all messages.
      */
-    fun getDefaultOptionIds(category: String, type: String): List<String> {
+   public  fun getDefaultOptionIds(category: String, type: String): List<String> {
         // A meeting message takes the custom set without Report — see [meetingMessageDefaultOptions].
         if (isMeetingMessage(category, type)) {
             return meetingMessageDefaultOptions
@@ -193,12 +193,12 @@ object MessageOptionsUtils {
      * @param category the message category
      * @param type the message type
      */
-    fun isMeetingMessage(category: String?, type: String?): Boolean =
+    public fun isMeetingMessage(category: String?, type: String?): Boolean =
         category.equals(UIKitConstants.MessageCategory.CUSTOM, ignoreCase = true) &&
             type.equals(UIKitConstants.MessageType.MEETING, ignoreCase = true)
 
     /** @see isMeetingMessage */
-    fun isMeetingMessage(message: BaseMessage?): Boolean =
+    public fun isMeetingMessage(message: BaseMessage?): Boolean =
         message != null && isMeetingMessage(message.category, message.type)
 
     /**
@@ -216,7 +216,7 @@ object MessageOptionsUtils {
      * @return List of message options filtered by business rules
      */
     @JvmOverloads
-    fun getDefaultMessageOptions(
+    public fun getDefaultMessageOptions(
         context: Context,
         message: BaseMessage,
         user: User?,
@@ -274,7 +274,7 @@ object MessageOptionsUtils {
      * @param optionVisibilityMap Map of option ID to visibility (true = visible, false = hidden)
      * @return Filtered list of options where visibility is true or not specified
      */
-    fun getFilteredMessageOptions(
+    public fun getFilteredMessageOptions(
         options: List<CometChatMessageOption>,
         optionVisibilityMap: Map<String, Boolean>
     ): List<CometChatMessageOption> {
@@ -309,7 +309,7 @@ object MessageOptionsUtils {
                 // well as ones you received. The thread-header bell follows the same rule via
                 // [CometChatThreadSubscription.isAvailableForThread].
                 // Still hidden on the ineligible categories (see [isThreadSubscriptionEligible])
-                // and by the (default-off) feature gate. Otherwise shown on every message — a root
+                // and by the (default-on) feature gate. Otherwise shown on every message — a root
                 // targets its own thread, a reply its parent thread — and never gated on replyCount.
                 if (!isThreadSubscriptionEligible(message.category) ||
                     !CometChatUIKit.isThreadSubscriptionEnabled()
@@ -392,7 +392,7 @@ object MessageOptionsUtils {
     // ========================================
 
     /** Creates a "Reply in Thread" message option. */
-    fun replyInThread(context: Context): CometChatMessageOption {
+    public fun replyInThread(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.REPLY_IN_THREAD,
             title = context.getString(R.string.cometchat_reply_uppercase),
@@ -414,7 +414,7 @@ object MessageOptionsUtils {
      *   typically the thread's parent message, which is authoritative for all of its replies.
      */
     @JvmOverloads
-    fun threadSubscription(
+    public fun threadSubscription(
         context: Context,
         message: BaseMessage,
         subscribed: Boolean = message.isThreadSubscribed()
@@ -433,7 +433,7 @@ object MessageOptionsUtils {
     }
 
     /** The id of the thread a message belongs to: its own id if a root, else its parentMessageId. */
-    fun threadRootId(message: BaseMessage): Long =
+    public fun threadRootId(message: BaseMessage): Long =
         CometChatThreadSubscription.threadRootId(message)
 
     /** Categories the thread-subscription toggle is not offered on — see [isThreadSubscriptionEligible]. */
@@ -460,7 +460,7 @@ object MessageOptionsUtils {
      * to the custom-message option set, which does include THREAD_SUBSCRIPTION. An unknown category
      * stays eligible, matching that permissive fallback.
      */
-    fun isThreadSubscriptionEligible(category: String?): Boolean =
+    public fun isThreadSubscriptionEligible(category: String?): Boolean =
         category?.lowercase() !in threadSubscriptionIneligibleCategories
 
     /**
@@ -472,7 +472,7 @@ object MessageOptionsUtils {
         message.deletedAt > 0 || message.id == 0L
 
     /** Creates a "Pin message" option. */
-    fun pin(context: Context): CometChatMessageOption {
+    public fun pin(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.PIN,
             title = context.getString(R.string.cometchat_pin),
@@ -481,7 +481,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates an "Unpin message" option. */
-    fun unpin(context: Context): CometChatMessageOption {
+    public fun unpin(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.UNPIN,
             title = context.getString(R.string.cometchat_unpin),
@@ -490,7 +490,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Save message" option. */
-    fun save(context: Context): CometChatMessageOption {
+    public fun save(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.SAVE,
             title = context.getString(R.string.cometchat_save),
@@ -499,7 +499,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates an "Unsave message" option. */
-    fun unsave(context: Context): CometChatMessageOption {
+    public fun unsave(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.UNSAVE,
             title = context.getString(R.string.cometchat_unsave),
@@ -508,7 +508,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Reply" message option. */
-    fun reply(context: Context): CometChatMessageOption {
+    public fun reply(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.REPLY,
             title = context.getString(R.string.cometchat_reply),
@@ -517,7 +517,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Copy" message option. */
-    fun copy(context: Context): CometChatMessageOption {
+    public fun copy(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.COPY,
             title = context.getString(R.string.cometchat_copy),
@@ -526,7 +526,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates an "Edit" message option. */
-    fun edit(context: Context): CometChatMessageOption {
+    public fun edit(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.EDIT,
             title = context.getString(R.string.cometchat_edit),
@@ -535,7 +535,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Delete" message option. */
-    fun delete(context: Context): CometChatMessageOption {
+    public fun delete(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.DELETE,
             title = context.getString(R.string.cometchat_delete),
@@ -544,7 +544,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Share" message option. */
-    fun share(context: Context): CometChatMessageOption {
+    public fun share(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.SHARE,
             title = context.getString(R.string.cometchat_share),
@@ -553,7 +553,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Translate" message option. */
-    fun translate(context: Context): CometChatMessageOption {
+    public fun translate(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.TRANSLATE,
             title = context.getString(R.string.cometchat_translate),
@@ -562,7 +562,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Message Info" message option. */
-    fun messageInfo(context: Context): CometChatMessageOption {
+    public fun messageInfo(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.MESSAGE_INFORMATION,
             title = context.getString(R.string.cometchat_info),
@@ -571,7 +571,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Report" message option. */
-    fun report(context: Context): CometChatMessageOption {
+    public fun report(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.REPORT,
             title = context.getString(R.string.cometchat_report),
@@ -580,7 +580,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Message Privately" message option. */
-    fun messagePrivately(context: Context): CometChatMessageOption {
+    public fun messagePrivately(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.MESSAGE_PRIVATELY,
             title = context.getString(R.string.cometchat_message_privately),
@@ -589,7 +589,7 @@ object MessageOptionsUtils {
     }
 
     /** Creates a "Mark as Unread" message option. */
-    fun markAsUnread(context: Context): CometChatMessageOption {
+    public fun markAsUnread(context: Context): CometChatMessageOption {
         return CometChatMessageOption(
             id = UIKitConstants.MessageOption.MARK_AS_UNREAD,
             title = context.getString(R.string.cometchat_mark_unread),

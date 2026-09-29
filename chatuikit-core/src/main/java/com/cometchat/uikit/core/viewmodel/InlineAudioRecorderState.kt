@@ -19,7 +19,7 @@ package com.cometchat.uikit.core.viewmodel
  * @see InlineAudioRecorderStatus
  * @see CometChatInlineAudioRecorderViewModel
  */
-data class InlineAudioRecorderState(
+public data class InlineAudioRecorderState(
     /**
      * Current status of the inline audio recorder.
      * Determines which UI elements are visible and their behavior.

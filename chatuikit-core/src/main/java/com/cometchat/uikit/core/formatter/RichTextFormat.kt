@@ -4,7 +4,7 @@ package com.cometchat.uikit.core.formatter
  * Enum representing the different rich text formatting types.
  * Each format type corresponds to a specific markdown syntax.
  */
-enum class RichTextFormat {
+public enum class RichTextFormat {
     /**
      * Bold text formatting using **text** syntax.
      */
@@ -55,12 +55,12 @@ enum class RichTextFormat {
      */
     UNDERLINE;
 
-    companion object {
+    public companion object {
         /**
          * Maps each format to the set of formats it DISABLES (grays out) when active.
          * Ported from v5 CometChatRichTextToolbar.INCOMPATIBLE_FORMATS.
          */
-        val INCOMPATIBLE_FORMATS: Map<RichTextFormat, Set<RichTextFormat>> = mapOf(
+        public val INCOMPATIBLE_FORMATS: Map<RichTextFormat, Set<RichTextFormat>> = mapOf(
             BOLD to emptySet(),
             ITALIC to emptySet(),
             UNDERLINE to emptySet(),
@@ -77,7 +77,7 @@ enum class RichTextFormat {
          * Maps each format to the set of formats that are AUTO-DESELECTED when it is activated.
          * Ported from v5 CometChatRichTextToolbar.AUTO_DESELECT_FORMATS.
          */
-        val AUTO_DESELECT_FORMATS: Map<RichTextFormat, Set<RichTextFormat>> = mapOf(
+        public val AUTO_DESELECT_FORMATS: Map<RichTextFormat, Set<RichTextFormat>> = mapOf(
             BULLET_LIST to setOf(CODE_BLOCK, ORDERED_LIST),
             ORDERED_LIST to setOf(CODE_BLOCK, BULLET_LIST),
             BLOCKQUOTE to setOf(CODE_BLOCK),
@@ -91,7 +91,7 @@ enum class RichTextFormat {
          * Pure function: given a set of active formats, returns the set of formats
          * that should be disabled (grayed out, non-clickable).
          */
-        fun computeDisabledFormats(activeFormats: Set<RichTextFormat>): Set<RichTextFormat> {
+        public fun computeDisabledFormats(activeFormats: Set<RichTextFormat>): Set<RichTextFormat> {
             val disabled = mutableSetOf<RichTextFormat>()
             for (active in activeFormats) {
                 INCOMPATIBLE_FORMATS[active]?.let { disabled.addAll(it) }
@@ -103,7 +103,7 @@ enum class RichTextFormat {
          * Pure function: given the current active formats and a format being toggled,
          * returns the new active formats set after applying auto-deselect rules.
          */
-        fun toggleFormat(
+        public fun toggleFormat(
             activeFormats: Set<RichTextFormat>,
             format: RichTextFormat
         ): Set<RichTextFormat> {

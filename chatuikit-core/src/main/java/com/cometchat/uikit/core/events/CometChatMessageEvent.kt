@@ -14,13 +14,13 @@ import com.cometchat.chat.models.TypingIndicator
  * Sealed class hierarchy representing all message-related events.
  * Provides type-safe event handling for message lifecycle changes.
  */
-sealed class CometChatMessageEvent {
+sealed public class CometChatMessageEvent {
     /**
      * Event emitted when a message is sent.
      * @param message The sent message
      * @param status The status of the sent message (IN_PROGRESS, SUCCESS, ERROR)
      */
-    data class MessageSent(
+    public data class MessageSent(
         val message: BaseMessage,
         val status: MessageStatus
     ) : CometChatMessageEvent()
@@ -30,7 +30,7 @@ sealed class CometChatMessageEvent {
      * @param message The edited message
      * @param status The status of the edit operation
      */
-    data class MessageEdited(
+    public data class MessageEdited(
         val message: BaseMessage,
         val status: MessageStatus
     ) : CometChatMessageEvent()
@@ -39,7 +39,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is deleted.
      * @param message The deleted message
      */
-    data class MessageDeleted(
+    public data class MessageDeleted(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -47,7 +47,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is read.
      * @param message The read message
      */
-    data class MessageRead(
+    public data class MessageRead(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -55,7 +55,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a text message is received.
      * @param message The received text message
      */
-    data class TextMessageReceived(
+    public data class TextMessageReceived(
         val message: TextMessage
     ) : CometChatMessageEvent()
 
@@ -63,7 +63,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a media message is received.
      * @param message The received media message
      */
-    data class MediaMessageReceived(
+    public data class MediaMessageReceived(
         val message: MediaMessage
     ) : CometChatMessageEvent()
 
@@ -71,7 +71,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a custom message is received.
      * @param message The received custom message
      */
-    data class CustomMessageReceived(
+    public data class CustomMessageReceived(
         val message: CustomMessage
     ) : CometChatMessageEvent()
 
@@ -80,7 +80,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when typing starts.
      * @param indicator The typing indicator
      */
-    data class TypingStarted(
+    public data class TypingStarted(
         val indicator: TypingIndicator
     ) : CometChatMessageEvent()
 
@@ -88,7 +88,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when typing ends.
      * @param indicator The typing indicator
      */
-    data class TypingEnded(
+    public data class TypingEnded(
         val indicator: TypingIndicator
     ) : CometChatMessageEvent()
 
@@ -96,7 +96,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when messages are delivered.
      * @param receipt The message receipt
      */
-    data class MessagesDelivered(
+    public data class MessagesDelivered(
         val receipt: MessageReceipt
     ) : CometChatMessageEvent()
 
@@ -104,7 +104,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when messages are read.
      * @param receipt The message receipt
      */
-    data class MessagesRead(
+    public data class MessagesRead(
         val receipt: MessageReceipt
     ) : CometChatMessageEvent()
 
@@ -112,7 +112,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a reaction is added to a message.
      * @param event The reaction event
      */
-    data class ReactionAdded(
+    public data class ReactionAdded(
         val event: ReactionEvent
     ) : CometChatMessageEvent()
 
@@ -120,7 +120,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a reaction is removed from a message.
      * @param event The reaction event
      */
-    data class ReactionRemoved(
+    public data class ReactionRemoved(
         val event: ReactionEvent
     ) : CometChatMessageEvent()
 
@@ -128,7 +128,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a transient message is received.
      * @param message The transient message
      */
-    data class TransientMessageReceived(
+    public data class TransientMessageReceived(
         val message: TransientMessage
     ) : CometChatMessageEvent()
 
@@ -136,7 +136,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a live reaction is received.
      * @param icon The drawable resource ID of the live reaction
      */
-    data class LiveReaction(
+    public data class LiveReaction(
         val icon: Int
     ) : CometChatMessageEvent()
 
@@ -145,7 +145,7 @@ sealed class CometChatMessageEvent {
      * @param message The message being replied to
      * @param status The status of the reply operation
      */
-    data class ReplyToMessage(
+    public data class ReplyToMessage(
         val message: BaseMessage,
         val status: MessageStatus
     ) : CometChatMessageEvent()
@@ -154,7 +154,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is edited by another user.
      * @param message The edited message
      */
-    data class MessageEditedByOther(
+    public data class MessageEditedByOther(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -162,7 +162,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is deleted by another user.
      * @param message The deleted message
      */
-    data class MessageDeletedByOther(
+    public data class MessageDeletedByOther(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -170,7 +170,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when messages are delivered to all recipients.
      * @param receipt The message receipt
      */
-    data class MessagesDeliveredToAll(
+    public data class MessagesDeliveredToAll(
         val receipt: MessageReceipt
     ) : CometChatMessageEvent()
 
@@ -178,7 +178,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when messages are read by all recipients.
      * @param receipt The message receipt
      */
-    data class MessagesReadByAll(
+    public data class MessagesReadByAll(
         val receipt: MessageReceipt
     ) : CometChatMessageEvent()
 
@@ -186,7 +186,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is moderated.
      * @param message The moderated message
      */
-    data class MessageModerated(
+    public data class MessageModerated(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -194,7 +194,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when an interaction goal is completed.
      * @param receipt The interaction receipt
      */
-    data class InteractionGoalCompleted(
+    public data class InteractionGoalCompleted(
         val receipt: InteractionReceipt
     ) : CometChatMessageEvent()
 
@@ -202,7 +202,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is pinned (conversation-wide).
      * @param message The pinned message (carries pinnedAt/pinnedBy)
      */
-    data class MessagePinned(
+    public data class MessagePinned(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -210,7 +210,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is unpinned.
      * @param message The unpinned message (pin attributes cleared)
      */
-    data class MessageUnpinned(
+    public data class MessageUnpinned(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -218,7 +218,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is saved by the current user (private).
      * @param message The saved message (carries savedAt)
      */
-    data class MessageSaved(
+    public data class MessageSaved(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 
@@ -226,7 +226,7 @@ sealed class CometChatMessageEvent {
      * Event emitted when a message is unsaved by the current user.
      * @param message The unsaved message (savedAt cleared)
      */
-    data class MessageUnsaved(
+    public data class MessageUnsaved(
         val message: BaseMessage
     ) : CometChatMessageEvent()
 }

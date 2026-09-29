@@ -30,7 +30,7 @@ package com.cometchat.uikit.core.viewmodel
  *
  * @see CometChatMediaRecorderViewModel
  */
-enum class MediaRecorderState {
+public enum class MediaRecorderState {
     /**
      * Initial state, ready to start recording.
      * Only the record button is visible in this state.

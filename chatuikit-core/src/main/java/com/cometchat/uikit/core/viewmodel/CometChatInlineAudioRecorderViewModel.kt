@@ -45,7 +45,7 @@ import kotlinx.coroutines.SupervisorJob
  * @see InlineAudioRecorderState
  * @see InlineAudioRecorderStatus
  */
-open class CometChatInlineAudioRecorderViewModel : ViewModel() {
+open public class CometChatInlineAudioRecorderViewModel : ViewModel() {
 
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -55,44 +55,44 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * Complete state of the inline audio recorder.
      */
     private val _state = MutableStateFlow(InlineAudioRecorderState())
-    val state: StateFlow<InlineAudioRecorderState> = _state.asStateFlow()
+    public val state: StateFlow<InlineAudioRecorderState> = _state.asStateFlow()
 
     // ==================== Convenience Accessors ====================
 
     /**
      * Current recording status.
      */
-    val status: InlineAudioRecorderStatus
+    public val status: InlineAudioRecorderStatus
         get() = _state.value.status
 
     /**
      * Total recorded duration in milliseconds.
      */
-    val duration: Long
+    public val duration: Long
         get() = _state.value.duration
 
     /**
      * Current playback position in milliseconds.
      */
-    val currentPosition: Long
+    public val currentPosition: Long
         get() = _state.value.currentPosition
 
     /**
      * List of amplitude values for waveform visualization.
      */
-    val amplitudes: List<Float>
+    public val amplitudes: List<Float>
         get() = _state.value.amplitudes
 
     /**
      * Path to the recorded file.
      */
-    val filePath: String?
+    public val filePath: String?
         get() = _state.value.filePath
 
     /**
      * Error message if in ERROR state.
      */
-    val errorMessage: String?
+    public val errorMessage: String?
         get() = _state.value.errorMessage
 
     // ==================== Formatted Time ====================
@@ -100,13 +100,13 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
     /**
      * Formats the total duration as MM:SS.
      */
-    val formattedDuration: String
+    public val formattedDuration: String
         get() = formatTime(_state.value.duration)
 
     /**
      * Formats the current playback position as MM:SS.
      */
-    val formattedPosition: String
+    public val formattedPosition: String
         get() = formatTime(_state.value.currentPosition)
 
     /**
@@ -116,7 +116,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * - COMPLETED: total recording duration
      * - PLAYING: current playback position
      */
-    val displayTime: String
+    public val displayTime: String
         get() = when (_state.value.status) {
             InlineAudioRecorderStatus.RECORDING -> formattedDuration
             InlineAudioRecorderStatus.PAUSED -> formattedDuration
@@ -133,7 +133,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun startRecording(): Boolean {
+    public fun startRecording(): Boolean {
         if (!isValidTransition(_state.value.status, InlineAudioRecorderStatus.RECORDING)) {
             return false
         }
@@ -153,7 +153,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun pauseRecording(): Boolean {
+    public fun pauseRecording(): Boolean {
         if (!isValidTransition(_state.value.status, InlineAudioRecorderStatus.PAUSED)) {
             return false
         }
@@ -169,7 +169,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun resumeRecording(): Boolean {
+    public fun resumeRecording(): Boolean {
         if (_state.value.status != InlineAudioRecorderStatus.PAUSED) {
             return false
         }
@@ -185,7 +185,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun stopRecording(): Boolean {
+    public fun stopRecording(): Boolean {
         val currentStatus = _state.value.status
         if (currentStatus != InlineAudioRecorderStatus.RECORDING && 
             currentStatus != InlineAudioRecorderStatus.PAUSED) {
@@ -204,7 +204,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun deleteRecording(): Boolean {
+    public fun deleteRecording(): Boolean {
         if (_state.value.status == InlineAudioRecorderStatus.IDLE) {
             return false
         }
@@ -218,7 +218,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun startPlayback(): Boolean {
+    public fun startPlayback(): Boolean {
         if (_state.value.status != InlineAudioRecorderStatus.COMPLETED) {
             return false
         }
@@ -234,7 +234,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun pausePlayback(): Boolean {
+    public fun pausePlayback(): Boolean {
         if (_state.value.status != InlineAudioRecorderStatus.PLAYING) {
             return false
         }
@@ -248,7 +248,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * Handles playback completion.
      * Resets playback position to beginning and transitions to COMPLETED state.
      */
-    fun onPlaybackComplete() {
+    public fun onPlaybackComplete() {
         if (_state.value.status == InlineAudioRecorderStatus.PLAYING) {
             _state.value = _state.value.copy(
                 status = InlineAudioRecorderStatus.COMPLETED,
@@ -264,7 +264,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * @param positionMs the position to seek to in milliseconds
      * @return true if seek was successful, false otherwise
      */
-    fun seekTo(positionMs: Long): Boolean {
+    public fun seekTo(positionMs: Long): Boolean {
         val currentStatus = _state.value.status
         if (currentStatus != InlineAudioRecorderStatus.COMPLETED && 
             currentStatus != InlineAudioRecorderStatus.PLAYING) {
@@ -283,7 +283,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param message the error message
      */
-    fun handleError(message: String) {
+    public fun handleError(message: String) {
         _state.value = _state.value.copy(
             status = InlineAudioRecorderStatus.ERROR,
             errorMessage = message
@@ -296,7 +296,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @return true if recovery was successful, false otherwise
      */
-    fun recover(): Boolean {
+    public fun recover(): Boolean {
         if (_state.value.status != InlineAudioRecorderStatus.ERROR) {
             return false
         }
@@ -311,7 +311,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param durationMs the new duration in milliseconds
      */
-    fun updateDuration(durationMs: Long) {
+    public fun updateDuration(durationMs: Long) {
         _state.value = _state.value.copy(
             duration = durationMs.coerceAtLeast(0L)
         )
@@ -322,7 +322,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param positionMs the new position in milliseconds
      */
-    fun updatePosition(positionMs: Long) {
+    public fun updatePosition(positionMs: Long) {
         _state.value = _state.value.copy(
             currentPosition = positionMs.coerceIn(0L, _state.value.duration)
         )
@@ -334,7 +334,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param amplitude the amplitude value to add
      */
-    fun addAmplitude(amplitude: Float) {
+    public fun addAmplitude(amplitude: Float) {
         val clampedAmplitude = amplitude.coerceIn(0f, 1f)
         _state.value = _state.value.copy(
             amplitudes = _state.value.amplitudes + clampedAmplitude
@@ -346,7 +346,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param path the file path, or null to clear
      */
-    fun setFilePath(path: String?) {
+    public fun setFilePath(path: String?) {
         _state.value = _state.value.copy(
             filePath = path
         )
@@ -355,7 +355,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
     /**
      * Clears all amplitude values.
      */
-    fun clearAmplitudes() {
+    public fun clearAmplitudes() {
         _state.value = _state.value.copy(
             amplitudes = emptyList()
         )
@@ -366,7 +366,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      *
      * @param newState the new state to set
      */
-    fun setState(newState: InlineAudioRecorderState) {
+    public fun setState(newState: InlineAudioRecorderState) {
         _state.value = newState
     }
 
@@ -378,7 +378,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * @param durationMs the duration in milliseconds
      * @return formatted time string (e.g., "01:30")
      */
-    fun formatTime(durationMs: Long): String {
+    public fun formatTime(durationMs: Long): String {
         val totalSeconds = durationMs / 1000
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
@@ -400,7 +400,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * @param to the target state
      * @return true if the transition is valid, false otherwise
      */
-    fun isValidTransition(from: InlineAudioRecorderStatus, to: InlineAudioRecorderStatus): Boolean {
+    public fun isValidTransition(from: InlineAudioRecorderStatus, to: InlineAudioRecorderStatus): Boolean {
         if (from == to) return true // Same state is always valid (no-op)
 
         return when (from) {
@@ -433,7 +433,7 @@ open class CometChatInlineAudioRecorderViewModel : ViewModel() {
      * Releases all resources.
      * Call this when the recorder is no longer needed.
      */
-    fun release() {
+    public fun release() {
         _state.value = InlineAudioRecorderState()
     }
 

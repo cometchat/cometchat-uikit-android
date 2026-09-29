@@ -10,14 +10,14 @@ import com.cometchat.chat.models.MessageReceipt
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface MessageInformationRepository {
+public interface MessageInformationRepository {
 
     /**
      * Fetches message receipts for a specific message.
      * @param messageId The ID of the message to fetch receipts for
      * @return Result containing list of MessageReceipt objects or error
      */
-    suspend fun fetchReceipts(messageId: Long): Result<List<MessageReceipt>>
+    suspend public fun fetchReceipts(messageId: Long): Result<List<MessageReceipt>>
 
     /**
      * Creates a MessageReceipt from a BaseMessage for USER conversations.
@@ -27,5 +27,5 @@ interface MessageInformationRepository {
      * @param message The message to create a receipt from
      * @return MessageReceipt created from the message data
      */
-    fun createReceiptFromMessage(message: BaseMessage): MessageReceipt
+    public fun createReceiptFromMessage(message: BaseMessage): MessageReceipt
 }

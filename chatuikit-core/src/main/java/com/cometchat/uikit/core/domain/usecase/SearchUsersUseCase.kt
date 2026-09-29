@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.UsersRepository
  * 
  * @param repository The repository to search users from
  */
-open class SearchUsersUseCase(
+open public class SearchUsersUseCase(
     private val repository: UsersRepository
 ) {
     /**
@@ -19,7 +19,7 @@ open class SearchUsersUseCase(
      * @param builder The UsersRequestBuilder to configure the search
      * @return Result containing list of matching users or error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         searchKeyword: String,
         builder: UsersRequest.UsersRequestBuilder
     ): Result<List<User>> {

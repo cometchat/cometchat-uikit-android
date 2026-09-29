@@ -6,12 +6,12 @@ import com.cometchat.chat.models.Conversation
  * Sealed class hierarchy representing all conversation-related events.
  * Provides type-safe event handling for conversation state changes.
  */
-sealed class CometChatConversationEvent {
+sealed public class CometChatConversationEvent {
     /**
      * Event emitted when a conversation is deleted.
      * @param conversation The deleted conversation
      */
-    data class ConversationDeleted(
+    public data class ConversationDeleted(
         val conversation: Conversation
     ) : CometChatConversationEvent()
     
@@ -19,7 +19,7 @@ sealed class CometChatConversationEvent {
      * Event emitted when a conversation is updated.
      * @param conversation The updated conversation
      */
-    data class ConversationUpdated(
+    public data class ConversationUpdated(
         val conversation: Conversation
     ) : CometChatConversationEvent()
 }

@@ -11,7 +11,7 @@ package com.cometchat.uikit.core.formatter
  * [MarkdownRenderer.parse] and then extracting plain text from the resulting segments
  * (round-trip consistency property).
  */
-object PlainTextStripper {
+public object PlainTextStripper {
 
     /**
      * Strips all markdown syntax markers from [markdown] and returns clean plain text.
@@ -26,7 +26,7 @@ object PlainTextStripper {
      * @param markdown The raw markdown string to strip
      * @return Clean plain text with all markdown syntax removed
      */
-    fun strip(markdown: String): String {
+    public fun strip(markdown: String): String {
         if (markdown.isEmpty()) return ""
 
         val segments = MarkdownRenderer.parse(markdown)

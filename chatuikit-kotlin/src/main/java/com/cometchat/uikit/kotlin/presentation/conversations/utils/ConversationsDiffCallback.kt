@@ -7,7 +7,7 @@ import com.cometchat.chat.models.Conversation
  * DiffUtil callback for efficient RecyclerView updates.
  * Compares conversations by their unique ID and content.
  */
-class ConversationsDiffCallback(
+public class ConversationsDiffCallback(
     private val oldList: List<Conversation>,
     private val newList: List<Conversation>
 ) : DiffUtil.Callback() {

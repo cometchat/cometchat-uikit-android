@@ -56,13 +56,13 @@ import com.google.android.material.card.MaterialCardView
  * Ported from the Java implementation:
  * chatuikit/src/main/java/com/cometchat/chatuikit/aiassistantchathistory/CometChatAIAssistantChatHistory.java
  */
-class CometChatAIAssistantChatHistory @JvmOverloads constructor(
+public class CometChatAIAssistantChatHistory @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometChatAIAssistantChatHistoryStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatAIAssistantChatHistory::class.java.simpleName
     }
 
@@ -103,8 +103,8 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
     private var onItemLongClick: ((View, Int, BaseMessage?) -> Unit)? = null
 
     // Popup menu customization
-    var options: Function2<Context, BaseMessage, List<CometChatPopupMenu.MenuItem>>? = null
-    var addOptions: Function2<Context, BaseMessage, List<CometChatPopupMenu.MenuItem>>? = null
+    public var options: Function2<Context, BaseMessage, List<CometChatPopupMenu.MenuItem>>? = null
+    public var addOptions: Function2<Context, BaseMessage, List<CometChatPopupMenu.MenuItem>>? = null
 
     // Visibility controls
     private var errorStateVisibility: Int = View.VISIBLE
@@ -683,7 +683,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param user The User whose chat history to display
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         if (::viewModel.isInitialized) {
             viewModel.setUser(user)
         }
@@ -696,7 +696,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param group The Group whose chat history to display
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         if (::viewModel.isInitialized) {
             viewModel.setGroup(group)
         }
@@ -707,7 +707,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param listener The click listener
      */
-    fun setOnCloseClickListener(listener: OnClick) {
+    public fun setOnCloseClickListener(listener: OnClick) {
         this.onCloseButtonClickListener = listener
     }
 
@@ -716,7 +716,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param listener The click listener
      */
-    fun setOnNewChatClickListener(listener: OnClick) {
+    public fun setOnNewChatClickListener(listener: OnClick) {
         this.onNewChatClickListener = listener
     }
 
@@ -725,7 +725,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param listener The click listener invoked with (view, position, message)
      */
-    fun setOnItemClickListener(listener: (View, Int, BaseMessage?) -> Unit) {
+    public fun setOnItemClickListener(listener: (View, Int, BaseMessage?) -> Unit) {
         this.onItemClick = listener
     }
 
@@ -735,7 +735,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param listener The long click listener invoked with (view, position, message)
      */
-    fun setOnItemLongClickListener(listener: (View, Int, BaseMessage?) -> Unit) {
+    public fun setOnItemLongClickListener(listener: (View, Int, BaseMessage?) -> Unit) {
         this.onItemLongClick = listener
     }
 
@@ -745,7 +745,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param style The style resource ID to apply
      */
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 style, R.styleable.CometChatAIAssistantChatHistory
@@ -759,7 +759,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param visibility The visibility state (View.VISIBLE or View.GONE)
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         this.errorStateVisibility = visibility
         binding.errorStateView.visibility = visibility
     }
@@ -769,7 +769,7 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      *
      * @param visibility The visibility state (View.VISIBLE or View.GONE)
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         this.emptyStateVisibility = visibility
         binding.emptyStateView.visibility = visibility
     }
@@ -780,119 +780,119 @@ class CometChatAIAssistantChatHistory @JvmOverloads constructor(
      * Gets the text appearance resource ID for the delete option text.
      */
     @StyleRes
-    fun getDeleteOptionTextAppearance(): Int = style.deleteOptionTextAppearance
+    public fun getDeleteOptionTextAppearance(): Int = style.deleteOptionTextAppearance
 
     /**
      * Gets the text color for the delete option in the popup menu.
      */
     @ColorInt
-    fun getDeleteOptionTextColor(): Int = style.deleteOptionTextColor
+    public fun getDeleteOptionTextColor(): Int = style.deleteOptionTextColor
 
     /**
      * Gets the tint color for the delete option icon in the popup menu.
      */
     @ColorInt
-    fun getDeleteOptionIconTint(): Int = style.deleteOptionIconTint
+    public fun getDeleteOptionIconTint(): Int = style.deleteOptionIconTint
 
     /**
      * Gets the drawable icon used for the delete option in the popup menu.
      */
-    fun getDeleteOptionIcon(): Drawable? = style.deleteOptionIcon
+    public fun getDeleteOptionIcon(): Drawable? = style.deleteOptionIcon
 
     /**
      * Gets the background color for the date separator.
      */
     @ColorInt
-    fun getDateSeparatorBackgroundColor(): Int = style.dateSeparatorBackgroundColor
+    public fun getDateSeparatorBackgroundColor(): Int = style.dateSeparatorBackgroundColor
 
     /**
      * Gets the background color for the entire chat history view.
      */
     @ColorInt
-    fun getChatHistoryBackgroundColor(): Int = style.chatHistoryBackgroundColor
+    public fun getChatHistoryBackgroundColor(): Int = style.chatHistoryBackgroundColor
 
     /**
      * Gets the background color for the chat history header.
      */
     @ColorInt
-    fun getChatHistoryHeaderBackgroundColor(): Int = style.chatHistoryHeaderBackgroundColor
+    public fun getChatHistoryHeaderBackgroundColor(): Int = style.chatHistoryHeaderBackgroundColor
 
     /**
      * Gets the text color for the chat history header title.
      */
     @ColorInt
-    fun getChatHistoryHeaderTextColor(): Int = style.chatHistoryHeaderTextColor
+    public fun getChatHistoryHeaderTextColor(): Int = style.chatHistoryHeaderTextColor
 
     /**
      * Gets the text appearance resource ID for the chat history header title.
      */
     @StyleRes
-    fun getChatHistoryHeaderTextAppearance(): Int = style.chatHistoryHeaderTextAppearance
+    public fun getChatHistoryHeaderTextAppearance(): Int = style.chatHistoryHeaderTextAppearance
 
     /**
      * Gets the drawable icon used for the chat history header close button.
      */
-    fun getChatHistoryHeaderCloseIcon(): Drawable? = style.chatHistoryHeaderCloseIcon
+    public fun getChatHistoryHeaderCloseIcon(): Drawable? = style.chatHistoryHeaderCloseIcon
 
     /**
      * Gets the tint color for the chat history header close button icon.
      */
     @ColorInt
-    fun getChatHistoryHeaderCloseIconTint(): Int = style.chatHistoryHeaderCloseIconTint
+    public fun getChatHistoryHeaderCloseIconTint(): Int = style.chatHistoryHeaderCloseIconTint
 
     /**
      * Gets the text color for the "New Chat" label.
      */
     @ColorInt
-    fun getNewChatTextColor(): Int = style.newChatTextColor
+    public fun getNewChatTextColor(): Int = style.newChatTextColor
 
     /**
      * Gets the text appearance resource ID for the "New Chat" label.
      */
     @StyleRes
-    fun getNewChatTextAppearance(): Int = style.newChatTextAppearance
+    public fun getNewChatTextAppearance(): Int = style.newChatTextAppearance
 
     /**
      * Gets the drawable resource ID for the "New Chat" icon.
      */
     @DrawableRes
-    fun getNewChatIcon(): Int = style.newChatIcon
+    public fun getNewChatIcon(): Int = style.newChatIcon
 
     /**
      * Gets the tint color for the "New Chat" icon.
      */
     @ColorInt
-    fun getNewChatIconTint(): Int = style.newChatIconTint
+    public fun getNewChatIconTint(): Int = style.newChatIconTint
 
     /**
      * Gets the text color for the date separator.
      */
     @ColorInt
-    fun getDateSeparatorTextColor(): Int = style.dateSeparatorTextColor
+    public fun getDateSeparatorTextColor(): Int = style.dateSeparatorTextColor
 
     /**
      * Gets the text appearance resource ID for the date separator.
      */
     @StyleRes
-    fun getDateSeparatorTextAppearance(): Int = style.dateSeparatorTextAppearance
+    public fun getDateSeparatorTextAppearance(): Int = style.dateSeparatorTextAppearance
 
     /**
      * Gets the background color for individual chat history items.
      */
     @ColorInt
-    fun getItemBackgroundColor(): Int = style.itemBackgroundColor
+    public fun getItemBackgroundColor(): Int = style.itemBackgroundColor
 
     /**
      * Gets the text color for individual chat history items.
      */
     @ColorInt
-    fun getItemTextColor(): Int = style.itemTextColor
+    public fun getItemTextColor(): Int = style.itemTextColor
 
     /**
      * Gets the text appearance resource ID for individual chat history items.
      */
     @StyleRes
-    fun getItemTextAppearance(): Int = style.itemTextAppearance
+    public fun getItemTextAppearance(): Int = style.itemTextAppearance
 
     // ==================== Internal Style Setter Methods ====================
 

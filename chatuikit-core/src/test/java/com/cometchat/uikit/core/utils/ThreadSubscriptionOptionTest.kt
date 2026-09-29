@@ -17,7 +17,8 @@ import org.mockito.kotlin.whenever
  * - §6.3 the option sits immediately after "Reply in Thread" and appears on every message type
  *   (never gated on replyCount).
  * - reply -> parent thread: threadRootId resolves a reply to its parentMessageId, a root to its own id.
- * - §7.5 the feature gate is default-off (UIKitSettings.enableThreadSubscription).
+ * - the feature gate (UIKitSettings.enableThreadSubscription) is default-ON and opt-OUT, matching
+ *   the React and React Native kits; §7.5's original default-off is superseded.
  * - the option is absent on the ineligible categories (interactive / action / call), which matters
  *   because an unrecognised category falls back to the custom-message option set.
  *
@@ -101,13 +102,16 @@ class ThreadSubscriptionOptionTest : FunSpec({
         MessageOptionsUtils.threadRootId(root) shouldBe 42L
     }
 
-    // ==================== §7.5 feature gate is default-off ====================
+    // ============ feature gate is default-ON, opt-OUT (React / RN parity) ============
 
-    test("thread subscription is off by default and opt-in via the builder") {
-        UIKitSettings.UIKitSettingsBuilder().build().enableThreadSubscription shouldBe false
-        UIKitSettings.UIKitSettingsBuilder()
-            .setEnableThreadSubscription(true)
+    test("thread subscription is on by default and opt-OUT via the deprecated builder flag") {
+        UIKitSettings.UIKitSettingsBuilder().build().enableThreadSubscription shouldBe true
+
+        // Deprecated, but it must keep working — it is the only global opt-out.
+        @Suppress("DEPRECATION")
+        val optedOut = UIKitSettings.UIKitSettingsBuilder()
+            .setEnableThreadSubscription(false)
             .build()
-            .enableThreadSubscription shouldBe true
+        optedOut.enableThreadSubscription shouldBe false
     }
 })

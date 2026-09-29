@@ -24,7 +24,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * via Android spans so that [CometChatConversationListItem.bindSubtitle]
  * displays rich text in the subtitleTextView.
  */
-object ConversationSubtitleRenderer {
+public object ConversationSubtitleRenderer {
 
     /** Leading margin indent (in pixels) for list items and blockquotes. */
     private const val BLOCK_INDENT_PX = 16
@@ -42,7 +42,7 @@ object ConversationSubtitleRenderer {
      * @return SpannableString with Android text spans and no raw markdown markers
      */
     @JvmOverloads
-    fun render(
+    public fun render(
         context: Context,
         markdown: String,
         formatterSpans: Spanned? = null

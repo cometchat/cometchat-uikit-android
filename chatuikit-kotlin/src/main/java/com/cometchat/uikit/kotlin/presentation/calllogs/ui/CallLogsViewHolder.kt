@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.calls.model.CallLog
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.presentation.calllogs.style.CometChatCallLogsListItemStyle
 import com.cometchat.uikit.kotlin.presentation.calllogs.utils.CallLogsViewHolderListener
 import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
@@ -19,17 +20,17 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  * - bindView() is called during bind operations with call log data
  * - Custom views replace default views when listeners are set
  */
-class CallLogsViewHolder(
-    val callLogsListItem: CometChatCallLogsListItem
+public class CallLogsViewHolder(
+    public val callLogsListItem: CometChatCallLogsListItem
 ) : RecyclerView.ViewHolder(callLogsListItem) {
 
-    companion object {
+    public companion object {
         private val TAG = CallLogsViewHolder::class.java.simpleName
         
         /**
          * Creates a new CallLogsViewHolder with CometChatCallLogsListItem as the row view.
          */
-        fun create(parent: ViewGroup): CallLogsViewHolder {
+        public fun create(parent: ViewGroup): CallLogsViewHolder {
             val context = parent.context
             val callLogsListItem = CometChatCallLogsListItem(context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -68,14 +69,14 @@ class CallLogsViewHolder(
      * Creates or updates custom views using the provided listeners.
      * Custom views are recreated when listeners change.
      */
-    fun createCustomViews(
+    public fun createCustomViews(
         itemViewListener: CallLogsViewHolderListener?,
         leadingViewListener: CallLogsViewHolderListener?,
         titleViewListener: CallLogsViewHolderListener?,
         subtitleViewListener: CallLogsViewHolderListener?,
         trailingViewListener: CallLogsViewHolderListener?
     ) {
-        android.util.Log.d(TAG, "createCustomViews: itemView=${itemViewListener != null}, leading=${leadingViewListener != null}, title=${titleViewListener != null}, subtitle=${subtitleViewListener != null}, trailing=${trailingViewListener != null}")
+        CometChatLogger.d(TAG, "createCustomViews: itemView=${itemViewListener != null}, leading=${leadingViewListener != null}, title=${titleViewListener != null}, subtitle=${subtitleViewListener != null}, trailing=${trailingViewListener != null}")
         
         // Check if any listener has changed OR if we need to restore defaults
         val itemViewChanged = itemViewListener !== lastItemViewListener || 
@@ -169,7 +170,7 @@ class CallLogsViewHolder(
     /**
      * Binds call log data to the views.
      */
-    fun bind(
+    public fun bind(
         callLog: CallLog,
         callLogsList: List<CallLog>,
         position: Int,

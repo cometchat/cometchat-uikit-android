@@ -16,12 +16,12 @@ import com.cometchat.chat.models.User
  * - Scope hierarchy and comparison utilities
  * - User-to-GroupMember conversion
  */
-object GroupMembersPermissionUtils {
+public object GroupMembersPermissionUtils {
 
     /**
      * Owner scope constant. Not defined in CometChatConstants, so we define it here.
      */
-    const val SCOPE_OWNER = "OWNER"
+    public const val SCOPE_OWNER: String = "OWNER"
 
     // ==================== Permission Checks ====================
 
@@ -41,7 +41,7 @@ object GroupMembersPermissionUtils {
      * @param groupOwnerId The UID of the group owner
      * @return true if the logged-in user can kick the target member
      */
-    fun canKickMember(
+    public fun canKickMember(
         loggedInUserScope: String,
         targetMemberScope: String,
         loggedInUserId: String,
@@ -85,7 +85,7 @@ object GroupMembersPermissionUtils {
      * @param groupOwnerId The UID of the group owner
      * @return true if the logged-in user can ban the target member
      */
-    fun canBanMember(
+    public fun canBanMember(
         loggedInUserScope: String,
         targetMemberScope: String,
         loggedInUserId: String,
@@ -123,7 +123,7 @@ object GroupMembersPermissionUtils {
      * @param groupOwnerId The UID of the group owner
      * @return true if the logged-in user can change the target member's scope
      */
-    fun canChangeMemberScope(
+    public fun canChangeMemberScope(
         loggedInUserId: String,
         targetMemberId: String,
         groupOwnerId: String?
@@ -144,7 +144,7 @@ object GroupMembersPermissionUtils {
      * @param scope The scope constant
      * @return Numeric level (4=Owner, 3=Admin, 2=Moderator, 1=Participant, 0=Unknown)
      */
-    fun getScopeLevel(scope: String): Int {
+    public fun getScopeLevel(scope: String): Int {
         return when (scope.uppercase()) {
             SCOPE_OWNER -> 4
             CometChatConstants.SCOPE_ADMIN.uppercase() -> 3
@@ -161,7 +161,7 @@ object GroupMembersPermissionUtils {
      * @param scope2 Second scope to compare
      * @return Positive if scope1 > scope2, negative if scope1 < scope2, 0 if equal
      */
-    fun compareScopes(scope1: String, scope2: String): Int {
+    public fun compareScopes(scope1: String, scope2: String): Int {
         return getScopeLevel(scope1) - getScopeLevel(scope2)
     }
 
@@ -171,7 +171,7 @@ object GroupMembersPermissionUtils {
      *
      * @return List of assignable scope constants
      */
-    fun getAssignableScopes(): List<String> {
+    public fun getAssignableScopes(): List<String> {
         return listOf(
             CometChatConstants.SCOPE_ADMIN,
             CometChatConstants.SCOPE_MODERATOR,
@@ -186,7 +186,7 @@ object GroupMembersPermissionUtils {
      * @param scope The scope to check for
      * @return true if the member has the specified scope
      */
-    fun hasScope(member: GroupMember, scope: String): Boolean {
+    public fun hasScope(member: GroupMember, scope: String): Boolean {
         return member.scope.equals(scope, ignoreCase = true)
     }
 
@@ -197,7 +197,7 @@ object GroupMembersPermissionUtils {
      * @param group The group
      * @return true if the member is the owner
      */
-    fun isOwner(member: GroupMember, group: Group): Boolean {
+    public fun isOwner(member: GroupMember, group: Group): Boolean {
         return member.uid == group.owner
     }
 
@@ -210,7 +210,7 @@ object GroupMembersPermissionUtils {
      * @param scope The scope to assign to the group member (defaults to PARTICIPANT)
      * @return A GroupMember object with the user's information
      */
-    fun userToGroupMember(
+    public fun userToGroupMember(
         user: User,
         scope: String = CometChatConstants.SCOPE_PARTICIPANT
     ): GroupMember {

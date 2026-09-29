@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">कॉपी करें</string>
+    <string name="cometchat_delete" translatable="true">हटाएँ</string>
+    <string name="cometchat_edit" translatable="true">संपादित करें</string>
+    <string name="cometchat_info" translatable="true">"जानकारी"</string>
+    <string name="cometchat_mark_unread" translatable="true">अपठित के रूप में चिह्नित करें</string>
+    <string name="cometchat_message_privately" translatable="true">निजी संदेश भेजें</string>
+    <string name="cometchat_pin" translatable="true">संदेश पिन करें</string>
+    <string name="cometchat_reply" translatable="true">उत्तर दें</string>
+    <string name="cometchat_reply_uppercase" translatable="true">थ्रेड में उत्तर दें</string>
+    <string name="cometchat_report" translatable="true">रिपोर्ट करें</string>
+    <string name="cometchat_save" translatable="true">संदेश सहेजें</string>
+    <string name="cometchat_share" translatable="true">साझा करें</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">थ्रेड की सदस्यता लें</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">थ्रेड की सदस्यता समाप्त करें</string>
+    <string name="cometchat_translate" translatable="true">अनुवाद करें</string>
+    <string name="cometchat_unpin" translatable="true">संदेश अनपिन करें</string>
+    <string name="cometchat_unsave" translatable="true">संदेश का सहेजना हटाएं</string>
+</resources>

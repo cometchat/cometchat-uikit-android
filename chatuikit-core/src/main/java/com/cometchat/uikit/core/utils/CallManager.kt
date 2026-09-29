@@ -17,7 +17,7 @@ import com.cometchat.chat.core.CometChat
  * 
  * @see CallingState for the legacy implementation pattern
  */
-object CallManager {
+public object CallManager {
     
     private const val TAG = "CallManager"
     
@@ -34,7 +34,7 @@ object CallManager {
      * 
      * @param call The Call to set as active, or null to clear the active call
      */
-    fun setActiveCall(call: Call?) {
+    public fun setActiveCall(call: Call?) {
         activeCall = call
     }
     
@@ -43,13 +43,13 @@ object CallManager {
      * 
      * @return The active Call or null if no call is active
      */
-    fun getActiveCall(): Call? = activeCall
+    public fun getActiveCall(): Call? = activeCall
     
     /**
      * Clears the active call state.
      * Sets the active call to null.
      */
-    fun clearActiveCall() {
+    public fun clearActiveCall() {
         activeCall = null
     }
     
@@ -58,14 +58,14 @@ object CallManager {
      * 
      * @return true if there is an active call, false otherwise
      */
-    fun hasActiveCall(): Boolean = activeCall != null
+    public fun hasActiveCall(): Boolean = activeCall != null
     
     /**
      * Sets whether there is an active meeting (group call) in progress.
      * 
      * @param isActive true if a meeting is active, false otherwise
      */
-    fun setIsActiveMeeting(isActive: Boolean) {
+    public fun setIsActiveMeeting(isActive: Boolean) {
         isActiveMeeting = isActive
     }
     
@@ -74,7 +74,7 @@ object CallManager {
      * 
      * @return true if a meeting is active, false otherwise
      */
-    fun isActiveMeeting(): Boolean = isActiveMeeting
+    public fun isActiveMeeting(): Boolean = isActiveMeeting
     
     /**
      * Adds CometChat SDK call listeners to handle call state changes.
@@ -163,7 +163,7 @@ object CallManager {
      * 
      * This is useful for cleanup during logout or app termination.
      */
-    fun reset() {
+    public fun reset() {
         activeCall = null
         isActiveMeeting = false
     }

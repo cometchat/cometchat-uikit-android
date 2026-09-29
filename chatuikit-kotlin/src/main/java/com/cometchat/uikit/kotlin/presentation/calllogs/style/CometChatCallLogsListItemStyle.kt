@@ -16,7 +16,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.CometCha
  * Style configuration for CometChatCallLogsListItem component.
  * Contains all visual styling properties for a single call log item.
  */
-data class CometChatCallLogsListItemStyle(
+public data class CometChatCallLogsListItemStyle(
     // Background
     @ColorInt val backgroundColor: Int = 0,
     
@@ -51,11 +51,11 @@ data class CometChatCallLogsListItemStyle(
     val avatarStyle: CometChatAvatarStyle = CometChatAvatarStyle(),
     val dateStyle: CometChatDateStyle = CometChatDateStyle()
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style using CometChatTheme values.
          */
-        fun default(context: Context): CometChatCallLogsListItemStyle {
+        public fun default(context: Context): CometChatCallLogsListItemStyle {
             return CometChatCallLogsListItemStyle(
                 // Background
                 backgroundColor = Color.TRANSPARENT,
@@ -97,7 +97,7 @@ data class CometChatCallLogsListItemStyle(
          * Creates a style from a TypedArray.
          * The TypedArray will be recycled after extraction.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCallLogsListItemStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCallLogsListItemStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

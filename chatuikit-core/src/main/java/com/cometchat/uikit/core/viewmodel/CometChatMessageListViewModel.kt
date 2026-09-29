@@ -1,7 +1,6 @@
 package com.cometchat.uikit.core.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,6 +49,7 @@ import com.cometchat.uikit.core.state.SmartRepliesUIState
 import com.cometchat.uikit.core.utils.AgentChatDetector
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.utils.PinSaveUtils
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.getDefaultMessagesCategories
 import com.cometchat.uikit.core.utils.getDefaultMessagesTypes
 import java.util.Collections
@@ -207,7 +207,7 @@ import kotlin.math.log
  * @see MessageAlignment
  * @see ListOperations
  */
-open class CometChatMessageListViewModel(
+open public class CometChatMessageListViewModel(
     private val repository: MessageListRepository,
     private val enableListeners: Boolean = true
 ) : ViewModel(), ListOperations<BaseMessage> {
@@ -231,7 +231,7 @@ open class CometChatMessageListViewModel(
      * - Panel management identification
      */
     private val _idMap = MutableStateFlow<Map<String, String>>(emptyMap())
-    val idMap: StateFlow<Map<String, String>> = _idMap.asStateFlow()
+    public val idMap: StateFlow<Map<String, String>> = _idMap.asStateFlow()
     
     /**
      * The current UI state of the message list.
@@ -243,7 +243,7 @@ open class CometChatMessageListViewModel(
      * - [MessageListUIState.Error]: An error occurred during fetching
      */
     private val _uiState = MutableStateFlow<MessageListUIState>(MessageListUIState.Loading)
-    val uiState: StateFlow<MessageListUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<MessageListUIState> = _uiState.asStateFlow()
     
     /**
      * The current list of messages in the conversation.
@@ -255,7 +255,7 @@ open class CometChatMessageListViewModel(
      * - Messages are edited, deleted, or have reactions added/removed
      */
     private val _messages = MutableStateFlow<List<BaseMessage>>(emptyList())
-    val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
+    public val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
     
     /**
      * Delegate for list operations.
@@ -273,7 +273,7 @@ open class CometChatMessageListViewModel(
      * This becomes `false` when the oldest message in the conversation is reached.
      */
     private val _hasMorePreviousMessages = MutableStateFlow(true)
-    val hasMorePreviousMessages: StateFlow<Boolean> = _hasMorePreviousMessages.asStateFlow()
+    public val hasMorePreviousMessages: StateFlow<Boolean> = _hasMorePreviousMessages.asStateFlow()
     
     /**
      * Whether there are more next (newer) messages available to fetch.
@@ -282,7 +282,7 @@ open class CometChatMessageListViewModel(
      * have arrived that are not yet in the current list.
      */
     private val _hasMoreNewMessages = MutableStateFlow(false)
-    val hasMoreNewMessages: StateFlow<Boolean> = _hasMoreNewMessages.asStateFlow()
+    public val hasMoreNewMessages: StateFlow<Boolean> = _hasMoreNewMessages.asStateFlow()
     
     /**
      * Whether a fetch operation is currently in progress.
@@ -291,7 +291,7 @@ open class CometChatMessageListViewModel(
      * Only one fetch operation can be in progress at a time.
      */
     private val _isInProgress = MutableStateFlow(false)
-    val isInProgress: StateFlow<Boolean> = _isInProgress.asStateFlow()
+    public val isInProgress: StateFlow<Boolean> = _isInProgress.asStateFlow()
     
     /**
      * The message ID to scroll to, or `null` if no scroll is needed.
@@ -300,7 +300,7 @@ open class CometChatMessageListViewModel(
      * by calling [clearScrollToMessage].
      */
     private val _scrollToMessageId = MutableStateFlow<Long?>(null)
-    val scrollToMessageId: StateFlow<Long?> = _scrollToMessageId.asStateFlow()
+    public val scrollToMessageId: StateFlow<Long?> = _scrollToMessageId.asStateFlow()
     
     /**
      * The first unread message, used to display an "unread messages" anchor.
@@ -309,7 +309,7 @@ open class CometChatMessageListViewModel(
      * unread messages in the conversation.
      */
     private val _unreadMessageAnchor = MutableStateFlow<BaseMessage?>(null)
-    val unreadMessageAnchor: StateFlow<BaseMessage?> = _unreadMessageAnchor.asStateFlow()
+    public val unreadMessageAnchor: StateFlow<BaseMessage?> = _unreadMessageAnchor.asStateFlow()
     
     /**
      * The number of unread messages in the conversation.
@@ -318,7 +318,7 @@ open class CometChatMessageListViewModel(
      * is called.
      */
     private val _unreadCount = MutableStateFlow(0)
-    val unreadCount: StateFlow<Int> = _unreadCount.asStateFlow()
+    public val unreadCount: StateFlow<Int> = _unreadCount.asStateFlow()
     
     /**
      * The current state of a delete operation.
@@ -332,7 +332,7 @@ open class CometChatMessageListViewModel(
      * Call [resetDeleteState] to return to [MessageDeleteState.Idle] after handling.
      */
     private val _deleteState = MutableStateFlow<MessageDeleteState>(MessageDeleteState.Idle)
-    val deleteState: StateFlow<MessageDeleteState> = _deleteState.asStateFlow()
+    public val deleteState: StateFlow<MessageDeleteState> = _deleteState.asStateFlow()
     
     /**
      * The current state of a flag/report operation.
@@ -346,7 +346,7 @@ open class CometChatMessageListViewModel(
      * Call [resetFlagState] to return to [MessageFlagState.Idle] after handling.
      */
     private val _flagState = MutableStateFlow<MessageFlagState>(MessageFlagState.Idle)
-    val flagState: StateFlow<MessageFlagState> = _flagState.asStateFlow()
+    public val flagState: StateFlow<MessageFlagState> = _flagState.asStateFlow()
     
     /**
      * List of users currently typing in the conversation.
@@ -355,7 +355,7 @@ open class CometChatMessageListViewModel(
      * Users are added when they start typing and removed when they stop.
      */
     private val _typingUsers = MutableStateFlow<List<User>>(emptyList())
-    val typingUsers: StateFlow<List<User>> = _typingUsers.asStateFlow()
+    public val typingUsers: StateFlow<List<User>> = _typingUsers.asStateFlow()
     
     // ========================================
     // Smart Replies State
@@ -368,7 +368,7 @@ open class CometChatMessageListViewModel(
      * when [clearSmartReplies] is called or when a new message is sent.
      */
     private val _smartReplies = MutableStateFlow<List<String>>(emptyList())
-    val smartReplies: StateFlow<List<String>> = _smartReplies.asStateFlow()
+    public val smartReplies: StateFlow<List<String>> = _smartReplies.asStateFlow()
     
     /**
      * The current UI state for smart replies.
@@ -380,7 +380,7 @@ open class CometChatMessageListViewModel(
      * - [SmartRepliesUIState.Error]: Fetch failed
      */
     private val _smartRepliesUIState = MutableStateFlow<SmartRepliesUIState>(SmartRepliesUIState.Idle)
-    val smartRepliesUIState: StateFlow<SmartRepliesUIState> = _smartRepliesUIState.asStateFlow()
+    public val smartRepliesUIState: StateFlow<SmartRepliesUIState> = _smartRepliesUIState.asStateFlow()
     
     // ========================================
     // Conversation Starter State
@@ -393,7 +393,7 @@ open class CometChatMessageListViewModel(
      * cleared when [clearConversationStarter] is called or when a message is sent.
      */
     private val _conversationStarterReplies = MutableStateFlow<List<String>>(emptyList())
-    val conversationStarterReplies: StateFlow<List<String>> = _conversationStarterReplies.asStateFlow()
+    public val conversationStarterReplies: StateFlow<List<String>> = _conversationStarterReplies.asStateFlow()
     
     /**
      * The current UI state for conversation starters.
@@ -405,7 +405,7 @@ open class CometChatMessageListViewModel(
      * - [ConversationStarterUIState.Error]: Fetch failed
      */
     private val _conversationStarterUIState = MutableStateFlow<ConversationStarterUIState>(ConversationStarterUIState.Idle)
-    val conversationStarterUIState: StateFlow<ConversationStarterUIState> = _conversationStarterUIState.asStateFlow()
+    public val conversationStarterUIState: StateFlow<ConversationStarterUIState> = _conversationStarterUIState.asStateFlow()
     
     /**
      * Event emitted when conversation starters should be removed from UI.
@@ -414,7 +414,7 @@ open class CometChatMessageListViewModel(
      * that the conversation has started and starters are no longer needed.
      */
     private val _removeConversationStarter = MutableSharedFlow<Unit>()
-    val removeConversationStarter: SharedFlow<Unit> = _removeConversationStarter.asSharedFlow()
+    public val removeConversationStarter: SharedFlow<Unit> = _removeConversationStarter.asSharedFlow()
     
     // ========================================
     // Conversation Summary State
@@ -427,7 +427,7 @@ open class CometChatMessageListViewModel(
      * when [dismissConversationSummary] is called.
      */
     private val _conversationSummary = MutableStateFlow<String?>(null)
-    val conversationSummary: StateFlow<String?> = _conversationSummary.asStateFlow()
+    public val conversationSummary: StateFlow<String?> = _conversationSummary.asStateFlow()
     
     /**
      * The current UI state for conversation summary.
@@ -439,7 +439,7 @@ open class CometChatMessageListViewModel(
      * - [ConversationSummaryUIState.Error]: Fetch failed
      */
     private val _conversationSummaryUIState = MutableStateFlow<ConversationSummaryUIState>(ConversationSummaryUIState.Idle)
-    val conversationSummaryUIState: StateFlow<ConversationSummaryUIState> = _conversationSummaryUIState.asStateFlow()
+    public val conversationSummaryUIState: StateFlow<ConversationSummaryUIState> = _conversationSummaryUIState.asStateFlow()
     
     /**
      * Event emitted when conversation summary should be removed from UI.
@@ -447,7 +447,7 @@ open class CometChatMessageListViewModel(
      * This is emitted when the user dismisses the summary.
      */
     private val _removeConversationSummary = MutableSharedFlow<Unit>()
-    val removeConversationSummary: SharedFlow<Unit> = _removeConversationSummary.asSharedFlow()
+    public val removeConversationSummary: SharedFlow<Unit> = _removeConversationSummary.asSharedFlow()
     
     // Events
     
@@ -457,7 +457,7 @@ open class CometChatMessageListViewModel(
      * This is emitted when a new message is received and the user is at the bottom.
      */
     private val _scrollToBottomEvent = MutableSharedFlow<Unit>()
-    val scrollToBottomEvent: SharedFlow<Unit> = _scrollToBottomEvent.asSharedFlow()
+    public val scrollToBottomEvent: SharedFlow<Unit> = _scrollToBottomEvent.asSharedFlow()
     
     /**
      * Event emitted when a message sound should be played.
@@ -465,7 +465,7 @@ open class CometChatMessageListViewModel(
      * The boolean value indicates whether to play the sound (`true`) or not.
      */
     private val _playSoundEvent = MutableSharedFlow<Boolean>()
-    val playSoundEvent: SharedFlow<Boolean> = _playSoundEvent.asSharedFlow()
+    public val playSoundEvent: SharedFlow<Boolean> = _playSoundEvent.asSharedFlow()
     
     /**
      * Event emitted when a message has been successfully marked as read.
@@ -504,7 +504,7 @@ open class CometChatMessageListViewModel(
      * @see markConversationRead
      */
     private val _messageReadEvent = MutableSharedFlow<BaseMessage>()
-    val messageReadEvent: SharedFlow<BaseMessage> = _messageReadEvent.asSharedFlow()
+    public val messageReadEvent: SharedFlow<BaseMessage> = _messageReadEvent.asSharedFlow()
     
     /**
      * Event emitted when a message is deleted via UIKit events.
@@ -515,7 +515,7 @@ open class CometChatMessageListViewModel(
      * @see handleMessageDeletedEvent
      */
     private val _messageDeleted = MutableSharedFlow<BaseMessage>()
-    val messageDeleted: SharedFlow<BaseMessage> = _messageDeleted.asSharedFlow()
+    public val messageDeleted: SharedFlow<BaseMessage> = _messageDeleted.asSharedFlow()
 
     /**
      * Event emitted when a message is updated in-place (e.g., reply count changed).
@@ -525,7 +525,7 @@ open class CometChatMessageListViewModel(
      * call notifyItemChanged / trigger recomposition for the affected message.
      */
     private val _messageUpdated = MutableSharedFlow<BaseMessage>()
-    val messageUpdated: SharedFlow<BaseMessage> = _messageUpdated.asSharedFlow()
+    public val messageUpdated: SharedFlow<BaseMessage> = _messageUpdated.asSharedFlow()
     
     /**
      * Event emitted when a message sender's full user details are fetched.
@@ -537,7 +537,7 @@ open class CometChatMessageListViewModel(
      * @see fetchMessageSender
      */
     private val _messageSenderFetched = MutableSharedFlow<User>()
-    val messageSenderFetched: SharedFlow<User> = _messageSenderFetched.asSharedFlow()
+    public val messageSenderFetched: SharedFlow<User> = _messageSenderFetched.asSharedFlow()
     
     /**
      * Event emitted when a message needs special processing.
@@ -550,7 +550,7 @@ open class CometChatMessageListViewModel(
      * @see emitProcessMessageData
      */
     private val _processMessageData = MutableSharedFlow<BaseMessage>()
-    val processMessageData: SharedFlow<BaseMessage> = _processMessageData.asSharedFlow()
+    public val processMessageData: SharedFlow<BaseMessage> = _processMessageData.asSharedFlow()
     
     /** Job for UIKit message events subscription. */
     private var messageEventsJob: Job? = null
@@ -563,7 +563,7 @@ open class CometChatMessageListViewModel(
      * behind for the ViewModel's whole life.
      */
     private var threadEventsJob: Job? = null
-    
+
     /** Job for UIKit group events subscription. */
     private var groupEventsJob: Job? = null
     
@@ -606,7 +606,7 @@ open class CometChatMessageListViewModel(
      * The UI should call [clearHighlightScroll] after the highlight animation completes.
      */
     private val _highlightScroll = MutableStateFlow(false)
-    val highlightScroll: StateFlow<Boolean> = _highlightScroll.asStateFlow()
+    public val highlightScroll: StateFlow<Boolean> = _highlightScroll.asStateFlow()
     
     /**
      * The configured message ID to navigate to on initial load.
@@ -640,7 +640,7 @@ open class CometChatMessageListViewModel(
      * Returns the ID (uid or guid) for which the ViewModel was last fully initialized.
      * Used by Compose to skip redundant LaunchedEffect executions during animated transitions.
      */
-    fun getInitializedId(): String? = initializedId
+    public fun getInitializedId(): String? = initializedId
 
     /**
      * Explicitly sets the UI state to [MessageListUIState.Empty].
@@ -648,7 +648,7 @@ open class CometChatMessageListViewModel(
      * messages are not fetched, so the empty/greeting state with
      * conversation starters is shown immediately.
      */
-    fun setUIStateEmpty() {
+    public fun setUIStateEmpty() {
         _uiState.value = MessageListUIState.Empty
     }
     
@@ -708,7 +708,7 @@ open class CometChatMessageListViewModel(
      * conversation changes, since the counts are re-read from the server on the next fetch.
      */
     private val countedReplyIds: MutableSet<Long> = Collections.synchronizedSet(mutableSetOf())
-    
+
     /** Sound manager for playing message sounds. */
     private var soundManager: CometChatSoundManager? = null
     
@@ -762,7 +762,7 @@ open class CometChatMessageListViewModel(
      * Used by the UI layer (e.g., [CometChatMessageList]) to wire stream callbacks
      * and pass the service to the adapter/bubble for real-time event handling.
      */
-    fun getAIStreamService(): CometChatAIStreamService? = aiStreamService
+    public fun getAIStreamService(): CometChatAIStreamService? = aiStreamService
 
     /** Whether the current conversation is an agent chat. */
     private var isAgentChat: Boolean = false
@@ -780,7 +780,7 @@ open class CometChatMessageListViewModel(
      * Used by the UI layer to control agent-specific behavior such as avatar
      * visibility, slot suppression, and swipe-to-reply disabling.
      */
-    fun isAgentChat(): Boolean = isAgentChat
+    public fun isAgentChat(): Boolean = isAgentChat
 
     /**
      * Tracks whether [parentMessageId] has been set from a successful first message send
@@ -833,7 +833,7 @@ open class CometChatMessageListViewModel(
      *   - A non-null list of [CometChatMessageOption] to **replace** all default options, or
      *   - `null` to fall back to the default options.
      */
-    fun setOptions(callback: (BaseMessage) -> List<CometChatMessageOption>?) {
+    public fun setOptions(callback: (BaseMessage) -> List<CometChatMessageOption>?) {
         setOptionsCallback = callback
     }
 
@@ -843,7 +843,7 @@ open class CometChatMessageListViewModel(
      * @param callback A function that receives the [BaseMessage] and returns a list of
      *   [CometChatMessageOption] to append after the default options.
      */
-    fun addOptions(callback: (BaseMessage) -> List<CometChatMessageOption>) {
+    public fun addOptions(callback: (BaseMessage) -> List<CometChatMessageOption>) {
         addOptionsCallback = callback
     }
 
@@ -870,10 +870,10 @@ open class CometChatMessageListViewModel(
      * Falls back to [message] when the list has no match — a thread parent, or a row whose message
      * is no longer loaded.
      */
-    fun currentMessage(message: BaseMessage): BaseMessage =
+    public fun currentMessage(message: BaseMessage): BaseMessage =
         _messages.value.firstOrNull { it.id != 0L && it.id == message.id } ?: message
 
-    fun resolveMessageOptions(
+    public fun resolveMessageOptions(
         message: BaseMessage,
         defaultOptions: List<CometChatMessageOption>
     ): List<CometChatMessageOption> {
@@ -900,7 +900,7 @@ open class CometChatMessageListViewModel(
      * @see deleteMessage
      */
     private val _deleteConfirmationRequest = MutableSharedFlow<BaseMessage>()
-    val deleteConfirmationRequest: SharedFlow<BaseMessage> = _deleteConfirmationRequest.asSharedFlow()
+    public val deleteConfirmationRequest: SharedFlow<BaseMessage> = _deleteConfirmationRequest.asSharedFlow()
 
     /**
      * Event emitted when a message translation completes successfully.
@@ -912,7 +912,7 @@ open class CometChatMessageListViewModel(
      * @see handleMessageOptionClick
      */
     private val _messageTranslated = MutableSharedFlow<BaseMessage>()
-    val messageTranslated: SharedFlow<BaseMessage> = _messageTranslated.asSharedFlow()
+    public val messageTranslated: SharedFlow<BaseMessage> = _messageTranslated.asSharedFlow()
 
     /**
      * Event emitted when an error occurs during message operations.
@@ -925,7 +925,7 @@ open class CometChatMessageListViewModel(
      * @see deleteMessage
      */
     private val _onError = MutableSharedFlow<CometChatException>()
-    val onError: SharedFlow<CometChatException> = _onError.asSharedFlow()
+    public val onError: SharedFlow<CometChatException> = _onError.asSharedFlow()
 
     /**
      * Functional interface for formatting message text.
@@ -943,8 +943,8 @@ open class CometChatMessageListViewModel(
      *
      * @return The formatted text as a [CharSequence] (may include spans for styling)
      */
-    fun interface TextFormatterCallback {
-        fun formatText(
+    public fun interface TextFormatterCallback {
+        public fun formatText(
             context: Context,
             message: BaseMessage,
             formattingType: UIKitConstants.FormattingType,
@@ -976,7 +976,7 @@ open class CometChatMessageListViewModel(
      * @see markMessageAsUnread
      * @see deleteMessage
      */
-    fun handleMessageOptionClick(
+    public fun handleMessageOptionClick(
         context: Context,
         optionId: String,
         message: BaseMessage,
@@ -1145,7 +1145,7 @@ open class CometChatMessageListViewModel(
      *
      * @see setGroup
      */
-    fun setUser(
+    public fun setUser(
         user: User,
         parentMessageId: Long = -1,
         gotoMessageId: Long = 0,
@@ -1182,7 +1182,7 @@ open class CometChatMessageListViewModel(
 
         // Detect agent chat and create AI stream service if needed
         isAgentChat = AgentChatDetector.isAgentChat(user)
-        Log.d("StreamingState", "setUser: isAgentChat = $isAgentChat for user ${user.uid}")
+        CometChatLogger.d("StreamingState", "setUser: isAgentChat = $isAgentChat")
         agentChatParentMessageIdSet = false
         if (isAgentChat) {
             aiStreamService = CometChatAIStreamService(viewModelScope).also {
@@ -1214,7 +1214,7 @@ open class CometChatMessageListViewModel(
      *
      * @see setUser
      */
-    fun setGroup(
+    public fun setGroup(
         group: Group,
         parentMessageId: Long = -1,
         gotoMessageId: Long = 0,
@@ -1443,7 +1443,7 @@ open class CometChatMessageListViewModel(
      *
      * @param disable `true` to disable read receipts, `false` to enable (default).
      */
-    fun setDisableReceipt(disable: Boolean) { disableReceipt = disable }
+    public fun setDisableReceipt(disable: Boolean) { disableReceipt = disable }
     
     /**
      * Sets whether to disable reaction event handling.
@@ -1459,7 +1459,7 @@ open class CometChatMessageListViewModel(
      *
      * @param disable `true` to disable reaction handling, `false` to enable (default).
      */
-    fun setDisableReactions(disable: Boolean) { disableReactions = disable }
+    public fun setDisableReactions(disable: Boolean) { disableReactions = disable }
     
     /**
      * Sets whether to completely hide deleted messages.
@@ -1469,7 +1469,7 @@ open class CometChatMessageListViewModel(
      *
      * @param hide `true` to hide deleted messages, `false` to show placeholder.
      */
-    fun setHideDeleteMessage(hide: Boolean) { hideDeleteMessage = hide }
+    public fun setHideDeleteMessage(hide: Boolean) { hideDeleteMessage = hide }
     
     /**
      * Sets whether to start from the first unread message.
@@ -1481,7 +1481,7 @@ open class CometChatMessageListViewModel(
      *
      * @see setUnreadThreshold
      */
-    fun setStartFromUnreadMessages(start: Boolean) { startFromUnreadMessages = start }
+    public fun setStartFromUnreadMessages(start: Boolean) { startFromUnreadMessages = start }
     
     /**
      * Sets the minimum unread count to trigger starting from unread messages.
@@ -1490,7 +1490,7 @@ open class CometChatMessageListViewModel(
      *
      * @param threshold Minimum unread count (default is 30).
      */
-    fun setUnreadThreshold(threshold: Int) { unreadThreshold = threshold }
+    public fun setUnreadThreshold(threshold: Int) { unreadThreshold = threshold }
 
     /**
      * Enables loading the most recent agent conversation when the message list opens.
@@ -1507,7 +1507,7 @@ open class CometChatMessageListViewModel(
      *
      * @see fetchLastAgentConversation
      */
-    fun setLoadLastAgentConversation(enable: Boolean) { loadLastAgentConversation = enable }
+    public fun setLoadLastAgentConversation(enable: Boolean) { loadLastAgentConversation = enable }
 
     /**
      * Returns the current `parentMessageId` value.
@@ -1517,7 +1517,7 @@ open class CometChatMessageListViewModel(
      *
      * @return The parent message ID, or `-1` for main conversation.
      */
-    fun getParentMessageId(): Long = parentMessageId
+    public fun getParentMessageId(): Long = parentMessageId
 
     /**
      * Supplies the thread's root message, the authority for its thread's subscription state.
@@ -1525,27 +1525,27 @@ open class CometChatMessageListViewModel(
      * Re-supply it whenever the parent updates; a fetched flag on a fresh parent object overrides any
      * locally mirrored value.
      */
-    fun setParentMessage(message: BaseMessage?) {
+    public fun setParentMessage(message: BaseMessage?) {
         parentMessage = message
         if (message != null) parentMessageId = message.id
     }
 
     /** The thread's root message, when one was supplied via [setParentMessage]. */
-    fun getParentMessage(): BaseMessage? = parentMessage
+    public fun getParentMessage(): BaseMessage? = parentMessage
     
     /**
      * Sets whether to disable playing sounds for incoming messages.
      *
      * @param disable `true` to disable sounds, `false` to enable (default).
      */
-    fun setDisableSoundForMessages(disable: Boolean) { disableSoundForMessages = disable }
+    public fun setDisableSoundForMessages(disable: Boolean) { disableSoundForMessages = disable }
     
     /**
      * Sets a custom sound resource for incoming messages.
      *
      * @param rawRes Raw resource ID of the sound file, or `0` for default sound.
      */
-    fun setCustomSoundForMessages(@RawRes rawRes: Int) { customSoundForMessages = rawRes }
+    public fun setCustomSoundForMessages(@RawRes rawRes: Int) { customSoundForMessages = rawRes }
     
     /**
      * Sets whether to enable AI conversation starters.
@@ -1560,7 +1560,7 @@ open class CometChatMessageListViewModel(
      * @see fetchConversationStarter
      * @see clearConversationStarter
      */
-    fun setEnableConversationStarter(enable: Boolean) { 
+    public fun setEnableConversationStarter(enable: Boolean) {
         enableConversationStarter = enable 
         if (!enable) {
             clearConversationStarter()
@@ -1578,7 +1578,7 @@ open class CometChatMessageListViewModel(
      * @see setSmartRepliesDelay
      * @see setSmartReplyKeywords
      */
-    fun setEnableSmartReplies(enable: Boolean) {
+    public fun setEnableSmartReplies(enable: Boolean) {
         enableSmartReplies = enable
         if (!enable) {
             clearSmartReplies()
@@ -1594,7 +1594,7 @@ open class CometChatMessageListViewModel(
      *
      * @param delayMs Delay in milliseconds. Default is 10000 (10 seconds).
      */
-    fun setSmartRepliesDelay(delayMs: Int) {
+    public fun setSmartRepliesDelay(delayMs: Int) {
         smartRepliesDelay = delayMs
     }
     
@@ -1607,7 +1607,7 @@ open class CometChatMessageListViewModel(
      *
      * @param keywords List of keywords to filter messages. Empty list for no filtering.
      */
-    fun setSmartReplyKeywords(keywords: List<String>) {
+    public fun setSmartReplyKeywords(keywords: List<String>) {
         smartReplyKeywords = keywords
     }
     
@@ -1630,7 +1630,7 @@ open class CometChatMessageListViewModel(
      *
      * @see clearSmartReplies
      */
-    fun fetchSmartReplies() {
+    public fun fetchSmartReplies() {
         if (!enableSmartReplies) return
         
         val receiverId = user?.uid ?: group?.guid ?: return
@@ -1685,7 +1685,7 @@ open class CometChatMessageListViewModel(
      * - Smart replies are disabled
      * - Conversation starter is removed
      */
-    fun clearSmartReplies() {
+    public fun clearSmartReplies() {
         smartRepliesJob?.cancel()
         smartRepliesJob = null
         _smartReplies.value = emptyList()
@@ -1769,7 +1769,7 @@ open class CometChatMessageListViewModel(
      *
      * @see clearConversationStarter
      */
-    fun fetchConversationStarter() {
+    public fun fetchConversationStarter() {
         if (!enableConversationStarter) return
         
         // Only fetch in main conversation
@@ -1824,7 +1824,7 @@ open class CometChatMessageListViewModel(
      * - A message is added to the conversation
      * - Conversation starters are disabled
      */
-    fun clearConversationStarter() {
+    public fun clearConversationStarter() {
         _conversationStarterReplies.value = emptyList()
         _conversationStarterUIState.value = ConversationStarterUIState.Idle
         
@@ -1865,7 +1865,7 @@ open class CometChatMessageListViewModel(
      * @see dismissConversationSummary
      * @see setUnreadThreshold
      */
-    fun setEnableConversationSummary(enable: Boolean) { 
+    public fun setEnableConversationSummary(enable: Boolean) {
         enableConversationSummary = enable 
         if (!enable) {
             dismissConversationSummary()
@@ -1892,7 +1892,7 @@ open class CometChatMessageListViewModel(
      *
      * @see dismissConversationSummary
      */
-    fun fetchConversationSummary() {
+    public fun fetchConversationSummary() {
         if (!enableConversationSummary) return
         
         // Only fetch in main conversation
@@ -1946,7 +1946,7 @@ open class CometChatMessageListViewModel(
      * - User manually dismisses the summary
      * - Conversation summary is disabled
      */
-    fun dismissConversationSummary() {
+    public fun dismissConversationSummary() {
         _conversationSummary.value = null
         _conversationSummaryUIState.value = ConversationSummaryUIState.Idle
         
@@ -1980,7 +1980,7 @@ open class CometChatMessageListViewModel(
      *
      * @param context The Android context (application context recommended).
      */
-    fun initSoundManager(context: Context) {
+    public fun initSoundManager(context: Context) {
         if (soundManager == null) {
             soundManager = CometChatSoundManager(context.applicationContext)
         }
@@ -2011,7 +2011,7 @@ open class CometChatMessageListViewModel(
      *
      * @see setLoadLastAgentConversation
      */
-    fun fetchLastAgentConversation() {
+    public fun fetchLastAgentConversation() {
         val currentUser = user
         if (currentUser == null) {
             _uiState.value = MessageListUIState.Empty
@@ -2101,7 +2101,7 @@ open class CometChatMessageListViewModel(
      * @see fetchNextMessages
      * @see fetchMessagesWithUnreadCount
      */
-    fun fetchMessages() {
+    public fun fetchMessages() {
         if (!_hasMorePreviousMessages.value || _isInProgress.value) return
         _isInProgress.value = true
         
@@ -2197,7 +2197,7 @@ open class CometChatMessageListViewModel(
      *
      * @see fetchMessages
      */
-    fun fetchNextMessages() {
+    public fun fetchNextMessages() {
         val lastMessage = _messages.value.lastOrNull() ?: return
         if (_isInProgress.value) return
         
@@ -2248,7 +2248,7 @@ open class CometChatMessageListViewModel(
      * @see setStartFromUnreadMessages
      * @see setUnreadThreshold
      */
-    fun fetchMessagesWithUnreadCount() {
+    public fun fetchMessagesWithUnreadCount() {
         viewModelScope.launch {
             val id = user?.uid ?: group?.guid ?: return@launch
             val type = if (user != null) CometChatConstants.RECEIVER_TYPE_USER else CometChatConstants.RECEIVER_TYPE_GROUP
@@ -2315,7 +2315,7 @@ open class CometChatMessageListViewModel(
      * @see clearHighlightScroll
      * @see highlightScroll
      */
-    fun goToMessage(messageId: Long, highlight: Boolean = true) {
+    public fun goToMessage(messageId: Long, highlight: Boolean = true) {
         viewModelScope.launch {
             // Step 1: Set uiState to Loading
             _uiState.value = MessageListUIState.Loading
@@ -2393,7 +2393,7 @@ open class CometChatMessageListViewModel(
      *
      * @see goToMessage
      */
-    fun clearScrollToMessage() {
+    public fun clearScrollToMessage() {
         _scrollToMessageId.value = null
     }
     
@@ -2405,7 +2405,7 @@ open class CometChatMessageListViewModel(
      * @see goToMessage
      * @see highlightScroll
      */
-    fun clearHighlightScroll() {
+    public fun clearHighlightScroll() {
         _highlightScroll.value = false
     }
 
@@ -2600,7 +2600,7 @@ open class CometChatMessageListViewModel(
      * @see updateMessage
      * @see removeMessage
      */
-    open fun addMessage(message: BaseMessage) {
+    open public fun addMessage(message: BaseMessage) {
         val isForChat = isMessageForCurrentChat(message)
         val isForThread = isThreadedMessageForCurrentChat(message)
         if (isForChat && isForThread) {
@@ -2686,7 +2686,7 @@ open class CometChatMessageListViewModel(
      * @see addMessage
      * @see removeMessage
      */
-    open fun updateMessage(message: BaseMessage) {
+    open public fun updateMessage(message: BaseMessage) {
         val reconciled = reconcilePinSaveOnReplace(message)
         updateItem(reconciled) { it.id == reconciled.id }
     }
@@ -2699,7 +2699,7 @@ open class CometChatMessageListViewModel(
     private fun replaceMessageAuthoritative(message: BaseMessage) {
         val existing = _messages.value.firstOrNull { it.id == message.id }
         val reconciled =
-            if (existing != null) carryThreadSubscriptionForward(existing, message) else message
+            if (existing != null) carryReceiptsForward(existing, carryThreadSubscriptionForward(existing, message)) else message
         updateItem(reconciled) { it.id == reconciled.id }
     }
 
@@ -2709,9 +2709,12 @@ open class CometChatMessageListViewModel(
      */
     protected fun reconcilePinSaveOnReplace(message: BaseMessage): BaseMessage {
         val existing = _messages.value.firstOrNull { it.id == message.id } ?: return message
-        return carryThreadSubscriptionForward(
+        return carryReceiptsForward(
             existing,
-            PinSaveUtils.carryPinSaveForward(existing, message)
+            carryThreadSubscriptionForward(
+                existing,
+                PinSaveUtils.carryPinSaveForward(existing, message)
+            )
         )
     }
 
@@ -2737,6 +2740,33 @@ open class CometChatMessageListViewModel(
     ): BaseMessage {
         if (!existing.isThreadSubscribed() || incoming.isThreadSubscribed()) return incoming
         return incoming.clone().apply { setThreadSubscribed(true) }
+    }
+
+    /**
+     * Carries delivered/read receipt timestamps from the loaded copy onto a replacement.
+     *
+     * Receipts (deliveredAt/readAt) are stamped onto the loaded message by the receipt handlers.
+     * A content-replace frame carries the message body but not those timestamps, so it arrives
+     * with them zeroed — exactly like the pin/save and thread-subscription state this class
+     * already carries forward. The one that reliably wipes the sender's tick is the media
+     * onMessageEdited that fires after upload/extension processing: it is emitted only for
+     * messages with an attachment (file/image/audio/video), never plain text, which is why
+     * only media messages lose the delivered tick a moment after showing it (ENG-39520).
+     *
+     * A receipt only ever moves forward (0 -> timestamp), and it is never carried on a content
+     * frame, so preserving the loaded value whenever the incoming one is 0 is always correct.
+     */
+    private fun carryReceiptsForward(
+        existing: BaseMessage,
+        incoming: BaseMessage
+    ): BaseMessage {
+        val needsDelivered = incoming.deliveredAt == 0L && existing.deliveredAt != 0L
+        val needsRead = incoming.readAt == 0L && existing.readAt != 0L
+        if (!needsDelivered && !needsRead) return incoming
+        return incoming.clone().apply {
+            if (needsDelivered) deliveredAt = existing.deliveredAt
+            if (needsRead) readAt = existing.readAt
+        }
     }
 
     /** Whether [action] is a pinned/unpinned/saved/unsaved action message. */
@@ -2807,7 +2837,7 @@ open class CometChatMessageListViewModel(
      * @see updateMessage
      * @see clear
      */
-    open fun removeMessage(message: BaseMessage) {
+    open public fun removeMessage(message: BaseMessage) {
         removeItem(message)
     }
     
@@ -2846,14 +2876,9 @@ open class CometChatMessageListViewModel(
      * @see handleMessageSentEvent
      */
     @JvmOverloads
-    open fun updateReplyCount(parentMessageId: Long, replyMessageId: Long = 0L) {
+    open public fun updateReplyCount(parentMessageId: Long, replyMessageId: Long = 0L) {
         // Same reply delivered twice — the count already includes it.
         if (replyMessageId > 0L && !countedReplyIds.add(replyMessageId)) {
-            Log.d(
-                "CometChatMsgListVM",
-                "updateReplyCount: dropped duplicate delivery of reply $replyMessageId " +
-                    "for parent $parentMessageId"
-            )
             return
         }
 
@@ -2885,7 +2910,7 @@ open class CometChatMessageListViewModel(
      *
      * @see clearItems
      */
-    open fun clear() {
+    open public fun clear() {
         clearItems()
         countedReplyIds.clear()
         repository.resetRequest()
@@ -2918,7 +2943,7 @@ open class CometChatMessageListViewModel(
      * @see resetDeleteState
      * @see setHideDeleteMessage
      */
-    fun deleteMessage(message: BaseMessage) {
+    public fun deleteMessage(message: BaseMessage) {
         viewModelScope.launch {
             _deleteState.value = MessageDeleteState.InProgress
             
@@ -2958,7 +2983,7 @@ open class CometChatMessageListViewModel(
      *
      * @see deleteMessage
      */
-    fun resetDeleteState() {
+    public fun resetDeleteState() {
         _deleteState.value = MessageDeleteState.Idle
     }
     
@@ -2978,7 +3003,7 @@ open class CometChatMessageListViewModel(
      *
      * @see resetFlagState
      */
-    fun flagMessage(message: BaseMessage, reason: String, remark: String = "") {
+    public fun flagMessage(message: BaseMessage, reason: String, remark: String = "") {
         viewModelScope.launch {
             _flagState.value = MessageFlagState.InProgress
             
@@ -3000,7 +3025,7 @@ open class CometChatMessageListViewModel(
      *
      * @see flagMessage
      */
-    fun resetFlagState() {
+    public fun resetFlagState() {
         _flagState.value = MessageFlagState.Idle
     }
     
@@ -3015,7 +3040,7 @@ open class CometChatMessageListViewModel(
      *
      * @see removeReaction
      */
-    fun addReaction(message: BaseMessage, emoji: String) {
+    public fun addReaction(message: BaseMessage, emoji: String) {
         viewModelScope.launch {
             repository.addReaction(message.id, emoji)
                 .onSuccess { updatedMessage ->
@@ -3035,7 +3060,7 @@ open class CometChatMessageListViewModel(
      *
      * @see addReaction
      */
-    fun removeReaction(message: BaseMessage, emoji: String) {
+    public fun removeReaction(message: BaseMessage, emoji: String) {
         viewModelScope.launch {
             repository.removeReaction(message.id, emoji)
                 .onSuccess { updatedMessage ->
@@ -3062,11 +3087,11 @@ open class CometChatMessageListViewModel(
      * @see markMessageAsRead
      * @see setDisableReceipt
      */
-    fun markAsDelivered(message: BaseMessage) {
+    public fun markAsDelivered(message: BaseMessage) {
         if (disableReceipt) return
         val senderUid = message.sender?.uid ?: return // Don't mark if sender is null
         if (senderUid == getLoggedInUserUid()) return
-        
+
         viewModelScope.launch {
             repository.markAsDelivered(message)
         }
@@ -3085,7 +3110,7 @@ open class CometChatMessageListViewModel(
      * @see markMessageAsUnread
      * @see setDisableReceipt
      */
-    fun markMessageAsRead(message: BaseMessage) {
+    public fun markMessageAsRead(message: BaseMessage) {
         if (!disableReceipt && message.sender?.uid != CometChat.getLoggedInUser()?.uid) {
             viewModelScope.launch {
                 repository.markAsRead(message)
@@ -3135,7 +3160,7 @@ open class CometChatMessageListViewModel(
      * @see messageReadEvent
      * @see updateMessageReadAt
      */
-    fun markLastMessageAsRead(message: BaseMessage) {
+    public fun markLastMessageAsRead(message: BaseMessage) {
         // Condition 1: Check if receipts are disabled
         if (disableReceipt) return
         
@@ -3207,11 +3232,11 @@ open class CometChatMessageListViewModel(
      *
      * @see markMessageAsRead
      */
-    fun markMessageAsUnread(message: BaseMessage) {
+    public fun markMessageAsUnread(message: BaseMessage) {
         viewModelScope.launch {
             repository.markAsUnread(message)
                 .onSuccess { conversation ->
-                    Log.d("CometChatMessageListVM", "markMessageAsUnread() - SUCCESS for conversationId=${message.conversationId}, unreadCount=${conversation.unreadMessageCount}")
+                    CometChatLogger.d("CometChatMessageListVM", "markMessageAsUnread() - SUCCESS for conversationId=${message.conversationId}, unreadCount=${conversation.unreadMessageCount}")
                     // Set the unread message anchor for UI to display the "New" separator
                     _unreadMessageAnchor.value = message
                     
@@ -3220,7 +3245,7 @@ open class CometChatMessageListViewModel(
                     CometChatEvents.emitConversationEvent(CometChatConversationEvent.ConversationUpdated(conversation))
                 }
                 .onFailure { error ->
-                    Log.e("CometChatMessageListVM", "markMessageAsUnread() - FAILED: ${error.message}")
+                    CometChatLogger.e("CometChatMessageListVM", "markMessageAsUnread() - FAILED: ${error.message}")
                 }
         }
     }
@@ -3244,14 +3269,14 @@ open class CometChatMessageListViewModel(
      * @see markMessageAsRead
      * @see unreadCount
      */
-    fun markConversationRead() {
-        Log.d("CometChatMessageListVM", "markConversationRead() called")
+    public fun markConversationRead() {
+        CometChatLogger.d("CometChatMessageListVM", "markConversationRead() called")
         val lastMessage = _messages.value.lastOrNull() ?: run {
-            Log.d("CometChatMessageListVM", "markConversationRead() - No messages in list, returning")
+            CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - No messages in list, returning")
             return
         }
         
-        Log.d("CometChatMessageListVM", "markConversationRead() - lastMessage.id=${lastMessage.id}, conversationId=${lastMessage.conversationId}")
+        CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - lastMessage.id=${lastMessage.id}, conversationId=${lastMessage.conversationId}")
         
         // Reset local unread count
         _unreadCount.value = 0
@@ -3259,36 +3284,36 @@ open class CometChatMessageListViewModel(
         // If last message is from current user, we don't need to send a read receipt to the server
         // but we still need to notify ConversationListViewModel to clear the unread badge
         if (lastMessage.sender?.uid == getLoggedInUserUid()) {
-            Log.d("CometChatMessageListVM", "markConversationRead() - Last message is from current user, emitting MessageRead event without server call")
+            CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - Last message is from current user, emitting MessageRead event without server call")
             viewModelScope.launch {
                 // Emit UIKit event so ConversationListViewModel can clear unread count
                 CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageRead(lastMessage))
-                Log.d("CometChatMessageListVM", "markConversationRead() - MessageRead event emitted for conversationId=${lastMessage.conversationId}")
+                CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - MessageRead event emitted for conversationId=${lastMessage.conversationId}")
             }
             return
         }
         
         // Only send read receipt to server if receipts are enabled
         if (disableReceipt) {
-            Log.d("CometChatMessageListVM", "markConversationRead() - Receipts disabled, emitting local event only")
+            CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - Receipts disabled, emitting local event only")
             viewModelScope.launch {
                 CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageRead(lastMessage))
             }
             return
         }
         
-        Log.d("CometChatMessageListVM", "markConversationRead() - Calling repository.markAsRead()")
+        CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - Calling repository.markAsRead()")
         viewModelScope.launch {
             repository.markAsRead(lastMessage)
                 .onSuccess {
-                    Log.d("CometChatMessageListVM", "markConversationRead() - markAsRead SUCCESS, emitting MessageRead event")
+                    CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - markAsRead SUCCESS, emitting MessageRead event")
                     _messageReadEvent.emit(lastMessage)
                     // Emit UIKit event so ConversationListViewModel can clear unread count
                     CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageRead(lastMessage))
-                    Log.d("CometChatMessageListVM", "markConversationRead() - MessageRead event emitted for conversationId=${lastMessage.conversationId}")
+                    CometChatLogger.d("CometChatMessageListVM", "markConversationRead() - MessageRead event emitted for conversationId=${lastMessage.conversationId}")
                 }
                 .onFailure { error ->
-                    Log.e("CometChatMessageListVM", "markConversationRead() - markAsRead FAILED: ${error.message}")
+                    CometChatLogger.e("CometChatMessageListVM", "markConversationRead() - markAsRead FAILED: ${error.message}")
                 }
         }
     }
@@ -3303,7 +3328,7 @@ open class CometChatMessageListViewModel(
      * @see markConversationRead
      * @see unreadCount
      */
-    fun resetUnreadCount() {
+    public fun resetUnreadCount() {
         _unreadCount.value = 0
     }
     
@@ -3329,7 +3354,7 @@ open class CometChatMessageListViewModel(
      *
      * @see messageSenderFetched
      */
-    fun fetchMessageSender(message: BaseMessage?) {
+    public fun fetchMessageSender(message: BaseMessage?) {
         val senderUid = message?.sender?.uid
         if (senderUid.isNullOrEmpty()) return
         
@@ -3376,7 +3401,7 @@ open class CometChatMessageListViewModel(
      *
      * @see CometChatMessageEvent.MessageEdited
      */
-    fun onMessageEdit(message: BaseMessage) {
+    public fun onMessageEdit(message: BaseMessage) {
         CometChatEvents.emitMessageEvent(
             CometChatMessageEvent.MessageEdited(message, MessageStatus.IN_PROGRESS)
         )
@@ -3399,7 +3424,7 @@ open class CometChatMessageListViewModel(
      *
      * @see CometChatMessageEvent.ReplyToMessage
      */
-    fun onMessageReply(message: BaseMessage) {
+    public fun onMessageReply(message: BaseMessage) {
         CometChatEvents.emitMessageEvent(
             CometChatMessageEvent.ReplyToMessage(message, MessageStatus.IN_PROGRESS)
         )
@@ -3417,7 +3442,7 @@ open class CometChatMessageListViewModel(
      * @see gotoMessageId
      * @see fetchMessagesWithUnreadCount
      */
-    fun clearGoToMessageId() {
+    public fun clearGoToMessageId() {
         gotoMessageId = 0
     }
     
@@ -3432,7 +3457,7 @@ open class CometChatMessageListViewModel(
      *
      * @see processMessageData
      */
-    fun emitProcessMessageData(message: BaseMessage) {
+    public fun emitProcessMessageData(message: BaseMessage) {
         viewModelScope.launch {
             _processMessageData.emit(message)
         }
@@ -3589,7 +3614,7 @@ open class CometChatMessageListViewModel(
      *
      * @see MessageAlignment
      */
-    fun getMessageAlignment(message: BaseMessage): MessageAlignment {
+    public fun getMessageAlignment(message: BaseMessage): MessageAlignment {
         return when {
             message.category == CometChatConstants.CATEGORY_ACTION -> MessageAlignment.CENTER
             message.category == CometChatConstants.CATEGORY_CALL -> MessageAlignment.CENTER
@@ -3705,7 +3730,7 @@ open class CometChatMessageListViewModel(
      *
      * @see idMap
      */
-    fun getIdMap(): Map<String, String> = _idMap.value
+    public fun getIdMap(): Map<String, String> = _idMap.value
 
     /**
      * Returns the currently configured message types.
@@ -3715,7 +3740,7 @@ open class CometChatMessageListViewModel(
      *
      * @return List of message type strings (e.g., "text", "image", "video")
      */
-    fun getTypes(): List<String> = messagesTypes
+    public fun getTypes(): List<String> = messagesTypes
 
     /**
      * Returns the currently configured message categories.
@@ -3725,7 +3750,7 @@ open class CometChatMessageListViewModel(
      *
      * @return List of message category strings (e.g., "message", "action", "call")
      */
-    fun getCategories(): List<String> = messagesCategories
+    public fun getCategories(): List<String> = messagesCategories
     
     /**
      * Checks if an event's ID map matches the current conversation context.
@@ -3744,7 +3769,7 @@ open class CometChatMessageListViewModel(
      * @param eventIdMap The ID map from an incoming event.
      * @return `true` if the event is for the current conversation, `false` otherwise.
      */
-    fun matchesIdMap(eventIdMap: Map<String, String>): Boolean {
+    public fun matchesIdMap(eventIdMap: Map<String, String>): Boolean {
         val currentMap = _idMap.value
         
         // Check receiver ID and type
@@ -4006,7 +4031,7 @@ open class CometChatMessageListViewModel(
      */
     private fun handleMessageSentEvent(event: CometChatMessageEvent.MessageSent) {
         val message = event.message
-        
+
         // Check if message belongs to current conversation
         if (!isMessageForCurrentChat(message)) return
         
@@ -4147,10 +4172,14 @@ open class CometChatMessageListViewModel(
         // First try to update by muid (temp ID used for optimistic updates)
         val muid = message.muid
         if (!muid.isNullOrEmpty()) {
-            val updated = updateItem(message) { it.muid == muid }
+            // Preserve any receipt already stamped on the echo when the delivered/read receipt
+            // won the race against this SUCCESS event (ENG-39520).
+            val existing = _messages.value.firstOrNull { it.muid == muid }
+            val reconciled = if (existing != null) carryReceiptsForward(existing, message) else message
+            val updated = updateItem(reconciled) { it.muid == muid }
             if (updated) return
         }
-        
+
         // Fall back to update by ID
         val updated = updateItem(message) { it.id == message.id }
         if (!updated) {
@@ -4471,11 +4500,11 @@ open class CometChatMessageListViewModel(
                 override fun onTextMessageReceived(message: TextMessage) {
                     handleIncomingMessage(message)
                 }
-                
+
                 override fun onMediaMessageReceived(message: MediaMessage) {
                     handleIncomingMessage(message)
                 }
-                
+
                 override fun onCustomMessageReceived(message: CustomMessage) {
                     handleIncomingMessage(message)
                 }
@@ -4497,15 +4526,16 @@ open class CometChatMessageListViewModel(
                         // state; carry it over from the loaded copy so the rebind keeps the
                         // indicator (the list swap and the rebind emission must agree).
                         val edited = reconcilePinSaveOnReplace(message)
+                        CometChatLogger.d("CometChatMsgListVM", "━━━ onMessageEdited ━━━ msgId=${message.id}, type=${message.type}, moderationStatus=${(message as? com.cometchat.chat.models.TextMessage)?.moderationStatus?.name ?: (message as? com.cometchat.chat.models.MediaMessage)?.moderationStatus?.name ?: "N/A"}")
                         updateMessage(edited)
                         // Emit via SharedFlow to bypass StateFlow conflation
                         // This ensures moderation status changes trigger UI rebind in real-time
                         viewModelScope.launch {
-                            android.util.Log.d("CometChatMsgListVM", "onMessageEdited: emitting _messageUpdated for msgId=${message.id}")
+                            CometChatLogger.d("CometChatMsgListVM", "onMessageEdited: emitting _messageUpdated for msgId=${message.id}")
                             _messageUpdated.emit(edited)
                         }
                     } else {
-                        android.util.Log.d("CometChatMsgListVM", "onMessageEdited: IGNORED (not for current chat) msgId=${message.id}")
+                        CometChatLogger.d("CometChatMsgListVM", "onMessageEdited: IGNORED (not for current chat) msgId=${message.id}")
                     }
                 }
 
@@ -4582,15 +4612,15 @@ open class CometChatMessageListViewModel(
                 override fun onMessagesDelivered(messageReceipt: MessageReceipt) {
                     handleMessageReceipt(messageReceipt)
                 }
-                
+
                 override fun onMessagesRead(messageReceipt: MessageReceipt) {
                     handleMessageReceipt(messageReceipt)
                 }
-                
+
                 override fun onMessagesDeliveredToAll(messageReceipt: MessageReceipt) {
                     handleMessageReceipt(messageReceipt)
                 }
-                
+
                 override fun onMessagesReadByAll(messageReceipt: MessageReceipt) {
                     handleMessageReceipt(messageReceipt)
                 }
@@ -4877,16 +4907,16 @@ open class CometChatMessageListViewModel(
      */
     private fun handleMessageReceipt(receipt: MessageReceipt) {
         if (disableReceipt) return
-        
+
         val currentId = user?.uid ?: group?.guid ?: return
-        
+
         // Validate receipt is for current chat and correct receipt type
         when (receipt.receiverType) {
             CometChatConstants.RECEIVER_TYPE_USER -> {
                 // For user chats, the sender of the receipt should match the current chat user
                 // Only process DELIVERED and READ receipts (not TO_ALL variants)
                 if (receipt.sender?.uid != currentId) return
-                
+
                 when (receipt.receiptType) {
                     MessageReceipt.RECEIPT_TYPE_DELIVERED -> setDeliveryReceipts(receipt)
                     MessageReceipt.RECEIPT_TYPE_READ -> setReadReceipts(receipt)
@@ -4896,7 +4926,7 @@ open class CometChatMessageListViewModel(
                 // For group chats, the receiver ID should match the current group
                 // Only process DELIVERED_TO_ALL and READ_BY_ALL receipts
                 if (receipt.receiverId != currentId) return
-                
+
                 when (receipt.receiptType) {
                     MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL -> setDeliveryReceipts(receipt)
                     MessageReceipt.RECEIPT_TYPE_READ_BY_ALL -> setReadReceipts(receipt)

@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageInformationViewModel
  * @param eventListener Optional custom event listener implementation
  * @param enableListeners Whether to enable real-time listeners (default true)
  */
-class CometChatMessageInformationViewModelFactory(
+public class CometChatMessageInformationViewModelFactory(
     private val repository: MessageInformationRepository? = null,
     private val eventListener: MessageReceiptEventListener? = null,
     private val enableListeners: Boolean = true

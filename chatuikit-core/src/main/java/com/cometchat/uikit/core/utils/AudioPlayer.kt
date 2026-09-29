@@ -1,7 +1,6 @@
 package com.cometchat.uikit.core.utils
 
 import android.media.MediaPlayer
-import android.util.Log
 
 /**
  * Singleton audio player for managing audio playback across the UI Kit.
@@ -11,20 +10,20 @@ import android.util.Log
  *
  * Shared across chatuikit-kotlin and chatuikit-jetpack modules.
  */
-class AudioPlayer private constructor() {
+public class AudioPlayer private constructor() {
 
     private val mediaPlayer = MediaPlayer()
     private var isPrepared = false
     private var completionListener: MediaPlayer.OnCompletionListener? = null
 
-    companion object {
+    public companion object {
         private const val TAG = "AudioPlayer"
 
         @Volatile
         private var instance: AudioPlayer? = null
 
         @JvmStatic
-        fun getInstance(): AudioPlayer {
+        public fun getInstance(): AudioPlayer {
             return instance ?: synchronized(this) {
                 instance ?: AudioPlayer().also { instance = it }
             }
@@ -39,7 +38,7 @@ class AudioPlayer private constructor() {
      * @param preparedListener Callback when the player is prepared
      * @param completionListener Callback when playback completes
      */
-    fun setAudioUrl(
+    public fun setAudioUrl(
         url: String,
         preparedListener: MediaPlayer.OnPreparedListener?,
         completionListener: MediaPlayer.OnCompletionListener?
@@ -58,7 +57,7 @@ class AudioPlayer private constructor() {
                 completionListener?.onCompletion(mp)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error setting audio URL: ${e.message}")
+            CometChatLogger.e(TAG, "Error setting audio URL: ${e.message}")
         }
     }
 
@@ -66,7 +65,7 @@ class AudioPlayer private constructor() {
      * Resets the media player.
      * Fires the completion listener of the previously playing audio.
      */
-    fun reset() {
+    public fun reset() {
         mediaPlayer.reset()
         completionListener?.onCompletion(mediaPlayer)
         isPrepared = false
@@ -75,7 +74,7 @@ class AudioPlayer private constructor() {
     /**
      * Starts playback if prepared and not already playing.
      */
-    fun start() {
+    public fun start() {
         if (!mediaPlayer.isPlaying && isPrepared) {
             mediaPlayer.start()
         }
@@ -84,7 +83,7 @@ class AudioPlayer private constructor() {
     /**
      * Stops playback.
      */
-    fun stop() {
+    public fun stop() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.stop()
             isPrepared = false
@@ -94,10 +93,10 @@ class AudioPlayer private constructor() {
     /**
      * Checks if audio is currently playing.
      */
-    fun isPlaying(): Boolean = mediaPlayer.isPlaying
+    public fun isPlaying(): Boolean = mediaPlayer.isPlaying
 
     /**
      * Gets the underlying MediaPlayer instance.
      */
-    fun getMediaPlayer(): MediaPlayer = mediaPlayer
+    public fun getMediaPlayer(): MediaPlayer = mediaPlayer
 }

@@ -10,18 +10,18 @@ import com.cometchat.chat.models.User
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface UsersRepository {
+public interface UsersRepository {
     
     /**
      * Fetches users based on the provided request configuration.
      * @param request The configured UsersRequest with pagination and filters
      * @return Result containing list of users or error
      */
-    suspend fun getUsers(request: UsersRequest): Result<List<User>>
+    suspend public fun getUsers(request: UsersRequest): Result<List<User>>
     
     /**
      * Checks if there are more users to fetch (pagination).
      * @return true if more users are available
      */
-    fun hasMoreUsers(): Boolean
+    public fun hasMoreUsers(): Boolean
 }

@@ -30,11 +30,11 @@ import kotlinx.coroutines.launch
  * 
  * Validates: Requirements 5.1-5.14
  */
-open class CometChatIncomingCallViewModel(
+open public class CometChatIncomingCallViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatIncomingCallViewModel"
     }
 
@@ -46,7 +46,7 @@ open class CometChatIncomingCallViewModel(
      * Validates: Requirement 5.2
      */
     private val _call = MutableStateFlow<Call?>(null)
-    val call: StateFlow<Call?> = _call.asStateFlow()
+    public val call: StateFlow<Call?> = _call.asStateFlow()
 
     /**
      * StateFlow for the accepted call result.
@@ -55,7 +55,7 @@ open class CometChatIncomingCallViewModel(
      * Validates: Requirement 5.3
      */
     private val _acceptedCall = MutableStateFlow<Call?>(null)
-    val acceptedCall: StateFlow<Call?> = _acceptedCall.asStateFlow()
+    public val acceptedCall: StateFlow<Call?> = _acceptedCall.asStateFlow()
 
     /**
      * StateFlow for the rejected/cancelled call result.
@@ -64,7 +64,7 @@ open class CometChatIncomingCallViewModel(
      * Validates: Requirement 5.4
      */
     private val _rejectedCall = MutableStateFlow<Call?>(null)
-    val rejectedCall: StateFlow<Call?> = _rejectedCall.asStateFlow()
+    public val rejectedCall: StateFlow<Call?> = _rejectedCall.asStateFlow()
 
     /**
      * SharedFlow for error events.
@@ -73,7 +73,7 @@ open class CometChatIncomingCallViewModel(
      * Validates: Requirement 5.5
      */
     private val _errorEvent = MutableSharedFlow<CometChatException>()
-    val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
+    public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
     // ==================== Internal State ====================
 
@@ -95,7 +95,7 @@ open class CometChatIncomingCallViewModel(
      * 
      * @param call The incoming Call object
      */
-    fun setCall(call: Call) {
+    public fun setCall(call: Call) {
         // Reset stale state from previous calls to prevent unintended actions
         // This is important when the ViewModel is reused (e.g., in Compose with remember)
         resetState()
@@ -107,13 +107,13 @@ open class CometChatIncomingCallViewModel(
      * 
      * @return The current Call or null if not set
      */
-    fun getCall(): Call? = _call.value
+    public fun getCall(): Call? = _call.value
 
     /**
      * Resets the ViewModel state to initial values.
      * Called when a new call is set to prevent stale state from triggering actions.
      */
-    fun resetState() {
+    public fun resetState() {
         _acceptedCall.value = null
         _rejectedCall.value = null
     }
@@ -130,7 +130,7 @@ open class CometChatIncomingCallViewModel(
      * 
      * Validates: Requirements 5.6, 5.8, 5.9, 5.12
      */
-    fun acceptCall() {
+    public fun acceptCall() {
         val currentCall = _call.value ?: return
         
         CometChat.acceptCall(currentCall.sessionId, object : CometChat.CallbackListener<Call>() {
@@ -164,7 +164,7 @@ open class CometChatIncomingCallViewModel(
      * 
      * Validates: Requirements 5.7, 5.10, 5.11, 5.12
      */
-    fun rejectCall() {
+    public fun rejectCall() {
         val currentCall = _call.value ?: return
         
         CometChat.rejectCall(
@@ -199,7 +199,7 @@ open class CometChatIncomingCallViewModel(
      * 
      * Validates: Requirement 5.13
      */
-    fun addListeners() {
+    public fun addListeners() {
         if (listenerId != null) {
             // Listeners already added
             return
@@ -240,7 +240,7 @@ open class CometChatIncomingCallViewModel(
     /**
      * Removes the CometChat SDK call listeners.
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         listenerId?.let { id ->
             CometChat.removeCallListener(id)
             listenerId = null

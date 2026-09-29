@@ -8,39 +8,39 @@ package com.cometchat.uikit.core.formatter
  * Platform-agnostic — shared by Jetpack Compose and Kotlin XML UI kits.
  * The UI layer maps [RenderedSegment] and [InlineSpan] to platform-specific styled text.
  */
-object MarkdownRenderer {
+public object MarkdownRenderer {
 
     /**
      * A block-level segment of rendered markdown.
      */
-    sealed class RenderedSegment {
+    sealed public class RenderedSegment {
         /** Normal text block with inline formatting spans. */
-        data class Text(
+        public data class Text(
             val text: String,
             val spans: List<InlineSpan> = emptyList()
         ) : RenderedSegment()
 
         /** Fenced code block. */
-        data class CodeBlock(
+        public data class CodeBlock(
             val code: String,
             val language: String = ""
         ) : RenderedSegment()
 
         /** Bullet list item (content may have inline spans). */
-        data class BulletItem(
+        public data class BulletItem(
             val text: String,
             val spans: List<InlineSpan> = emptyList()
         ) : RenderedSegment()
 
         /** Ordered list item (content may have inline spans). */
-        data class OrderedItem(
+        public data class OrderedItem(
             val number: Int,
             val text: String,
             val spans: List<InlineSpan> = emptyList()
         ) : RenderedSegment()
 
         /** Blockquote line (content may have inline spans). */
-        data class Blockquote(
+        public data class Blockquote(
             val text: String,
             val spans: List<InlineSpan> = emptyList()
         ) : RenderedSegment()
@@ -50,7 +50,7 @@ object MarkdownRenderer {
      * An inline formatting span within a text segment.
      * [start] and [end] are relative to the parent segment's text.
      */
-    data class InlineSpan(
+    public data class InlineSpan(
         val start: Int,
         val end: Int,
         val format: RichTextFormat,
@@ -63,7 +63,7 @@ object MarkdownRenderer {
      * Handles fenced code blocks first, then processes remaining text
      * line-by-line for block-level elements, and finally parses inline formatting.
      */
-    fun parse(markdown: String): List<RenderedSegment> {
+    public fun parse(markdown: String): List<RenderedSegment> {
         if (markdown.isBlank()) return listOf(RenderedSegment.Text(""))
 
         val segments = mutableListOf<RenderedSegment>()
@@ -158,7 +158,7 @@ object MarkdownRenderer {
      *
      * We take the second approach: [parseInline] returns the clean text and spans.
      */
-    fun parseInlineSpans(text: String): List<InlineSpan> {
+    public fun parseInlineSpans(text: String): List<InlineSpan> {
         val result = parseInline(text)
         return result.second
     }
@@ -170,7 +170,7 @@ object MarkdownRenderer {
      * Strategy: iteratively strip the outermost format layer, record spans
      * relative to the progressively stripped text, until no more markers remain.
      */
-    fun parseInline(text: String): Pair<String, List<InlineSpan>> {
+    public fun parseInline(text: String): Pair<String, List<InlineSpan>> {
         if (text.isEmpty()) return text to emptyList()
 
         // Each pattern strips one layer of markers per pass.

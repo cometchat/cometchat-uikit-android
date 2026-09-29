@@ -7,13 +7,13 @@ package com.cometchat.uikit.core.formatter
  * Normal segments use [RichTextEditorController] for WYSIWYG formatting.
  * Code segments hold plain text with an optional language hint.
  */
-sealed class ComposerSegment {
-    abstract val id: String
+sealed public class ComposerSegment {
+    abstract public val id: String
 
     /**
      * Normal rich text segment with span-based formatting.
      */
-    data class Normal(
+    public data class Normal(
         override val id: String,
         val controller: RichTextEditorController = RichTextEditorController()
     ) : ComposerSegment()
@@ -21,7 +21,7 @@ sealed class ComposerSegment {
     /**
      * Code block segment — plain text, monospace, no formatting.
      */
-    data class Code(
+    public data class Code(
         override val id: String,
         var text: String = "",
         var language: String = "",

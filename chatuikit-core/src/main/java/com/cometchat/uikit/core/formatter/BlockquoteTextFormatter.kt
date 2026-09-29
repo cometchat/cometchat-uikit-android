@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  * Supports multi-line selections.
  * Renders preview with QuoteSpan.
  */
-class BlockquoteTextFormatter(
+public class BlockquoteTextFormatter(
     private val quoteColor: Int = Color.parseColor("#CCCCCC"),
     private val quoteStripeWidth: Int = 4,
     private val quoteGapWidth: Int = 16
@@ -193,7 +193,7 @@ class BlockquoteTextFormatter(
      * @param cursorPosition The current cursor position
      * @return FormattedResult with new quote line added
      */
-    fun addNewQuoteLine(text: String, cursorPosition: Int): FormattedResult {
+    public fun addNewQuoteLine(text: String, cursorPosition: Int): FormattedResult {
         val newText = StringBuilder(text)
         newText.insert(cursorPosition, "\n$markdownPrefix")
         

@@ -67,13 +67,13 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * }
  * ```
  */
-class CometChatConversationListItem @JvmOverloads constructor(
+public class CometChatConversationListItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatConversationListItem::class.java.simpleName
     }
 
@@ -363,7 +363,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the conversation to display.
      */
-    fun setConversation(conversation: Conversation) {
+    public fun setConversation(conversation: Conversation) {
         this.conversation = conversation
         bindConversation()
     }
@@ -372,7 +372,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * Sets the typing indicator info for this conversation.
      * Supports multiple users typing simultaneously (common in group conversations).
      */
-    fun setTypingIndicator(indicator: TypingIndicator?) {
+    public fun setTypingIndicator(indicator: TypingIndicator?) {
         this.typingIndicatorInfo = indicator
         bindSubtitle()
     }
@@ -380,7 +380,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the selection state.
      */
-    fun setItemSelected(selected: Boolean) {
+    public fun setItemSelected(selected: Boolean) {
         this.isSelected = selected
         updateSelectionState()
     }
@@ -388,7 +388,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the selection mode.
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         this.selectionMode = mode
         updateSelectionState()
     }
@@ -396,14 +396,14 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (Conversation) -> Unit) {
+    public fun setOnItemClick(callback: (Conversation) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (Conversation) -> Unit) {
+    public fun setOnItemLongClick(callback: (Conversation) -> Unit) {
         onItemLongClick = callback
     }
 
@@ -411,7 +411,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * Sets custom leading view (replaces avatar section).
      * Pass null to restore the default leading view.
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         customLeadingView = view
         if (view != null) {
             binding.conversationLeadingView.removeAllViews()
@@ -426,7 +426,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * Sets custom title view.
      * Pass null to restore the default title view.
      */
-    fun setTitleView(view: View?) {
+    public fun setTitleView(view: View?) {
         customTitleView = view
         if (view != null) {
             binding.conversationsTitleView.removeAllViews()
@@ -441,7 +441,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * Sets custom subtitle view.
      * Pass null to restore the default subtitle view.
      */
-    fun setSubtitleView(view: View?) {
+    public fun setSubtitleView(view: View?) {
         customSubtitleView = view
         if (view != null) {
             // Clear subtitle binding reference when custom view is set
@@ -458,7 +458,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * Sets custom trailing view (replaces date/badge section).
      * Pass null to restore the default trailing view.
      */
-    fun setTrailingView(view: View?) {
+    public fun setTrailingView(view: View?) {
         customTrailingView = view
         if (view != null) {
             // Clear tail binding reference when custom view is set
@@ -474,7 +474,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets text formatters for message preview.
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         textFormatters = formatters
         bindSubtitle()
     }
@@ -482,7 +482,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets custom date/time formatter.
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         dateTimeFormatter = formatter
         bindTrailing()
     }
@@ -490,7 +490,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide user status indicator.
      */
-    fun setHideUserStatus(hide: Boolean) {
+    public fun setHideUserStatus(hide: Boolean) {
         hideUserStatus = hide
         bindLeading()
     }
@@ -498,7 +498,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide group type indicator.
      */
-    fun setHideGroupType(hide: Boolean) {
+    public fun setHideGroupType(hide: Boolean) {
         hideGroupType = hide
         bindLeading()
     }
@@ -506,7 +506,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide message receipts.
      */
-    fun setHideReceipts(hide: Boolean) {
+    public fun setHideReceipts(hide: Boolean) {
         hideReceipts = hide
         bindSubtitle()
     }
@@ -514,7 +514,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide item separator.
      */
-    fun setHideSeparator(hide: Boolean) {
+    public fun setHideSeparator(hide: Boolean) {
         hideSeparator = hide
         separatorView?.visibility = if (hide) GONE else VISIBLE
     }
@@ -522,7 +522,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatConversationListItemStyle) {
+    public fun setStyle(style: CometChatConversationListItemStyle) {
         this.style = style
         applyStyle()
         bindConversation()
@@ -531,7 +531,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatConversations
@@ -546,84 +546,84 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Gets the background color.
      */
-    fun getItemBackgroundColor(): Int = style.backgroundColor
+    public fun getItemBackgroundColor(): Int = style.backgroundColor
 
     /**
      * Gets the selected background color.
      */
-    fun getSelectedBackgroundColor(): Int = style.selectedBackgroundColor
+    public fun getSelectedBackgroundColor(): Int = style.selectedBackgroundColor
 
     /**
      * Gets the title text color.
      */
-    fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getTitleTextColor(): Int = style.titleTextColor
 
     /**
      * Gets the title text appearance.
      */
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
 
     /**
      * Gets the subtitle text color.
      */
-    fun getSubtitleTextColor(): Int = style.subtitleTextColor
+    public fun getSubtitleTextColor(): Int = style.subtitleTextColor
 
     /**
      * Gets the subtitle text appearance.
      */
-    fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
+    public fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
 
     /**
      * Gets the message type icon tint.
      */
-    fun getMessageTypeIconTint(): Int = style.messageTypeIconTint
+    public fun getMessageTypeIconTint(): Int = style.messageTypeIconTint
 
     /**
      * Gets the separator color.
      */
-    fun getSeparatorColor(): Int = style.separatorColor
+    public fun getSeparatorColor(): Int = style.separatorColor
 
     /**
      * Gets the separator height.
      */
-    fun getSeparatorHeight(): Int = style.separatorHeight
+    public fun getSeparatorHeight(): Int = style.separatorHeight
 
     /**
      * Gets the avatar style.
      */
-    fun getAvatarStyle(): CometChatAvatarStyle = style.avatarStyle
+    public fun getAvatarStyle(): CometChatAvatarStyle = style.avatarStyle
 
     /**
      * Gets the status indicator style.
      */
-    fun getStatusIndicatorStyle(): CometChatStatusIndicatorStyle = style.statusIndicatorStyle
+    public fun getStatusIndicatorStyle(): CometChatStatusIndicatorStyle = style.statusIndicatorStyle
 
     /**
      * Gets the date style.
      */
-    fun getDateStyle(): CometChatDateStyle = style.dateStyle
+    public fun getDateStyle(): CometChatDateStyle = style.dateStyle
 
     /**
      * Gets the badge count style.
      */
-    fun getBadgeCountStyle(): CometChatBadgeCountStyle = style.badgeCountStyle
+    public fun getBadgeCountStyle(): CometChatBadgeCountStyle = style.badgeCountStyle
 
     /**
      * Gets the receipt style.
      */
-    fun getReceiptStyle(): CometChatReceiptStyle = style.receiptStyle
+    public fun getReceiptStyle(): CometChatReceiptStyle = style.receiptStyle
 
     /**
      * Gets the typing indicator style.
      */
-    fun getTypingIndicatorStyle(): CometChatTypingIndicatorStyle = style.typingIndicatorStyle
+    public fun getTypingIndicatorStyle(): CometChatTypingIndicatorStyle = style.typingIndicatorStyle
 
     // ==================== Setters (update style object + apply) ====================
 
     /**
      * Sets the background color.
      */
-    fun setItemBackgroundColor(@ColorInt color: Int) {
+    public fun setItemBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         if (color != 0) binding.parentLayout.setBackgroundColor(color)
     }
@@ -631,7 +631,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the selected background color.
      */
-    fun setSelectedBackgroundColor(@ColorInt color: Int) {
+    public fun setSelectedBackgroundColor(@ColorInt color: Int) {
         style = style.copy(selectedBackgroundColor = color)
         updateSelectionState()
     }
@@ -639,7 +639,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the title text color.
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         if (color != 0) binding.tvConversationsTitle.setTextColor(color)
     }
@@ -647,7 +647,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the title text appearance.
      */
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) binding.tvConversationsTitle.setTextAppearance(appearance)
     }
@@ -655,7 +655,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the subtitle text color.
      */
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(subtitleTextColor = color)
         if (color != 0) {
             subtitleBinding?.tvSubtitle?.setTextColor(color)
@@ -666,7 +666,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the subtitle text appearance.
      */
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(subtitleTextAppearance = appearance)
         if (appearance != 0) {
             subtitleBinding?.tvSubtitle?.setTextAppearance(appearance)
@@ -677,7 +677,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the message type icon tint.
      */
-    fun setMessageTypeIconTint(@ColorInt color: Int) {
+    public fun setMessageTypeIconTint(@ColorInt color: Int) {
         style = style.copy(messageTypeIconTint = color)
         if (color != 0) subtitleBinding?.ivMessageTypeIcon?.setColorFilter(color)
     }
@@ -685,7 +685,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the separator color.
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         if (color != 0) separatorView?.setBackgroundColor(color)
     }
@@ -693,7 +693,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the separator height.
      */
-    fun setSeparatorHeight(@Dimension height: Int) {
+    public fun setSeparatorHeight(@Dimension height: Int) {
         style = style.copy(separatorHeight = height)
         if (height != 0) {
             separatorView?.layoutParams = (separatorView?.layoutParams as? LayoutParams)?.apply {
@@ -705,7 +705,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the avatar style.
      */
-    fun setAvatarStyle(avatarStyle: CometChatAvatarStyle) {
+    public fun setAvatarStyle(avatarStyle: CometChatAvatarStyle) {
         style = style.copy(avatarStyle = avatarStyle)
         binding.conversationsAvatar.setStyle(avatarStyle)
     }
@@ -713,7 +713,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the status indicator style.
      */
-    fun setStatusIndicatorStyle(statusIndicatorStyle: CometChatStatusIndicatorStyle) {
+    public fun setStatusIndicatorStyle(statusIndicatorStyle: CometChatStatusIndicatorStyle) {
         style = style.copy(statusIndicatorStyle = statusIndicatorStyle)
         binding.conversationsStatusAndTypeIndicator.setStyle(statusIndicatorStyle)
     }
@@ -721,7 +721,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the date style.
      */
-    fun setDateStyle(dateStyle: CometChatDateStyle) {
+    public fun setDateStyle(dateStyle: CometChatDateStyle) {
         style = style.copy(dateStyle = dateStyle)
         dateView?.setStyle(dateStyle)
     }
@@ -729,7 +729,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the badge count style.
      */
-    fun setBadgeCountStyle(badgeCountStyle: CometChatBadgeCountStyle) {
+    public fun setBadgeCountStyle(badgeCountStyle: CometChatBadgeCountStyle) {
         style = style.copy(badgeCountStyle = badgeCountStyle)
         badgeView?.setStyle(badgeCountStyle)
     }
@@ -737,7 +737,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the receipt style.
      */
-    fun setReceiptStyle(receiptStyle: CometChatReceiptStyle) {
+    public fun setReceiptStyle(receiptStyle: CometChatReceiptStyle) {
         style = style.copy(receiptStyle = receiptStyle)
         receiptView?.setStyle(receiptStyle)
     }
@@ -745,7 +745,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Sets the typing indicator style.
      */
-    fun setTypingIndicatorStyle(typingIndicatorStyle: CometChatTypingIndicatorStyle) {
+    public fun setTypingIndicatorStyle(typingIndicatorStyle: CometChatTypingIndicatorStyle) {
         style = style.copy(typingIndicatorStyle = typingIndicatorStyle)
         // Typing indicator text view styling is applied in bindSubtitle()
     }
@@ -753,42 +753,42 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Gets the current conversation.
      */
-    fun getConversation(): Conversation? = conversation
+    public fun getConversation(): Conversation? = conversation
 
     /**
      * Gets the current typing indicator info.
      */
-    fun getTypingIndicator(): TypingIndicator? = typingIndicatorInfo
+    public fun getTypingIndicator(): TypingIndicator? = typingIndicatorInfo
 
     /**
      * Gets the leading view container for custom view placement.
      */
-    fun getLeadingViewContainer(): ViewGroup = binding.conversationLeadingView
+    public fun getLeadingViewContainer(): ViewGroup = binding.conversationLeadingView
 
     /**
      * Gets the title view container for custom view placement.
      */
-    fun getTitleViewContainer(): ViewGroup = binding.conversationsTitleView
+    public fun getTitleViewContainer(): ViewGroup = binding.conversationsTitleView
 
     /**
      * Gets the subtitle view container for custom view placement.
      */
-    fun getSubtitleViewContainer(): ViewGroup = binding.subtitleView
+    public fun getSubtitleViewContainer(): ViewGroup = binding.subtitleView
 
     /**
      * Gets the trailing view container for custom view placement.
      */
-    fun getTrailingViewContainer(): ViewGroup = binding.tailView
+    public fun getTrailingViewContainer(): ViewGroup = binding.tailView
 
     /**
      * Gets the parent layout for full item replacement.
      */
-    fun getParentLayout(): ViewGroup = binding.parentLayout
+    public fun getParentLayout(): ViewGroup = binding.parentLayout
 
     /**
      * Resets the leading view to default.
      */
-    fun resetLeadingView() {
+    public fun resetLeadingView() {
         customLeadingView = null
         binding.conversationLeadingView.removeAllViews()
         // Re-add default avatar and status indicator
@@ -800,7 +800,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Resets the title view to default.
      */
-    fun resetTitleView() {
+    public fun resetTitleView() {
         customTitleView = null
         binding.conversationsTitleView.removeAllViews()
         binding.conversationsTitleView.addView(binding.tvConversationsTitle)
@@ -810,7 +810,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Resets the subtitle view to default.
      */
-    fun resetSubtitleView() {
+    public fun resetSubtitleView() {
         customSubtitleView = null
         initDefaultSubtitleViews()
         bindSubtitle()
@@ -819,7 +819,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
     /**
      * Resets the trailing view to default.
      */
-    fun resetTrailingView() {
+    public fun resetTrailingView() {
         customTrailingView = null
         initDefaultTrailingViews()
         bindTrailing()
@@ -830,7 +830,7 @@ class CometChatConversationListItem @JvmOverloads constructor(
      * This method rebuilds all default views (leading, title, subtitle, trailing)
      * and re-binds the current conversation data.
      */
-    fun restoreDefaultLayout() {
+    public fun restoreDefaultLayout() {
         // Clear all custom views
         customLeadingView = null
         customTitleView = null

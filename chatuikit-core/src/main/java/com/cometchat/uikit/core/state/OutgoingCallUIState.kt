@@ -10,13 +10,13 @@ import com.cometchat.chat.models.User
  *
  * Validates: Requirements 10.1-10.7
  */
-sealed class OutgoingCallUIState {
+sealed public class OutgoingCallUIState {
     /**
      * Idle state - initial state before any call is initiated.
      *
      * Validates: Requirement 10.2
      */
-    object Idle : OutgoingCallUIState()
+    public object Idle : OutgoingCallUIState()
 
     /**
      * Calling state - displayed when an outgoing call is being made.
@@ -26,7 +26,7 @@ sealed class OutgoingCallUIState {
      *
      * Validates: Requirement 10.3
      */
-    data class Calling(val call: Call, val user: User?) : OutgoingCallUIState()
+    public data class Calling(val call: Call, val user: User?) : OutgoingCallUIState()
 
     /**
      * Accepted state - displayed when the call has been accepted by the recipient.
@@ -35,7 +35,7 @@ sealed class OutgoingCallUIState {
      *
      * Validates: Requirement 10.4
      */
-    data class Accepted(val call: Call) : OutgoingCallUIState()
+    public data class Accepted(val call: Call) : OutgoingCallUIState()
 
     /**
      * Rejected state - displayed when the call has been rejected by the recipient.
@@ -44,7 +44,7 @@ sealed class OutgoingCallUIState {
      *
      * Validates: Requirement 10.5
      */
-    data class Rejected(val call: Call) : OutgoingCallUIState()
+    public data class Rejected(val call: Call) : OutgoingCallUIState()
 
     /**
      * OngoingCall state - displayed when the call is in progress.
@@ -54,7 +54,7 @@ sealed class OutgoingCallUIState {
      *
      * Validates: Requirement 10.6
      */
-    data class OngoingCall(val sessionId: String, val callType: String) : OutgoingCallUIState()
+    public data class OngoingCall(val sessionId: String, val callType: String) : OutgoingCallUIState()
 
     /**
      * Error state - displayed when an error occurs during call handling.
@@ -63,5 +63,5 @@ sealed class OutgoingCallUIState {
      *
      * Validates: Requirement 10.7
      */
-    data class Error(val exception: CometChatException) : OutgoingCallUIState()
+    public data class Error(val exception: CometChatException) : OutgoingCallUIState()
 }

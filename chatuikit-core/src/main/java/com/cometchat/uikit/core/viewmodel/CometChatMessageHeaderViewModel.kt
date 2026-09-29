@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
  * @param getGroupUseCase Use case for fetching group data
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatMessageHeaderViewModel(
+open public class CometChatMessageHeaderViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val getGroupUseCase: GetGroupUseCase,
     private val enableListeners: Boolean = true
@@ -53,27 +53,27 @@ open class CometChatMessageHeaderViewModel(
 
     // UI State
     private val _uiState = MutableStateFlow<MessageHeaderUIState>(MessageHeaderUIState.Loading)
-    val uiState: StateFlow<MessageHeaderUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<MessageHeaderUIState> = _uiState.asStateFlow()
 
     // User state
     private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user.asStateFlow()
+    public val user: StateFlow<User?> = _user.asStateFlow()
 
     // Group state
     private val _group = MutableStateFlow<Group?>(null)
-    val group: StateFlow<Group?> = _group.asStateFlow()
+    public val group: StateFlow<Group?> = _group.asStateFlow()
 
     // Typing indicator state
     private val _typingIndicator = MutableStateFlow<TypingIndicator?>(null)
-    val typingIndicator: StateFlow<TypingIndicator?> = _typingIndicator.asStateFlow()
+    public val typingIndicator: StateFlow<TypingIndicator?> = _typingIndicator.asStateFlow()
 
     // Member count for groups
     private val _memberCount = MutableStateFlow(0)
-    val memberCount: StateFlow<Int> = _memberCount.asStateFlow()
+    public val memberCount: StateFlow<Int> = _memberCount.asStateFlow()
 
     // Error events - emitted for UI to handle via callback
     private val _errorEvent = MutableSharedFlow<CometChatException>()
-    val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
+    public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
     // Listener tag for SDK listeners
     private var listenersTag: String? = null
@@ -103,7 +103,7 @@ open class CometChatMessageHeaderViewModel(
      * 
      * @param user The User object to display in the header
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         _user.value = user
         _group.value = null
         currentId = user.uid
@@ -116,7 +116,7 @@ open class CometChatMessageHeaderViewModel(
      * 
      * @param group The Group object to display in the header
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         _group.value = group
         _user.value = null
         currentId = group.guid
@@ -130,7 +130,7 @@ open class CometChatMessageHeaderViewModel(
      * 
      * @param uid The user ID to refresh
      */
-    fun refreshUser(uid: String) {
+    public fun refreshUser(uid: String) {
         viewModelScope.launch {
             getUserUseCase(uid)
                 .onSuccess { user ->
@@ -153,7 +153,7 @@ open class CometChatMessageHeaderViewModel(
      * 
      * @param guid The group ID to refresh
      */
-    fun refreshGroup(guid: String) {
+    public fun refreshGroup(guid: String) {
         viewModelScope.launch {
             getGroupUseCase(guid)
                 .onSuccess { group ->
@@ -446,7 +446,7 @@ open class CometChatMessageHeaderViewModel(
      * Removes all CometChat SDK listeners and cancels UIKit local event listener jobs.
      * Called when the ViewModel is cleared.
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         listenersTag?.let { tag ->
             CometChat.removeUserListener(tag)
             CometChat.removeGroupListener(tag)

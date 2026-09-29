@@ -7,7 +7,9 @@ import com.cometchat.uikit.core.viewmodel.CometChatConversationsViewModel
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.types.shouldBeInstanceOf
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.wheneverBlocking
 
 /**
  * Tests for CometChatCallLogsViewModelFactory.
@@ -17,9 +19,23 @@ import org.mockito.kotlin.mock
  */
 class CometChatCallLogsViewModelFactoryTest : FunSpec({
 
+    /**
+     * A data source that answers, rather than a bare mock.
+     *
+     * Creating the view model starts fetchCallLogs() on viewModelScope. An unstubbed suspend mock
+     * returns null, CallLogsRepositoryImpl then calls isEmpty() on it, and the resulting
+     * NullPointerException lands on a DefaultDispatcher worker with nothing awaiting it. kotlinx
+     * coroutines-test attributes such orphaned exceptions to the *next* test that uses runTest,
+     * which fails as UncaughtExceptionsBeforeTest somewhere else entirely — this spec was doing
+     * that to MessageListFetchWithUnreadPropertyTest and CometChatSearchViewModelStateTransitions-
+     * PropertyTest depending on ordering.
+     */
+    fun answeringDataSource(): CallLogsDataSource = mock<CallLogsDataSource>().also {
+        wheneverBlocking { it.fetchCallLogs(any()) }.thenReturn(Result.success(emptyList()))
+    }
+
     test("create should return CometChatCallLogsViewModel for correct class") {
-        // Use a mock DataSource to avoid real SDK calls
-        val mockDataSource = mock<CallLogsDataSource>()
+        val mockDataSource = answeringDataSource()
         val repository = CallLogsRepositoryImpl(mockDataSource)
         val factory = CometChatCallLogsViewModelFactory(
             repository = repository,
@@ -32,7 +48,7 @@ class CometChatCallLogsViewModelFactoryTest : FunSpec({
     }
 
     test("create should throw IllegalArgumentException for unsupported ViewModel class") {
-        val mockDataSource = mock<CallLogsDataSource>()
+        val mockDataSource = answeringDataSource()
         val repository = CallLogsRepositoryImpl(mockDataSource)
         val factory = CometChatCallLogsViewModelFactory(
             repository = repository,
@@ -45,7 +61,7 @@ class CometChatCallLogsViewModelFactoryTest : FunSpec({
     }
 
     test("create should pass custom repository through to ViewModel") {
-        val mockDataSource = mock<CallLogsDataSource>()
+        val mockDataSource = answeringDataSource()
         val customRepository = CallLogsRepositoryImpl(mockDataSource)
         val factory = CometChatCallLogsViewModelFactory(
             repository = customRepository,

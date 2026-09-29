@@ -8,7 +8,7 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  * 
  * @param repository The repository to perform kick operation
  */
-open class KickGroupMemberUseCase(
+open public class KickGroupMemberUseCase(
     private val repository: GroupMembersRepository
 ) {
     /**
@@ -17,7 +17,7 @@ open class KickGroupMemberUseCase(
      * @param uid The user ID to kick
      * @return Result indicating success or failure
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         guid: String,
         uid: String
     ): Result<Unit> {

@@ -7,7 +7,7 @@ import com.cometchat.calls.model.CallLog
  * DiffUtil.Callback implementation for efficient CallLog list updates.
  * Compares call logs by their session ID for identity and content equality.
  */
-class CallLogsDiffCallback(
+public class CallLogsDiffCallback(
     private val oldList: List<CallLog>,
     private val newList: List<CallLog>
 ) : DiffUtil.Callback() {

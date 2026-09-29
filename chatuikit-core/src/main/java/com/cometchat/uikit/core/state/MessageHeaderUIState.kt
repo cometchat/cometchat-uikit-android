@@ -13,13 +13,13 @@ import com.cometchat.chat.models.User
  * 
  * @see com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
  */
-sealed class MessageHeaderUIState {
+sealed public class MessageHeaderUIState {
     
     /**
      * Loading state - displayed while fetching user/group details.
      * This is the initial state before user or group data is set.
      */
-    object Loading : MessageHeaderUIState()
+    public object Loading : MessageHeaderUIState()
     
     /**
      * User content state - displayed when showing a user conversation.
@@ -28,7 +28,7 @@ sealed class MessageHeaderUIState {
      * 
      * @param user The CometChat User object to display in the header
      */
-    data class UserContent(val user: User) : MessageHeaderUIState()
+    public data class UserContent(val user: User) : MessageHeaderUIState()
     
     /**
      * Group content state - displayed when showing a group conversation.
@@ -37,7 +37,7 @@ sealed class MessageHeaderUIState {
      * 
      * @param group The CometChat Group object to display in the header
      */
-    data class GroupContent(val group: Group) : MessageHeaderUIState()
+    public data class GroupContent(val group: Group) : MessageHeaderUIState()
     
     /**
      * Error state - displayed when fetching user/group details fails.
@@ -46,5 +46,5 @@ sealed class MessageHeaderUIState {
      * 
      * @param exception The CometChatException that caused the error
      */
-    data class Error(val exception: CometChatException) : MessageHeaderUIState()
+    public data class Error(val exception: CometChatException) : MessageHeaderUIState()
 }

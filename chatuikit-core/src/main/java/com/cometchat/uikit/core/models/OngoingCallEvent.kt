@@ -8,16 +8,16 @@ import com.cometchat.chat.exceptions.CometChatException
  *
  * Validates: Requirement 1.5
  */
-sealed class OngoingCallEvent {
+sealed public class OngoingCallEvent {
     /**
      * Event emitted when the call has ended.
      */
-    object CallEnded : OngoingCallEvent()
+    public object CallEnded : OngoingCallEvent()
 
     /**
      * Event emitted when the call session times out.
      */
-    object SessionTimeout : OngoingCallEvent()
+    public object SessionTimeout : OngoingCallEvent()
 
     /**
      * Event emitted when a user joins the call.
@@ -25,19 +25,19 @@ sealed class OngoingCallEvent {
      * @param userId The unique identifier of the user who joined
      * @param isCurrentUser True if the joined user is the current logged-in user
      */
-    data class UserJoined(val userId: String, val isCurrentUser: Boolean) : OngoingCallEvent()
+    public data class UserJoined(val userId: String, val isCurrentUser: Boolean) : OngoingCallEvent()
 
     /**
      * Event emitted when a user leaves the call.
      *
      * @param userId The unique identifier of the user who left
      */
-    data class UserLeft(val userId: String) : OngoingCallEvent()
+    public data class UserLeft(val userId: String) : OngoingCallEvent()
 
     /**
      * Event emitted when an error occurs during the call.
      *
      * @param exception The CometChatException that caused the error
      */
-    data class Error(val exception: CometChatException) : OngoingCallEvent()
+    public data class Error(val exception: CometChatException) : OngoingCallEvent()
 }

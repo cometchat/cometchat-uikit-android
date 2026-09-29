@@ -24,7 +24,7 @@ import com.cometchat.uikit.kotlin.presentation.emojikeyboard.model.EmojiCategory
  * @param context The context used for layout inflation and layout manager creation.
  * @param emojiCategories The list of emoji categories to display.
  */
-class EmojiAdapter(
+internal class EmojiAdapter(
     private val context: Context,
     emojiCategories: List<EmojiCategory>?
 ) : RecyclerView.Adapter<EmojiAdapter.EmojiViewHolder>() {

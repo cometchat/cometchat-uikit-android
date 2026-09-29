@@ -13,7 +13,7 @@ import java.util.Locale
  * It allows setting the locale and retrieving the locale country code for an
  * activity or context.
  */
-object CometChatLocalize {
+public object CometChatLocalize {
     private const val TAG = "CometChatLocalize"
     private var locale: Locale? = null
 
@@ -25,7 +25,7 @@ object CometChatLocalize {
      *                 English, "fr" for French). Use [Language.Code] constants.
      */
     @JvmStatic
-    fun setLocale(context: Context, @Language.Code language: String) {
+    public fun setLocale(context: Context, @Language.Code language: String) {
         locale = Locale(language)
         Locale.setDefault(locale!!)
         
@@ -45,7 +45,7 @@ object CometChatLocalize {
      * @return The current default locale.
      */
     @JvmStatic
-    fun getDefault(): Locale {
+    public fun getDefault(): Locale {
         if (locale == null) {
             locale = Locale.getDefault()
         }
@@ -60,7 +60,7 @@ object CometChatLocalize {
      * @return The country code of the current locale in the specified context.
      */
     @JvmStatic
-    fun getLocale(context: Context): String {
+    public fun getLocale(context: Context): String {
         val config: Configuration = context.resources.configuration
         return config.locales[0].country
     }
@@ -72,7 +72,7 @@ object CometChatLocalize {
      * @return The language code of the current locale in the specified context.
      */
     @JvmStatic
-    fun getLanguage(context: Context): String {
+    public fun getLanguage(context: Context): String {
         val config: Configuration = context.resources.configuration
         return config.locales[0].language
     }
@@ -84,7 +84,7 @@ object CometChatLocalize {
      * @return True if the current locale is RTL, false otherwise.
      */
     @JvmStatic
-    fun isRtl(context: Context): Boolean {
+    public fun isRtl(context: Context): Boolean {
         val config: Configuration = context.resources.configuration
         return config.layoutDirection == View.LAYOUT_DIRECTION_RTL
     }
@@ -93,7 +93,7 @@ object CometChatLocalize {
      * Resets the locale to the system default.
      */
     @JvmStatic
-    fun resetToDefault() {
+    public fun resetToDefault() {
         locale = null
     }
 
@@ -106,7 +106,7 @@ object CometChatLocalize {
      * @return A new context with the specified locale.
      */
     @JvmStatic
-    fun createLocalizedContext(context: Context, @Language.Code language: String): Context {
+    public fun createLocalizedContext(context: Context, @Language.Code language: String): Context {
         val newLocale = Locale(language)
         val config = Configuration(context.resources.configuration)
         config.setLocale(newLocale)

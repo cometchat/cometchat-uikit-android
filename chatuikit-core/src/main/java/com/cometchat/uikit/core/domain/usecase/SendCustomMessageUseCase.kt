@@ -15,7 +15,7 @@ import com.cometchat.uikit.core.domain.repository.MessageComposerRepository
  *
  * @param repository The repository to send messages through
  */
-open class SendCustomMessageUseCase(
+open public class SendCustomMessageUseCase(
     private val repository: MessageComposerRepository
 ) {
     /**
@@ -33,7 +33,7 @@ open class SendCustomMessageUseCase(
      * @return Result containing the sent CustomMessage with updated metadata on success,
      *         or error on failure
      */
-    open suspend operator fun invoke(message: CustomMessage): Result<CustomMessage> {
+    open suspend operator public fun invoke(message: CustomMessage): Result<CustomMessage> {
         return repository.sendCustomMessage(message).onSuccess { sentMessage ->
             // The server subscribes the sender to the message's thread on every send, but
             // stamps `threadSubscribed` only on FETCHED copies — the send result comes back

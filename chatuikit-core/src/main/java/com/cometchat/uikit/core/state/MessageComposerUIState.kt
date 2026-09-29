@@ -20,19 +20,19 @@ import com.cometchat.chat.models.BaseMessage
  * 
  * @see com.cometchat.uikit.core.viewmodel.CometChatMessageComposerViewModel
  */
-sealed class MessageComposerUIState {
+sealed public class MessageComposerUIState {
     
     /**
      * Idle state - default state when the composer is ready for input.
      * This is the initial state and the state returned to after successful operations.
      */
-    object Idle : MessageComposerUIState()
+    public object Idle : MessageComposerUIState()
     
     /**
      * Sending state - displayed while a message is being sent.
      * The UI should show appropriate loading indicators during this state.
      */
-    object Sending : MessageComposerUIState()
+    public object Sending : MessageComposerUIState()
     
     /**
      * Editing state - displayed when the user is editing an existing message.
@@ -41,7 +41,7 @@ sealed class MessageComposerUIState {
      * 
      * @param message The original BaseMessage being edited
      */
-    data class Editing(val message: BaseMessage) : MessageComposerUIState()
+    public data class Editing(val message: BaseMessage) : MessageComposerUIState()
     
     /**
      * Replying state - displayed when the user is replying to a message.
@@ -50,14 +50,14 @@ sealed class MessageComposerUIState {
      * 
      * @param message The BaseMessage being replied to (quoted)
      */
-    data class Replying(val message: BaseMessage) : MessageComposerUIState()
+    public data class Replying(val message: BaseMessage) : MessageComposerUIState()
     
     /**
      * AI generating state - displayed when AI is generating a response.
      * The UI should show a stop button instead of the send button
      * to allow the user to interrupt the AI generation.
      */
-    object AIGenerating : MessageComposerUIState()
+    public object AIGenerating : MessageComposerUIState()
     
     /**
      * Success state - displayed when a message operation completes successfully.
@@ -66,7 +66,7 @@ sealed class MessageComposerUIState {
      * 
      * @param message The BaseMessage that was successfully sent or edited
      */
-    data class Success(val message: BaseMessage) : MessageComposerUIState()
+    public data class Success(val message: BaseMessage) : MessageComposerUIState()
     
     /**
      * Error state - displayed when a message operation fails.
@@ -75,7 +75,7 @@ sealed class MessageComposerUIState {
      * 
      * @param exception The CometChatException that caused the error
      */
-    data class Error(val exception: CometChatException) : MessageComposerUIState()
+    public data class Error(val exception: CometChatException) : MessageComposerUIState()
 }
 
 /**
@@ -90,7 +90,7 @@ sealed class MessageComposerUIState {
  * 
  * @see com.cometchat.uikit.core.viewmodel.CometChatMessageComposerViewModel
  */
-sealed class ComposerPanelEvent {
+sealed public class ComposerPanelEvent {
     
     /**
      * Event to show a custom view in the top panel (header area).
@@ -98,7 +98,7 @@ sealed class ComposerPanelEvent {
      * 
      * @param viewProvider A function that creates the View to display given a Context
      */
-    data class ShowTopPanel(val viewProvider: (Context) -> View) : ComposerPanelEvent()
+    public data class ShowTopPanel(val viewProvider: (Context) -> View) : ComposerPanelEvent()
     
     /**
      * Event to show a custom view in the bottom panel (footer area).
@@ -106,17 +106,17 @@ sealed class ComposerPanelEvent {
      * 
      * @param viewProvider A function that creates the View to display given a Context
      */
-    data class ShowBottomPanel(val viewProvider: (Context) -> View) : ComposerPanelEvent()
+    public data class ShowBottomPanel(val viewProvider: (Context) -> View) : ComposerPanelEvent()
     
     /**
      * Event to close/hide the top panel.
      * The UI should remove any custom view from the header area.
      */
-    object CloseTopPanel : ComposerPanelEvent()
+    public object CloseTopPanel : ComposerPanelEvent()
     
     /**
      * Event to close/hide the bottom panel.
      * The UI should remove any custom view from the footer area.
      */
-    object CloseBottomPanel : ComposerPanelEvent()
+    public object CloseBottomPanel : ComposerPanelEvent()
 }

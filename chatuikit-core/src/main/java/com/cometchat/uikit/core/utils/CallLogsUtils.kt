@@ -10,7 +10,7 @@ import com.cometchat.chat.core.CometChat
  * Utility functions for call log classification and data extraction.
  * Provides helper methods for determining call direction, type, and participant info.
  */
-object CallLogsUtils {
+public object CallLogsUtils {
     
     /**
      * Determines if the call was outgoing (initiated by the logged-in user).
@@ -18,7 +18,7 @@ object CallLogsUtils {
      * @param callLog The call log to check
      * @return true if the logged-in user initiated the call, false otherwise
      */
-    fun isOutgoingCall(callLog: CallLog): Boolean {
+    public fun isOutgoingCall(callLog: CallLog): Boolean {
         val initiator = callLog.initiator as? CallUser
         val loggedInUserId = CometChat.getLoggedInUser()?.uid
         return initiator?.uid == loggedInUserId
@@ -31,7 +31,7 @@ object CallLogsUtils {
      * @param callLog The call log to check
      * @return true if the call was missed/unanswered, false otherwise
      */
-    fun isMissedCall(callLog: CallLog): Boolean {
+    public fun isMissedCall(callLog: CallLog): Boolean {
         // Only incoming calls can be "missed" from the user's perspective
         if (isOutgoingCall(callLog)) return false
         
@@ -47,7 +47,7 @@ object CallLogsUtils {
      * @param callLog The call log to check
      * @return true if the call was incoming and answered, false otherwise
      */
-    fun isIncomingCall(callLog: CallLog): Boolean {
+    public fun isIncomingCall(callLog: CallLog): Boolean {
         return !isOutgoingCall(callLog) && !isMissedCall(callLog)
     }
     
@@ -57,7 +57,7 @@ object CallLogsUtils {
      * @param callLog The call log to check
      * @return true if the call was audio-only, false otherwise
      */
-    fun isAudioCall(callLog: CallLog): Boolean {
+    public fun isAudioCall(callLog: CallLog): Boolean {
         return callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO
     }
     
@@ -68,7 +68,7 @@ object CallLogsUtils {
      * @param callLog The call log to check
      * @return true if the call was a video call, false otherwise
      */
-    fun isVideoCall(callLog: CallLog): Boolean {
+    public fun isVideoCall(callLog: CallLog): Boolean {
         return callLog.type == CometChatCallsConstants.CALL_TYPE_VIDEO ||
                callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO
     }
@@ -81,7 +81,7 @@ object CallLogsUtils {
      * @param callLog The call log to get the name from
      * @return The display name of the other participant
      */
-    fun getDisplayName(callLog: CallLog): String {
+    public fun getDisplayName(callLog: CallLog): String {
         // Handle group calls
         if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
             val receiver = callLog.receiver as? CallGroup
@@ -108,7 +108,7 @@ object CallLogsUtils {
      * @param callLog The call log to get the avatar from
      * @return The avatar URL of the other participant, or null if not available
      */
-    fun getAvatarUrl(callLog: CallLog): String? {
+    public fun getAvatarUrl(callLog: CallLog): String? {
         // Handle group calls
         if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
             val receiver = callLog.receiver as? CallGroup
@@ -134,7 +134,7 @@ object CallLogsUtils {
      * @param callLog The call log to get the UID from
      * @return The UID of the other participant or group GUID
      */
-    fun getOtherParticipantUid(callLog: CallLog): String {
+    public fun getOtherParticipantUid(callLog: CallLog): String {
         // Handle group calls
         if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
             val receiver = callLog.receiver as? CallGroup

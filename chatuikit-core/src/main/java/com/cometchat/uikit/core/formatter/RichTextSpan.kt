@@ -10,7 +10,7 @@ package com.cometchat.uikit.core.formatter
  * @param end Exclusive end index in the plain text
  * @param formats Set of formats applied to this range
  */
-data class RichTextSpan(
+public data class RichTextSpan(
     val start: Int,
     val end: Int,
     val formats: Set<RichTextFormat>
@@ -22,13 +22,13 @@ data class RichTextSpan(
     val length: Int get() = (end - start).coerceAtLeast(0)
 
     /** True if this span contains the given position. */
-    fun contains(position: Int): Boolean = position in start until end
+    public fun contains(position: Int): Boolean = position in start until end
 
     /** True if this span overlaps with the given range. */
-    fun overlaps(rangeStart: Int, rangeEnd: Int): Boolean =
+    public fun overlaps(rangeStart: Int, rangeEnd: Int): Boolean =
         start < rangeEnd && end > rangeStart
 
     /** Returns a copy shifted by the given offset. */
-    fun shift(offset: Int): RichTextSpan =
+    public fun shift(offset: Int): RichTextSpan =
         copy(start = start + offset, end = end + offset)
 }

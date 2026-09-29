@@ -17,7 +17,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * All properties use Android-native types (@ColorInt Int, @StyleRes Int, Drawable,
  * @DrawableRes Int) with sentinel default values (0 for ints, null for Drawables).
  */
-data class CometChatAIAssistantChatHistoryStyle(
+public data class CometChatAIAssistantChatHistoryStyle(
     // Component background
     @ColorInt val chatHistoryBackgroundColor: Int = 0,
 
@@ -51,7 +51,7 @@ data class CometChatAIAssistantChatHistoryStyle(
     @ColorInt val deleteOptionTextColor: Int = 0,
     @StyleRes val deleteOptionTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's
          * cometChatAIAssistantChatHistoryStyle attribute.
@@ -59,7 +59,7 @@ data class CometChatAIAssistantChatHistoryStyle(
          * @param context The context to access theme resources
          * @return A CometChatAIAssistantChatHistoryStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatAIAssistantChatHistoryStyle {
+        public fun default(context: Context): CometChatAIAssistantChatHistoryStyle {
             return extractFromThemeStyle(context, R.attr.cometChatAIAssistantChatHistoryStyle)
         }
 
@@ -74,7 +74,7 @@ data class CometChatAIAssistantChatHistoryStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatAIAssistantChatHistoryStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(
+        public fun fromTypedArray(
             context: Context,
             typedArray: TypedArray
         ): CometChatAIAssistantChatHistoryStyle {

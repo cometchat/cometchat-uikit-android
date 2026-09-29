@@ -1,8 +1,12 @@
+import org.gradle.api.artifacts.ProjectDependency
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.roborazzi)
+    // no version: the root project loads the Dokka plugins on the classpath
+    id("org.jetbrains.dokka")
+    id("org.jetbrains.dokka-javadoc")
 }
 
 android {
@@ -56,6 +60,9 @@ android {
                 // Complete separation between unit tests and screenshot tests:
                 // - testDebugUnitTest: only unit tests (excludes *ScreenshotTest*)
                 // - recordRoborazziDebug / verifyRoborazziDebug: only screenshot tests
+                // Merging the two passes costs ~80min and leaks coroutine exceptions
+                // between classes that pass separately; they stay apart and contribute
+                // to one coverage report via separate .exec files.
                 val isRoborazziTask = project.gradle.startParameter.taskNames.any { taskName ->
                     taskName.lowercase().contains("roborazzi")
                 }
@@ -80,9 +87,11 @@ configurations.all {
 }
 
 dependencies {
+    lintChecks(project(":lint-checks"))
     // Core module – shared ViewModels and business logic (published artifact)
-    implementation(libs.chatuikit.core.android)
-    // implementation(project(":chatuikit-core"))
+    // ENG-38658 (A4): core types (ViewModels, UIState, UIKitConstants) appear in
+    // this toolkit's public signatures, so consumers must see core transitively.
+    api(libs.chatuikit.core.android)
     // CometChat SDK
     implementation(libs.chat.sdk.android)
     compileOnly(libs.calls.sdk.android)
@@ -116,8 +125,6 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.gridlayout)
 
-    // Animations
-    implementation(libs.lottie)
 
     // Utilities
     implementation(libs.gson)
@@ -155,4 +162,17 @@ dependencies {
     androidTestImplementation(project(":chatuikit-core"))
     androidTestImplementation(libs.calls.sdk.android)
     debugImplementation("androidx.fragment:fragment-testing-manifest:1.8.6")
+}
+
+// ENG-38655 (X2): every declaration must state its visibility explicitly
+kotlin {
+    explicitApi()
+}
+
+// ENG-38658 (X6): package the Dokka javadoc output as a -javadoc.jar for
+// publishing (wired into the publication by Track 2 / A2).
+val dokkaJavadocJar: TaskProvider<Jar> = tasks.register("dokkaJavadocJar", Jar::class) {
+    dependsOn(tasks.named("dokkaGeneratePublicationJavadoc"))
+    from(tasks.named("dokkaGeneratePublicationJavadoc").map { it.outputs })
+    archiveClassifier.set("javadoc")
 }

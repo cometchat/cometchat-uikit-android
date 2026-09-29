@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.CallLogsRepository
  * 
  * @param repository The repository for call logs operations
  */
-open class FetchCallLogsUseCase(
+open public class FetchCallLogsUseCase(
     private val repository: CallLogsRepository
 ) {
     /**
@@ -19,7 +19,7 @@ open class FetchCallLogsUseCase(
      * @param request The CallLogRequest configured with pagination and filters
      * @return Result containing list of CallLog on success, or exception on failure
      */
-    open suspend operator fun invoke(request: CallLogRequest): Result<List<CallLog>> {
+    open suspend operator public fun invoke(request: CallLogRequest): Result<List<CallLog>> {
         return repository.getCallLogs(request)
     }
     
@@ -28,5 +28,5 @@ open class FetchCallLogsUseCase(
      * 
      * @return true if more call logs can be fetched, false otherwise
      */
-    open fun hasMore(): Boolean = repository.hasMoreCallLogs()
+    open public fun hasMore(): Boolean = repository.hasMoreCallLogs()
 }

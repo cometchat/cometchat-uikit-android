@@ -4,7 +4,7 @@ package com.cometchat.uikit.core.events
  * Enum representing the status of a message operation.
  * Maps to the Java MessageStatus annotation values for compatibility.
  */
-enum class MessageStatus(val value: Int) {
+public enum class MessageStatus(public val value: Int) {
     /**
      * The message operation is in progress.
      */
@@ -20,12 +20,12 @@ enum class MessageStatus(val value: Int) {
      */
     ERROR(-1);
 
-    companion object {
+    public companion object {
         /**
          * Converts an integer value to the corresponding MessageStatus.
          * @param value The integer value to convert
          * @return The corresponding MessageStatus, defaults to IN_PROGRESS if not found
          */
-        fun fromInt(value: Int): MessageStatus = entries.find { it.value == value } ?: IN_PROGRESS
+        public fun fromInt(value: Int): MessageStatus = entries.find { it.value == value } ?: IN_PROGRESS
     }
 }

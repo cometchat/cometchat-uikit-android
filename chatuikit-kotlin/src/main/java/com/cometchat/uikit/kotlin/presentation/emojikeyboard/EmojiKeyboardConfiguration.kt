@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.presentation.emojikeyboard.style.CometChatEmoj
  * @param onLongClick Callback invoked when a user long-presses an emoji, receiving the emoji unicode string
  * @param style Optional style configuration for the emoji keyboard appearance
  */
-data class EmojiKeyboardConfiguration(
+public data class EmojiKeyboardConfiguration(
     val onClick: ((String) -> Unit)? = null,
     val onLongClick: ((String) -> Unit)? = null,
     val style: CometChatEmojiKeyboardStyle? = null

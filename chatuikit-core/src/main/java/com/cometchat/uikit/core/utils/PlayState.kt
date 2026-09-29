@@ -3,7 +3,7 @@ package com.cometchat.uikit.core.utils
 /**
  * Represents the playback state of an audio bubble.
  */
-enum class PlayState {
+public enum class PlayState {
     /** Initial state — no playback has occurred */
     INIT,
     /** Audio is actively playing */

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.AppSettings
 import com.cometchat.chat.core.CometChat
@@ -29,8 +30,16 @@ import java.util.concurrent.TimeUnit
  *
  * The MessageAdapter calls `CometChat.getLoggedInUser()` to determine message alignment,
  * which requires the SDK to be initialized and a user to be logged in. This helper
- * performs initialization with real credentials and logs in as `cometchat-uid-2` so that
- * message alignment (incoming vs outgoing) is correctly determined.
+ * performs initialization and logs in as the configured test user so that message
+ * alignment (incoming vs outgoing) is correctly determined.
+ *
+ * Credentials are supplied via instrumentation runner arguments (same names as the
+ * sample apps' `E2ETestConfig`) — never hardcoded here:
+ *
+ *   ./gradlew :chatuikit-kotlin:connectedDebugAndroidTest \
+ *       -Pandroid.testInstrumentationRunnerArguments.appId=YOUR_APP_ID \
+ *       -Pandroid.testInstrumentationRunnerArguments.authKey=YOUR_AUTH_KEY \
+ *       -Pandroid.testInstrumentationRunnerArguments.region=YOUR_REGION
  *
  * Call [ensureInitialized] once in `@BeforeClass` or `@Before` of any test that renders
  * messages in the RecyclerView.
@@ -39,10 +48,13 @@ object MessageListTestSdkHelper {
 
     private const val TAG = "MessageListTestHelper"
 
-    private const val APP_ID = "278059f315a564b4"
-    private const val AUTH_KEY = "5bb2416b7eb003c1f94234c26178a4b053c66b97"
-    private const val REGION = "in"
-    private const val LOGIN_UID = "cometchat-uid-2"
+    private fun arg(name: String): String? =
+        InstrumentationRegistry.getArguments().getString(name)?.takeIf { it.isNotBlank() }
+
+    private val APP_ID: String get() = arg("appId") ?: "YOUR_APP_ID"
+    private val AUTH_KEY: String get() = arg("authKey") ?: "YOUR_AUTH_KEY"
+    private val REGION: String get() = arg("region") ?: "in"
+    private val LOGIN_UID: String get() = arg("testUid") ?: "cometchat-uid-2"
 
     @Volatile
     private var initialized = false
@@ -51,7 +63,7 @@ object MessageListTestSdkHelper {
      * The UID of the logged-in test user. Use this when creating outgoing messages
      * so that the message alignment logic correctly identifies them as outgoing.
      */
-    const val LOGGED_IN_USER_UID = LOGIN_UID
+    val LOGGED_IN_USER_UID: String get() = LOGIN_UID
 
     /**
      * Initializes CometChat SDK with real credentials and logs in as [LOGIN_UID].
@@ -61,6 +73,14 @@ object MessageListTestSdkHelper {
         if (initialized) return
         synchronized(this) {
             if (initialized) return
+
+            check(APP_ID != "YOUR_APP_ID" && AUTH_KEY != "YOUR_AUTH_KEY") {
+                "CometChat test credentials are not configured. Pass them as instrumentation " +
+                    "runner arguments, e.g. ./gradlew :chatuikit-kotlin:connectedDebugAndroidTest " +
+                    "-Pandroid.testInstrumentationRunnerArguments.appId=<APP_ID> " +
+                    "-Pandroid.testInstrumentationRunnerArguments.authKey=<AUTH_KEY> " +
+                    "-Pandroid.testInstrumentationRunnerArguments.region=<REGION>"
+            }
 
             val context = ApplicationProvider.getApplicationContext<android.app.Application>()
             val appSettings = AppSettings.AppSettingsBuilder()

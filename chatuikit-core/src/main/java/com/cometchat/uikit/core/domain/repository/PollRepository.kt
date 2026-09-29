@@ -9,7 +9,7 @@ import org.json.JSONArray
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data handling strategies (remote, local, cached).
  */
-interface PollRepository {
+public interface PollRepository {
 
     /**
      * Creates a poll.
@@ -21,7 +21,7 @@ interface PollRepository {
      * @param quotedMessageId Optional ID of the message being replied to
      * @return Result containing success or error
      */
-    suspend fun createPoll(
+    suspend public fun createPoll(
         question: String,
         options: JSONArray,
         receiverId: String,

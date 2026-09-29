@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.MessageHeaderRepository
  *
  * @param repository The repository to fetch group data from
  */
-open class GetGroupUseCase(
+open public class GetGroupUseCase(
     private val repository: MessageHeaderRepository
 ) {
     /**
@@ -24,7 +24,7 @@ open class GetGroupUseCase(
      * @param guid The unique identifier of the group
      * @return Result containing Group on success or error on failure
      */
-    open suspend operator fun invoke(guid: String): Result<Group> {
+    open suspend operator public fun invoke(guid: String): Result<Group> {
         return repository.getGroup(guid)
     }
 }

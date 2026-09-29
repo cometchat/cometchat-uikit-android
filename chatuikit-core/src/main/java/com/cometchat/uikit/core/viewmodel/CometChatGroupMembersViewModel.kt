@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
  * @param changeMemberScopeUseCase Use case for changing member scope
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatGroupMembersViewModel(
+open public class CometChatGroupMembersViewModel(
     private val fetchGroupMembersUseCase: FetchGroupMembersUseCase,
     private val kickGroupMemberUseCase: KickGroupMemberUseCase,
     private val banGroupMemberUseCase: BanGroupMemberUseCase,
@@ -57,31 +57,31 @@ open class CometChatGroupMembersViewModel(
     
     // UI State
     private val _uiState = MutableStateFlow<GroupMembersUIState>(GroupMembersUIState.Loading)
-    val uiState: StateFlow<GroupMembersUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<GroupMembersUIState> = _uiState.asStateFlow()
     
     // Members list
     private val _members = MutableStateFlow<List<GroupMember>>(emptyList())
-    val members: StateFlow<List<GroupMember>> = _members.asStateFlow()
+    public val members: StateFlow<List<GroupMember>> = _members.asStateFlow()
     
     // Has more data flag
     private val _hasMore = MutableStateFlow(true)
-    val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
+    public val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
     
     // Loading state
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    public val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     
     // Selection state
     private val _selectedMembers = MutableStateFlow<Map<String, GroupMember>>(emptyMap())
-    val selectedMembers: StateFlow<Map<String, GroupMember>> = _selectedMembers.asStateFlow()
+    public val selectedMembers: StateFlow<Map<String, GroupMember>> = _selectedMembers.asStateFlow()
     
     // Dialog state
     private val _dialogState = MutableStateFlow<DialogState>(DialogState.Hidden)
-    val dialogState: StateFlow<DialogState> = _dialogState.asStateFlow()
+    public val dialogState: StateFlow<DialogState> = _dialogState.asStateFlow()
     
     // Events (one-time emissions)
     private val _events = MutableSharedFlow<GroupMembersEvent>()
-    val events: SharedFlow<GroupMembersEvent> = _events.asSharedFlow()
+    public val events: SharedFlow<GroupMembersEvent> = _events.asSharedFlow()
     
     // ==================== Configuration ====================
     
@@ -110,9 +110,9 @@ open class CometChatGroupMembersViewModel(
     
     // ==================== ListOperations Implementation ====================
     
-    override fun addItem(item: GroupMember) = listDelegate.addItem(item)
+    override fun addItem(item: GroupMember): Unit = listDelegate.addItem(item)
     
-    override fun addItems(items: List<GroupMember>) = listDelegate.addItems(items)
+    override fun addItems(items: List<GroupMember>): Unit = listDelegate.addItems(items)
     
     override fun removeItem(item: GroupMember): Boolean = listDelegate.removeItem(item)
     
@@ -121,7 +121,7 @@ open class CometChatGroupMembersViewModel(
     override fun updateItem(item: GroupMember, predicate: (GroupMember) -> Boolean): Boolean =
         listDelegate.updateItem(item, predicate)
     
-    override fun clearItems() = listDelegate.clearItems()
+    override fun clearItems(): Unit = listDelegate.clearItems()
     
     override fun getItems(): List<GroupMember> = listDelegate.getItems()
     
@@ -129,9 +129,9 @@ open class CometChatGroupMembersViewModel(
     
     override fun getItemCount(): Int = listDelegate.getItemCount()
     
-    override fun moveItemToTop(item: GroupMember) = listDelegate.moveItemToTop(item)
+    override fun moveItemToTop(item: GroupMember): Unit = listDelegate.moveItemToTop(item)
     
-    override fun batch(operations: ListOperationsBatchScope<GroupMember>.() -> Unit) =
+    override fun batch(operations: ListOperationsBatchScope<GroupMember>.() -> Unit): Unit =
         listDelegate.batch(operations)
     
     // ==================== Public API ====================
@@ -142,7 +142,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param group The group object
      */
-    open fun setGroup(group: Group) {
+    open public fun setGroup(group: Group) {
         this.currentGroup = group
         
         // Initialize request builders if not already set
@@ -166,7 +166,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param builder The custom request builder
      */
-    open fun setGroupMembersRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
+    open public fun setGroupMembersRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
         this.groupMembersRequestBuilder = builder
         currentGroup?.let { group ->
             this.groupMembersRequestBuilder = builder.setGuid(group.guid)
@@ -178,7 +178,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param builder The custom search request builder
      */
-    open fun setSearchRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
+    open public fun setSearchRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
         this.searchGroupMembersRequestBuilder = builder
     }
     
@@ -187,7 +187,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param exclude true to exclude owner
      */
-    open fun setExcludeOwner(exclude: Boolean) {
+    open public fun setExcludeOwner(exclude: Boolean) {
         this.excludeOwner = exclude
     }
     
@@ -195,7 +195,7 @@ open class CometChatGroupMembersViewModel(
      * Fetches group members with pagination support.
      * Shows loading state only on initial fetch.
      */
-    open fun fetchGroupMembers() {
+    open public fun fetchGroupMembers() {
         if (isFetching || !_hasMore.value) return
         
         val group = currentGroup ?: run {
@@ -272,7 +272,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param query The search keyword (null to clear search)
      */
-    open fun searchGroupMembers(query: String?) {
+    open public fun searchGroupMembers(query: String?) {
         // Cancel any pending search job (debouncing)
         searchJob?.cancel()
         
@@ -364,7 +364,7 @@ open class CometChatGroupMembersViewModel(
     /**
      * Refreshes the member list from the beginning.
      */
-    open fun refreshList() {
+    open public fun refreshList() {
         isFetching = false
         _hasMore.value = true
         currentSearchKeyword = null
@@ -379,7 +379,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to kick
      */
-    open fun kickMember(member: GroupMember) {
+    open public fun kickMember(member: GroupMember) {
         val group = currentGroup ?: return
         
         viewModelScope.launch {
@@ -439,7 +439,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to ban
      */
-    open fun banMember(member: GroupMember) {
+    open public fun banMember(member: GroupMember) {
         val group = currentGroup ?: return
         
         viewModelScope.launch {
@@ -500,7 +500,7 @@ open class CometChatGroupMembersViewModel(
      * @param member The member whose scope to change
      * @param newScope The new scope (admin/moderator/participant)
      */
-    open fun changeMemberScope(member: GroupMember, newScope: String) {
+    open public fun changeMemberScope(member: GroupMember, newScope: String) {
         val group = currentGroup ?: return
         
         viewModelScope.launch {
@@ -563,7 +563,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to select
      */
-    open fun selectMember(member: GroupMember) {
+    open public fun selectMember(member: GroupMember) {
         _selectedMembers.value = _selectedMembers.value + (member.uid to member)
     }
     
@@ -572,14 +572,14 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to deselect
      */
-    open fun deselectMember(member: GroupMember) {
+    open public fun deselectMember(member: GroupMember) {
         _selectedMembers.value = _selectedMembers.value - member.uid
     }
     
     /**
      * Clears all selections.
      */
-    open fun clearSelection() {
+    open public fun clearSelection() {
         _selectedMembers.value = emptyMap()
     }
     
@@ -589,7 +589,7 @@ open class CometChatGroupMembersViewModel(
      * @param member The member to check
      * @return true if selected
      */
-    open fun isSelected(member: GroupMember): Boolean {
+    open public fun isSelected(member: GroupMember): Boolean {
         return _selectedMembers.value.containsKey(member.uid)
     }
     
@@ -600,7 +600,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to kick
      */
-    open fun showKickConfirmation(member: GroupMember) {
+    open public fun showKickConfirmation(member: GroupMember) {
         _dialogState.value = DialogState.ConfirmKick(member)
     }
     
@@ -609,7 +609,7 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member to ban
      */
-    open fun showBanConfirmation(member: GroupMember) {
+    open public fun showBanConfirmation(member: GroupMember) {
         _dialogState.value = DialogState.ConfirmBan(member)
     }
     
@@ -618,14 +618,14 @@ open class CometChatGroupMembersViewModel(
      * 
      * @param member The member whose scope to change
      */
-    open fun showScopeSelection(member: GroupMember) {
+    open public fun showScopeSelection(member: GroupMember) {
         _dialogState.value = DialogState.SelectScope(member, member.scope)
     }
     
     /**
      * Dismisses any open dialog.
      */
-    open fun dismissDialog() {
+    open public fun dismissDialog() {
         _dialogState.value = DialogState.Hidden
     }
     

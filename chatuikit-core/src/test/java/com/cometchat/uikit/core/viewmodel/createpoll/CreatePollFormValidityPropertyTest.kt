@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.string
@@ -73,9 +74,11 @@ class CreatePollFormValidityPropertyTest : FunSpec({
     test("PBT: isFormValid with 3+ options only needs 2 non-blank") {
         checkAll(
             50,
-            Arb.string(1..30),
-            Arb.string(1..20),
-            Arb.string(1..20),
+            // isNotBlank, not merely isNotEmpty: Arb.string(1..30) happily yields
+            // whitespace-only strings, which isFormValid correctly rejects.
+            Arb.string(1..30).filter { it.isNotBlank() },
+            Arb.string(1..20).filter { it.isNotBlank() },
+            Arb.string(1..20).filter { it.isNotBlank() },
             Arb.string(0..20)
         ) { question, opt1, opt2, opt3 ->
             val vm = CometChatCreatePollViewModel(createPollUseCase)

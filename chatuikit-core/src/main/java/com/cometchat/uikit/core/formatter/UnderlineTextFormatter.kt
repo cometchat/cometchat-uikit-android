@@ -11,7 +11,7 @@ import java.util.regex.Pattern
  * Applies underline formatting to selected text by wrapping it with <u></u> tags.
  * Renders preview with UnderlineSpan.
  */
-class UnderlineTextFormatter : RichTextFormatter {
+public class UnderlineTextFormatter : RichTextFormatter {
 
     override val formatType: RichTextFormat = RichTextFormat.UNDERLINE
     override val markdownPrefix: String = "<u>"

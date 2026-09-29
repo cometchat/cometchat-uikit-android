@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
  * @param joinGroupUseCase Use case for joining groups
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatGroupsViewModel(
+open public class CometChatGroupsViewModel(
     private val fetchGroupsUseCase: FetchGroupsUseCase,
     private val joinGroupUseCase: JoinGroupUseCase,
     private val enableListeners: Boolean = true
@@ -44,26 +44,26 @@ open class CometChatGroupsViewModel(
 
     // UI State
     private val _uiState = MutableStateFlow<GroupsUIState>(GroupsUIState.Loading)
-    val uiState: StateFlow<GroupsUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<GroupsUIState> = _uiState.asStateFlow()
 
     // Groups list
     private val _groups = MutableStateFlow<List<Group>>(emptyList())
-    val groups: StateFlow<List<Group>> = _groups.asStateFlow()
+    public val groups: StateFlow<List<Group>> = _groups.asStateFlow()
 
     // Selection state
     private val _selectedGroups = MutableStateFlow<Set<Group>>(emptySet())
-    val selectedGroups: StateFlow<Set<Group>> = _selectedGroups.asStateFlow()
+    public val selectedGroups: StateFlow<Set<Group>> = _selectedGroups.asStateFlow()
 
     // Events
     private val _groupJoinedEvent = MutableSharedFlow<Group>()
-    val groupJoinedEvent: SharedFlow<Group> = _groupJoinedEvent.asSharedFlow()
+    public val groupJoinedEvent: SharedFlow<Group> = _groupJoinedEvent.asSharedFlow()
 
     private val _groupCreatedEvent = MutableSharedFlow<Group>()
-    val groupCreatedEvent: SharedFlow<Group> = _groupCreatedEvent.asSharedFlow()
+    public val groupCreatedEvent: SharedFlow<Group> = _groupCreatedEvent.asSharedFlow()
 
     // Scroll to top event
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
-    val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+    public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
     // List operations delegate
     private val listDelegate = ListOperationsDelegate(
@@ -94,18 +94,18 @@ open class CometChatGroupsViewModel(
 
     // ==================== ListOperations Implementation ====================
 
-    override fun addItem(item: Group) = listDelegate.addItem(item)
-    override fun addItems(items: List<Group>) = listDelegate.addItems(items)
-    override fun removeItem(item: Group) = listDelegate.removeItem(item)
-    override fun removeItemAt(index: Int) = listDelegate.removeItemAt(index)
-    override fun updateItem(item: Group, predicate: (Group) -> Boolean) =
+    override fun addItem(item: Group): Unit = listDelegate.addItem(item)
+    override fun addItems(items: List<Group>): Unit = listDelegate.addItems(items)
+    override fun removeItem(item: Group): Boolean = listDelegate.removeItem(item)
+    override fun removeItemAt(index: Int): Group? = listDelegate.removeItemAt(index)
+    override fun updateItem(item: Group, predicate: (Group) -> Boolean): Boolean =
         listDelegate.updateItem(item, predicate)
-    override fun clearItems() = listDelegate.clearItems()
-    override fun getItems() = listDelegate.getItems()
-    override fun getItemAt(index: Int) = listDelegate.getItemAt(index)
-    override fun getItemCount() = listDelegate.getItemCount()
-    override fun moveItemToTop(item: Group) = listDelegate.moveItemToTop(item)
-    override fun batch(operations: ListOperationsBatchScope<Group>.() -> Unit) =
+    override fun clearItems(): Unit = listDelegate.clearItems()
+    override fun getItems(): List<Group> = listDelegate.getItems()
+    override fun getItemAt(index: Int): Group? = listDelegate.getItemAt(index)
+    override fun getItemCount(): Int = listDelegate.getItemCount()
+    override fun moveItemToTop(item: Group): Unit = listDelegate.moveItemToTop(item)
+    override fun batch(operations: ListOperationsBatchScope<Group>.() -> Unit): Unit =
         listDelegate.batch(operations)
 
 
@@ -116,7 +116,7 @@ open class CometChatGroupsViewModel(
      * Shows loading state only on initial fetch.
      * Prevents concurrent fetches using isFetching flag.
      */
-    fun fetchGroups() {
+    public fun fetchGroups() {
         if (isFetching || !hasMoreData) return
 
         viewModelScope.launch {
@@ -169,7 +169,7 @@ open class CometChatGroupsViewModel(
      *
      * @param query The search keyword for finding groups
      */
-    fun searchGroups(query: String?) {
+    public fun searchGroups(query: String?) {
         // Cancel any pending search job (debouncing)
         searchJob?.cancel()
         
@@ -238,7 +238,7 @@ open class CometChatGroupsViewModel(
      * This is a silent refresh - it does not show loading shimmer to maintain scroll position.
      * Uses client's request builder if set, otherwise creates a default one.
      */
-    fun refreshList() {
+    public fun refreshList() {
         // Reset pagination state for fresh fetch
         hasMoreData = true
         isFetching = false
@@ -286,7 +286,7 @@ open class CometChatGroupsViewModel(
      * @param group The group to join
      * @param password Optional password for password-protected groups
      */
-    fun joinGroup(group: Group, password: String? = null) {
+    public fun joinGroup(group: Group, password: String? = null) {
         viewModelScope.launch {
             joinGroupUseCase(group.guid, group.groupType, password)
                 .onSuccess { joinedGroup ->
@@ -305,7 +305,7 @@ open class CometChatGroupsViewModel(
      * @param group The group to select
      * @param mode The selection mode (SINGLE or MULTIPLE)
      */
-    fun selectGroup(group: Group, mode: UIKitConstants.SelectionMode = UIKitConstants.SelectionMode.MULTIPLE) {
+    public fun selectGroup(group: Group, mode: UIKitConstants.SelectionMode = UIKitConstants.SelectionMode.MULTIPLE) {
         val current = _selectedGroups.value.toMutableSet()
         
         when (mode) {
@@ -335,7 +335,7 @@ open class CometChatGroupsViewModel(
      *
      * @param group The group to deselect
      */
-    fun deselectGroup(group: Group) {
+    public fun deselectGroup(group: Group) {
         val current = _selectedGroups.value.toMutableSet()
         current.removeAll { it.guid == group.guid }
         _selectedGroups.value = current
@@ -344,21 +344,21 @@ open class CometChatGroupsViewModel(
     /**
      * Clears all selected groups.
      */
-    fun clearSelection() {
+    public fun clearSelection() {
         _selectedGroups.value = emptySet()
     }
 
     /**
      * Returns the list of currently selected groups.
      */
-    fun getSelectedGroups(): List<Group> = _selectedGroups.value.toList()
+    public fun getSelectedGroups(): List<Group> = _selectedGroups.value.toList()
 
     /**
      * Sets the groups request builder for customizing fetch parameters.
      *
      * @param builder The custom request builder
      */
-    fun setGroupsRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
+    public fun setGroupsRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
         groupsRequestBuilder = builder
         groupsRequest = builder.build()
     }
@@ -368,7 +368,7 @@ open class CometChatGroupsViewModel(
      *
      * @param builder The custom search request builder
      */
-    fun setSearchRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
+    public fun setSearchRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
         searchRequestBuilder = builder
     }
 

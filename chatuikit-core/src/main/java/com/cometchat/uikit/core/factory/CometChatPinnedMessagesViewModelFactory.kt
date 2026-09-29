@@ -9,7 +9,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatPinnedMessagesViewModel
  *
  * @param enableListeners Whether to enable live upkeep. Set false for previews/testing.
  */
-class CometChatPinnedMessagesViewModelFactory(
+public class CometChatPinnedMessagesViewModelFactory(
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {
 

@@ -15,7 +15,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatCreatePollViewModel
  * @param repository The repository to use for data operations.
  *                   Defaults to PollRepositoryImpl with PollDataSourceImpl.
  */
-class CometChatCreatePollViewModelFactory(
+public class CometChatCreatePollViewModelFactory(
     private val repository: PollRepository = PollRepositoryImpl(
         PollDataSourceImpl()
     )

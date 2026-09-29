@@ -8,7 +8,7 @@ import com.cometchat.uikit.core.domain.repository.CallButtonsRepository
  * Use case for starting a group conference call.
  * Checks for active calls before starting a new group call.
  */
-open class StartGroupCallUseCase(
+open public class StartGroupCallUseCase(
     private val repository: CallButtonsRepository
 ) {
     /**
@@ -17,7 +17,7 @@ open class StartGroupCallUseCase(
      * @param callType The type of call (audio/video)
      * @return Result containing the sent CustomMessage or an error if active call exists or sending fails
      */
-    open suspend operator fun invoke(groupId: String, callType: String): Result<CustomMessage> {
+    open suspend operator public fun invoke(groupId: String, callType: String): Result<CustomMessage> {
         if (repository.hasActiveCall()) {
             return Result.failure(
                 CometChatException(

@@ -30,11 +30,11 @@ import kotlinx.coroutines.launch
  * 
  * Validates: Requirements 9.1-9.14, 2.2, 2.3, 2.4
  */
-open class CometChatOutgoingCallViewModel(
+open public class CometChatOutgoingCallViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatOutgoingCallViewModel"
     }
 
@@ -46,7 +46,7 @@ open class CometChatOutgoingCallViewModel(
      * Validates: Requirement 9.2
      */
     private val _call = MutableStateFlow<Call?>(null)
-    val call: StateFlow<Call?> = _call.asStateFlow()
+    public val call: StateFlow<Call?> = _call.asStateFlow()
 
     /**
      * StateFlow for the accepted call result.
@@ -55,7 +55,7 @@ open class CometChatOutgoingCallViewModel(
      * Validates: Requirement 9.3
      */
     private val _acceptedCall = MutableStateFlow<Call?>(null)
-    val acceptedCall: StateFlow<Call?> = _acceptedCall.asStateFlow()
+    public val acceptedCall: StateFlow<Call?> = _acceptedCall.asStateFlow()
 
     /**
      * StateFlow for the rejected/cancelled call result.
@@ -64,7 +64,7 @@ open class CometChatOutgoingCallViewModel(
      * Validates: Requirement 9.4
      */
     private val _rejectedCall = MutableStateFlow<Call?>(null)
-    val rejectedCall: StateFlow<Call?> = _rejectedCall.asStateFlow()
+    public val rejectedCall: StateFlow<Call?> = _rejectedCall.asStateFlow()
 
     /**
      * SharedFlow for error events.
@@ -73,7 +73,7 @@ open class CometChatOutgoingCallViewModel(
      * Validates: Requirement 9.5
      */
     private val _errorEvent = MutableSharedFlow<CometChatException>()
-    val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
+    public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
     /**
      * StateFlow for the end call button enabled state.
@@ -82,7 +82,7 @@ open class CometChatOutgoingCallViewModel(
      * Validates: Requirement 9.6
      */
     private val _endCallButtonEnabled = MutableStateFlow(true)
-    val endCallButtonEnabled: StateFlow<Boolean> = _endCallButtonEnabled.asStateFlow()
+    public val endCallButtonEnabled: StateFlow<Boolean> = _endCallButtonEnabled.asStateFlow()
 
     // ==================== Internal State ====================
 
@@ -103,7 +103,7 @@ open class CometChatOutgoingCallViewModel(
      * 
      * @param call The outgoing Call object
      */
-    fun setCall(call: Call) {
+    public fun setCall(call: Call) {
         _call.value = call
         // Reset end call button enabled state when a new call is set
         _endCallButtonEnabled.value = true
@@ -114,7 +114,7 @@ open class CometChatOutgoingCallViewModel(
      * 
      * @return The current Call or null if not set
      */
-    fun getCall(): Call? = _call.value
+    public fun getCall(): Call? = _call.value
 
     /**
      * Cancels the current outgoing call.
@@ -130,7 +130,7 @@ open class CometChatOutgoingCallViewModel(
      * 
      * Validates: Requirements 9.7, 9.8, 9.9, 9.10
      */
-    fun cancelCall() {
+    public fun cancelCall() {
         val currentCall = _call.value ?: return
         
         CometChat.rejectCall(
@@ -165,7 +165,7 @@ open class CometChatOutgoingCallViewModel(
      * 
      * Validates: Requirement 9.11, 2.2, 2.3, 2.4
      */
-    fun addListeners() {
+    public fun addListeners() {
         if (listenerId != null) {
             // Listeners already added
             return
@@ -228,7 +228,7 @@ open class CometChatOutgoingCallViewModel(
     /**
      * Removes the CometChat SDK call listeners.
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         listenerId?.let { id ->
             CometChat.removeCallListener(id)
             listenerId = null

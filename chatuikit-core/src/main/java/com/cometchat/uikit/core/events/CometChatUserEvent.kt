@@ -6,12 +6,12 @@ import com.cometchat.chat.models.User
  * Sealed class hierarchy representing all user-related events.
  * Provides type-safe event handling for user state changes.
  */
-sealed class CometChatUserEvent {
+sealed public class CometChatUserEvent {
     /**
      * Event emitted when a user is blocked.
      * @param user The blocked user
      */
-    data class UserBlocked(
+    public data class UserBlocked(
         val user: User
     ) : CometChatUserEvent()
 
@@ -19,7 +19,7 @@ sealed class CometChatUserEvent {
      * Event emitted when a user is unblocked.
      * @param user The unblocked user
      */
-    data class UserUnblocked(
+    public data class UserUnblocked(
         val user: User
     ) : CometChatUserEvent()
 }

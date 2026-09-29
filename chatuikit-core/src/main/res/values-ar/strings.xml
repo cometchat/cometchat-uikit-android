@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">نسخ</string>
+    <string name="cometchat_delete" translatable="true">حذف</string>
+    <string name="cometchat_edit" translatable="true">تعديل</string>
+    <string name="cometchat_info" translatable="true">"معلومات"</string>
+    <string name="cometchat_mark_unread" translatable="true">وضع علامة غير مقروء</string>
+    <string name="cometchat_message_privately" translatable="true">إرسال رسالة خاصة</string>
+    <string name="cometchat_pin" translatable="true">تثبيت الرسالة</string>
+    <string name="cometchat_reply" translatable="true">رد</string>
+    <string name="cometchat_reply_uppercase" translatable="true">الرد في السلسلة</string>
+    <string name="cometchat_report" translatable="true">إبلاغ</string>
+    <string name="cometchat_save" translatable="true">حفظ الرسالة</string>
+    <string name="cometchat_share" translatable="true">مشاركة</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">الاشتراك في المحادثة</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">إلغاء الاشتراك في المحادثة</string>
+    <string name="cometchat_translate" translatable="true">ترجمة</string>
+    <string name="cometchat_unpin" translatable="true">إلغاء تثبيت الرسالة</string>
+    <string name="cometchat_unsave" translatable="true">إلغاء حفظ الرسالة</string>
+</resources>

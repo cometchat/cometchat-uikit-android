@@ -75,8 +75,23 @@ class CometChatMessageListViewModelListOpsTest : FunSpec({
         return vm
     }
 
-    beforeTest {
+    // Main is installed once for the whole spec, not per test. The VM fires
+    // CometChatEvents.emitMessageEvent, which launches on the bus's own Default-dispatcher scope —
+    // a launch advanceUntilIdle() cannot see. With a per-test resetMain() that stray launch could
+    // resume this spec's Main-bound collectors AFTER Main was torn down, crashing on
+    // "Dispatchers.Main was accessed when the platform dispatcher was absent" and pinning the
+    // leaked exception on the NEXT test's runTest (UncaughtExceptionsBeforeTest).
+    beforeSpec {
         Dispatchers.setMain(testDispatcher)
+    }
+
+    afterSpec {
+        // Let any still-queued bus emissions run while Main is still installed.
+        Thread.sleep(100)
+        Dispatchers.resetMain()
+    }
+
+    beforeTest {
         repository = mock()
         whenever(repository.hasMorePreviousMessages()).thenReturn(true)
         whenever(repository.fetchPreviousMessages()).thenReturn(Result.success(emptyList()))
@@ -84,7 +99,6 @@ class CometChatMessageListViewModelListOpsTest : FunSpec({
     }
 
     afterTest {
-        Dispatchers.resetMain()
         println()
     }
 

@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  * Applies bold formatting to selected text by wrapping it with double asterisks.
  * Renders preview with StyleSpan(Typeface.BOLD).
  */
-class BoldTextFormatter : RichTextFormatter {
+public class BoldTextFormatter : RichTextFormatter {
     
     override val formatType: RichTextFormat = RichTextFormat.BOLD
     override val markdownPrefix: String = "**"

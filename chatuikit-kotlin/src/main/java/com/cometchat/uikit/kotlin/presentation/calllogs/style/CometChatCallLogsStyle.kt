@@ -17,7 +17,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Follows the same pattern as CometChatConversationsStyle - state styling
  * is handled inline rather than through separate state style classes.
  */
-data class CometChatCallLogsStyle(
+public data class CometChatCallLogsStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = Color.TRANSPARENT,
@@ -58,25 +58,25 @@ data class CometChatCallLogsStyle(
      * Returns a copy of this style with itemStyle properly initialized if it has empty icons.
      * Use this when you need to ensure icons are set.
      */
-    fun withDefaultItemStyle(context: Context): CometChatCallLogsStyle {
+    public fun withDefaultItemStyle(context: Context): CometChatCallLogsStyle {
         return if (itemStyle.incomingCallIcon == 0) {
             copy(itemStyle = CometChatCallLogsListItemStyle.default(context))
         } else {
             this
         }
     }
-    companion object {
+    public companion object {
         /**
          * Creates a default style using CometChatTheme values.
          */
-        fun default(context: Context): CometChatCallLogsStyle {
+        public fun default(context: Context): CometChatCallLogsStyle {
             return extractFromTypedArray(context, null)
         }
         
         /**
          * Creates a style by extracting values from the theme's cometchatCallLogsStyle.
          */
-        fun fromTheme(context: Context): CometChatCallLogsStyle {
+        public fun fromTheme(context: Context): CometChatCallLogsStyle {
             val themeTypedArray = context.obtainStyledAttributes(intArrayOf(R.attr.cometchatCallLogsStyle))
             val styleResId = themeTypedArray.getResourceId(0, 0)
             themeTypedArray.recycle()
@@ -99,7 +99,7 @@ data class CometChatCallLogsStyle(
          * Creates a style from a TypedArray.
          * The TypedArray will be recycled after extraction.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCallLogsStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCallLogsStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

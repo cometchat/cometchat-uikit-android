@@ -12,14 +12,14 @@ import com.cometchat.chat.models.Conversation
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface SearchRepository {
+public interface SearchRepository {
     
     /**
      * Fetches conversations based on the provided request configuration.
      * @param request The configured ConversationsRequest with pagination and filters
      * @return Result containing list of conversations or error
      */
-    suspend fun getConversations(
+    suspend public fun getConversations(
         request: ConversationsRequest
     ): Result<List<Conversation>>
     
@@ -28,7 +28,7 @@ interface SearchRepository {
      * @param request The configured MessagesRequest with pagination and filters
      * @return Result containing list of messages or error
      */
-    suspend fun getMessages(
+    suspend public fun getMessages(
         request: MessagesRequest
     ): Result<List<BaseMessage>>
     
@@ -36,11 +36,11 @@ interface SearchRepository {
      * Checks if there are more conversations to fetch (pagination).
      * @return true if more conversations are available
      */
-    fun hasMoreConversations(): Boolean
+    public fun hasMoreConversations(): Boolean
     
     /**
      * Checks if there are more messages to fetch (pagination).
      * @return true if more messages are available
      */
-    fun hasMoreMessages(): Boolean
+    public fun hasMoreMessages(): Boolean
 }

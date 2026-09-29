@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  * @param emoji The unicode character string for this emoji (e.g., "😀")
  * @param keywords List of keywords associated with this emoji (e.g., ["smile", "happy"])
  */
-data class Emoji(
+public data class Emoji(
     @SerializedName("emoji")
     @Expose
     val emoji: String,

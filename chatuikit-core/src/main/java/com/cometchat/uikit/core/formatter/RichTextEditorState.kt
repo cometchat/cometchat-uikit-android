@@ -8,34 +8,34 @@ package com.cometchat.uikit.core.formatter
  * Platform-agnostic — shared by Jetpack Compose and Kotlin XML UI kits.
  * UI layers observe this state and render accordingly.
  */
-class RichTextEditorState {
+public class RichTextEditorState {
 
     private val _spanManager = RichTextSpanManager()
 
     /** Current plain text (no markdown markers). */
-    var text: String = ""
+    public var text: String = ""
         private set
 
     /** Current selection start (inclusive). */
-    var selectionStart: Int = 0
+    public var selectionStart: Int = 0
         private set
 
     /** Current selection end (exclusive). Same as selectionStart when cursor is collapsed. */
-    var selectionEnd: Int = 0
+    public var selectionEnd: Int = 0
         private set
 
     /**
      * Formats that will be applied to the next typed character when cursor is collapsed.
      * Cleared when the user explicitly moves the cursor (not during text changes).
      */
-    val pendingFormats: MutableSet<RichTextFormat> = mutableSetOf()
+    public val pendingFormats: MutableSet<RichTextFormat> = mutableSetOf()
 
     /**
      * Formats explicitly disabled at the cursor. When the cursor is inside a bold span
      * and the user toggles bold off, BOLD is added here so new text won't inherit it.
      * Cleared when the user explicitly moves the cursor.
      */
-    val disabledFormats: MutableSet<RichTextFormat> = mutableSetOf()
+    public val disabledFormats: MutableSet<RichTextFormat> = mutableSetOf()
 
     /**
      * Consumed mention spans — mentions that were converted to plain text when
@@ -45,22 +45,22 @@ class RichTextEditorState {
      * Key: start position in the plain text.
      * Value: the [ConsumedMentionSpan] holding original mention data.
      */
-    val consumedMentionSpans: MutableMap<Int, ConsumedMentionSpan> = mutableMapOf()
+    public val consumedMentionSpans: MutableMap<Int, ConsumedMentionSpan> = mutableMapOf()
 
     /** Read-only snapshot of current spans. */
-    val spans: List<RichTextSpan> get() = _spanManager.spans
+    public val spans: List<RichTextSpan> get() = _spanManager.spans
 
     /** The underlying span manager (for direct operations). */
-    val spanManager: RichTextSpanManager get() = _spanManager
+    public val spanManager: RichTextSpanManager get() = _spanManager
 
     /** True when cursor is collapsed (no selection range). */
-    val isCursorCollapsed: Boolean get() = selectionStart == selectionEnd
+    public val isCursorCollapsed: Boolean get() = selectionStart == selectionEnd
 
     /**
      * Returns the set of formats currently "active" — either from spans at the cursor
      * position, or from pending formats (when cursor is collapsed).
      */
-    val activeFormats: Set<RichTextFormat>
+    public val activeFormats: Set<RichTextFormat>
         get() {
             val spanFormats = if (isCursorCollapsed) {
                 // Check position and position-1 to handle cursor at span boundary
@@ -78,13 +78,13 @@ class RichTextEditorState {
      * Returns formats that should be grayed out / non-clickable in the toolbar,
      * based on the current active formats and compatibility rules.
      */
-    val toolbarDisabledFormats: Set<RichTextFormat>
+    public val toolbarDisabledFormats: Set<RichTextFormat>
         get() = FormatCompatibility.getDisabledFormats(activeFormats)
 
     // ==================== Mutations ====================
 
     /** Sets the text content. Does NOT adjust spans — use [RichTextEditorController] for edits. */
-    fun setText(newText: String) {
+    public fun setText(newText: String) {
         text = newText
     }
 
@@ -92,7 +92,7 @@ class RichTextEditorState {
      * Updates the selection range. Clears pending/disabled formats when selection changes.
      * Used when the user explicitly moves the cursor (not during text input).
      */
-    fun setSelection(start: Int, end: Int) {
+    public fun setSelection(start: Int, end: Int) {
         val changed = start != selectionStart || end != selectionEnd
         selectionStart = start
         selectionEnd = end
@@ -107,13 +107,13 @@ class RichTextEditorState {
      * Used internally by the controller during text change processing,
      * where pending/disabled formats are managed explicitly.
      */
-    fun setSelectionInternal(start: Int, end: Int) {
+    public fun setSelectionInternal(start: Int, end: Int) {
         selectionStart = start
         selectionEnd = end
     }
 
     /** Resets everything to empty state. */
-    fun clear() {
+    public fun clear() {
         text = ""
         selectionStart = 0
         selectionEnd = 0

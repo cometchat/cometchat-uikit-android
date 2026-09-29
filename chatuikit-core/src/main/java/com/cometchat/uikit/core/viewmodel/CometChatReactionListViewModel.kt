@@ -31,13 +31,13 @@ import kotlinx.coroutines.launch
  * @param removeReactionUseCase Use case for removing reactions
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatReactionListViewModel(
+open public class CometChatReactionListViewModel(
     private val fetchReactionsUseCase: FetchReactionsUseCase,
     private val removeReactionUseCase: RemoveReactionUseCase,
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "ReactionListViewModel"
         private const val DEFAULT_LIMIT = 10
         internal const val ALL_TAB_KEY = "All"
@@ -45,27 +45,27 @@ open class CometChatReactionListViewModel(
 
     // UI State
     private val _uiState = MutableStateFlow<ReactionListUIState>(ReactionListUIState.Loading)
-    val uiState: StateFlow<ReactionListUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<ReactionListUIState> = _uiState.asStateFlow()
 
     // Reaction headers (tabs) - includes "All" tab as first item
     private val _reactionHeaders = MutableStateFlow<List<ReactionCount>>(emptyList())
-    val reactionHeaders: StateFlow<List<ReactionCount>> = _reactionHeaders.asStateFlow()
+    public val reactionHeaders: StateFlow<List<ReactionCount>> = _reactionHeaders.asStateFlow()
 
     // Reacted users list for current tab
     private val _reactedUsers = MutableStateFlow<List<Reaction>>(emptyList())
-    val reactedUsers: StateFlow<List<Reaction>> = _reactedUsers.asStateFlow()
+    public val reactedUsers: StateFlow<List<Reaction>> = _reactedUsers.asStateFlow()
 
     // Selected reaction (emoji or "All")
     private val _selectedReaction = MutableStateFlow<String?>(null)
-    val selectedReaction: StateFlow<String?> = _selectedReaction.asStateFlow()
+    public val selectedReaction: StateFlow<String?> = _selectedReaction.asStateFlow()
 
     // Active tab index
     private val _activeTabIndex = MutableStateFlow(0)
-    val activeTabIndex: StateFlow<Int> = _activeTabIndex.asStateFlow()
+    public val activeTabIndex: StateFlow<Int> = _activeTabIndex.asStateFlow()
 
     // Base message
     private val _baseMessage = MutableStateFlow<BaseMessage?>(null)
-    val baseMessage: StateFlow<BaseMessage?> = _baseMessage.asStateFlow()
+    public val baseMessage: StateFlow<BaseMessage?> = _baseMessage.asStateFlow()
 
     // Caching - keyed by emoji (or "All" for all reactions)
     private val reactionRequestCache = mutableMapOf<String, ReactionsRequest>()
@@ -99,7 +99,7 @@ open class CometChatReactionListViewModel(
      *
      * @param message The message to display reactions for
      */
-    fun setBaseMessage(message: BaseMessage) {
+    public fun setBaseMessage(message: BaseMessage) {
         _baseMessage.value = message
         
         // Extract reaction counts from message and create headers
@@ -119,7 +119,7 @@ open class CometChatReactionListViewModel(
      *
      * @param builder The custom request builder
      */
-    fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder) {
+    public fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder) {
         reactionsRequestBuilder = builder
     }
 
@@ -129,7 +129,7 @@ open class CometChatReactionListViewModel(
      *
      * @param reaction The emoji to filter by, or "All" for all reactions
      */
-    fun setSelectedReaction(reaction: String?) {
+    public fun setSelectedReaction(reaction: String?) {
         val reactionToSet = reaction ?: ALL_TAB_KEY
         _selectedReaction.value = reactionToSet
         currentSelectedReactionTab = reactionToSet
@@ -151,7 +151,7 @@ open class CometChatReactionListViewModel(
      * @param reactionFilter The emoji to filter by, or null for current selection
      * @param customBuilder Optional custom request builder
      */
-    fun fetchReactedUsers(
+    public fun fetchReactedUsers(
         reactionFilter: String? = null,
         customBuilder: ReactionsRequest.ReactionsRequestBuilder? = null
     ) {
@@ -205,7 +205,7 @@ open class CometChatReactionListViewModel(
      * @param message The message to remove reaction from
      * @param emoji The emoji reaction to remove
      */
-    fun removeReaction(message: BaseMessage, emoji: String) {
+    public fun removeReaction(message: BaseMessage, emoji: String) {
         // Prevent concurrent removals
         if (isRemovingReaction) return
 
@@ -233,7 +233,7 @@ open class CometChatReactionListViewModel(
      * Clears both caches (request and user caches).
      * Call this when the message changes or component is reset.
      */
-    fun clearCache() {
+    public fun clearCache() {
         reactionRequestCache.clear()
         reactedUserCache.clear()
     }

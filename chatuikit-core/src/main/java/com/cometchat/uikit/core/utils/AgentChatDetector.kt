@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core.utils
 
-import android.util.Log
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
 
@@ -11,7 +10,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * Detection checks both the user's UID prefix and the user's role against the
  * [UIKitConstants.AIConstants.AGENTIC_USER] constant (`"@agentic"`).
  */
-object AgentChatDetector {
+public object AgentChatDetector {
 
     /**
      * Checks if the given user represents an AI agent chat.
@@ -23,9 +22,9 @@ object AgentChatDetector {
      * @param user The user to check
      * @return true if the user is an agentic user, false otherwise
      */
-    fun isAgentChat(user: User): Boolean {
+    public fun isAgentChat(user: User): Boolean {
         val prefix = UIKitConstants.AIConstants.AGENTIC_USER
-        Log.e("isAgentChat", "isAgentChat: ${prefix.equals(user.role, ignoreCase = true)}")
+        CometChatLogger.e("isAgentChat", "isAgentChat: ${prefix.equals(user.role, ignoreCase = true)}")
         return prefix.equals(user.role, ignoreCase = true)
     }
 }

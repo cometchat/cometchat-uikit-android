@@ -15,9 +15,9 @@ import com.cometchat.uikit.kotlin.presentation.emojikeyboard.model.Emoji
  * This interface mirrors the `EmojiKeyBoardView.OnClick` interface from the Java `chatuikit` module.
  * It will be replaced by `EmojiKeyBoardView.OnClick` once `EmojiKeyBoardView` is implemented.
  */
-interface EmojiItemOnClick {
-    fun onClick(emoji: String)
-    fun onLongClick(emoji: String)
+public interface EmojiItemOnClick {
+    public fun onClick(emoji: String)
+    public fun onLongClick(emoji: String)
 }
 
 /**
@@ -30,7 +30,7 @@ interface EmojiItemOnClick {
  * @param context The context used for layout inflation.
  * @param onClick Optional callback for emoji click and long-click events.
  */
-class EmojiItemAdapter(
+internal class EmojiItemAdapter(
     private val context: Context,
     private val onClick: EmojiItemOnClick?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

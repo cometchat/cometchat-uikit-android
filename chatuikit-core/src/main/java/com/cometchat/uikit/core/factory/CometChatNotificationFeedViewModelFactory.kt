@@ -19,7 +19,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatNotificationFeedViewModel
  * @param pollingIntervalMs Interval for unread count polling in milliseconds.
  *                          Defaults to 30000ms (30 seconds).
  */
-class CometChatNotificationFeedViewModelFactory(
+public class CometChatNotificationFeedViewModelFactory(
     private val feedRequestBuilder: NotificationFeedRequest.NotificationFeedRequestBuilder? = null,
     private val categoriesRequestBuilder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder? = null,
     private val enableListeners: Boolean = true,

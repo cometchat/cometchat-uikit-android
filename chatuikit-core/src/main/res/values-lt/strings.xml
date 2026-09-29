@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Kopijuoti</string>
+    <string name="cometchat_delete" translatable="true">Ištrinti</string>
+    <string name="cometchat_edit" translatable="true">Redaguoti</string>
+    <string name="cometchat_info" translatable="true">"Informacija"</string>
+    <string name="cometchat_mark_unread" translatable="true">Žymėti kaip neskaitytą</string>
+    <string name="cometchat_message_privately" translatable="true">Rašyti asmeniškai</string>
+    <string name="cometchat_pin" translatable="true">Prisegti žinutę</string>
+    <string name="cometchat_reply" translatable="true">Atsakyti</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Atsakyti gijoje</string>
+    <string name="cometchat_report" translatable="true">Pranešti</string>
+    <string name="cometchat_save" translatable="true">Išsaugoti žinutę</string>
+    <string name="cometchat_share" translatable="true">Bendrinti</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Prenumeruoti giją</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Atšaukti gijos prenumeratą</string>
+    <string name="cometchat_translate" translatable="true">Versti</string>
+    <string name="cometchat_unpin" translatable="true">Atsegti žinutę</string>
+    <string name="cometchat_unsave" translatable="true">Pašalinti žinutę iš išsaugotų</string>
+</resources>

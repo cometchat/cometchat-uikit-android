@@ -22,6 +22,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.presentation.incomingcall.CometChatIncomingCall
 import com.cometchat.uikit.kotlin.presentation.incomingcall.style.CometChatIncomingCallStyle
 import com.cometchat.uikit.kotlin.presentation.ongoingcall.ui.CometChatOngoingCallActivity
@@ -42,9 +43,9 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
  * CometChatCallActivity.launchOutgoingCallScreen(context, call, null)
  * ```
  */
-class CometChatCallActivity : AppCompatActivity() {
+public class CometChatCallActivity : AppCompatActivity() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatCallActivity"
         private const val OUTGOING_CALL = "outgoing_call"
         private const val INCOMING_CALL = "incoming_call"
@@ -72,7 +73,7 @@ class CometChatCallActivity : AppCompatActivity() {
          */
         @JvmStatic
         @Synchronized
-        fun launchOutgoingCallScreen(
+        public fun launchOutgoingCallScreen(
             context: Context,
             call: Call,
             style: CometChatOutgoingCallStyle? = null
@@ -100,7 +101,7 @@ class CometChatCallActivity : AppCompatActivity() {
          * @param style Optional style configuration for the incoming call screen
          */
         @JvmStatic
-        fun launchIncomingCallScreen(
+        public fun launchIncomingCallScreen(
             context: Context,
             call: Call,
             style: CometChatIncomingCallStyle? = null
@@ -123,7 +124,7 @@ class CometChatCallActivity : AppCompatActivity() {
          * @param callSettingsBuilder Optional call settings builder
          */
         @JvmStatic
-        fun launchConferenceCallScreen(
+        public fun launchConferenceCallScreen(
             context: Context,
             baseMessage: BaseMessage,
             callSettingsBuilder: CometChatCalls.SessionSettingsBuilder? = null
@@ -181,12 +182,25 @@ class CometChatCallActivity : AppCompatActivity() {
             INCOMING_CALL -> setupIncomingCall()
         }
 
-        // Handle back press
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                startPictureInPictureMode()
-            }
-        })
+        // ENG-38657 (T5): on API 31+ the system auto-enters PiP on the back
+        // gesture (setAutoEnterEnabled), so predictive back keeps working; the
+        // manual interceptor below - which disables predictive back - is only
+        // registered where auto-enter is unavailable.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val pipMetrics = resources.displayMetrics
+            setPictureInPictureParams(
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(pipMetrics.widthPixels, pipMetrics.heightPixels))
+                    .setAutoEnterEnabled(true)
+                    .build()
+            )
+        } else {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    startPictureInPictureMode()
+                }
+            })
+        }
     }
     
     /**
@@ -273,7 +287,7 @@ class CometChatCallActivity : AppCompatActivity() {
             })
             
             setOnError { exception ->
-                android.util.Log.e(TAG, "Incoming call error: ${exception.message}")
+                CometChatLogger.e(TAG, "Incoming call error: ${exception.message}")
                 finish()
             }
         }

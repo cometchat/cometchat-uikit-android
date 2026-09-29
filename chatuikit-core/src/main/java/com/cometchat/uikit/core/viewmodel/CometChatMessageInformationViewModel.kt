@@ -26,13 +26,13 @@ import kotlinx.coroutines.launch
  * @param eventListener Event listener for real-time receipt updates
  * @param enableListeners Whether to enable real-time listeners (set to false for testing)
  */
-open class CometChatMessageInformationViewModel(
+open public class CometChatMessageInformationViewModel(
     private val repository: MessageInformationRepository,
     private val eventListener: MessageReceiptEventListener,
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "MessageInfoViewModel"
     }
 
@@ -42,37 +42,37 @@ open class CometChatMessageInformationViewModel(
      * UI State - LOADING, LOADED, EMPTY, ERROR
      */
     private val _state = MutableStateFlow<MessageInformationUIState?>(null)
-    val state: StateFlow<MessageInformationUIState?> = _state.asStateFlow()
+    public val state: StateFlow<MessageInformationUIState?> = _state.asStateFlow()
 
     /**
      * Receipt list data
      */
     private val _listData = MutableStateFlow<List<MessageReceipt>>(emptyList())
-    val listData: StateFlow<List<MessageReceipt>> = _listData.asStateFlow()
+    public val listData: StateFlow<List<MessageReceipt>> = _listData.asStateFlow()
 
     /**
      * Update receipt notification (index of updated item)
      */
     private val _updateReceipt = MutableStateFlow<Int?>(null)
-    val updateReceipt: StateFlow<Int?> = _updateReceipt.asStateFlow()
+    public val updateReceipt: StateFlow<Int?> = _updateReceipt.asStateFlow()
 
     /**
      * Add receipt notification (index where item was added)
      */
     private val _addReceipt = MutableStateFlow<Int?>(null)
-    val addReceipt: StateFlow<Int?> = _addReceipt.asStateFlow()
+    public val addReceipt: StateFlow<Int?> = _addReceipt.asStateFlow()
 
     /**
      * Exception for error handling
      */
     private val _exception = MutableStateFlow<CometChatException?>(null)
-    val exception: StateFlow<CometChatException?> = _exception.asStateFlow()
+    public val exception: StateFlow<CometChatException?> = _exception.asStateFlow()
 
     /**
      * Clear list trigger
      */
     private val _clearList = MutableStateFlow<Unit?>(null)
-    val clearList: StateFlow<Unit?> = _clearList.asStateFlow()
+    public val clearList: StateFlow<Unit?> = _clearList.asStateFlow()
 
     // ==================== Internal State ====================
 
@@ -112,7 +112,7 @@ open class CometChatMessageInformationViewModel(
      *
      * @param baseMessage The message to display information for
      */
-    fun setMessage(baseMessage: BaseMessage?) {
+    public fun setMessage(baseMessage: BaseMessage?) {
         if (baseMessage == null) return
 
         this.message = baseMessage
@@ -137,18 +137,18 @@ open class CometChatMessageInformationViewModel(
     /**
      * Gets the current message.
      */
-    fun getMessage(): BaseMessage? = message
+    public fun getMessage(): BaseMessage? = message
 
     /**
      * Gets the conversation type.
      */
-    fun getConversationType(): String? = conversationType
+    public fun getConversationType(): String? = conversationType
 
     /**
      * Fetches message receipts for GROUP conversations.
      * Per design doc: fetchMessageReceipt() logic.
      */
-    fun fetchMessageReceipt() {
+    public fun fetchMessageReceipt() {
         val currentMessage = message
         if (currentMessage == null) {
             _state.value = MessageInformationUIState.Loading
@@ -183,7 +183,7 @@ open class CometChatMessageInformationViewModel(
      * Adds the real-time event listener.
      * Per design doc: addListener() logic.
      */
-    fun addListener() {
+    public fun addListener() {
         receiptEventsJob = viewModelScope.launch {
             eventListener.receiptEvents().collect { messageReceipt ->
                 val currentMessage = message
@@ -198,7 +198,7 @@ open class CometChatMessageInformationViewModel(
      * Removes the real-time event listener.
      * Per design doc: removeListener() logic.
      */
-    fun removeListener() {
+    public fun removeListener() {
         receiptEventsJob?.cancel()
         receiptEventsJob = null
     }

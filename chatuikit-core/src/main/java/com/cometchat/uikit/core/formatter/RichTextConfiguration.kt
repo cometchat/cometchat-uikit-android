@@ -18,7 +18,7 @@ package com.cometchat.uikit.core.formatter
  * @param enableOrderedList Enable ordered list formatting (1. item)
  * @param enableBlockquote Enable blockquote formatting (> text)
  */
-data class RichTextConfiguration(
+public data class RichTextConfiguration(
     val enableBold: Boolean = false,
     val enableItalic: Boolean = false,
     val enableUnderline: Boolean = false,
@@ -33,7 +33,7 @@ data class RichTextConfiguration(
     /**
      * Returns true if any formatting option is enabled.
      */
-    fun hasAnyEnabled(): Boolean {
+    public fun hasAnyEnabled(): Boolean {
         return enableBold || enableItalic || enableUnderline || enableStrikethrough ||
                enableInlineCode || enableCodeBlock || enableLink ||
                enableBulletList || enableOrderedList || enableBlockquote
@@ -42,7 +42,7 @@ data class RichTextConfiguration(
     /**
      * Returns a list of enabled format types.
      */
-    fun getEnabledFormats(): List<RichTextFormat> {
+    public fun getEnabledFormats(): List<RichTextFormat> {
         return buildList {
             if (enableBold) add(RichTextFormat.BOLD)
             if (enableItalic) add(RichTextFormat.ITALIC)
@@ -57,11 +57,11 @@ data class RichTextConfiguration(
         }
     }
     
-    companion object {
+    public companion object {
         /**
          * Creates a configuration with all formatters enabled.
          */
-        fun allEnabled(): RichTextConfiguration = RichTextConfiguration(
+        public fun allEnabled(): RichTextConfiguration = RichTextConfiguration(
             enableBold = true,
             enableItalic = true,
             enableUnderline = true,
@@ -77,7 +77,7 @@ data class RichTextConfiguration(
         /**
          * Creates a configuration with basic formatters enabled (bold, italic, underline, strikethrough).
          */
-        fun basicFormatting(): RichTextConfiguration = RichTextConfiguration(
+        public fun basicFormatting(): RichTextConfiguration = RichTextConfiguration(
             enableBold = true,
             enableItalic = true,
             enableUnderline = true,
@@ -87,7 +87,7 @@ data class RichTextConfiguration(
         /**
          * Creates a configuration with code formatters enabled (inline code, code block).
          */
-        fun codeFormatting(): RichTextConfiguration = RichTextConfiguration(
+        public fun codeFormatting(): RichTextConfiguration = RichTextConfiguration(
             enableInlineCode = true,
             enableCodeBlock = true
         )
@@ -95,7 +95,7 @@ data class RichTextConfiguration(
         /**
          * Creates a configuration with list formatters enabled (bullet, ordered).
          */
-        fun listFormatting(): RichTextConfiguration = RichTextConfiguration(
+        public fun listFormatting(): RichTextConfiguration = RichTextConfiguration(
             enableBulletList = true,
             enableOrderedList = true
         )

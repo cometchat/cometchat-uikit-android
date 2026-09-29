@@ -19,29 +19,29 @@ package com.cometchat.uikit.core.utils
  * a `MenuItem` in the View kit) and renders its own "More"/"Back" rows. With today's
  * option counts this resolves to exactly two pages, but it is not hardcoded to two.
  */
-object MessageOptionsPaginator {
+public object MessageOptionsPaginator {
 
     /** Maximum number of real options shown on the first page before a "More" row is added. */
-    const val MAX_VISIBLE_OPTIONS = 6
+    public const val MAX_VISIBLE_OPTIONS: Int = 6
 
     /** Stable id used for the synthetic "More" navigation row (never a real option). */
-    const val MORE_ID = "cometchat_option_more"
+    public const val MORE_ID: String = "cometchat_option_more"
 
     /** Stable id used for the synthetic "Back" navigation row (never a real option). */
-    const val BACK_ID = "cometchat_option_back"
+    public const val BACK_ID: String = "cometchat_option_back"
 
     /**
      * A single position within a rendered page.
      */
-    sealed interface Slot {
+    public sealed interface Slot {
         /** A real option, identified by its index into the source options list. */
-        data class Item(val index: Int) : Slot
+        public data class Item(val index: Int) : Slot
 
         /** Navigation row that advances to the next page. */
-        data object More : Slot
+        public data object More : Slot
 
         /** Navigation row that returns to the previous page. */
-        data object Back : Slot
+        public data object Back : Slot
     }
 
     /**
@@ -51,7 +51,7 @@ object MessageOptionsPaginator {
      * @param maxVisible the cap of real options on the first page (defaults to [MAX_VISIBLE_OPTIONS])
      * @return the ordered pages; the returned list always has at least one page (possibly empty)
      */
-    fun paginate(size: Int, maxVisible: Int = MAX_VISIBLE_OPTIONS): List<List<Slot>> {
+    public fun paginate(size: Int, maxVisible: Int = MAX_VISIBLE_OPTIONS): List<List<Slot>> {
         require(maxVisible >= 1) { "maxVisible must be >= 1" }
 
         // Fits on a single page — no navigation rows.

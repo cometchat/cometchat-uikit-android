@@ -1,7 +1,6 @@
 package com.cometchat.uikit.core.utils
 
 import android.media.MediaMetadataRetriever
-import android.util.Log
 
 /**
  * Extracts the playback duration (in milliseconds) of a local video/audio file, used to stamp a
@@ -11,7 +10,7 @@ import android.util.Log
  * Reads directly from the file path — no [android.content.Context] needed. Safe to call off the main
  * thread (the composer stages attachments in a background flow before upload).
  */
-fun extractMediaDurationMillis(filePath: String?, mimeType: String?): Long? {
+public fun extractMediaDurationMillis(filePath: String?, mimeType: String?): Long? {
     if (filePath.isNullOrEmpty()) return null
     val mime = mimeType?.lowercase().orEmpty()
     if (!mime.startsWith("video/") && !mime.startsWith("audio/")) return null
@@ -22,7 +21,7 @@ fun extractMediaDurationMillis(filePath: String?, mimeType: String?): Long? {
             ?.toLongOrNull()
             ?.takeIf { it > 0 }
     } catch (e: Exception) {
-        Log.w("MediaDurationUtils", "Failed to read duration for $filePath: ${e.message}")
+        CometChatLogger.w("MediaDurationUtils", "Failed to read duration for $filePath: ${e.message}")
         null
     } finally {
         runCatching { retriever.release() }

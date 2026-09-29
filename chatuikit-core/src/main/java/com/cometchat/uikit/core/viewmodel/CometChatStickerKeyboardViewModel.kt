@@ -22,11 +22,11 @@ import kotlinx.coroutines.launch
  *
  * @param getStickersUseCase Use case for fetching stickers
  */
-open class CometChatStickerKeyboardViewModel(
+open public class CometChatStickerKeyboardViewModel(
     private val getStickersUseCase: GetStickersUseCase
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "StickerKeyboardVM"
     }
 
@@ -34,26 +34,26 @@ open class CometChatStickerKeyboardViewModel(
 
     /** Current UI state (Loading, Content, Empty, Error) */
     private val _uiState = MutableStateFlow<StickerKeyboardUIState>(StickerKeyboardUIState.Loading)
-    val uiState: StateFlow<StickerKeyboardUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<StickerKeyboardUIState> = _uiState.asStateFlow()
 
     // ==================== Sticker Data ====================
 
     /** List of all sticker sets */
     private val _stickerSets = MutableStateFlow<List<StickerSet>>(emptyList())
-    val stickerSets: StateFlow<List<StickerSet>> = _stickerSets.asStateFlow()
+    public val stickerSets: StateFlow<List<StickerSet>> = _stickerSets.asStateFlow()
 
     /** Index of the currently selected sticker set */
     private val _selectedSetIndex = MutableStateFlow(0)
-    val selectedSetIndex: StateFlow<Int> = _selectedSetIndex.asStateFlow()
+    public val selectedSetIndex: StateFlow<Int> = _selectedSetIndex.asStateFlow()
 
     /** Stickers in the currently selected set */
     private val _currentStickers = MutableStateFlow<List<Sticker>>(emptyList())
-    val currentStickers: StateFlow<List<Sticker>> = _currentStickers.asStateFlow()
+    public val currentStickers: StateFlow<List<Sticker>> = _currentStickers.asStateFlow()
 
     // ==================== Callbacks ====================
 
     /** Callback invoked when a sticker is clicked */
-    var onStickerClick: ((Sticker) -> Unit)? = null
+    public var onStickerClick: ((Sticker) -> Unit)? = null
 
     // ==================== State Flags ====================
 
@@ -76,7 +76,7 @@ open class CometChatStickerKeyboardViewModel(
      * - Empty when no stickers are available
      * - Error when fetch fails
      */
-    fun fetchStickers() {
+    public fun fetchStickers() {
         // Prevent concurrent fetches
         if (isFetching) return
 
@@ -102,7 +102,7 @@ open class CometChatStickerKeyboardViewModel(
      *
      * @param index The index of the sticker set to select
      */
-    fun selectStickerSet(index: Int) {
+    public fun selectStickerSet(index: Int) {
         val sets = _stickerSets.value
         if (index < 0 || index >= sets.size) return
 
@@ -114,7 +114,7 @@ open class CometChatStickerKeyboardViewModel(
      * Retries fetching stickers after an error.
      * Resets the UI state to Loading and fetches again.
      */
-    fun retry() {
+    public fun retry() {
         fetchStickers()
     }
 
@@ -124,7 +124,7 @@ open class CometChatStickerKeyboardViewModel(
      *
      * @param sticker The sticker that was clicked
      */
-    fun onStickerClicked(sticker: Sticker) {
+    public fun onStickerClicked(sticker: Sticker) {
         onStickerClick?.invoke(sticker)
     }
 

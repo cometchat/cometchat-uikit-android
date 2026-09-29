@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  * Applies inline code formatting to selected text by wrapping it with backticks.
  * Renders preview with BackgroundColorSpan and TypefaceSpan("monospace").
  */
-class InlineCodeTextFormatter(
+public class InlineCodeTextFormatter(
     private val codeBackgroundColor: Int = Color.parseColor("#E8E8E8")
 ) : RichTextFormatter {
     

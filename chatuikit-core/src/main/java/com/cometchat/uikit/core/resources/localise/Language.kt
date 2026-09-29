@@ -6,26 +6,26 @@ import androidx.annotation.StringDef
  * Language codes supported by CometChat UIKit.
  * Use these constants with [CometChatLocalize.setLocale] to set the app language.
  */
-object Language {
-    const val ENGLISH = "en"
-    const val SPANISH = "es"
-    const val FRENCH = "fr"
-    const val GERMAN = "de"
-    const val PORTUGUESE = "pt"
-    const val ITALIAN = "it"
-    const val RUSSIAN = "ru"
-    const val CHINESE = "zh"
-    const val JAPANESE = "ja"
-    const val KOREAN = "ko"
-    const val ARABIC = "ar"
-    const val HINDI = "hi"
-    const val TURKISH = "tr"
-    const val DUTCH = "nl"
-    const val POLISH = "pl"
-    const val SWEDISH = "sv"
-    const val HUNGARIAN = "hu"
-    const val MALAY = "ms"
-    const val LITHUANIAN = "lt"
+public object Language {
+    public const val ENGLISH: String = "en"
+    public const val SPANISH: String = "es"
+    public const val FRENCH: String = "fr"
+    public const val GERMAN: String = "de"
+    public const val PORTUGUESE: String = "pt"
+    public const val ITALIAN: String = "it"
+    public const val RUSSIAN: String = "ru"
+    public const val CHINESE: String = "zh"
+    public const val JAPANESE: String = "ja"
+    public const val KOREAN: String = "ko"
+    public const val ARABIC: String = "ar"
+    public const val HINDI: String = "hi"
+    public const val TURKISH: String = "tr"
+    public const val DUTCH: String = "nl"
+    public const val POLISH: String = "pl"
+    public const val SWEDISH: String = "sv"
+    public const val HUNGARIAN: String = "hu"
+    public const val MALAY: String = "ms"
+    public const val LITHUANIAN: String = "lt"
 
     /**
      * Annotation for language code validation.
@@ -36,5 +36,5 @@ object Language {
         TURKISH, DUTCH, POLISH, SWEDISH, HUNGARIAN, MALAY, LITHUANIAN
     )
     @Retention(AnnotationRetention.SOURCE)
-    annotation class Code
+    public annotation class Code
 }

@@ -21,9 +21,9 @@ import com.cometchat.uikit.core.R
  *
  * @param context The context of the application.
  */
-class CometChatSoundManager(private val context: Context) {
+public class CometChatSoundManager(private val context: Context) {
     
-    companion object {
+    public companion object {
         private const val TAG = "CometChatSoundManager"
         private val VIBRATE_PATTERN = longArrayOf(0, 1000, 1000)
         private const val VIBRATE_DURATION = 200L
@@ -49,7 +49,7 @@ class CometChatSoundManager(private val context: Context) {
      *
      * @param sound The sound type to be played.
      */
-    fun play(sound: Sound) {
+    public fun play(sound: Sound) {
         when (sound) {
             Sound.INCOMING_CALL -> {
                 val uri = Uri.parse("android.resource://${context.packageName}/${sound.getRawFile()}")
@@ -73,7 +73,7 @@ class CometChatSoundManager(private val context: Context) {
      * @param sound The sound type to be played.
      * @param rawFile The custom raw file resource ID. Pass 0 to use default.
      */
-    fun play(sound: Sound, @RawRes rawFile: Int) {
+    public fun play(sound: Sound, @RawRes rawFile: Int) {
         if (rawFile == 0) {
             play(sound)
             return
@@ -191,7 +191,7 @@ class CometChatSoundManager(private val context: Context) {
      * Pauses the audio playback and plays a disconnected sound.
      * Resets the audio settings to the normal state.
      */
-    fun pause() {
+    public fun pause() {
         pauseSilently()
         soundPool.play(disconnectedSoundId, 1.0f, 1.0f, 0, 0, 1.0f)
     }
@@ -200,7 +200,7 @@ class CometChatSoundManager(private val context: Context) {
      * Pauses the audio playback silently without playing any sound.
      * Resets all audio settings to normal state.
      */
-    fun pauseSilently() {
+    public fun pauseSilently() {
         val audioManager = getAudioManager()
         audioManager.isSpeakerphoneOn = false
         audioManager.isMicrophoneMute = false
@@ -229,7 +229,7 @@ class CometChatSoundManager(private val context: Context) {
      * Releases resources used by the sound manager.
      * Call this when the sound manager is no longer needed.
      */
-    fun release() {
+    public fun release() {
         soundPool.release()
         incomingAudioManager.stop()
         outgoingAudioManager.stop()

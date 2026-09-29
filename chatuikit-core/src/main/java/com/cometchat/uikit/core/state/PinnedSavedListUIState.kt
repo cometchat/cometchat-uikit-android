@@ -5,16 +5,16 @@ import com.cometchat.chat.exceptions.CometChatException
 /**
  * UI states shared by the Pinned Messages and Saved Messages list screens.
  */
-sealed class PinnedSavedListUIState {
+public sealed class PinnedSavedListUIState {
     /** Displayed while the first page is loading. */
-    object Loading : PinnedSavedListUIState()
+    public object Loading : PinnedSavedListUIState()
 
     /** Displayed when there is at least one message to show. */
-    object Content : PinnedSavedListUIState()
+    public object Content : PinnedSavedListUIState()
 
     /** Displayed when the list is empty. */
-    object Empty : PinnedSavedListUIState()
+    public object Empty : PinnedSavedListUIState()
 
     /** Displayed when loading fails. */
-    data class Error(val exception: CometChatException) : PinnedSavedListUIState()
+    public data class Error(val exception: CometChatException) : PinnedSavedListUIState()
 }

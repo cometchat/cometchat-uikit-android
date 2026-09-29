@@ -1,34 +1,33 @@
 package com.cometchat.uikit.core.utils
 
-import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Singleton manager for all audio bubble playback states.
  * Ensures only one audio plays at a time, state survives LazyColumn/RecyclerView recycling.
  */
-object AudioBubbleStateManager {
+public object AudioBubbleStateManager {
     private const val TAG = "AudioBubbleStateMgr"
     private val states = ConcurrentHashMap<Int, AudioBubblePlaybackState>()
 
-    fun getOrCreate(id: Int, audioUrl: String?, localPath: String?): AudioBubblePlaybackState {
+    public fun getOrCreate(id: Int, audioUrl: String?, localPath: String?): AudioBubblePlaybackState {
         return states.getOrPut(id) { AudioBubblePlaybackState(id = id, audioUrl = audioUrl, localPath = localPath) }
     }
 
     /** Returns the existing state without creating one — for restoring UI on RecyclerView re-bind. */
-    fun peek(id: Int): AudioBubblePlaybackState? = states[id]
+    public fun peek(id: Int): AudioBubblePlaybackState? = states[id]
 
-    fun pauseAllExcept(excludeId: Int) {
+    public fun pauseAllExcept(excludeId: Int) {
         states.values.toList().forEach { state ->
             if (state.id != excludeId && state.playState == PlayState.PLAYING) state.pause()
         }
     }
 
-    fun clearAll() {
-        Log.d(TAG, "Clearing all audio bubble states (${states.size} entries)")
+    public fun clearAll() {
+        CometChatLogger.d(TAG, "Clearing all audio bubble states (${states.size} entries)")
         states.values.toList().forEach { it.release() }
         states.clear()
     }
 
-    fun remove(id: Int) { states.remove(id)?.release() }
+    public fun remove(id: Int) { states.remove(id)?.release() }
 }

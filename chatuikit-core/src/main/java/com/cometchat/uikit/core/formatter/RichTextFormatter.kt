@@ -16,24 +16,24 @@ import android.text.SpannableString
  * @see RichTextFormat for the available format types
  * @see FormattedResult for the result of formatting operations
  */
-interface RichTextFormatter {
+public interface RichTextFormatter {
     
     /**
      * The type of rich text format this formatter handles.
      */
-    val formatType: RichTextFormat
+    public val formatType: RichTextFormat
     
     /**
      * The markdown prefix used to start the formatting.
      * For example: "**" for bold, "_" for italic, "`" for inline code.
      */
-    val markdownPrefix: String
+    public val markdownPrefix: String
     
     /**
      * The markdown suffix used to end the formatting.
      * For example: "**" for bold, "_" for italic, "`" for inline code.
      */
-    val markdownSuffix: String
+    public val markdownSuffix: String
     
     /**
      * Applies the formatting to the selected text.
@@ -44,7 +44,7 @@ interface RichTextFormatter {
      * @param selectionEnd The end position of the selection
      * @return FormattedResult containing the new text and updated selection positions
      */
-    fun applyFormat(text: String, selectionStart: Int, selectionEnd: Int): FormattedResult
+    public fun applyFormat(text: String, selectionStart: Int, selectionEnd: Int): FormattedResult
     
     /**
      * Removes the formatting from the selected text.
@@ -55,7 +55,7 @@ interface RichTextFormatter {
      * @param selectionEnd The end position of the selection
      * @return FormattedResult containing the new text and updated selection positions
      */
-    fun removeFormat(text: String, selectionStart: Int, selectionEnd: Int): FormattedResult
+    public fun removeFormat(text: String, selectionStart: Int, selectionEnd: Int): FormattedResult
     
     /**
      * Checks if the formatting is applied to the selected text.
@@ -66,7 +66,7 @@ interface RichTextFormatter {
      * @param selectionEnd The end position of the selection
      * @return True if the formatting is applied, false otherwise
      */
-    fun isFormatApplied(text: String, selectionStart: Int, selectionEnd: Int): Boolean
+    public fun isFormatApplied(text: String, selectionStart: Int, selectionEnd: Int): Boolean
     
     /**
      * Generates a formatted preview of the text with Android spans.
@@ -75,5 +75,5 @@ interface RichTextFormatter {
      * @param text The text containing markdown formatting
      * @return SpannableString with visual formatting applied
      */
-    fun getFormattedPreview(text: String): SpannableString
+    public fun getFormattedPreview(text: String): SpannableString
 }

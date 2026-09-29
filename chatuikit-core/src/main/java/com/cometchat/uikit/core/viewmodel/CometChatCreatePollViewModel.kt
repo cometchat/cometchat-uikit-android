@@ -21,11 +21,11 @@ import org.json.JSONArray
  *
  * @param createPollUseCase Use case for creating polls
  */
-open class CometChatCreatePollViewModel(
+open public class CometChatCreatePollViewModel(
     private val createPollUseCase: CreatePollUseCase
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CreatePollVM"
     }
 
@@ -33,25 +33,25 @@ open class CometChatCreatePollViewModel(
 
     /** Current UI state (Idle, Submitting, Success, Error) */
     private val _uiState = MutableStateFlow<CreatePollUIState>(CreatePollUIState.Idle)
-    val uiState: StateFlow<CreatePollUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<CreatePollUIState> = _uiState.asStateFlow()
 
     // ==================== Form Data ====================
 
     /** The poll question */
     private val _question = MutableStateFlow("")
-    val question: StateFlow<String> = _question.asStateFlow()
+    public val question: StateFlow<String> = _question.asStateFlow()
 
     /** The poll options */
     private val _options = MutableStateFlow<List<String>>(listOf("", ""))
-    val options: StateFlow<List<String>> = _options.asStateFlow()
+    public val options: StateFlow<List<String>> = _options.asStateFlow()
 
     // ==================== Callbacks ====================
 
     /** Callback invoked when poll is created successfully */
-    var onPollCreated: (() -> Unit)? = null
+    public var onPollCreated: (() -> Unit)? = null
 
     /** Callback invoked when poll creation fails */
-    var onError: ((CometChatException) -> Unit)? = null
+    public var onError: ((CometChatException) -> Unit)? = null
 
     // ==================== Public API Methods ====================
 
@@ -60,7 +60,7 @@ open class CometChatCreatePollViewModel(
      *
      * @param question The new question text
      */
-    fun setQuestion(question: String) {
+    public fun setQuestion(question: String) {
         _question.value = question
     }
 
@@ -70,7 +70,7 @@ open class CometChatCreatePollViewModel(
      * @param index The index of the option to update
      * @param value The new option text
      */
-    fun updateOption(index: Int, value: String) {
+    public fun updateOption(index: Int, value: String) {
         val currentOptions = _options.value.toMutableList()
         if (index in currentOptions.indices) {
             currentOptions[index] = value
@@ -81,7 +81,7 @@ open class CometChatCreatePollViewModel(
     /**
      * Adds a new empty option to the poll.
      */
-    fun addOption() {
+    public fun addOption() {
         val currentOptions = _options.value.toMutableList()
         currentOptions.add("")
         _options.value = currentOptions
@@ -93,7 +93,7 @@ open class CometChatCreatePollViewModel(
      *
      * @param index The index of the option to remove
      */
-    fun removeOption(index: Int) {
+    public fun removeOption(index: Int) {
         val currentOptions = _options.value.toMutableList()
         if (currentOptions.size > 2 && index in currentOptions.indices) {
             currentOptions.removeAt(index)
@@ -107,7 +107,7 @@ open class CometChatCreatePollViewModel(
      *
      * @return True if the form is valid
      */
-    fun isFormValid(): Boolean {
+    public fun isFormValid(): Boolean {
         val questionValid = _question.value.isNotBlank()
         val validOptions = _options.value.filter { it.isNotBlank() }
         return questionValid && validOptions.size >= 2
@@ -120,7 +120,7 @@ open class CometChatCreatePollViewModel(
      * @param receiverType The type of receiver ("user" or "group")
      * @param quotedMessageId Optional ID of the message being replied to
      */
-    fun createPoll(
+    public fun createPoll(
         receiverId: String,
         receiverType: String,
         quotedMessageId: Long? = null
@@ -156,7 +156,7 @@ open class CometChatCreatePollViewModel(
     /**
      * Resets the form to initial state.
      */
-    fun reset() {
+    public fun reset() {
         _question.value = ""
         _options.value = listOf("", "")
         _uiState.value = CreatePollUIState.Idle
@@ -165,7 +165,7 @@ open class CometChatCreatePollViewModel(
     /**
      * Dismisses the error state and returns to idle.
      */
-    fun dismissError() {
+    public fun dismissError() {
         if (_uiState.value is CreatePollUIState.Error) {
             _uiState.value = CreatePollUIState.Idle
         }

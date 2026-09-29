@@ -29,7 +29,7 @@ import java.util.Locale
  * Provides helper methods for extracting and formatting conversation data
  * for display in the conversation list item.
  */
-object ConversationUtils {
+public object ConversationUtils {
 
     /**
      * Returns a formatted string representation of the last message.
@@ -39,7 +39,7 @@ object ConversationUtils {
      * @param message The BaseMessage to format
      * @return Formatted string for display in subtitle
      */
-    fun getLastMessageText(context: Context, message: BaseMessage?): String {
+    public fun getLastMessageText(context: Context, message: BaseMessage?): String {
         if (message == null) {
             return context.getString(R.string.cometchat_start_conv_hint)
         }
@@ -71,7 +71,7 @@ object ConversationUtils {
      * @return Drawable resource ID or null for plain text messages
      */
     @DrawableRes
-    fun getLastMessageIcon(message: BaseMessage?): Int? {
+    public fun getLastMessageIcon(message: BaseMessage?): Int? {
         if (message == null) return null
 
         // Check if message is deleted
@@ -106,7 +106,7 @@ object ConversationUtils {
      * @param message The BaseMessage to get prefix for
      * @return Sender name prefix (e.g., "John: " or "You: ") or empty string
      */
-    fun getMessagePrefix(context: Context, message: BaseMessage): String {
+    public fun getMessagePrefix(context: Context, message: BaseMessage): String {
         // Only show prefix for group messages
         if (message.receiverType != CometChatConstants.RECEIVER_TYPE_GROUP) {
             return ""
@@ -142,7 +142,7 @@ object ConversationUtils {
      * @param message The BaseMessage to format
      * @return Complete formatted string with prefix (for group messages) + message text
      */
-    fun getFormattedSubtitleText(context: Context, message: BaseMessage?): String {
+    public fun getFormattedSubtitleText(context: Context, message: BaseMessage?): String {
         if (message == null) {
             return context.getString(R.string.cometchat_start_conv_hint)
         }
@@ -166,7 +166,7 @@ object ConversationUtils {
      * @param textFormatters List of text formatters to apply (e.g., CometChatMentionsFormatter)
      * @return Formatted CharSequence with styling applied for TextMessages, plain String for others
      */
-    fun getFormattedLastMessageText(
+    public fun getFormattedLastMessageText(
         context: Context,
         message: BaseMessage?,
         textFormatters: List<CometChatTextFormatter>
@@ -231,7 +231,7 @@ object ConversationUtils {
      * @param conversation The conversation to get the title from
      * @return The name of the user or group
      */
-    fun getConversationTitle(conversation: Conversation): String {
+    public fun getConversationTitle(conversation: Conversation): String {
         return when (conversation.conversationType) {
             CometChatConstants.CONVERSATION_TYPE_USER -> {
                 (conversation.conversationWith as? User)?.name ?: ""
@@ -249,7 +249,7 @@ object ConversationUtils {
      * @param conversation The conversation to get the avatar from
      * @return The avatar URL of the user or group icon
      */
-    fun getConversationAvatar(conversation: Conversation): String? {
+    public fun getConversationAvatar(conversation: Conversation): String? {
         return when (conversation.conversationType) {
             CometChatConstants.CONVERSATION_TYPE_USER -> {
                 (conversation.conversationWith as? User)?.avatar
@@ -267,7 +267,7 @@ object ConversationUtils {
      * @param conversation The conversation
      * @return The User object or null if it's a group conversation
      */
-    fun getUser(conversation: Conversation): User? {
+    public fun getUser(conversation: Conversation): User? {
         return if (conversation.conversationType == CometChatConstants.CONVERSATION_TYPE_USER) {
             conversation.conversationWith as? User
         } else null
@@ -279,7 +279,7 @@ object ConversationUtils {
      * @param conversation The conversation
      * @return The Group object or null if it's a user conversation
      */
-    fun getGroup(conversation: Conversation): Group? {
+    public fun getGroup(conversation: Conversation): Group? {
         return if (conversation.conversationType == CometChatConstants.CONVERSATION_TYPE_GROUP) {
             conversation.conversationWith as? Group
         } else null
@@ -291,7 +291,7 @@ object ConversationUtils {
      * @param conversation The conversation to check
      * @return True if it's a user conversation, false otherwise
      */
-    fun isUserConversation(conversation: Conversation): Boolean {
+    public fun isUserConversation(conversation: Conversation): Boolean {
         return conversation.conversationType == CometChatConstants.CONVERSATION_TYPE_USER
     }
 
@@ -301,7 +301,7 @@ object ConversationUtils {
      * @param conversation The conversation to check
      * @return True if it's a group conversation, false otherwise
      */
-    fun isGroupConversation(conversation: Conversation): Boolean {
+    public fun isGroupConversation(conversation: Conversation): Boolean {
         return conversation.conversationType == CometChatConstants.CONVERSATION_TYPE_GROUP
     }
 

@@ -15,7 +15,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
  * @param repository The repository to use for data operations.
  *                   Defaults to StickerRepositoryImpl with StickerDataSourceImpl.
  */
-class CometChatStickerKeyboardViewModelFactory(
+public class CometChatStickerKeyboardViewModelFactory(
     private val repository: StickerRepository = StickerRepositoryImpl(
         StickerDataSourceImpl()
     )

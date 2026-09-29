@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">コピー</string>
+    <string name="cometchat_delete" translatable="true">削除</string>
+    <string name="cometchat_edit" translatable="true">編集</string>
+    <string name="cometchat_info" translatable="true">"情報"</string>
+    <string name="cometchat_mark_unread" translatable="true">未読にする</string>
+    <string name="cometchat_message_privately" translatable="true">個別にメッセージを送る</string>
+    <string name="cometchat_pin" translatable="true">メッセージをピン留め</string>
+    <string name="cometchat_reply" translatable="true">返信</string>
+    <string name="cometchat_reply_uppercase" translatable="true">スレッドで返信</string>
+    <string name="cometchat_report" translatable="true">報告</string>
+    <string name="cometchat_save" translatable="true">メッセージを保存</string>
+    <string name="cometchat_share" translatable="true">共有</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">スレッドを購読</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">スレッドの購読を解除</string>
+    <string name="cometchat_translate" translatable="true">翻訳</string>
+    <string name="cometchat_unpin" translatable="true">メッセージのピン留めを解除</string>
+    <string name="cometchat_unsave" translatable="true">メッセージの保存を解除</string>
+</resources>

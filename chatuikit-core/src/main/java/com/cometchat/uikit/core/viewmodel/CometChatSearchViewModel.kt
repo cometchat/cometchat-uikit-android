@@ -40,42 +40,42 @@ import kotlinx.coroutines.launch
  * @param fetchConversationsUseCase Use case for fetching conversations
  * @param fetchMessagesUseCase Use case for fetching messages
  */
-open class CometChatSearchViewModel(
+open public class CometChatSearchViewModel(
     private val fetchConversationsUseCase: FetchConversationsUseCase,
     private val fetchMessagesUseCase: FetchMessagesUseCase
 ) : ViewModel() {
 
-    companion object {
-        const val DEFAULT_LIMIT = 15
-        const val DEBOUNCE_DELAY_MS = 450L
+    public companion object {
+        public const val DEFAULT_LIMIT: Int = 15
+        public const val DEBOUNCE_DELAY_MS: Long = 450L
     }
 
     // UI State
     private val _uiState = MutableStateFlow<SearchUIState>(SearchUIState.Initial)
-    val uiState: StateFlow<SearchUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<SearchUIState> = _uiState.asStateFlow()
 
     // Conversations list
     private val _conversations = MutableStateFlow<List<Conversation>>(emptyList())
-    val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
+    public val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
 
     // Messages list
     private val _messages = MutableStateFlow<List<BaseMessage>>(emptyList())
-    val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
+    public val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
 
     // Pagination flags
     private val _hasMoreConversations = MutableStateFlow(true)
-    val hasMoreConversations: StateFlow<Boolean> = _hasMoreConversations.asStateFlow()
+    public val hasMoreConversations: StateFlow<Boolean> = _hasMoreConversations.asStateFlow()
 
     private val _hasMoreMessages = MutableStateFlow(true)
-    val hasMoreMessages: StateFlow<Boolean> = _hasMoreMessages.asStateFlow()
+    public val hasMoreMessages: StateFlow<Boolean> = _hasMoreMessages.asStateFlow()
 
     // Selected filters
     private val _selectedFilters = MutableStateFlow<Set<SearchFilter>>(emptySet())
-    val selectedFilters: StateFlow<Set<SearchFilter>> = _selectedFilters.asStateFlow()
+    public val selectedFilters: StateFlow<Set<SearchFilter>> = _selectedFilters.asStateFlow()
 
     // Visible filters - shows all 7 when no selection, or only same-group filters when selected
     private val _visibleFilters = MutableStateFlow<List<SearchFilter>>(SearchFilter.entries.toList())
-    val visibleFilters: StateFlow<List<SearchFilter>> = _visibleFilters.asStateFlow()
+    public val visibleFilters: StateFlow<List<SearchFilter>> = _visibleFilters.asStateFlow()
 
     // Search configuration
     private var searchScopes: List<SearchScope> = listOf(SearchScope.MESSAGES, SearchScope.CONVERSATIONS)
@@ -113,7 +113,7 @@ open class CometChatSearchViewModel(
      * @param searchText The search query text
      * @param filters The set of selected filters
      */
-    fun searchConversationsAndMessages(searchText: String, filters: Set<SearchFilter>) {
+    public fun searchConversationsAndMessages(searchText: String, filters: Set<SearchFilter>) {
         if (searchText.isEmpty() && filters.isEmpty()) {
             clear()
             _uiState.value = SearchUIState.Initial
@@ -189,7 +189,7 @@ open class CometChatSearchViewModel(
      * @param filters The set of selected filters
      * @return The appropriate SearchMode
      */
-    fun getSearchMode(searchText: String, filters: Set<SearchFilter>): SearchMode {
+    public fun getSearchMode(searchText: String, filters: Set<SearchFilter>): SearchMode {
         val messageFilters = filters.filter { it.isMessageFilter() }
         val conversationFilters = filters.filter { it.isConversationFilter() }
 
@@ -232,9 +232,10 @@ open class CometChatSearchViewModel(
      * Fetches conversations based on search text and filters.
      */
     private suspend fun fetchConversations(searchText: String, filters: Set<SearchFilter>) {
-        val builder = conversationsRequestBuilder?.let {
-            ConversationsRequest.ConversationsRequestBuilder()
-        } ?: ConversationsRequest.ConversationsRequestBuilder()
+        // Use the integrator-supplied builder when one was set, so setConversationsRequestBuilder
+        // actually scopes the search. Previously both branches constructed a fresh default builder,
+        // which silently discarded the caller's.
+        val builder = conversationsRequestBuilder ?: ConversationsRequest.ConversationsRequestBuilder()
 
         configureConversationRequest(builder, searchText, filters)
         currentConversationsRequest = builder.build()
@@ -269,9 +270,8 @@ open class CometChatSearchViewModel(
      * Fetches messages based on search text and filters.
      */
     private suspend fun fetchMessages(searchText: String, filters: Set<SearchFilter>) {
-        val builder = messagesRequestBuilder?.let {
-            MessagesRequest.MessagesRequestBuilder()
-        } ?: MessagesRequest.MessagesRequestBuilder()
+        // Use the integrator-supplied builder when one was set — see fetchConversations above.
+        val builder = messagesRequestBuilder ?: MessagesRequest.MessagesRequestBuilder()
 
         configureMessageRequest(builder, searchText, filters)
         currentMessagesRequest = builder.build()
@@ -470,7 +470,7 @@ open class CometChatSearchViewModel(
     /**
      * Fetches more conversations for pagination.
      */
-    fun fetchMoreConversations() {
+    public fun fetchMoreConversations() {
         if (!_hasMoreConversations.value || isConversationRequestPending) return
 
         viewModelScope.launch {
@@ -501,7 +501,7 @@ open class CometChatSearchViewModel(
     /**
      * Fetches more messages for pagination.
      */
-    fun fetchMoreMessages() {
+    public fun fetchMoreMessages() {
         if (!_hasMoreMessages.value || isMessageRequestPending) return
 
         viewModelScope.launch {
@@ -529,7 +529,7 @@ open class CometChatSearchViewModel(
      *
      * @param scopes List of SearchScope values (MESSAGES, CONVERSATIONS, or both)
      */
-    fun setSearchScopes(scopes: List<SearchScope>) {
+    public fun setSearchScopes(scopes: List<SearchScope>) {
         searchScopes = scopes
     }
 
@@ -539,7 +539,7 @@ open class CometChatSearchViewModel(
      *
      * @param uid The user ID to filter messages by, or null to clear
      */
-    fun setUid(uid: String?) {
+    public fun setUid(uid: String?) {
         this.uid = uid
         updateVisibleFiltersForContext()
     }
@@ -550,7 +550,7 @@ open class CometChatSearchViewModel(
      *
      * @param guid The group ID to filter messages by, or null to clear
      */
-    fun setGuid(guid: String?) {
+    public fun setGuid(guid: String?) {
         this.guid = guid
         updateVisibleFiltersForContext()
     }
@@ -583,7 +583,7 @@ open class CometChatSearchViewModel(
      *
      * @param builder The custom request builder
      */
-    fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
+    public fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
         conversationsRequestBuilder = builder
     }
 
@@ -592,7 +592,7 @@ open class CometChatSearchViewModel(
      *
      * @param builder The custom request builder
      */
-    fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder) {
+    public fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder) {
         messagesRequestBuilder = builder
     }
 
@@ -611,7 +611,7 @@ open class CometChatSearchViewModel(
      *
      * @param filter The filter to toggle
      */
-    fun toggleFilter(filter: SearchFilter) {
+    public fun toggleFilter(filter: SearchFilter) {
         val currentFilters = _selectedFilters.value.toMutableSet()
         val clickedGroup = filter.group
 
@@ -659,7 +659,7 @@ open class CometChatSearchViewModel(
     /**
      * Clears all search state including lists, filters, and request state.
      */
-    fun clear() {
+    public fun clear() {
         searchJob?.cancel()
         clearLists()
         _selectedFilters.value = emptySet()

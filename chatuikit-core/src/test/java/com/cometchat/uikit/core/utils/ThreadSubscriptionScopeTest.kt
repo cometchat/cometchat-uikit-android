@@ -51,6 +51,7 @@ class ThreadSubscriptionScopeTest : FunSpec({
      * The flag lives on CometChatUIKit's private settings object; `mockStatic` cannot intercept a
      * Kotlin object's instance methods, so inject the settings directly.
      */
+    @Suppress("DEPRECATION")
     fun setThreadSubscription(enabled: Boolean) {
         val field = CometChatUIKit::class.java.getDeclaredField("authenticationSettings")
         field.isAccessible = true
@@ -61,6 +62,13 @@ class ThreadSubscriptionScopeTest : FunSpec({
                 .setEnableThreadSubscription(enabled)
                 .build()
         )
+    }
+
+    /** Drops the injected settings so the gate falls back to its default (ON). */
+    fun clearThreadSubscriptionSettings() {
+        val field = CometChatUIKit::class.java.getDeclaredField("authenticationSettings")
+        field.isAccessible = true
+        field.set(CometChatUIKit, null)
     }
 
     beforeTest {
@@ -76,7 +84,9 @@ class ThreadSubscriptionScopeTest : FunSpec({
     }
 
     afterTest {
-        setThreadSubscription(false)
+        // The gate is read off CometChatUIKit's process-wide settings, and it is default-ON now —
+        // clear the injected settings rather than leaving a disabled gate for later specs.
+        clearThreadSubscriptionSettings()
         cometChatMock.close()
     }
 

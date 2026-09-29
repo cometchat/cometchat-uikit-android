@@ -8,7 +8,7 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  * 
  * @param repository The repository to perform scope change operation
  */
-open class ChangeMemberScopeUseCase(
+open public class ChangeMemberScopeUseCase(
     private val repository: GroupMembersRepository
 ) {
     /**
@@ -18,7 +18,7 @@ open class ChangeMemberScopeUseCase(
      * @param scope The new scope (admin/moderator/participant)
      * @return Result indicating success or failure
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         guid: String,
         uid: String,
         scope: String

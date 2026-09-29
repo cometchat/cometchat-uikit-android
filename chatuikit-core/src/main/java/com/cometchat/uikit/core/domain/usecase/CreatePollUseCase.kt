@@ -12,7 +12,7 @@ import org.json.JSONArray
  *
  * @param repository The repository to use for poll operations
  */
-open class CreatePollUseCase(
+open public class CreatePollUseCase(
     private val repository: PollRepository
 ) {
     /**
@@ -25,7 +25,7 @@ open class CreatePollUseCase(
      * @param quotedMessageId Optional ID of the message being replied to
      * @return Result containing success or error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         question: String,
         options: JSONArray,
         receiverId: String,

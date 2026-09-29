@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
  * Ported from the Java implementation:
  * chatuikit/src/main/java/com/cometchat/chatuikit/aiassistantchathistory/AIAssistantChatHistoryAdapter.java
  */
-class AIAssistantChatHistoryAdapter(
+internal class AIAssistantChatHistoryAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<AIAssistantChatHistoryAdapter.MessageViewHolder>(),
     StickyHeaderAdapter<AIAssistantChatHistoryAdapter.DateItemHolder> {

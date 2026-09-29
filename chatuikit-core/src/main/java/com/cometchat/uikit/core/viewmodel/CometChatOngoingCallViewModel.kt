@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core.viewmodel
 
-import android.util.Log
 import android.widget.RelativeLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -24,6 +23,7 @@ import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -45,9 +45,9 @@ import kotlinx.coroutines.launch
  *
  * Validates: Requirements 1.1, 1.2, 1.3
  */
-open class CometChatOngoingCallViewModel : ViewModel() {
+open public class CometChatOngoingCallViewModel : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatOngoingCallViewModel"
     }
 
@@ -60,7 +60,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      * Validates: Requirement 1.1
      */
     private val _uiState = MutableStateFlow<OngoingCallUIState>(OngoingCallUIState.Loading)
-    val uiState: StateFlow<OngoingCallUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OngoingCallUIState> = _uiState.asStateFlow()
 
     /**
      * StateFlow for loading indicator visibility.
@@ -69,7 +69,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      * Validates: Requirement 1.2
      */
     private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    public val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     /**
      * SharedFlow for one-time events.
@@ -79,7 +79,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      * Validates: Requirement 1.3
      */
     private val _events = MutableSharedFlow<OngoingCallEvent>()
-    val events: SharedFlow<OngoingCallEvent> = _events.asSharedFlow()
+    public val events: SharedFlow<OngoingCallEvent> = _events.asSharedFlow()
 
     // ==================== Internal State ====================
 
@@ -157,7 +157,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirement 2.5
      */
-    fun setSessionId(sessionId: String) {
+    public fun setSessionId(sessionId: String) {
         this.sessionId = sessionId
     }
 
@@ -167,7 +167,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirement 2.6
      */
-    fun setCallType(callType: String) {
+    public fun setCallType(callType: String) {
         this.callType = callType
     }
 
@@ -177,7 +177,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirement 2.4
      */
-    fun setCallWorkFlow(workFlow: CallWorkFlow) {
+    public fun setCallWorkFlow(workFlow: CallWorkFlow) {
         this.callWorkFlow = workFlow
     }
 
@@ -187,7 +187,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirement 2.3
      */
-    fun setSessionSettingsBuilder(builder: CometChatCalls.SessionSettingsBuilder?) {
+    public fun setSessionSettingsBuilder(builder: CometChatCalls.SessionSettingsBuilder?) {
         this.sessionSettingsBuilder = builder
     }
 
@@ -207,7 +207,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 17.1, 17.2, 17.3
      */
-    fun startCall(callViewContainer: RelativeLayout) {
+    public fun startCall(callViewContainer: RelativeLayout) {
         // Validate required parameters
         val sid = sessionId ?: return
         val type = callType ?: return
@@ -239,7 +239,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
 
             override fun onError(e: com.cometchat.calls.exceptions.CometChatException) {
                 // On failure: emit Error event (Requirement 3.7)
-                Log.e(TAG, "joinSession error: $e")
+                CometChatLogger.e(TAG, "joinSession error: $e")
                 val chatException = CometChatException(e.code, e.message)
                 viewModelScope.launch {
                     mutableEvents.emit(OngoingCallEvent.Error(chatException))
@@ -265,7 +265,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      * Property 6: Workflow-Dependent Call End Behavior
      * Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7
      */
-    fun endCall() {
+    public fun endCall() {
         when (callWorkFlow) {
             CallWorkFlow.MEETING -> {
                 // For MEETING: leave session via CallSession instance
@@ -307,7 +307,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
 
                     override fun onError(e: CometChatException) {
                         // On failure: still set Ended state, emit Error event (Requirement 7.6, 7.7)
-                        Log.e(TAG, "endCall error: $e")
+                        CometChatLogger.e(TAG, "endCall error: $e")
                         mutableUiState.value = OngoingCallUIState.Ended
                         viewModelScope.launch {
                             mutableEvents.emit(OngoingCallEvent.Error(e))
@@ -328,7 +328,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 13.3, 13.4, 13.5
      */
-    fun addListeners(owner: LifecycleOwner? = null) {
+    public fun addListeners(owner: LifecycleOwner? = null) {
         val session = callSession ?: CallSession.getInstance() ?: return
         // Use provided owner, stored owner, or skip registration.
         // Listeners will be registered when startCall() succeeds if no owner is available yet.
@@ -384,15 +384,15 @@ open class CometChatOngoingCallViewModel : ViewModel() {
             }
 
             override fun onConnectionLost() {
-                Log.w(TAG, "Call connection lost")
+                CometChatLogger.w(TAG, "Call connection lost")
             }
 
             override fun onConnectionRestored() {
-                Log.d(TAG, "Call connection restored")
+                CometChatLogger.d(TAG, "Call connection restored")
             }
 
             override fun onConnectionClosed() {
-                Log.d(TAG, "Call connection closed")
+                CometChatLogger.d(TAG, "Call connection closed")
             }
         })
 
@@ -518,7 +518,7 @@ open class CometChatOngoingCallViewModel : ViewModel() {
      *
      * Validates: Requirement 13.5
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         // v5 listeners are lifecycle-aware and auto-cleanup — no manual removal needed
     }
 

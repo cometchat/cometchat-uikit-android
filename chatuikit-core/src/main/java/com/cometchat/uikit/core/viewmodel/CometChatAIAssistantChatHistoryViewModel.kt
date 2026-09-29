@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  *
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatAIAssistantChatHistoryViewModel(
+open public class CometChatAIAssistantChatHistoryViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
@@ -42,31 +42,31 @@ open class CometChatAIAssistantChatHistoryViewModel(
 
     /** Observable list of messages for the UI. */
     private val _messages = MutableStateFlow<List<BaseMessage>>(emptyList())
-    val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
+    public val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
 
     /** Current UI state (Loading, Empty, Error, Content). */
     private val _uiState = MutableStateFlow<ChatHistoryUIState>(ChatHistoryUIState.Empty)
-    val uiState: StateFlow<ChatHistoryUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<ChatHistoryUIState> = _uiState.asStateFlow()
 
     /** Delete operation state. */
     private val _deleteState = MutableSharedFlow<UIKitConstants.DeleteState>(extraBufferCapacity = 3)
-    val deleteState: SharedFlow<UIKitConstants.DeleteState> = _deleteState.asSharedFlow()
+    public val deleteState: SharedFlow<UIKitConstants.DeleteState> = _deleteState.asSharedFlow()
 
     /** Emits the position of a removed message for adapter notification. */
     private val _removeMessagePosition = MutableSharedFlow<Int>(extraBufferCapacity = 1)
-    val removeMessagePosition: SharedFlow<Int> = _removeMessagePosition.asSharedFlow()
+    public val removeMessagePosition: SharedFlow<Int> = _removeMessagePosition.asSharedFlow()
 
     /** Whether more messages are available for pagination. */
     private val _hasMore = MutableStateFlow(true)
-    val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
+    public val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
 
     /** Whether a fetch operation is currently in progress. */
     private val _isInProgress = MutableStateFlow(false)
-    val isInProgress: StateFlow<Boolean> = _isInProgress.asStateFlow()
+    public val isInProgress: StateFlow<Boolean> = _isInProgress.asStateFlow()
 
     /** Emits the count of newly prepended messages for adapter range notification. */
     private val _messagesRangeChanged = MutableSharedFlow<Int>(extraBufferCapacity = 1)
-    val messagesRangeChanged: SharedFlow<Int> = _messagesRangeChanged.asSharedFlow()
+    public val messagesRangeChanged: SharedFlow<Int> = _messagesRangeChanged.asSharedFlow()
 
     // --- Internal State ---
 
@@ -86,7 +86,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      *
      * @param user The User whose chat history to display
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         initializeMessagesRequest()
         fetchMessages()
@@ -98,7 +98,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      *
      * @param group The Group whose chat history to display
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         initializeMessagesRequest()
     }
@@ -110,7 +110,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      * Sets hasMore=false on empty response.
      * Emits Loading state on first fetch when list is empty.
      */
-    fun fetchMessages() {
+    public fun fetchMessages() {
         if (messagesRequest == null) return
         if (!_hasMore.value) return
         if (_isInProgress.value) return
@@ -157,7 +157,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      *
      * @param baseMessage The message to delete
      */
-    fun deleteChatHistoryItem(baseMessage: BaseMessage) {
+    public fun deleteChatHistoryItem(baseMessage: BaseMessage) {
         _deleteState.tryEmit(UIKitConstants.DeleteState.INITIATED_DELETE)
 
         CometChat.deleteMessage(baseMessage.id, object : CometChat.CallbackListener<BaseMessage>() {
@@ -185,7 +185,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      *
      * @param baseMessage The message to remove
      */
-    fun remove(baseMessage: BaseMessage) {
+    public fun remove(baseMessage: BaseMessage) {
         val oldIndex = messageArrayList.indexOfFirst { it.id == baseMessage.id }
         if (oldIndex == -1) return
 
@@ -205,7 +205,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
      * - SDK MessageListener for server-pushed deletion events
      * - UIKit CometChatEvents.messageEvents for local inter-component deletion events
      */
-    fun addListeners() {
+    public fun addListeners() {
         if (!enableListeners) return
 
         listenerTag = "ChatHistory_${System.currentTimeMillis()}"
@@ -231,7 +231,7 @@ open class CometChatAIAssistantChatHistoryViewModel(
     /**
      * Unregisters all event listeners and cancels the message events job.
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         listenerTag?.let { CometChat.removeMessageListener(it) }
         messageEventsJob?.cancel()
         messageEventsJob = null

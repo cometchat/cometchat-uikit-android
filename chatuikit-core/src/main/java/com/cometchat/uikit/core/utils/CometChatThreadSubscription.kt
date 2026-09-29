@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap
  * anything delivered in realtime — a send result, or an own message relayed to another device —
  * arrives flagless and must be stamped by the kit, which is what Case 2's mirrors do.
  */
-object CometChatThreadSubscription {
+public object CometChatThreadSubscription {
 
     /** Swallows an impatient double-tap without blocking a deliberate retry after a failure. */
     private const val TOGGLE_DEBOUNCE_MS = 400L
@@ -50,19 +50,19 @@ object CometChatThreadSubscription {
     private val lastToggleAt = ConcurrentHashMap<Long, Long>()
 
     /** The outcome of a [toggle], for the caller to turn into its own toast copy. */
-    sealed class ToggleResult {
+    public sealed class ToggleResult {
         /** The server write succeeded; [subscribed] is the settled state. */
-        data class Success(val parentMessageId: Long, val subscribed: Boolean) : ToggleResult()
+        public data class Success(val parentMessageId: Long, val subscribed: Boolean) : ToggleResult()
 
         /** The server write failed and the optimistic flip has already been reverted. */
-        data class Failure(val parentMessageId: Long, val exception: CometChatException?) : ToggleResult()
+        public data class Failure(val parentMessageId: Long, val exception: CometChatException?) : ToggleResult()
     }
 
     /**
-     * Whether the thread-subscription affordances should be offered at all. The feature is opt-in via
-     * [com.cometchat.uikit.core.UIKitSettings.enableThreadSubscription].
+     * Whether the thread-subscription affordances should be offered at all. On by default; the
+     * feature is opt-OUT via [com.cometchat.uikit.core.UIKitSettings.enableThreadSubscription].
      */
-    fun isSupported(): Boolean = CometChatUIKit.isThreadSubscriptionEnabled()
+    public fun isSupported(): Boolean = CometChatUIKit.isThreadSubscriptionEnabled()
 
     /**
      * Whether the follow control should be offered for the thread rooted at [parentMessage].
@@ -77,13 +77,13 @@ object CometChatThreadSubscription {
      * Still hides on an un-sent root — a thread needs a server-assigned parent id — and whenever
      * the feature is unsupported.
      */
-    fun isAvailableForThread(parentMessage: BaseMessage?): Boolean =
+    public fun isAvailableForThread(parentMessage: BaseMessage?): Boolean =
         isSupported() &&
             parentMessage != null &&
             parentMessage.id > 0L
 
     /** The id of the thread a message belongs to: its own id if a root, else its `parentMessageId`. */
-    fun threadRootId(message: BaseMessage): Long =
+    public fun threadRootId(message: BaseMessage): Long =
         if (message.parentMessageId != 0L) message.parentMessageId else message.id
 
     /**
@@ -99,7 +99,7 @@ object CometChatThreadSubscription {
      * @param message Any message in the thread — a root or one of its replies.
      * @param currentlySubscribed The state the caller is showing right now; the toggle targets its inverse.
      */
-    fun toggle(
+    public fun toggle(
         message: BaseMessage,
         currentlySubscribed: Boolean,
         onResult: (ToggleResult) -> Unit = {}
@@ -150,7 +150,7 @@ object CometChatThreadSubscription {
      * This publishes only; it never calls `subscribeToThread`, which would re-issue a redundant write
      * for a subscription that already exists. The next fetch of the parent confirms it.
      */
-    fun mirrorSubscribed(parentMessageId: Long, subscribed: Boolean = true) {
+    public fun mirrorSubscribed(parentMessageId: Long, subscribed: Boolean = true) {
         if (parentMessageId <= 0L) return
         publish(parentMessageId, subscribed)
     }
@@ -165,7 +165,7 @@ object CometChatThreadSubscription {
      * - A **root** (Case 2) is stamped only — its thread cannot be open anywhere yet, and later
      *   fetches of the message carry the flag from the server.
      */
-    fun applyOwnMessageSent(sentMessage: BaseMessage) {
+    public fun applyOwnMessageSent(sentMessage: BaseMessage) {
         val parentId = sentMessage.parentMessageId
         if (parentId > 0L) {
             sentMessage.setThreadSubscribed(true)
@@ -193,7 +193,7 @@ object CometChatThreadSubscription {
      * @param parentMessage The thread's root, when the caller holds it. Without it only the mirrors
      *   can fire — there is nothing authoritative to inherit from.
      */
-    fun applyIncomingMessageSubscription(
+    public fun applyIncomingMessageSubscription(
         message: BaseMessage,
         parentMessage: BaseMessage?,
         loggedInUserUid: String? = runCatching { CometChatUIKit.getLoggedInUser()?.uid }.getOrNull()
@@ -254,7 +254,7 @@ object CometChatThreadSubscription {
      * @param heldMessage The copy the surface currently holds for that id, when it has one.
      * @param parentMessage The thread's root, when the caller holds it.
      */
-    fun applyEditedMessageSubscription(
+    public fun applyEditedMessageSubscription(
         editedMessage: BaseMessage,
         heldMessage: BaseMessage?,
         parentMessage: BaseMessage?,

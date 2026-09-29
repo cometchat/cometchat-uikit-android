@@ -30,7 +30,7 @@ import java.io.File
  *
  * @see MediaRecorderState
  */
-open class CometChatMediaRecorderViewModel : ViewModel() {
+open public class CometChatMediaRecorderViewModel : ViewModel() {
 
     // ==================== Recording State ====================
 
@@ -39,7 +39,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Valid states: IDLE, RECORDING, RECORDED
      */
     private val _recordingState = MutableStateFlow(MediaRecorderState.IDLE)
-    val recordingState: StateFlow<MediaRecorderState> = _recordingState.asStateFlow()
+    public val recordingState: StateFlow<MediaRecorderState> = _recordingState.asStateFlow()
 
     // ==================== Timer State ====================
 
@@ -47,13 +47,13 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Current recording time formatted as MM:SS.
      */
     private val _recordingTime = MutableStateFlow("00:00")
-    val recordingTime: StateFlow<String> = _recordingTime.asStateFlow()
+    public val recordingTime: StateFlow<String> = _recordingTime.asStateFlow()
 
     /**
      * Recording duration in milliseconds.
      */
     private val _recordingDurationMs = MutableStateFlow(0L)
-    val recordingDurationMs: StateFlow<Long> = _recordingDurationMs.asStateFlow()
+    public val recordingDurationMs: StateFlow<Long> = _recordingDurationMs.asStateFlow()
 
     // ==================== Audio Visualizer State ====================
 
@@ -61,7 +61,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Current audio amplitude for visualizer (0.0 to 1.0).
      */
     private val _audioAmplitude = MutableStateFlow(0f)
-    val audioAmplitude: StateFlow<Float> = _audioAmplitude.asStateFlow()
+    public val audioAmplitude: StateFlow<Float> = _audioAmplitude.asStateFlow()
 
     // ==================== Playback State ====================
 
@@ -69,13 +69,13 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Playback progress (0.0 to 1.0).
      */
     private val _playbackProgress = MutableStateFlow(0f)
-    val playbackProgress: StateFlow<Float> = _playbackProgress.asStateFlow()
+    public val playbackProgress: StateFlow<Float> = _playbackProgress.asStateFlow()
 
     /**
      * Whether audio is currently playing.
      */
     private val _isPlaying = MutableStateFlow(false)
-    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+    public val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     // ==================== File State ====================
 
@@ -83,7 +83,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Reference to the recorded audio file.
      */
     private val _recordedFile = MutableStateFlow<File?>(null)
-    val recordedFile: StateFlow<File?> = _recordedFile.asStateFlow()
+    public val recordedFile: StateFlow<File?> = _recordedFile.asStateFlow()
 
     // ==================== Error State ====================
 
@@ -91,7 +91,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Last error that occurred, if any.
      */
     private val _error = MutableStateFlow<Exception?>(null)
-    val error: StateFlow<Exception?> = _error.asStateFlow()
+    public val error: StateFlow<Exception?> = _error.asStateFlow()
 
     // ==================== State Transition Methods ====================
 
@@ -101,7 +101,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun startRecording(): Boolean {
+    public fun startRecording(): Boolean {
         if (_recordingState.value != MediaRecorderState.IDLE) {
             return false
         }
@@ -119,7 +119,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun stopRecording(): Boolean {
+    public fun stopRecording(): Boolean {
         if (_recordingState.value != MediaRecorderState.RECORDING) {
             return false
         }
@@ -136,7 +136,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if transition was successful, false otherwise
      */
-    fun deleteRecording(): Boolean {
+    public fun deleteRecording(): Boolean {
         val currentState = _recordingState.value
         if (currentState == MediaRecorderState.IDLE) {
             return false
@@ -158,7 +158,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return the recorded File if available, null otherwise
      */
-    fun submitRecording(): File? {
+    public fun submitRecording(): File? {
         if (_recordingState.value != MediaRecorderState.RECORDED) {
             return null
         }
@@ -171,7 +171,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param exception the error that occurred
      */
-    fun handleError(exception: Exception) {
+    public fun handleError(exception: Exception) {
         _error.value = exception
         _recordingState.value = MediaRecorderState.IDLE
         _recordingTime.value = "00:00"
@@ -189,7 +189,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if playback can start, false otherwise
      */
-    fun startPlayback(): Boolean {
+    public fun startPlayback(): Boolean {
         if (_recordingState.value != MediaRecorderState.RECORDED) {
             return false
         }
@@ -203,7 +203,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if playback was paused, false otherwise
      */
-    fun pausePlayback(): Boolean {
+    public fun pausePlayback(): Boolean {
         if (!_isPlaying.value) {
             return false
         }
@@ -217,7 +217,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @return true if toggle was successful, false otherwise
      */
-    fun togglePlayback(): Boolean {
+    public fun togglePlayback(): Boolean {
         if (_recordingState.value != MediaRecorderState.RECORDED) {
             return false
         }
@@ -231,7 +231,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param progress the position to seek to (0.0 to 1.0)
      */
-    fun seekTo(progress: Float) {
+    public fun seekTo(progress: Float) {
         _playbackProgress.value = progress.coerceIn(0f, 1f)
     }
 
@@ -239,7 +239,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Handles playback completion.
      * Resets playback state to beginning.
      */
-    fun onPlaybackComplete() {
+    public fun onPlaybackComplete() {
         _isPlaying.value = false
         _playbackProgress.value = 0f
     }
@@ -252,7 +252,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param amplitude the new amplitude value (0.0 to 1.0)
      */
-    fun updateAmplitude(amplitude: Float) {
+    public fun updateAmplitude(amplitude: Float) {
         _audioAmplitude.value = amplitude.coerceIn(0f, 1f)
     }
 
@@ -262,7 +262,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param timeMs the recording time in milliseconds
      */
-    fun updateRecordingTime(timeMs: Long) {
+    public fun updateRecordingTime(timeMs: Long) {
         _recordingDurationMs.value = timeMs
         _recordingTime.value = formatTime(timeMs)
     }
@@ -273,7 +273,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param progress the playback progress (0.0 to 1.0)
      */
-    fun updatePlaybackProgress(progress: Float) {
+    public fun updatePlaybackProgress(progress: Float) {
         _playbackProgress.value = progress.coerceIn(0f, 1f)
     }
 
@@ -282,7 +282,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      *
      * @param file the recorded audio file
      */
-    fun setRecordedFile(file: File?) {
+    public fun setRecordedFile(file: File?) {
         _recordedFile.value = file
     }
 
@@ -294,7 +294,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * @param durationMs the duration in milliseconds
      * @return formatted time string (e.g., "01:30")
      */
-    fun formatTime(durationMs: Long): String {
+    public fun formatTime(durationMs: Long): String {
         val totalSeconds = durationMs / 1000
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
@@ -314,7 +314,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * @param to the target state
      * @return true if the transition is valid, false otherwise
      */
-    fun isValidTransition(from: MediaRecorderState, to: MediaRecorderState): Boolean {
+    public fun isValidTransition(from: MediaRecorderState, to: MediaRecorderState): Boolean {
         if (from == to) return true // Same state is always valid (no-op)
         
         return when (from) {
@@ -328,7 +328,7 @@ open class CometChatMediaRecorderViewModel : ViewModel() {
      * Releases all resources.
      * Call this when the recorder is no longer needed.
      */
-    fun release() {
+    public fun release() {
         _recordingState.value = MediaRecorderState.IDLE
         _recordingTime.value = "00:00"
         _recordingDurationMs.value = 0L

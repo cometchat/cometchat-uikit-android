@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
  * CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageSent(message, status))
  * ```
  */
-object CometChatEvents {
+public object CometChatEvents {
     /**
      * Internal coroutine scope for event emission.
      * Uses SupervisorJob to prevent child failures from cancelling the scope.
@@ -59,7 +59,7 @@ object CometChatEvents {
      * Public read-only flow for message events.
      * Subscribe to this flow to receive message-related events.
      */
-    val messageEvents: SharedFlow<CometChatMessageEvent> = _messageEvents.asSharedFlow()
+    public val messageEvents: SharedFlow<CometChatMessageEvent> = _messageEvents.asSharedFlow()
 
 
     // ==================== User Events ====================
@@ -78,7 +78,7 @@ object CometChatEvents {
      * Public read-only flow for user events.
      * Subscribe to this flow to receive user-related events.
      */
-    val userEvents: SharedFlow<CometChatUserEvent> = _userEvents.asSharedFlow()
+    public val userEvents: SharedFlow<CometChatUserEvent> = _userEvents.asSharedFlow()
 
     // ==================== Group Events ====================
 
@@ -96,7 +96,7 @@ object CometChatEvents {
      * Public read-only flow for group events.
      * Subscribe to this flow to receive group-related events.
      */
-    val groupEvents: SharedFlow<CometChatGroupEvent> = _groupEvents.asSharedFlow()
+    public val groupEvents: SharedFlow<CometChatGroupEvent> = _groupEvents.asSharedFlow()
 
     // ==================== Call Events ====================
 
@@ -114,7 +114,7 @@ object CometChatEvents {
      * Public read-only flow for call events.
      * Subscribe to this flow to receive call-related events.
      */
-    val callEvents: SharedFlow<CometChatCallEvent> = _callEvents.asSharedFlow()
+    public val callEvents: SharedFlow<CometChatCallEvent> = _callEvents.asSharedFlow()
 
     // ==================== Conversation Events ====================
 
@@ -132,7 +132,7 @@ object CometChatEvents {
      * Public read-only flow for conversation events.
      * Subscribe to this flow to receive conversation-related events.
      */
-    val conversationEvents: SharedFlow<CometChatConversationEvent> = _conversationEvents.asSharedFlow()
+    public val conversationEvents: SharedFlow<CometChatConversationEvent> = _conversationEvents.asSharedFlow()
 
     // ==================== UI Events ====================
 
@@ -150,7 +150,7 @@ object CometChatEvents {
      * Public read-only flow for UI events.
      * Subscribe to this flow to receive UI-related events.
      */
-    val uiEvents: SharedFlow<CometChatUIEvent> = _uiEvents.asSharedFlow()
+    public val uiEvents: SharedFlow<CometChatUIEvent> = _uiEvents.asSharedFlow()
 
 
     // ==================== Thread Events ====================
@@ -169,7 +169,7 @@ object CometChatEvents {
      * Public read-only flow for thread-subscription events.
      * Subscribe to this flow to keep follow-state UI in sync without re-fetching.
      */
-    val threadEvents: SharedFlow<CometChatThreadEvent> = _threadEvents.asSharedFlow()
+    public val threadEvents: SharedFlow<CometChatThreadEvent> = _threadEvents.asSharedFlow()
 
 
     // ==================== Emit Functions ====================
@@ -180,7 +180,7 @@ object CometChatEvents {
      *
      * @param event The message event to emit
      */
-    fun emitMessageEvent(event: CometChatMessageEvent) {
+    public fun emitMessageEvent(event: CometChatMessageEvent) {
         scope.launch {
             _messageEvents.emit(event)
         }
@@ -192,7 +192,7 @@ object CometChatEvents {
      *
      * @param event The thread event to emit
      */
-    fun emitThreadEvent(event: CometChatThreadEvent) {
+    public fun emitThreadEvent(event: CometChatThreadEvent) {
         scope.launch {
             _threadEvents.emit(event)
         }
@@ -204,7 +204,7 @@ object CometChatEvents {
      *
      * @param event The user event to emit
      */
-    fun emitUserEvent(event: CometChatUserEvent) {
+    public fun emitUserEvent(event: CometChatUserEvent) {
         scope.launch {
             _userEvents.emit(event)
         }
@@ -216,7 +216,7 @@ object CometChatEvents {
      *
      * @param event The group event to emit
      */
-    fun emitGroupEvent(event: CometChatGroupEvent) {
+    public fun emitGroupEvent(event: CometChatGroupEvent) {
         scope.launch {
             _groupEvents.emit(event)
         }
@@ -228,7 +228,7 @@ object CometChatEvents {
      *
      * @param event The call event to emit
      */
-    fun emitCallEvent(event: CometChatCallEvent) {
+    public fun emitCallEvent(event: CometChatCallEvent) {
         scope.launch {
             _callEvents.emit(event)
         }
@@ -240,7 +240,7 @@ object CometChatEvents {
      *
      * @param event The conversation event to emit
      */
-    fun emitConversationEvent(event: CometChatConversationEvent) {
+    public fun emitConversationEvent(event: CometChatConversationEvent) {
         scope.launch {
             _conversationEvents.emit(event)
         }
@@ -252,7 +252,7 @@ object CometChatEvents {
      *
      * @param event The UI event to emit
      */
-    fun emitUIEvent(event: CometChatUIEvent) {
+    public fun emitUIEvent(event: CometChatUIEvent) {
         scope.launch {
             _uiEvents.emit(event)
         }

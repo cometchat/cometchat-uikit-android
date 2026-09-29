@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatSearchViewModel
  * @param repository The repository to use for data operations.
  *                   Defaults to SearchRepositoryImpl with SearchDataSourceImpl.
  */
-class CometChatSearchViewModelFactory(
+public class CometChatSearchViewModelFactory(
     private val repository: SearchRepository = SearchRepositoryImpl(
         SearchDataSourceImpl()
     )

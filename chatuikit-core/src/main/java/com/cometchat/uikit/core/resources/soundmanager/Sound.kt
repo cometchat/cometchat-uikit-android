@@ -7,7 +7,7 @@ import com.cometchat.uikit.core.R
  * Enum representing different sounds used in the application.
  * Each sound type has an associated raw audio resource file.
  */
-enum class Sound(@RawRes private var rawFile: Int) {
+public enum class Sound(@RawRes private var rawFile: Int) {
     /**
      * Sound played when receiving an incoming call.
      */
@@ -38,7 +38,7 @@ enum class Sound(@RawRes private var rawFile: Int) {
      *
      * @return The raw file resource ID.
      */
-    fun getRawFile(): Int = rawFile
+    public fun getRawFile(): Int = rawFile
 
     /**
      * Sets the raw file resource ID associated with the sound.
@@ -47,7 +47,7 @@ enum class Sound(@RawRes private var rawFile: Int) {
      * @param rawFile The raw file resource ID to be set.
      * @return The updated raw file resource ID.
      */
-    fun setRawFile(@RawRes rawFile: Int): Int {
+    public fun setRawFile(@RawRes rawFile: Int): Int {
         this.rawFile = rawFile
         return this.rawFile
     }

@@ -44,7 +44,7 @@ import com.cometchat.uikit.core.domain.model.SurroundingMessagesResult
  * @see com.cometchat.uikit.core.data.repository.MessageListRepositoryImpl
  * @see com.cometchat.uikit.core.viewmodel.CometChatMessageListViewModel
  */
-interface MessageListRepository {
+public interface MessageListRepository {
 
     /**
      * Fetches previous (older) messages using the configured [MessagesRequest].
@@ -61,7 +61,7 @@ interface MessageListRepository {
      * @see fetchNextMessages
      * @see hasMorePreviousMessages
      */
-    suspend fun fetchPreviousMessages(): Result<List<BaseMessage>>
+    suspend public fun fetchPreviousMessages(): Result<List<BaseMessage>>
 
     /**
      * Fetches next (newer) messages starting from a specific message ID.
@@ -77,7 +77,7 @@ interface MessageListRepository {
      *
      * @see fetchPreviousMessages
      */
-    suspend fun fetchNextMessages(fromMessageId: Long): Result<List<BaseMessage>>
+    suspend public fun fetchNextMessages(fromMessageId: Long): Result<List<BaseMessage>>
 
     /**
      * Fetches conversation details including unread message count.
@@ -94,7 +94,7 @@ interface MessageListRepository {
      * @return [Result] containing the [Conversation] object on success,
      *         or an error on failure.
      */
-    suspend fun getConversation(id: String, type: String): Result<Conversation>
+    suspend public fun getConversation(id: String, type: String): Result<Conversation>
 
     /**
      * Fetches a single message by its unique ID.
@@ -106,7 +106,7 @@ interface MessageListRepository {
      * @return [Result] containing the [BaseMessage] on success,
      *         or an error on failure (e.g., message not found).
      */
-    suspend fun getMessage(messageId: Long): Result<BaseMessage>
+    suspend public fun getMessage(messageId: Long): Result<BaseMessage>
 
     /**
      * Deletes a message from the server.
@@ -120,7 +120,7 @@ interface MessageListRepository {
      * @return [Result] containing the deleted [BaseMessage] with updated metadata on success,
      *         or an error on failure (e.g., permission denied).
      */
-    suspend fun deleteMessage(message: BaseMessage): Result<BaseMessage>
+    suspend public fun deleteMessage(message: BaseMessage): Result<BaseMessage>
 
     /**
      * Flags/reports a message for moderation.
@@ -133,7 +133,7 @@ interface MessageListRepository {
      * @param remark Additional remarks or context provided by the user (can be empty).
      * @return [Result] indicating success ([Result.success] with [Unit]) or failure.
      */
-    suspend fun flagMessage(messageId: Long, reason: String, remark: String): Result<Unit>
+    suspend public fun flagMessage(messageId: Long, reason: String, remark: String): Result<Unit>
 
     /**
      * Adds a reaction to a message.
@@ -148,7 +148,7 @@ interface MessageListRepository {
      *
      * @see removeReaction
      */
-    suspend fun addReaction(messageId: Long, emoji: String): Result<BaseMessage>
+    suspend public fun addReaction(messageId: Long, emoji: String): Result<BaseMessage>
 
     /**
      * Removes a reaction from a message.
@@ -162,7 +162,7 @@ interface MessageListRepository {
      *
      * @see addReaction
      */
-    suspend fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
+    suspend public fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
 
     /**
      * Marks a message as delivered.
@@ -175,7 +175,7 @@ interface MessageListRepository {
      *
      * @see markAsRead
      */
-    suspend fun markAsDelivered(message: BaseMessage): Result<Unit>
+    suspend public fun markAsDelivered(message: BaseMessage): Result<Unit>
 
     /**
      * Marks a message as read.
@@ -189,7 +189,7 @@ interface MessageListRepository {
      *
      * @see markAsUnread
      */
-    suspend fun markAsRead(message: BaseMessage): Result<Unit>
+    suspend public fun markAsRead(message: BaseMessage): Result<Unit>
 
     /**
      * Marks a message as unread.
@@ -203,7 +203,7 @@ interface MessageListRepository {
      *
      * @see markAsRead
      */
-    suspend fun markAsUnread(message: BaseMessage): Result<Conversation>
+    suspend public fun markAsUnread(message: BaseMessage): Result<Conversation>
 
     /**
      * Checks if there are more previous (older) messages available to fetch.
@@ -213,7 +213,7 @@ interface MessageListRepository {
      *
      * @return `true` if more messages are available, `false` if all messages have been fetched.
      */
-    fun hasMorePreviousMessages(): Boolean
+    public fun hasMorePreviousMessages(): Boolean
 
     /**
      * Resets the messages request for fresh fetching.
@@ -222,7 +222,7 @@ interface MessageListRepository {
      * [MessagesRequest], allowing messages to be fetched from the beginning.
      * Call this when switching conversations or when a full refresh is needed.
      */
-    fun resetRequest()
+    public fun resetRequest()
 
     /**
      * Configures the repository for a user (1-on-1) conversation.
@@ -242,7 +242,7 @@ interface MessageListRepository {
      *
      * @see configureForGroup
      */
-    fun configureForUser(
+    public fun configureForUser(
         user: User,
         messagesTypes: List<String>,
         messagesCategories: List<String>,
@@ -268,7 +268,7 @@ interface MessageListRepository {
      *
      * @see configureForUser
      */
-    fun configureForGroup(
+    public fun configureForGroup(
         group: Group,
         messagesTypes: List<String>,
         messagesCategories: List<String>,
@@ -289,7 +289,7 @@ interface MessageListRepository {
      *
      * @see getEffectiveMessagesCategories
      */
-    fun getEffectiveMessagesTypes(): List<String> = emptyList()
+    public fun getEffectiveMessagesTypes(): List<String> = emptyList()
 
     /**
      * Returns the message categories the configured [MessagesRequest] actually filters on.
@@ -298,7 +298,7 @@ interface MessageListRepository {
      *
      * @see getEffectiveMessagesTypes
      */
-    fun getEffectiveMessagesCategories(): List<String> = emptyList()
+    public fun getEffectiveMessagesCategories(): List<String> = emptyList()
 
     /**
      * Fetches messages surrounding a specific message ID.
@@ -321,7 +321,7 @@ interface MessageListRepository {
      * @see fetchPreviousMessages
      * @see fetchNextMessages
      */
-    suspend fun fetchSurroundingMessages(messageId: Long): Result<SurroundingMessagesResult>
+    suspend public fun fetchSurroundingMessages(messageId: Long): Result<SurroundingMessagesResult>
 
     /**
      * Fetches action messages (edits, deletes) since a specific message ID.
@@ -338,7 +338,7 @@ interface MessageListRepository {
      *
      * @see fetchNextMessages
      */
-    suspend fun fetchActionMessages(fromMessageId: Long): Result<List<BaseMessage>>
+    suspend public fun fetchActionMessages(fromMessageId: Long): Result<List<BaseMessage>>
 
     /**
      * Rebuilds the messages request to paginate from a specific message ID.
@@ -355,7 +355,7 @@ interface MessageListRepository {
      *
      * @see fetchPreviousMessages
      */
-    fun rebuildRequestFromMessageId(messageId: Long)
+    public fun rebuildRequestFromMessageId(messageId: Long)
 
     /**
      * Gets the current latest message ID tracked by the repository.
@@ -369,7 +369,7 @@ interface MessageListRepository {
      *
      * @see setLatestMessageId
      */
-    fun getLatestMessageId(): Long
+    public fun getLatestMessageId(): Long
 
     /**
      * Sets the latest message ID for real-time message guards.
@@ -382,5 +382,5 @@ interface MessageListRepository {
      *
      * @see getLatestMessageId
      */
-    fun setLatestMessageId(messageId: Long)
+    public fun setLatestMessageId(messageId: Long)
 }

@@ -9,12 +9,12 @@ import com.cometchat.chat.models.User
  * Sealed class hierarchy representing all group-related events.
  * Provides type-safe event handling for group membership and configuration changes.
  */
-sealed class CometChatGroupEvent {
+sealed public class CometChatGroupEvent {
     /**
      * Event emitted when a group is created.
      * @param group The created group
      */
-    data class GroupCreated(
+    public data class GroupCreated(
         val group: Group
     ) : CometChatGroupEvent()
 
@@ -22,7 +22,7 @@ sealed class CometChatGroupEvent {
      * Event emitted when a group is deleted.
      * @param group The deleted group
      */
-    data class GroupDeleted(
+    public data class GroupDeleted(
         val group: Group
     ) : CometChatGroupEvent()
 
@@ -32,7 +32,7 @@ sealed class CometChatGroupEvent {
      * @param user The user who left the group
      * @param group The group from which the user left
      */
-    data class GroupLeft(
+    public data class GroupLeft(
         val action: Action,
         val user: User,
         val group: Group
@@ -43,7 +43,7 @@ sealed class CometChatGroupEvent {
      * @param user The user who joined the group
      * @param group The group to which the user joined
      */
-    data class MemberJoined(
+    public data class MemberJoined(
         val user: User,
         val group: Group
     ) : CometChatGroupEvent()
@@ -55,7 +55,7 @@ sealed class CometChatGroupEvent {
      * @param group The group to which users were added
      * @param addedBy The user who added the other users
      */
-    data class MembersAdded(
+    public data class MembersAdded(
         val actions: List<Action>,
         val users: List<User>,
         val group: Group,
@@ -70,7 +70,7 @@ sealed class CometChatGroupEvent {
      * @param kickedBy The user who kicked the other user
      * @param group The group from which the user was kicked
      */
-    data class MemberKicked(
+    public data class MemberKicked(
         val action: Action,
         val user: User,
         val kickedBy: User,
@@ -84,7 +84,7 @@ sealed class CometChatGroupEvent {
      * @param bannedBy The user who banned the other user
      * @param group The group from which the user was banned
      */
-    data class MemberBanned(
+    public data class MemberBanned(
         val action: Action,
         val user: User,
         val bannedBy: User,
@@ -98,7 +98,7 @@ sealed class CometChatGroupEvent {
      * @param unbannedBy The user who unbanned the other user
      * @param group The group from which the user was unbanned
      */
-    data class MemberUnbanned(
+    public data class MemberUnbanned(
         val action: Action,
         val user: User,
         val unbannedBy: User,
@@ -113,7 +113,7 @@ sealed class CometChatGroupEvent {
      * @param oldScope The previous scope value
      * @param group The group in which the scope was changed
      */
-    data class MemberScopeChanged(
+    public data class MemberScopeChanged(
         val action: Action,
         val user: User,
         val newScope: String,
@@ -126,7 +126,7 @@ sealed class CometChatGroupEvent {
      * @param group The group for which ownership changed
      * @param newOwner The new owner of the group
      */
-    data class OwnershipChanged(
+    public data class OwnershipChanged(
         val group: Group,
         val newOwner: GroupMember
     ) : CometChatGroupEvent()

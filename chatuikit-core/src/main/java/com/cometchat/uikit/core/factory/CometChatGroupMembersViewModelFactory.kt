@@ -19,7 +19,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatGroupMembersViewModel
  * @param enableListeners Whether to enable CometChat listeners (default: true, set false for testing)
  * @param repository Optional custom repository for data operations. If null, creates default from request builder.
  */
-class CometChatGroupMembersViewModelFactory(
+public class CometChatGroupMembersViewModelFactory(
     private val groupMembersRequestBuilder: GroupMembersRequest.GroupMembersRequestBuilder? = null,
     private val enableListeners: Boolean = true,
     private val repository: com.cometchat.uikit.core.domain.repository.GroupMembersRepository? = null

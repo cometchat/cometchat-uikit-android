@@ -13,7 +13,7 @@ import kotlin.coroutines.suspendCoroutine
  * Use case for initiating a call based on a call log.
  * Determines the correct receiver based on who initiated the original call.
  */
-open class InitiateCallUseCase {
+open public class InitiateCallUseCase {
     
     /**
      * Initiates a call based on the call log and call type.
@@ -24,7 +24,7 @@ open class InitiateCallUseCase {
      * @param callType The type of call to initiate (audio/video)
      * @return Result containing the initiated Call on success, or exception on failure
      */
-    open suspend operator fun invoke(callLog: CallLog, callType: String): Result<Call> {
+    open suspend operator public fun invoke(callLog: CallLog, callType: String): Result<Call> {
         val receiverId = getReceiverId(callLog)
         
         if (receiverId.isEmpty()) {

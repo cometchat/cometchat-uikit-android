@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.SearchRepository
  * 
  * @param repository The search repository to fetch conversations from
  */
-open class FetchConversationsUseCase(
+open public class FetchConversationsUseCase(
     private val repository: SearchRepository
 ) {
     /**
@@ -18,7 +18,7 @@ open class FetchConversationsUseCase(
      * @param request The configured ConversationsRequest
      * @return Result containing list of conversations or error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         request: ConversationsRequest
     ): Result<List<Conversation>> {
         return repository.getConversations(request)
@@ -28,5 +28,5 @@ open class FetchConversationsUseCase(
      * Checks if there are more conversations available for pagination.
      * @return true if more conversations can be fetched
      */
-    open fun hasMore(): Boolean = repository.hasMoreConversations()
+    open public fun hasMore(): Boolean = repository.hasMoreConversations()
 }

@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  * Manages call initiation state and events for both user and group calls.
  * Shared between Jetpack Compose and XML Views implementations.
  */
-open class CometChatCallButtonsViewModel(
+open public class CometChatCallButtonsViewModel(
     private val initiateUserCallUseCase: InitiateUserCallUseCase,
     private val startGroupCallUseCase: StartGroupCallUseCase,
     private val enableListeners: Boolean = true
@@ -36,15 +36,15 @@ open class CometChatCallButtonsViewModel(
 
     // UI State
     private val _uiState = MutableStateFlow<CallButtonsUIState>(CallButtonsUIState.Idle)
-    val uiState: StateFlow<CallButtonsUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<CallButtonsUIState> = _uiState.asStateFlow()
 
     // One-time events
     private val _events = MutableSharedFlow<CallButtonsEvent>()
-    val events: SharedFlow<CallButtonsEvent> = _events.asSharedFlow()
+    public val events: SharedFlow<CallButtonsEvent> = _events.asSharedFlow()
 
     // Error events for UI callback
     private val _errorEvent = MutableSharedFlow<CometChatException>()
-    val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
+    public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
     // Current receiver state
     private var user: User? = null
@@ -68,7 +68,7 @@ open class CometChatCallButtonsViewModel(
      * Sets the user for 1-to-1 calls.
      * @param user The User to call
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         this.receiverId = user.uid
@@ -79,7 +79,7 @@ open class CometChatCallButtonsViewModel(
      * Sets the group for conference calls.
      * @param group The Group to start a call with
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         this.user = null
         this.receiverId = group.guid
@@ -90,19 +90,19 @@ open class CometChatCallButtonsViewModel(
      * Gets the currently set user.
      * @return The User or null if not set
      */
-    fun getUser(): User? = user
+    public fun getUser(): User? = user
 
     /**
      * Gets the currently set group.
      * @return The Group or null if not set
      */
-    fun getGroup(): Group? = group
+    public fun getGroup(): Group? = group
 
     /**
      * Initiates a call with the configured receiver.
      * @param callType The type of call (audio/video) - use CometChatConstants.CALL_TYPE_AUDIO or CALL_TYPE_VIDEO
      */
-    fun initiateCall(callType: String) {
+    public fun initiateCall(callType: String) {
         viewModelScope.launch {
             _uiState.value = CallButtonsUIState.Initiating
 
@@ -216,7 +216,7 @@ open class CometChatCallButtonsViewModel(
     /**
      * Removes all listeners. Called automatically in onCleared().
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         listenersTag?.let { tag ->
             CometChat.removeCallListener(tag)
         }

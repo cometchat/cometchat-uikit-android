@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.calls.model.CallLog
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.presentation.calllogs.style.CometChatCallLogsListItemStyle
 import com.cometchat.uikit.kotlin.presentation.calllogs.utils.CallLogsDiffCallback
 import com.cometchat.uikit.kotlin.presentation.calllogs.utils.CallLogsViewHolderListener
@@ -23,7 +24,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  * Implements DiffUtil for efficient list updates.
  * Supports custom item views and section views (leading, title, subtitle, trailing).
  */
-class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
+internal class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
 
     companion object {
         private val TAG = CallLogsAdapter::class.java.simpleName
@@ -93,7 +94,7 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets custom item view listener for replacing entire item.
      */
     fun setItemView(listener: CallLogsViewHolderListener?) {
-        android.util.Log.d(TAG, "setItemView: listener=${if (listener != null) "SET" else "NULL"}")
+        CometChatLogger.d(TAG, "setItemView: listener=${if (listener != null) "SET" else "NULL"}")
         itemViewListener = listener
         notifyDataSetChanged()
     }
@@ -102,7 +103,7 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets custom leading view listener.
      */
     fun setLeadingView(listener: CallLogsViewHolderListener?) {
-        android.util.Log.d(TAG, "setLeadingView: listener=${if (listener != null) "SET" else "NULL"}")
+        CometChatLogger.d(TAG, "setLeadingView: listener=${if (listener != null) "SET" else "NULL"}")
         leadingViewListener = listener
         notifyDataSetChanged()
     }
@@ -111,7 +112,7 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets custom title view listener.
      */
     fun setTitleView(listener: CallLogsViewHolderListener?) {
-        android.util.Log.d(TAG, "setTitleView: listener=${if (listener != null) "SET" else "NULL"}")
+        CometChatLogger.d(TAG, "setTitleView: listener=${if (listener != null) "SET" else "NULL"}")
         titleViewListener = listener
         notifyDataSetChanged()
     }
@@ -120,7 +121,7 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets custom subtitle view listener.
      */
     fun setSubtitleView(listener: CallLogsViewHolderListener?) {
-        android.util.Log.d(TAG, "setSubtitleView: listener=${if (listener != null) "SET" else "NULL"}")
+        CometChatLogger.d(TAG, "setSubtitleView: listener=${if (listener != null) "SET" else "NULL"}")
         subtitleViewListener = listener
         notifyDataSetChanged()
     }
@@ -129,7 +130,7 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets custom trailing view listener.
      */
     fun setTrailingView(listener: CallLogsViewHolderListener?) {
-        android.util.Log.d(TAG, "setTrailingView: listener=${if (listener != null) "SET" else "NULL"}")
+        CometChatLogger.d(TAG, "setTrailingView: listener=${if (listener != null) "SET" else "NULL"}")
         trailingViewListener = listener
         notifyDataSetChanged()
     }
@@ -138,8 +139,8 @@ class CallLogsAdapter : RecyclerView.Adapter<CallLogsViewHolder>() {
      * Sets the item style.
      */
     fun setItemStyle(style: CometChatCallLogsListItemStyle) {
-        android.util.Log.d(TAG, "setItemStyle: incomingCallIcon=${style.incomingCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, missedCallIcon=${style.missedCallIcon}")
-        android.util.Log.d(TAG, "setItemStyle: audioCallIcon=${style.audioCallIcon}, videoCallIcon=${style.videoCallIcon}")
+        CometChatLogger.d(TAG, "setItemStyle: incomingCallIcon=${style.incomingCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, missedCallIcon=${style.missedCallIcon}")
+        CometChatLogger.d(TAG, "setItemStyle: audioCallIcon=${style.audioCallIcon}, videoCallIcon=${style.videoCallIcon}")
         itemStyle = style
         notifyDataSetChanged()
     }

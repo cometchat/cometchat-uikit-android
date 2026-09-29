@@ -40,6 +40,7 @@ import com.cometchat.uikit.core.state.MessageComposerUIState
 import com.cometchat.uikit.core.utils.AgentChatDetector
 import com.cometchat.uikit.core.CometChatAIStreamService
 import com.cometchat.uikit.core.domain.model.StreamingState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import org.json.JSONObject
 import java.util.UUID
 import kotlinx.coroutines.Job
@@ -60,7 +61,7 @@ import java.io.File
  * Recording state enum for the audio recorder.
  * Represents the different states of the audio recording process.
  */
-enum class RecordingState {
+public enum class RecordingState {
     /** Initial state, ready to start recording */
     START,
     /** Actively recording audio */
@@ -75,15 +76,15 @@ enum class RecordingState {
  * Sealed class representing the different modes of the message composer.
  * Used to manage the UI state transitions between normal mode, attachment popup, and recording.
  */
-sealed class ComposerMode {
+sealed public class ComposerMode {
     /** Normal text input mode */
-    object Normal : ComposerMode()
+    public object Normal : ComposerMode()
     
     /** Attachment popup is open */
-    object AttachmentPopupOpen : ComposerMode()
+    public object AttachmentPopupOpen : ComposerMode()
     
     /** Audio recording mode with the current recording state */
-    data class Recording(val state: RecordingState) : ComposerMode()
+    public data class Recording(val state: RecordingState) : ComposerMode()
 }
 
 /**
@@ -108,7 +109,7 @@ sealed class ComposerMode {
  * @param editMessageUseCase Use case for editing messages
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatMessageComposerViewModel(
+open public class CometChatMessageComposerViewModel(
     private val sendTextMessageUseCase: SendTextMessageUseCase,
     private val sendMediaMessageUseCase: SendMediaMessageUseCase,
     private val sendCustomMessageUseCase: SendCustomMessageUseCase,
@@ -122,7 +123,7 @@ open class CometChatMessageComposerViewModel(
      * Current UI state of the message composer.
      */
     private val _uiState = MutableStateFlow<MessageComposerUIState>(MessageComposerUIState.Idle)
-    val uiState: StateFlow<MessageComposerUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<MessageComposerUIState> = _uiState.asStateFlow()
 
     // ==================== User/Group State ====================
 
@@ -130,13 +131,13 @@ open class CometChatMessageComposerViewModel(
      * User state (receiver for one-on-one conversations).
      */
     private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user.asStateFlow()
+    public val user: StateFlow<User?> = _user.asStateFlow()
 
     /**
      * Group state (receiver for group conversations).
      */
     private val _group = MutableStateFlow<Group?>(null)
-    val group: StateFlow<Group?> = _group.asStateFlow()
+    public val group: StateFlow<Group?> = _group.asStateFlow()
 
     // ==================== Compose State ====================
 
@@ -144,25 +145,25 @@ open class CometChatMessageComposerViewModel(
      * Current compose text in the input field.
      */
     private val _composeText = MutableStateFlow("")
-    val composeText: StateFlow<String> = _composeText.asStateFlow()
+    public val composeText: StateFlow<String> = _composeText.asStateFlow()
 
     /**
      * Message being edited (null if not in edit mode).
      */
     private val _editMessage = MutableStateFlow<BaseMessage?>(null)
-    val editMessage: StateFlow<BaseMessage?> = _editMessage.asStateFlow()
+    public val editMessage: StateFlow<BaseMessage?> = _editMessage.asStateFlow()
 
     /**
      * Message being replied to (null if not in reply mode).
      */
     private val _replyMessage = MutableStateFlow<BaseMessage?>(null)
-    val replyMessage: StateFlow<BaseMessage?> = _replyMessage.asStateFlow()
+    public val replyMessage: StateFlow<BaseMessage?> = _replyMessage.asStateFlow()
 
     /**
      * Last successfully sent message (for callbacks).
      */
     private val _sentMessage = MutableStateFlow<BaseMessage?>(null)
-    val sentMessage: StateFlow<BaseMessage?> = _sentMessage.asStateFlow()
+    public val sentMessage: StateFlow<BaseMessage?> = _sentMessage.asStateFlow()
 
     // ==================== AI State ====================
 
@@ -170,7 +171,7 @@ open class CometChatMessageComposerViewModel(
      * Whether AI is currently generating a response.
      */
     private val _isAIGenerating = MutableStateFlow(false)
-    val isAIGenerating: StateFlow<Boolean> = _isAIGenerating.asStateFlow()
+    public val isAIGenerating: StateFlow<Boolean> = _isAIGenerating.asStateFlow()
 
     // ==================== Composer Mode State ====================
 
@@ -178,13 +179,13 @@ open class CometChatMessageComposerViewModel(
      * Current mode of the message composer (Normal, AttachmentPopupOpen, or Recording).
      */
     private val _composerMode = MutableStateFlow<ComposerMode>(ComposerMode.Normal)
-    val composerMode: StateFlow<ComposerMode> = _composerMode.asStateFlow()
+    public val composerMode: StateFlow<ComposerMode> = _composerMode.asStateFlow()
 
     /**
      * Whether the attachment popup is currently expanded.
      */
     private val _isAttachmentPopupExpanded = MutableStateFlow(false)
-    val isAttachmentPopupExpanded: StateFlow<Boolean> = _isAttachmentPopupExpanded.asStateFlow()
+    public val isAttachmentPopupExpanded: StateFlow<Boolean> = _isAttachmentPopupExpanded.asStateFlow()
 
     // ==================== Recording State ====================
 
@@ -192,19 +193,19 @@ open class CometChatMessageComposerViewModel(
      * Current recording time formatted as MM:SS.
      */
     private val _recordingTime = MutableStateFlow("00:00")
-    val recordingTime: StateFlow<String> = _recordingTime.asStateFlow()
+    public val recordingTime: StateFlow<String> = _recordingTime.asStateFlow()
 
     /**
      * Path to the recorded audio file.
      */
     private val _recordedFilePath = MutableStateFlow<String?>(null)
-    val recordedFilePath: StateFlow<String?> = _recordedFilePath.asStateFlow()
+    public val recordedFilePath: StateFlow<String?> = _recordedFilePath.asStateFlow()
 
     /**
      * Current audio amplitude for waveform visualization (0.0 to 1.0).
      */
     private val _audioAmplitude = MutableStateFlow(0f)
-    val audioAmplitude: StateFlow<Float> = _audioAmplitude.asStateFlow()
+    public val audioAmplitude: StateFlow<Float> = _audioAmplitude.asStateFlow()
 
     // ==================== ID Map ====================
 
@@ -213,7 +214,7 @@ open class CometChatMessageComposerViewModel(
      * Contains RECEIVER_ID, RECEIVER_TYPE, and optionally PARENT_MESSAGE_ID.
      */
     private val _idMap = MutableStateFlow<HashMap<String, String>>(HashMap())
-    val idMap: StateFlow<HashMap<String, String>> = _idMap.asStateFlow()
+    public val idMap: StateFlow<HashMap<String, String>> = _idMap.asStateFlow()
 
     // ==================== Events ====================
 
@@ -221,13 +222,13 @@ open class CometChatMessageComposerViewModel(
      * Panel events for showing/hiding custom panels.
      */
     private val _panelEvents = MutableSharedFlow<ComposerPanelEvent>()
-    val panelEvents: SharedFlow<ComposerPanelEvent> = _panelEvents.asSharedFlow()
+    public val panelEvents: SharedFlow<ComposerPanelEvent> = _panelEvents.asSharedFlow()
 
     /**
      * Error events for UI error handling.
      */
     private val _errorEvent = MutableSharedFlow<CometChatException>()
-    val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
+    public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
     // ==================== Attachment Option Visibility State ====================
 
@@ -236,35 +237,35 @@ open class CometChatMessageComposerViewModel(
      * Default is true (visible).
      */
     private val _showCameraOption = MutableStateFlow(true)
-    val showCameraOption: StateFlow<Boolean> = _showCameraOption.asStateFlow()
+    public val showCameraOption: StateFlow<Boolean> = _showCameraOption.asStateFlow()
 
     /**
      * Visibility flag for Image attachment option.
      * Default is true (visible).
      */
     private val _showImageOption = MutableStateFlow(true)
-    val showImageOption: StateFlow<Boolean> = _showImageOption.asStateFlow()
+    public val showImageOption: StateFlow<Boolean> = _showImageOption.asStateFlow()
 
     /**
      * Visibility flag for Video attachment option.
      * Default is true (visible).
      */
     private val _showVideoOption = MutableStateFlow(true)
-    val showVideoOption: StateFlow<Boolean> = _showVideoOption.asStateFlow()
+    public val showVideoOption: StateFlow<Boolean> = _showVideoOption.asStateFlow()
 
     /**
      * Visibility flag for Audio attachment option.
      * Default is true (visible).
      */
     private val _showAudioOption = MutableStateFlow(true)
-    val showAudioOption: StateFlow<Boolean> = _showAudioOption.asStateFlow()
+    public val showAudioOption: StateFlow<Boolean> = _showAudioOption.asStateFlow()
 
     /**
      * Visibility flag for File/Document attachment option.
      * Default is true (visible).
      */
     private val _showFileOption = MutableStateFlow(true)
-    val showFileOption: StateFlow<Boolean> = _showFileOption.asStateFlow()
+    public val showFileOption: StateFlow<Boolean> = _showFileOption.asStateFlow()
 
     /**
      * Visibility flag for Poll attachment option.
@@ -273,7 +274,7 @@ open class CometChatMessageComposerViewModel(
      * when the extension is enabled.
      */
     private val _showPollOption = MutableStateFlow(false)
-    val showPollOption: StateFlow<Boolean> = _showPollOption.asStateFlow()
+    public val showPollOption: StateFlow<Boolean> = _showPollOption.asStateFlow()
 
     /**
      * Visibility flag for Collaborative Document attachment option.
@@ -282,7 +283,7 @@ open class CometChatMessageComposerViewModel(
      * when the extension is enabled.
      */
     private val _showCollaborativeDocumentOption = MutableStateFlow(false)
-    val showCollaborativeDocumentOption: StateFlow<Boolean> = _showCollaborativeDocumentOption.asStateFlow()
+    public val showCollaborativeDocumentOption: StateFlow<Boolean> = _showCollaborativeDocumentOption.asStateFlow()
 
     /**
      * Visibility flag for Collaborative Whiteboard attachment option.
@@ -291,7 +292,7 @@ open class CometChatMessageComposerViewModel(
      * when the extension is enabled.
      */
     private val _showCollaborativeWhiteboardOption = MutableStateFlow(false)
-    val showCollaborativeWhiteboardOption: StateFlow<Boolean> = _showCollaborativeWhiteboardOption.asStateFlow()
+    public val showCollaborativeWhiteboardOption: StateFlow<Boolean> = _showCollaborativeWhiteboardOption.asStateFlow()
 
     /**
      * Custom attachment options added by the developer.
@@ -307,13 +308,13 @@ open class CometChatMessageComposerViewModel(
      * order is preserved; consumed by both the Compose and Views composer trays.
      */
     private val _attachmentTiles = MutableStateFlow<List<AttachmentUploadTile>>(emptyList())
-    val attachmentTiles: StateFlow<List<AttachmentUploadTile>> = _attachmentTiles.asStateFlow()
+    public val attachmentTiles: StateFlow<List<AttachmentUploadTile>> = _attachmentTiles.asStateFlow()
 
     /**
      * True while at least one attachment is staged. Drives the mic↔send swap (staged attachments
      * count as "content") and the tray's visibility.
      */
-    val hasStagedAttachments: StateFlow<Boolean> = _attachmentTiles
+    public val hasStagedAttachments: StateFlow<Boolean> = _attachmentTiles
         .map { it.isNotEmpty() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -323,7 +324,7 @@ open class CometChatMessageComposerViewModel(
      * design: the send button must stay disabled while any tile is still uploading, failed, or
      * rejected.
      */
-    val attachmentsAllUploaded: StateFlow<Boolean> = _attachmentTiles
+    public val attachmentsAllUploaded: StateFlow<Boolean> = _attachmentTiles
         .map { tiles -> tiles.isNotEmpty() && tiles.all { it.status == AttachmentUploadStatus.DONE } }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -333,7 +334,7 @@ open class CometChatMessageComposerViewModel(
      * [DEFAULT_MAX_ATTACHMENT_COUNT]. The UIs use this for the picker selection limit and the
      * "tray full" gate; [stageAttachments] enforces it as the backstop.
      */
-    val maxAttachmentCount: Int
+    public val maxAttachmentCount: Int
         get() {
             val raw = runCatching { SettingsRepo.getSettings()?.fileCount ?: 0 }.getOrDefault(0)
             return if (raw in 1..1000) raw else DEFAULT_MAX_ATTACHMENT_COUNT
@@ -382,7 +383,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param user The User object to set as receiver
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         if (receiverId != user.uid || receiverType != UIKitConstants.ReceiverType.USER) {
             clearAttachments()
         }
@@ -400,7 +401,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param group The Group object to set as receiver
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         if (receiverId != group.guid || receiverType != UIKitConstants.ReceiverType.GROUP) {
             clearAttachments()
         }
@@ -421,7 +422,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param id The parent message ID
      */
-    fun setParentMessageId(id: Long) {
+    public fun setParentMessageId(id: Long) {
         if (parentMessageId != id) {
             clearAttachments()
         }
@@ -452,14 +453,14 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param text The text to set in the compose field
      */
-    fun setComposeText(text: String) {
+    public fun setComposeText(text: String) {
         _composeText.value = text
     }
 
     /**
      * Clears the compose text after it has been consumed by the UI.
      */
-    fun clearComposeText() {
+    public fun clearComposeText() {
         _composeText.value = ""
     }
 
@@ -471,7 +472,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param message The message to edit (TextMessage text or MediaMessage caption)
      */
-    fun setEditMessage(message: BaseMessage) {
+    public fun setEditMessage(message: BaseMessage) {
         _editMessage.value = message
         _replyMessage.value = null
         _uiState.value = MessageComposerUIState.Editing(message)
@@ -481,7 +482,7 @@ open class CometChatMessageComposerViewModel(
      * Clears the edit message state.
      * Returns UI to idle state.
      */
-    fun clearEditMessage() {
+    public fun clearEditMessage() {
         _editMessage.value = null
         _uiState.value = MessageComposerUIState.Idle
     }
@@ -494,7 +495,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param message The BaseMessage to reply to
      */
-    fun setReplyMessage(message: BaseMessage) {
+    public fun setReplyMessage(message: BaseMessage) {
         _replyMessage.value = message
         _editMessage.value = null
         _uiState.value = MessageComposerUIState.Replying(message)
@@ -504,7 +505,7 @@ open class CometChatMessageComposerViewModel(
      * Clears the reply message state.
      * Returns UI to idle state.
      */
-    fun clearReplyMessage() {
+    public fun clearReplyMessage() {
         _replyMessage.value = null
         _uiState.value = MessageComposerUIState.Idle
     }
@@ -520,7 +521,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param generating True if AI is generating, false otherwise
      */
-    fun setAIGenerating(generating: Boolean) {
+    public fun setAIGenerating(generating: Boolean) {
         _isAIGenerating.value = generating
         if (generating) {
             _uiState.value = MessageComposerUIState.AIGenerating
@@ -584,7 +585,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setCameraOptionVisibility(visible: Boolean) {
+    public fun setCameraOptionVisibility(visible: Boolean) {
         _showCameraOption.value = visible
     }
 
@@ -593,7 +594,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setImageOptionVisibility(visible: Boolean) {
+    public fun setImageOptionVisibility(visible: Boolean) {
         _showImageOption.value = visible
     }
 
@@ -602,7 +603,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setVideoOptionVisibility(visible: Boolean) {
+    public fun setVideoOptionVisibility(visible: Boolean) {
         _showVideoOption.value = visible
     }
 
@@ -611,7 +612,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setAudioOptionVisibility(visible: Boolean) {
+    public fun setAudioOptionVisibility(visible: Boolean) {
         _showAudioOption.value = visible
     }
 
@@ -620,7 +621,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setFileOptionVisibility(visible: Boolean) {
+    public fun setFileOptionVisibility(visible: Boolean) {
         _showFileOption.value = visible
     }
 
@@ -629,7 +630,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setPollOptionVisibility(visible: Boolean) {
+    public fun setPollOptionVisibility(visible: Boolean) {
         _showPollOption.value = visible
     }
 
@@ -638,7 +639,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setCollaborativeDocumentOptionVisibility(visible: Boolean) {
+    public fun setCollaborativeDocumentOptionVisibility(visible: Boolean) {
         _showCollaborativeDocumentOption.value = visible
     }
 
@@ -647,7 +648,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param visible True to show, false to hide
      */
-    fun setCollaborativeWhiteboardOptionVisibility(visible: Boolean) {
+    public fun setCollaborativeWhiteboardOptionVisibility(visible: Boolean) {
         _showCollaborativeWhiteboardOption.value = visible
     }
 
@@ -677,7 +678,7 @@ open class CometChatMessageComposerViewModel(
      * @param collaborativeWhiteboardIcon Drawable resource for Collaborative Whiteboard icon
      * @return List of visible attachment options
      */
-    fun getDefaultAttachmentOptions(
+    public fun getDefaultAttachmentOptions(
         cameraTitle: String,
         cameraIcon: Int,
         imageTitle: String,
@@ -787,7 +788,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param options The new list of custom attachment options
      */
-    fun setAttachmentOptions(options: List<CometChatMessageComposerAction>) {
+    public fun setAttachmentOptions(options: List<CometChatMessageComposerAction>) {
         _customAttachmentOptions.value = options
     }
 
@@ -796,7 +797,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param option The attachment option to add
      */
-    fun addAttachmentOption(option: CometChatMessageComposerAction) {
+    public fun addAttachmentOption(option: CometChatMessageComposerAction) {
         _customAttachmentOptions.value = _customAttachmentOptions.value + option
     }
 
@@ -807,7 +808,7 @@ open class CometChatMessageComposerViewModel(
      * If currently in Normal mode, opens the popup.
      * If currently in AttachmentPopupOpen mode, closes the popup.
      */
-    fun toggleAttachmentPopup() {
+    public fun toggleAttachmentPopup() {
         when (_composerMode.value) {
             is ComposerMode.Normal -> {
                 _composerMode.value = ComposerMode.AttachmentPopupOpen
@@ -828,7 +829,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param expanded True to open the popup, false to close it
      */
-    fun setAttachmentPopupExpanded(expanded: Boolean) {
+    public fun setAttachmentPopupExpanded(expanded: Boolean) {
         _isAttachmentPopupExpanded.value = expanded
         _composerMode.value = if (expanded) {
             ComposerMode.AttachmentPopupOpen
@@ -841,7 +842,7 @@ open class CometChatMessageComposerViewModel(
      * Starts the recording mode.
      * Transitions the composer to Recording mode with START state.
      */
-    fun startRecordingMode() {
+    public fun startRecordingMode() {
         // Close attachment popup if open
         if (_composerMode.value is ComposerMode.AttachmentPopupOpen) {
             _isAttachmentPopupExpanded.value = false
@@ -858,7 +859,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param state The new recording state
      */
-    fun setRecordingState(state: RecordingState) {
+    public fun setRecordingState(state: RecordingState) {
         val currentMode = _composerMode.value
         if (currentMode is ComposerMode.Recording) {
             // Validate state transitions
@@ -880,7 +881,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param time The formatted time string (MM:SS)
      */
-    fun updateRecordingTime(time: String) {
+    public fun updateRecordingTime(time: String) {
         _recordingTime.value = time
     }
 
@@ -889,7 +890,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param path The path to the recorded audio file
      */
-    fun setRecordedFilePath(path: String?) {
+    public fun setRecordedFilePath(path: String?) {
         _recordedFilePath.value = path
     }
 
@@ -898,7 +899,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param amplitude The amplitude value (0.0 to 1.0)
      */
-    fun updateAudioAmplitude(amplitude: Float) {
+    public fun updateAudioAmplitude(amplitude: Float) {
         _audioAmplitude.value = amplitude.coerceIn(0f, 1f)
     }
 
@@ -906,7 +907,7 @@ open class CometChatMessageComposerViewModel(
      * Exits recording mode and returns to Normal mode.
      * Should be called after sending or deleting a recording.
      */
-    fun exitRecordingMode() {
+    public fun exitRecordingMode() {
         _composerMode.value = ComposerMode.Normal
         _recordingTime.value = "00:00"
         _recordedFilePath.value = null
@@ -918,7 +919,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @return The current RecordingState or null if not in Recording mode
      */
-    fun getCurrentRecordingState(): RecordingState? {
+    public fun getCurrentRecordingState(): RecordingState? {
         return (_composerMode.value as? ComposerMode.Recording)?.state
     }
 
@@ -927,7 +928,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @return True if in Recording mode, false otherwise
      */
-    fun isInRecordingMode(): Boolean {
+    public fun isInRecordingMode(): Boolean {
         return _composerMode.value is ComposerMode.Recording
     }
 
@@ -940,7 +941,7 @@ open class CometChatMessageComposerViewModel(
      * @param text The message text
      * @return TextMessage object or null if text is blank
      */
-    fun createTextMessage(text: String): TextMessage? {
+    public fun createTextMessage(text: String): TextMessage? {
         if (text.isBlank()) return null
         val message = TextMessage(receiverId, text.trim(), receiverType)
         if (parentMessageId > -1L) {
@@ -956,15 +957,15 @@ open class CometChatMessageComposerViewModel(
      * @param contentType The MIME type of the file
      * @return MediaMessage object or null if file doesn't exist or is empty
      */
-    fun createMediaMessage(file: File, contentType: String): MediaMessage? {
-        android.util.Log.d("MessageComposerVM", "createMediaMessage: file=${file.absolutePath}, exists=${file.exists()}, size=${file.length()}, contentType=$contentType")
+    public fun createMediaMessage(file: File, contentType: String): MediaMessage? {
+        CometChatLogger.d("MessageComposerVM", "createMediaMessage: file=${file.absolutePath}, exists=${file.exists()}, size=${file.length()}, contentType=$contentType")
         if (!file.exists() || file.length() == 0L) {
-            android.util.Log.e("MessageComposerVM", "createMediaMessage: file doesn't exist or is empty, returning null")
+            CometChatLogger.e("MessageComposerVM", "createMediaMessage: file doesn't exist or is empty, returning null")
             return null
         }
-        android.util.Log.d("MessageComposerVM", "createMediaMessage: receiverId=$receiverId, receiverType=$receiverType")
+        CometChatLogger.d("MessageComposerVM", "createMediaMessage: receiverId=$receiverId, receiverType=$receiverType")
         val message = MediaMessage(receiverId, file, contentType, receiverType)
-        android.util.Log.d("MessageComposerVM", "createMediaMessage: MediaMessage created, attachment=${message.attachment}")
+        CometChatLogger.d("MessageComposerVM", "createMediaMessage: MediaMessage created, attachment=${message.attachment}")
         if (parentMessageId > -1L) {
             message.parentMessageId = parentMessageId
         }
@@ -979,7 +980,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param text The message text to send
      */
-    fun sendTextMessage(text: String) {
+    public fun sendTextMessage(text: String) {
         val message = createTextMessage(text) ?: return
 
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
@@ -1040,7 +1041,7 @@ open class CometChatMessageComposerViewModel(
      * 
      * @param message The TextMessage to send (with mentionedUsers already set)
      */
-    fun sendTextMessageWithMentions(message: TextMessage) {
+    public fun sendTextMessageWithMentions(message: TextMessage) {
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
         _replyMessage.value?.let { quotedMsg ->
             message.quotedMessage = quotedMsg
@@ -1099,11 +1100,11 @@ open class CometChatMessageComposerViewModel(
      * @param file The media file to send
      * @param contentType The MIME type of the file
      */
-    fun sendMediaMessage(file: File, contentType: String, isVoiceNote: Boolean = false) {
-        android.util.Log.d("MessageComposerVM", "sendMediaMessage: file=${file.absolutePath}, exists=${file.exists()}, size=${file.length()}, contentType=$contentType")
+    public fun sendMediaMessage(file: File, contentType: String, isVoiceNote: Boolean = false) {
+        CometChatLogger.d("MessageComposerVM", "sendMediaMessage: file=${file.absolutePath}, exists=${file.exists()}, size=${file.length()}, contentType=$contentType")
         val message = createMediaMessage(file, contentType)
         if (message == null) {
-            android.util.Log.e("MessageComposerVM", "sendMediaMessage: createMediaMessage returned null, aborting")
+            CometChatLogger.e("MessageComposerVM", "sendMediaMessage: createMediaMessage returned null, aborting")
             // Emit error event when file is invalid
             viewModelScope.launch {
                 val exception = CometChatException("FILE_ERROR", "File does not exist or is empty: ${file.absolutePath}")
@@ -1112,7 +1113,7 @@ open class CometChatMessageComposerViewModel(
             }
             return
         }
-        android.util.Log.d("MessageComposerVM", "sendMediaMessage: MediaMessage created successfully")
+        CometChatLogger.d("MessageComposerVM", "sendMediaMessage: MediaMessage created successfully")
 
         // ENG-36737: mark a mic-recorded voice note so the receive side routes it to
         // VoiceNoteBubble. Uses the DD / iOS-compatible metaData["audioType"] = "voice_note".
@@ -1169,7 +1170,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param inputs The files to stage, in the order they should appear in the tray.
      */
-    fun stageAttachments(inputs: List<StagedAttachmentInput>) {
+    public fun stageAttachments(inputs: List<StagedAttachmentInput>) {
         if (inputs.isEmpty()) return
 
         val maxCount = maxAttachmentCount
@@ -1225,7 +1226,7 @@ open class CometChatMessageComposerViewModel(
      * Removes a staged attachment. If it is still uploading, the in-flight upload is cancelled
      * first. Used for both the tray's "cancel" (while uploading) and "remove" (otherwise) intents.
      */
-    fun removeAttachment(tile: AttachmentUploadTile) {
+    public fun removeAttachment(tile: AttachmentUploadTile) {
         // The SDK handles every state: aborts an in-flight upload, or drops an
         // already-uploaded file from the batch.
         stagedFilesById.remove(tile.fileId)
@@ -1237,7 +1238,7 @@ open class CometChatMessageComposerViewModel(
      * Retries a [AttachmentUploadStatus.FAILED] attachment's upload via the SDK. Rejected tiles are
      * not retryable and are ignored.
      */
-    fun retryAttachment(tile: AttachmentUploadTile) {
+    public fun retryAttachment(tile: AttachmentUploadTile) {
         val request = uploadFileRequest ?: return
         updateTile(tile.fileId) {
             it.copy(status = AttachmentUploadStatus.UPLOADING, percent = 0, loaded = 0L, error = null)
@@ -1264,7 +1265,7 @@ open class CometChatMessageComposerViewModel(
     /**
      * Clears the tray, cancelling any in-flight uploads. Called on send and when switching chats.
      */
-    fun clearAttachments() {
+    public fun clearAttachments() {
         // clearAll() aborts any in-flight uploads and releases the batch from SDK memory.
         runCatching { uploadFileRequest?.clearAll() }
         uploadFileRequest = null
@@ -1282,7 +1283,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param caption Optional caption (the current compose text), trimmed; omitted when blank.
      */
-    fun sendStagedAttachments(caption: String? = null) {
+    public fun sendStagedAttachments(caption: String? = null) {
         val tiles = _attachmentTiles.value
         if (tiles.isEmpty() || tiles.any { it.status != AttachmentUploadStatus.DONE }) return
         if (tiles.none { it.attachment != null }) return
@@ -1375,12 +1376,12 @@ open class CometChatMessageComposerViewModel(
         }
     }
 
-    companion object {
+    public companion object {
         /** Fallback attachment cap when the server settings are unavailable or misconfigured. */
-        const val DEFAULT_MAX_ATTACHMENT_COUNT = 10
+        public const val DEFAULT_MAX_ATTACHMENT_COUNT: Int = 10
 
         /** Error code emitted on [errorEvent] when picked files are dropped by the count guard. */
-        const val ERROR_MAX_ATTACHMENTS_EXCEEDED = "MAX_ATTACHMENTS_EXCEEDED"
+        public const val ERROR_MAX_ATTACHMENTS_EXCEEDED: String = "MAX_ATTACHMENTS_EXCEEDED"
     }
 
     /**
@@ -1460,7 +1461,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param message The CustomMessage to send
      */
-    fun sendCustomMessage(message: CustomMessage) {
+    public fun sendCustomMessage(message: CustomMessage) {
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
@@ -1493,7 +1494,7 @@ open class CometChatMessageComposerViewModel(
      * @param stickerName The name/identifier of the sticker
      * @param pushNotificationMessage The push notification message to display (e.g., "Shared a Sticker")
      */
-    fun sendStickerMessage(stickerUrl: String, stickerName: String, pushNotificationMessage: String) {
+    public fun sendStickerMessage(stickerUrl: String, stickerName: String, pushNotificationMessage: String) {
         if (receiverId.isEmpty()) return
 
         viewModelScope.launch {
@@ -1602,7 +1603,7 @@ open class CometChatMessageComposerViewModel(
      *
      * @param newText The new text content for the message
      */
-    fun editMessage(newText: String) {
+    public fun editMessage(newText: String) {
         val originalMessage = _editMessage.value ?: return
         if (newText.isBlank()) return
 
@@ -1670,7 +1671,7 @@ open class CometChatMessageComposerViewModel(
     /**
      * When true, no typing indicator events are sent to the SDK.
      */
-    var disableTypingEvents: Boolean = false
+    public var disableTypingEvents: Boolean = false
 
     /**
      * Tracks whether a typing session is currently active (startTyping sent
@@ -1691,7 +1692,7 @@ open class CometChatMessageComposerViewModel(
      * milliseconds without another call.
      * Only sends if typing events are enabled and the user is not blocked.
      */
-    open fun startTyping() {
+    open public fun startTyping() {
         if (disableTypingEvents || isUserBlocked()) return
         if (!isTypingActive) {
             isTypingActive = true
@@ -1709,7 +1710,7 @@ open class CometChatMessageComposerViewModel(
      * debounced end. Safe to call when no session is active.
      * Only sends if typing events are enabled and the user is not blocked.
      */
-    open fun endTyping() {
+    open public fun endTyping() {
         typingDebounceJob?.cancel()
         typingDebounceJob = null
         if (!isTypingActive) return
@@ -1920,7 +1921,7 @@ open class CometChatMessageComposerViewModel(
      * @param onSuccess Callback invoked on successful poll creation
      * @param onError Callback invoked on error
      */
-    fun createPoll(
+    public fun createPoll(
         question: String,
         options: org.json.JSONArray,
         onSuccess: (() -> Unit)? = null,
@@ -1985,7 +1986,7 @@ open class CometChatMessageComposerViewModel(
      * @param onSuccess Callback invoked on successful whiteboard creation
      * @param onError Callback invoked on error
      */
-    fun createCollaborativeWhiteboard(
+    public fun createCollaborativeWhiteboard(
         onSuccess: (() -> Unit)? = null,
         onError: ((CometChatException) -> Unit)? = null
     ) {
@@ -2046,7 +2047,7 @@ open class CometChatMessageComposerViewModel(
      * @param onSuccess Callback invoked on successful document creation
      * @param onError Callback invoked on error
      */
-    fun createCollaborativeDocument(
+    public fun createCollaborativeDocument(
         onSuccess: (() -> Unit)? = null,
         onError: ((CometChatException) -> Unit)? = null
     ) {
@@ -2106,7 +2107,7 @@ open class CometChatMessageComposerViewModel(
      * Removes all event listeners.
      * Called when the ViewModel is cleared.
      */
-    fun removeListeners() {
+    public fun removeListeners() {
         messageEventsJob?.cancel()
         uiEventsJob?.cancel()
         // Clear the stream callback to avoid leaks

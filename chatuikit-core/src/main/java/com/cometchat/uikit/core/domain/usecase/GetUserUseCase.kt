@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.MessageHeaderRepository
  *
  * @param repository The repository to fetch user data from
  */
-open class GetUserUseCase(
+open public class GetUserUseCase(
     private val repository: MessageHeaderRepository
 ) {
     /**
@@ -24,7 +24,7 @@ open class GetUserUseCase(
      * @param uid The unique identifier of the user
      * @return Result containing User on success or error on failure
      */
-    open suspend operator fun invoke(uid: String): Result<User> {
+    open suspend operator public fun invoke(uid: String): Result<User> {
         return repository.getUser(uid)
     }
 }

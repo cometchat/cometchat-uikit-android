@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core.utils
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -13,13 +12,13 @@ import kotlin.random.Random
 /**
  * Utility object for generating waveform amplitude data for audio bubbles.
  */
-object WaveformUtils {
+public object WaveformUtils {
     private const val TAG = "WaveformUtils"
     private const val DEFAULT_BAR_COUNT = 28
     private const val MIN_AMPLITUDE = 0.15f
     private const val MAX_AMPLITUDE = 1.0f
 
-    fun generateDeterministicWaveform(key: String, barCount: Int = DEFAULT_BAR_COUNT): List<Float> {
+    public fun generateDeterministicWaveform(key: String, barCount: Int = DEFAULT_BAR_COUNT): List<Float> {
         val seed = key.hashCode().toLong()
         val random = Random(seed)
         return List(barCount) { index ->
@@ -29,11 +28,11 @@ object WaveformUtils {
         }
     }
 
-    fun generatePlaceholder(barCount: Int = DEFAULT_BAR_COUNT): List<Float> {
+    public fun generatePlaceholder(barCount: Int = DEFAULT_BAR_COUNT): List<Float> {
         return List(barCount) { MIN_AMPLITUDE + Random.nextFloat() * 0.7f }
     }
 
-    fun normalizeToBarCount(amplitudes: List<Float>, targetCount: Int): List<Float> {
+    public fun normalizeToBarCount(amplitudes: List<Float>, targetCount: Int): List<Float> {
         if (amplitudes.size == targetCount) return amplitudes
         if (amplitudes.isEmpty()) return generatePlaceholder(targetCount)
         return List(targetCount) { i ->

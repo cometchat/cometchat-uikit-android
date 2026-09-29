@@ -163,6 +163,55 @@ class CometChatAIAssistantChatHistoryViewModelTest : FunSpec({
         }
     }
 
+    // ==================== C2. Delete Operations ====================
+    // Ported from the toolkit AIAssistantChatHistory InteractionTests (ENG-38676 reconcile):
+    // deleteChatHistoryItem() is a core-VM behaviour, so its coverage belongs here.
+
+    test("deleteChatHistoryItem should emit INITIATED_DELETE") {
+        runTest {
+            val viewModel = CometChatAIAssistantChatHistoryViewModel(enableListeners = false)
+            advanceUntilIdle()
+
+            val message = MockFactory.createTextMessage(id = 7L, text = "to delete")
+            val states = mutableListOf<UIKitConstants.DeleteState>()
+            val job = CoroutineScope(testDispatcher).launch {
+                viewModel.deleteState.collect { states.add(it) }
+            }
+
+            // INITIATED_DELETE is emitted synchronously before the SDK call; the SDK
+            // callback never fires without a live SDK, so guard the call to stay deterministic.
+            println("    → deleteChatHistoryItem(id=7)")
+            runCatching { viewModel.deleteChatHistoryItem(message) }
+            advanceUntilIdle()
+
+            states.first() shouldBe UIKitConstants.DeleteState.INITIATED_DELETE
+            println("    ✅ deleteChatHistoryItem emits INITIATED_DELETE")
+            job.cancel()
+        }
+    }
+
+    test("for any message id: deleteChatHistoryItem emits INITIATED_DELETE") {
+        checkAll(20, Arb.long(1L, 100000L)) { messageId ->
+            runTest {
+                val viewModel = CometChatAIAssistantChatHistoryViewModel(enableListeners = false)
+                advanceUntilIdle()
+
+                val message = MockFactory.createTextMessage(id = messageId, text = "m")
+                val states = mutableListOf<UIKitConstants.DeleteState>()
+                val job = CoroutineScope(testDispatcher).launch {
+                    viewModel.deleteState.collect { states.add(it) }
+                }
+
+                runCatching { viewModel.deleteChatHistoryItem(message) }
+                advanceUntilIdle()
+
+                println("    → id=$messageId, states=$states")
+                states.first() shouldBe UIKitConstants.DeleteState.INITIATED_DELETE
+                job.cancel()
+            }
+        }
+    }
+
     // ==================== D. UIKit Events ====================
 
     test("CometChatEvents should deliver MessageDeleted to subscribers") {

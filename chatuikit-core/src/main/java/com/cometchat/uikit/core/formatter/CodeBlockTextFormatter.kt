@@ -14,7 +14,7 @@ import java.util.regex.Pattern
  * Supports multi-line code blocks with proper newline handling.
  * Renders preview with BackgroundColorSpan and TypefaceSpan("monospace").
  */
-class CodeBlockTextFormatter(
+public class CodeBlockTextFormatter(
     private val codeBackgroundColor: Int = Color.parseColor("#E8E8E8")
 ) : RichTextFormatter {
     

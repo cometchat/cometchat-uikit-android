@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  * Supports multi-line selections with auto-numbering.
  * Renders preview with LeadingMarginSpan.
  */
-class OrderedListTextFormatter(
+public class OrderedListTextFormatter(
     private val leadingMargin: Int = 32
 ) : RichTextFormatter {
     
@@ -209,7 +209,7 @@ class OrderedListTextFormatter(
      * @param cursorPosition The current cursor position
      * @return FormattedResult with new numbered item added
      */
-    fun addNewNumberedItem(text: String, cursorPosition: Int): FormattedResult {
+    public fun addNewNumberedItem(text: String, cursorPosition: Int): FormattedResult {
         // Find the current line to determine the next number
         val beforeCursor = text.substring(0, cursorPosition)
         val lastLineStart = beforeCursor.lastIndexOf('\n') + 1

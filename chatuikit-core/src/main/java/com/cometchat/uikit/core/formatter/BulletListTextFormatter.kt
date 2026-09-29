@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  * Supports multi-line selections.
  * Renders preview with BulletSpan.
  */
-class BulletListTextFormatter(
+public class BulletListTextFormatter(
     private val bulletGapWidth: Int = 16,
     private val bulletColor: Int? = null
 ) : RichTextFormatter {
@@ -195,7 +195,7 @@ class BulletListTextFormatter(
      * @param cursorPosition The current cursor position
      * @return FormattedResult with new bullet item added
      */
-    fun addNewBulletItem(text: String, cursorPosition: Int): FormattedResult {
+    public fun addNewBulletItem(text: String, cursorPosition: Int): FormattedResult {
         val newText = StringBuilder(text)
         newText.insert(cursorPosition, "\n$markdownPrefix")
         

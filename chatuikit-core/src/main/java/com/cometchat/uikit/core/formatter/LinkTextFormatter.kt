@@ -11,7 +11,7 @@ import java.util.regex.Pattern
  * Applies link formatting to selected text by wrapping it with [text](url) syntax.
  * Renders preview with URLSpan.
  */
-class LinkTextFormatter : RichTextFormatter {
+public class LinkTextFormatter : RichTextFormatter {
     
     override val formatType: RichTextFormat = RichTextFormat.LINK
     override val markdownPrefix: String = "["
@@ -55,7 +55,7 @@ class LinkTextFormatter : RichTextFormatter {
      * @param url The URL to link to
      * @return FormattedResult containing the new text and updated selection positions
      */
-    fun applyFormatWithUrl(text: String, selectionStart: Int, selectionEnd: Int, url: String): FormattedResult {
+    public fun applyFormatWithUrl(text: String, selectionStart: Int, selectionEnd: Int, url: String): FormattedResult {
         // Validate bounds to prevent StringIndexOutOfBoundsException
         val safeStart = selectionStart.coerceIn(0, text.length)
         val safeEnd = selectionEnd.coerceIn(0, text.length)
@@ -198,7 +198,7 @@ class LinkTextFormatter : RichTextFormatter {
      * @param position The cursor position
      * @return The URL if found, null otherwise
      */
-    fun extractUrl(text: String, position: Int): String? {
+    public fun extractUrl(text: String, position: Int): String? {
         val pattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)")
         val matcher = pattern.matcher(text)
         
@@ -218,7 +218,7 @@ class LinkTextFormatter : RichTextFormatter {
      * @param position The cursor position
      * @return The link text if found, null otherwise
      */
-    fun extractLinkText(text: String, position: Int): String? {
+    public fun extractLinkText(text: String, position: Int): String? {
         val pattern = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)")
         val matcher = pattern.matcher(text)
         

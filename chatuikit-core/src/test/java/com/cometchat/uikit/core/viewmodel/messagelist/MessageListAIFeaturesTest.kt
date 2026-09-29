@@ -24,7 +24,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import com.cometchat.chat.core.CometChat
+import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -74,8 +77,23 @@ class MessageListAIFeaturesTest : FunSpec({
         return vm
     }
 
-    beforeTest {
+    // Main is installed once for the whole spec, not per test. The VM fires
+    // CometChatEvents.emitMessageEvent, which launches on the bus's own Default-dispatcher scope —
+    // a launch advanceUntilIdle() cannot see. With a per-test resetMain() that stray launch could
+    // resume this spec's Main-bound collectors AFTER Main was torn down, crashing on
+    // "Dispatchers.Main was accessed when the platform dispatcher was absent" and pinning the
+    // leaked exception on the NEXT test's runTest (UncaughtExceptionsBeforeTest).
+    beforeSpec {
         Dispatchers.setMain(testDispatcher)
+    }
+
+    afterSpec {
+        // Let any still-queued bus emissions run while Main is still installed.
+        Thread.sleep(100)
+        Dispatchers.resetMain()
+    }
+
+    beforeTest {
         repository = mock()
         // Default stubs
         whenever(repository.hasMorePreviousMessages()).thenReturn(true)
@@ -86,7 +104,6 @@ class MessageListAIFeaturesTest : FunSpec({
     }
 
     afterTest {
-        Dispatchers.resetMain()
         println()
     }
 
@@ -132,39 +149,41 @@ class MessageListAIFeaturesTest : FunSpec({
         }
     }
 
-    xtest("conversation starters: cleared when first message is added - ignored due to CometChat.getConversationStarter NPE on null JSONObject") {
-        runTest {
-            whenever(repository.fetchPreviousMessages()).thenReturn(Result.success(emptyList()))
-            whenever(repository.hasMorePreviousMessages()).thenReturn(false)
+    test("fetchConversationStarter populates replies (Loaded), and clear resets them (Idle)") {
+        // ENG-38677 / L: previously xtest-disabled because fetchConversationStarter calls the
+        // static CometChat.getConversationStarter, which NPE'd on the unmocked SDK. We mock the
+        // static seam locally (scoped to this test) so the real code path runs and is asserted.
+        // NOTE (product robustness gap, to file): fetchConversationStarter only catches
+        // CometChatException, so a runtime exception from the SDK (like that NPE) escapes the
+        // coroutine and crashes instead of surfacing ConversationStarterUIState.Error.
+        val cometChatMock = Mockito.mockStatic(CometChat::class.java)
+        try {
+            runTest {
+                cometChatMock.`when`<Unit> {
+                    CometChat.getConversationStarter(any(), any(), anyOrNull(), any())
+                }.thenAnswer { inv ->
+                    inv.getArgument<CometChat.CallbackListener<List<String>>>(3).onSuccess(listOf("Hi there!", "How are you?"))
+                    null
+                }
 
-            val vm = CometChatMessageListViewModel(
-                repository = repository,
-                enableListeners = false
-            )
-            val user = MockFactory.createUser(uid = "test-user", name = "Test User")
-            vm.setUser(user)
-            vm.setEnableConversationStarter(true)
-            vm.fetchMessages()
-            advanceUntilIdle()
+                val vm = CometChatMessageListViewModel(repository = repository, enableListeners = false)
+                vm.setUser(MockFactory.createUser(uid = "test-user", name = "Test User"))
+                vm.setEnableConversationStarter(true)
 
-            // Simulate that conversation starters were loaded (manually set state)
-            // Since we can't mock CometChat.getConversationStarter, we test the clear behavior
-            // by adding a message and verifying the starters are cleared
+                vm.fetchConversationStarter()
+                advanceUntilIdle()
 
-            // Add a message to the list (FROM the configured user to pass isMessageForCurrentChat)
-            val newMessage = MockFactory.createTextMessage(
-                id = 1L,
-                text = "Hello",
-                senderUid = "test-user",
-                receiverId = "logged-in-user",
-                receiverType = CometChatConstants.RECEIVER_TYPE_USER
-            )
-            vm.addMessage(newMessage as BaseMessage)
-            advanceUntilIdle()
+                vm.conversationStarterReplies.value shouldBe listOf("Hi there!", "How are you?")
+                vm.conversationStarterUIState.value.shouldBeInstanceOf<ConversationStarterUIState.Loaded>()
 
-            // Conversation starters should be cleared
-            vm.conversationStarterReplies.value shouldBe emptyList()
-            println("    ✅ Conversation starters cleared when first message is added")
+                vm.clearConversationStarter()
+
+                vm.conversationStarterReplies.value shouldBe emptyList()
+                vm.conversationStarterUIState.value.shouldBeInstanceOf<ConversationStarterUIState.Idle>()
+                println("    ✅ Conversation starters populate then clear")
+            }
+        } finally {
+            cometChatMock.close()
         }
     }
 

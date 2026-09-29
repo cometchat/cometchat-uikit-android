@@ -9,7 +9,7 @@ package com.cometchat.uikit.core.formatter
  * can convert mentions to [ConsumedMentionSpan] when code formatting is applied,
  * and restore them when code formatting is removed.
  */
-interface MentionSpanProvider {
+public interface MentionSpanProvider {
 
     /**
      * Represents a mention found in a text range.
@@ -21,7 +21,7 @@ interface MentionSpanProvider {
      * @param suggestionItem The original suggestion item (typed as Any? for cross-module compatibility)
      * @param textAppearance The original text appearance (typed as Any? for cross-module compatibility)
      */
-    data class MentionInfo(
+    public data class MentionInfo(
         val start: Int,
         val end: Int,
         val id: Char,
@@ -37,7 +37,7 @@ interface MentionSpanProvider {
      * @param end Exclusive end of the query range
      * @return List of mentions in the range, ordered by start position
      */
-    fun getMentionsInRange(start: Int, end: Int): List<MentionInfo>
+    public fun getMentionsInRange(start: Int, end: Int): List<MentionInfo>
 
     /**
      * Removes the mention span at the given range, converting it to plain text.
@@ -46,7 +46,7 @@ interface MentionSpanProvider {
      * @param start Inclusive start of the mention
      * @param end Exclusive end of the mention
      */
-    fun removeMentionSpan(start: Int, end: Int)
+    public fun removeMentionSpan(start: Int, end: Int)
 
     /**
      * Restores a mention span from a [ConsumedMentionSpan] at the given range.
@@ -58,5 +58,5 @@ interface MentionSpanProvider {
      * @param end Exclusive end of the mention in the plain text
      * @param consumed The [ConsumedMentionSpan] holding the original mention data
      */
-    fun restoreMentionSpan(start: Int, end: Int, consumed: ConsumedMentionSpan)
+    public fun restoreMentionSpan(start: Int, end: Int, consumed: ConsumedMentionSpan)
 }

@@ -77,11 +77,11 @@ import kotlinx.coroutines.launch
  * }
  * ```
  */
-open class CometChatThreadHeaderViewModel(
+open public class CometChatThreadHeaderViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatThreadHeaderViewModel::class.java.simpleName
     }
 
@@ -103,7 +103,7 @@ open class CometChatThreadHeaderViewModel(
      * Flag to control reaction visibility.
      * When true, reaction updates are ignored.
      */
-    var hideReaction: Boolean = false
+    public var hideReaction: Boolean = false
 
     /**
      * Unique listener ID for CometChat SDK message events.
@@ -122,31 +122,31 @@ open class CometChatThreadHeaderViewModel(
      * Contains a single-item list with the parent message.
      */
     private val _parentMessageListStateFlow = MutableStateFlow<List<BaseMessage>>(emptyList())
-    val parentMessageListStateFlow: StateFlow<List<BaseMessage>> = _parentMessageListStateFlow.asStateFlow()
+    public val parentMessageListStateFlow: StateFlow<List<BaseMessage>> = _parentMessageListStateFlow.asStateFlow()
 
     /**
      * StateFlow for the current reply count.
      */
     private val _replyCountStateFlow = MutableStateFlow(0)
-    val replyCountStateFlow: StateFlow<Int> = _replyCountStateFlow.asStateFlow()
+    public val replyCountStateFlow: StateFlow<Int> = _replyCountStateFlow.asStateFlow()
 
     /**
      * SharedFlow for sent message events.
      */
     private val _sentMessage = MutableSharedFlow<BaseMessage>()
-    val sentMessage: SharedFlow<BaseMessage> = _sentMessage.asSharedFlow()
+    public val sentMessage: SharedFlow<BaseMessage> = _sentMessage.asSharedFlow()
 
     /**
      * SharedFlow for received message events.
      */
     private val _receiveMessage = MutableSharedFlow<BaseMessage>()
-    val receiveMessage: SharedFlow<BaseMessage> = _receiveMessage.asSharedFlow()
+    public val receiveMessage: SharedFlow<BaseMessage> = _receiveMessage.asSharedFlow()
 
     /**
      * SharedFlow for parent message updates.
      */
     private val _updateParentMessage = MutableSharedFlow<BaseMessage>()
-    val updateParentMessage: SharedFlow<BaseMessage> = _updateParentMessage.asSharedFlow()
+    public val updateParentMessage: SharedFlow<BaseMessage> = _updateParentMessage.asSharedFlow()
 
     // ==================== LiveData (for View-based UI) ====================
 
@@ -154,13 +154,13 @@ open class CometChatThreadHeaderViewModel(
      * LiveData for the parent message list.
      * Converts the StateFlow to LiveData for View-based UI compatibility.
      */
-    val parentMessageListLiveData: LiveData<List<BaseMessage>> = _parentMessageListStateFlow.asLiveData()
+    public val parentMessageListLiveData: LiveData<List<BaseMessage>> = _parentMessageListStateFlow.asLiveData()
 
     /**
      * LiveData for the current reply count.
      * Converts the StateFlow to LiveData for View-based UI compatibility.
      */
-    val replyCount: LiveData<Int> = _replyCountStateFlow.asLiveData()
+    public val replyCount: LiveData<Int> = _replyCountStateFlow.asLiveData()
 
     // ==================== Public Methods ====================
 
@@ -169,7 +169,7 @@ open class CometChatThreadHeaderViewModel(
      *
      * @param parentMessage The parent message to display. If null, no action is taken.
      */
-    fun setParentMessage(parentMessage: BaseMessage?) {
+    public fun setParentMessage(parentMessage: BaseMessage?) {
         if (parentMessage != null) {
             this._parentMessage = parentMessage
             _replyCountStateFlow.value = parentMessage.replyCount
@@ -184,7 +184,7 @@ open class CometChatThreadHeaderViewModel(
      *
      * @return The parent message, or null if not set.
      */
-    fun getCurrentParentMessage(): BaseMessage? = _parentMessage
+    public fun getCurrentParentMessage(): BaseMessage? = _parentMessage
 
     // ==================== Reply Count Methods ====================
 
@@ -202,7 +202,7 @@ open class CometChatThreadHeaderViewModel(
      *
      * @param baseMessage The updated message. If null, no action is taken.
      */
-    fun updateParentMessageInList(baseMessage: BaseMessage?) {
+    public fun updateParentMessageInList(baseMessage: BaseMessage?) {
         val parent = _parentMessage
         if (baseMessage != null && parent != null) {
             var emitted = baseMessage
@@ -288,7 +288,7 @@ open class CometChatThreadHeaderViewModel(
     /**
      * Adds SDK message listener for real-time server-pushed events.
      */
-    open fun addListener() {
+    open public fun addListener() {
         if (!enableListeners) return
         
         // Remove previous listener to prevent duplicate event handling
@@ -377,7 +377,7 @@ open class CometChatThreadHeaderViewModel(
     /**
      * Adds UIKit local event listeners for inter-component communication.
      */
-    open fun addLocalEventListeners() {
+    open public fun addLocalEventListeners() {
         if (!enableListeners) return
         
         // Cancel previous subscription to prevent duplicate event handling
@@ -408,7 +408,7 @@ open class CometChatThreadHeaderViewModel(
     /**
      * Removes the SDK message listener and UIKit event subscriptions.
      */
-    open fun removeListener() {
+    open public fun removeListener() {
         if (listenerId.isNotEmpty()) {
             CometChat.removeMessageListener(listenerId)
         }

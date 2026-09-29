@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.ConversationListRepository
  * 
  * @param repository The repository to fetch conversations from
  */
-open class RefreshConversationListUseCase(
+open public class RefreshConversationListUseCase(
     private val repository: ConversationListRepository
 ) {
     /**
@@ -24,7 +24,7 @@ open class RefreshConversationListUseCase(
      * @param request A freshly built ConversationsRequest (pagination at the start)
      * @return Result containing list of conversations or error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         request: ConversationsRequest
     ): Result<List<Conversation>> {
         return repository.getConversations(request)

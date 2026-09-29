@@ -12,7 +12,7 @@ package com.cometchat.uikit.core.utils
  * 
  * @see CallManager for active call state management
  */
-object CallsUtils {
+public object CallsUtils {
     
     private const val TAG = "CallsUtils"
     
@@ -36,7 +36,7 @@ object CallsUtils {
      * 
      * @return true if the CometChatCalls SDK is available, false otherwise
      */
-    fun isCallsSDKAvailable(): Boolean {
+    public fun isCallsSDKAvailable(): Boolean {
         // Return cached result if available
         cachedSdkAvailable?.let { return it }
         
@@ -67,7 +67,7 @@ object CallsUtils {
      * 
      * @return true if calling is enabled and available, false otherwise
      */
-    fun isCallingEnabled(): Boolean {
+    public fun isCallingEnabled(): Boolean {
         // First check if SDK is available
         if (!isCallsSDKAvailable()) {
             return false

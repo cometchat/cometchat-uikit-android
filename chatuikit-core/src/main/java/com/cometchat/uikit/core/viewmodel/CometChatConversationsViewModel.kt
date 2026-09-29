@@ -1,7 +1,6 @@
 package com.cometchat.uikit.core.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,6 +37,7 @@ import com.cometchat.uikit.core.events.CometChatUserEvent
 import com.cometchat.uikit.core.events.MessageStatus
 import com.cometchat.uikit.core.state.DeleteState
 import com.cometchat.uikit.core.state.UIState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
  * @param refreshConversationListUseCase Use case for refreshing the list
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatConversationsViewModel(
+open public class CometChatConversationsViewModel(
     private val getConversationListUseCase: GetConversationListUseCase,
     private val deleteConversationUseCase: DeleteConversationUseCase,
     private val refreshConversationListUseCase: RefreshConversationListUseCase,
@@ -70,11 +70,11 @@ open class CometChatConversationsViewModel(
     
     // UI State
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
-    val uiState: StateFlow<UIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<UIState> = _uiState.asStateFlow()
     
     // Conversations list
     private val _conversations = MutableStateFlow<List<Conversation>>(emptyList())
-    val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
+    public val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
     
     // Fetching state - prevents concurrent fetches
     private var isFetching = false
@@ -90,7 +90,7 @@ open class CometChatConversationsViewModel(
     
     // Typing indicators
     private val _typingIndicators = MutableStateFlow<Map<String, TypingIndicator>>(emptyMap())
-    val typingIndicators: StateFlow<Map<String, TypingIndicator>> = _typingIndicators.asStateFlow()
+    public val typingIndicators: StateFlow<Map<String, TypingIndicator>> = _typingIndicators.asStateFlow()
     
     // Typing indicator debounce job
     private var typingDebounceJob: Job? = null
@@ -101,19 +101,19 @@ open class CometChatConversationsViewModel(
     
     // Selection state
     private val _selectedConversations = MutableStateFlow<Set<Conversation>>(emptySet())
-    val selectedConversations: StateFlow<Set<Conversation>> = _selectedConversations.asStateFlow()
+    public val selectedConversations: StateFlow<Set<Conversation>> = _selectedConversations.asStateFlow()
     
     // Delete state
     private val _deleteState = MutableStateFlow<DeleteState>(DeleteState.Idle)
-    val deleteState: StateFlow<DeleteState> = _deleteState.asStateFlow()
+    public val deleteState: StateFlow<DeleteState> = _deleteState.asStateFlow()
     
     // Sound playback event - emits true when a sound should be played
     private val _playSoundEvent = MutableSharedFlow<Boolean>()
-    val playSoundEvent: SharedFlow<Boolean> = _playSoundEvent.asSharedFlow()
+    public val playSoundEvent: SharedFlow<Boolean> = _playSoundEvent.asSharedFlow()
     
     // Scroll to top event - emits when list should scroll to top (new message received)
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
-    val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+    public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
     
     // Configuration
     private var conversationsRequest: ConversationsRequest? = null
@@ -144,7 +144,7 @@ open class CometChatConversationsViewModel(
      * Uses client's request builder if set, otherwise creates a default one.
      * Prevents concurrent fetches using isFetching flag.
      */
-    fun fetchConversations() {
+    public fun fetchConversations() {
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
         
@@ -207,7 +207,7 @@ open class CometChatConversationsViewModel(
      * This is a silent refresh - it does not show loading shimmer.
      * Uses client's request builder if set, otherwise creates a default one.
      */
-    fun refreshList() {
+    public fun refreshList() {
         // Reset pagination state for fresh fetch
         hasMoreData = true
         isFetching = false
@@ -270,7 +270,7 @@ open class CometChatConversationsViewModel(
      * Pins a conversation for the current user. On success the returned conversation (carrying
      * pinnedAt/pinnedBy) is moved to the top of the list, matching the backend ordering.
      */
-    fun pinConversation(
+    public fun pinConversation(
         conversation: Conversation,
         onSuccess: (() -> Unit)? = null,
         onError: ((com.cometchat.chat.exceptions.CometChatException?) -> Unit)? = null
@@ -297,7 +297,7 @@ open class CometChatConversationsViewModel(
      * the unpinned section — leaving it in place could strand an unpinned conversation inside the
      * pinned block at the head of the list.
      */
-    fun unpinConversation(conversation: Conversation, onSuccess: (() -> Unit)? = null) {
+    public fun unpinConversation(conversation: Conversation, onSuccess: (() -> Unit)? = null) {
         val with = conversationWith(conversation) ?: return
         com.cometchat.chat.core.CometChat.unpinConversation(
             with,
@@ -374,7 +374,7 @@ open class CometChatConversationsViewModel(
         }
     }
 
-    fun deleteConversation(conversation: Conversation) {
+    public fun deleteConversation(conversation: Conversation) {
         viewModelScope.launch {
             _deleteState.value = DeleteState.InProgress
             
@@ -408,7 +408,7 @@ open class CometChatConversationsViewModel(
      * Resets delete state to idle.
      * Call after handling delete success/failure.
      */
-    fun resetDeleteState() {
+    public fun resetDeleteState() {
         _deleteState.value = DeleteState.Idle
     }
     
@@ -420,7 +420,7 @@ open class CometChatConversationsViewModel(
      * @param message The message to check
      * @return true if unread count should be incremented
      */
-    open fun willUpdateIncrementUnreadCount(message: BaseMessage): Boolean {
+    open public fun willUpdateIncrementUnreadCount(message: BaseMessage): Boolean {
         if (message is CustomMessage) {
             val metadata = message.metadata
             if (metadata != null && metadata.has("incrementUnreadCount")) {
@@ -442,7 +442,7 @@ open class CometChatConversationsViewModel(
      * @param message The custom message to check
      * @return true if the conversation should be updated
      */
-    open fun shouldUpdateConversationForCustomMessage(message: CustomMessage): Boolean {
+    open public fun shouldUpdateConversationForCustomMessage(message: CustomMessage): Boolean {
         return willUpdateIncrementUnreadCount(message) || 
             CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCustomMessages()
     }
@@ -454,7 +454,7 @@ open class CometChatConversationsViewModel(
      * @param message The message to check
      * @return true if the message is a threaded reply
      */
-    open fun isThreadedMessage(message: BaseMessage): Boolean {
+    open public fun isThreadedMessage(message: BaseMessage): Boolean {
         return message.parentMessageId > 0
     }
     
@@ -484,7 +484,7 @@ open class CometChatConversationsViewModel(
     /**
      * Selects or deselects a conversation based on selection mode.
      */
-    fun selectConversation(conversation: Conversation, mode: UIKitConstants.SelectionMode) {
+    public fun selectConversation(conversation: Conversation, mode: UIKitConstants.SelectionMode) {
         when (mode) {
             UIKitConstants.SelectionMode.SINGLE -> {
                 _selectedConversations.value = setOf(conversation)
@@ -507,14 +507,14 @@ open class CometChatConversationsViewModel(
     /**
      * Clears all selected conversations.
      */
-    fun clearSelection() {
+    public fun clearSelection() {
         _selectedConversations.value = emptySet()
     }
     
     /**
      * Returns the list of currently selected conversations.
      */
-    fun getSelectedConversations(): List<Conversation> = 
+    public fun getSelectedConversations(): List<Conversation> =
         _selectedConversations.value.toList()
     
     /**
@@ -524,7 +524,7 @@ open class CometChatConversationsViewModel(
      *
      * @param builder The custom request builder provided by the client
      */
-    fun setConversationsRequestBuilder(
+    public fun setConversationsRequestBuilder(
         builder: ConversationsRequest.ConversationsRequestBuilder
     ) {
         conversationsRequestBuilder = builder
@@ -534,14 +534,14 @@ open class CometChatConversationsViewModel(
     /**
      * Sets whether to disable read receipts.
      */
-    fun setDisableReceipt(disable: Boolean) {
+    public fun setDisableReceipt(disable: Boolean) {
         disableReceipt = disable
     }
     
     /**
      * Sets whether to disable sound for incoming messages.
      */
-    fun setDisableSoundForMessages(disable: Boolean) {
+    public fun setDisableSoundForMessages(disable: Boolean) {
         disableSoundForMessages = disable
     }
     
@@ -551,7 +551,7 @@ open class CometChatConversationsViewModel(
      *
      * @param rawRes The raw resource ID of the custom sound.
      */
-    fun setCustomSoundForMessage(@RawRes rawRes: Int) {
+    public fun setCustomSoundForMessage(@RawRes rawRes: Int) {
         customSoundForMessage = rawRes
     }
     
@@ -561,7 +561,7 @@ open class CometChatConversationsViewModel(
      *
      * @param context The application context.
      */
-    fun initSoundManager(context: Context) {
+    public fun initSoundManager(context: Context) {
         if (soundManager == null) {
             soundManager = CometChatSoundManager(context.applicationContext)
         }
@@ -849,7 +849,6 @@ open class CometChatConversationsViewModel(
                         updateGroupInConversation(event.group)
                     }
                     is CometChatGroupEvent.MembersAdded -> {
-                        android.util.Log.d("ActionDebug", "=== ConvVM: MembersAdded event received === group=${event.group.guid}, actionsCount=${event.actions.size}")
                         updateGroupInConversation(event.group)
                         // Fetch the conversation from server to get the real last message
                         // (locally-constructed Actions have id=0 and message=null)
@@ -901,9 +900,9 @@ open class CometChatConversationsViewModel(
         
         // Message events (e.g., message sent from MessageComposer)
         messageEventsJob = viewModelScope.launch {
-            Log.d("CometChatConvListVM", "Started collecting messageEvents")
+            CometChatLogger.d("CometChatConvListVM", "Started collecting messageEvents")
             CometChatEvents.messageEvents.collect { event ->
-                Log.d("CometChatConvListVM", "Received messageEvent: ${event::class.simpleName}")
+                CometChatLogger.d("CometChatConvListVM", "Received messageEvent: ${event::class.simpleName}")
                 when (event) {
                     is CometChatMessageEvent.MessageSent -> {
                         if (event.status == MessageStatus.SUCCESS) {
@@ -919,7 +918,7 @@ open class CometChatConversationsViewModel(
                         checkAndUpdateConversation(event.message, false)
                     }
                     is CometChatMessageEvent.MessageRead -> {
-                        Log.d("CometChatConvListVM", "Received MessageRead event - conversationId=${event.message.conversationId}, messageId=${event.message.id}")
+                        CometChatLogger.d("CometChatConvListVM", "Received MessageRead event - conversationId=${event.message.conversationId}, messageId=${event.message.id}")
                         clearUnreadCountForMessage(event.message)
                     }
                     is CometChatMessageEvent.TextMessageReceived -> {
@@ -1122,11 +1121,11 @@ open class CometChatConversationsViewModel(
      * Updates unread count for a conversation.
      */
     private fun updateConversationUnreadCount(conversation: Conversation, count: Int) {
-        Log.d("CometChatConvListVM", "updateConversationUnreadCount() - conversationId=${conversation.conversationId}, newCount=$count")
+        CometChatLogger.d("CometChatConvListVM", "updateConversationUnreadCount() - conversationId=${conversation.conversationId}, newCount=$count")
         _conversations.value = _conversations.value.map {
             if (it.conversationId == conversation.conversationId) {
                 // Clone to create new reference for Compose recomposition
-                Log.d("CometChatConvListVM", "updateConversationUnreadCount() - Updated conversation ${it.conversationId} unreadCount from ${it.unreadMessageCount} to $count")
+                CometChatLogger.d("CometChatConvListVM", "updateConversationUnreadCount() - Updated conversation ${it.conversationId} unreadCount from ${it.unreadMessageCount} to $count")
                 it.clone().apply { unreadMessageCount = count }
             } else {
                 it
@@ -1304,7 +1303,7 @@ open class CometChatConversationsViewModel(
                     }
                 }
                 override fun onError(e: CometChatException?) {
-                    Log.e("CometChatConvListVM", "Failed to refresh conversation: ${e?.message}")
+                    CometChatLogger.e("CometChatConvListVM", "Failed to refresh conversation: ${e?.message}")
                 }
             })
         }
@@ -1321,7 +1320,7 @@ open class CometChatConversationsViewModel(
             val conversation = try {
                 CometChatHelper.getConversationFromMessage(action)
             } catch (e: Exception) {
-                Log.e("CometChatConvListVM", "Error getting conversation from action: ${e.message}")
+                CometChatLogger.e("CometChatConvListVM", "Error getting conversation from action: ${e.message}")
                 null
             } ?: return@launch
             
@@ -1346,14 +1345,14 @@ open class CometChatConversationsViewModel(
         viewModelScope.launch {
             // Null safety check - ensure call has required fields before calling SDK
             if (call.receiverType.isNullOrEmpty() || call.receiverUid.isNullOrEmpty()) {
-                Log.w("CometChatConvListVM", "Skipping updateConversationWithCall: call has null receiverType or receiverUid")
+                CometChatLogger.w("CometChatConvListVM", "Skipping updateConversationWithCall: call has null receiverType or receiverUid")
                 return@launch
             }
             
             val conversation = try {
                 CometChatHelper.getConversationFromMessage(call)
             } catch (e: Exception) {
-                Log.e("CometChatConvListVM", "Error getting conversation from call: ${e.message}")
+                CometChatLogger.e("CometChatConvListVM", "Error getting conversation from call: ${e.message}")
                 null
             } ?: return@launch
             
@@ -1514,14 +1513,14 @@ open class CometChatConversationsViewModel(
         val conversationId = message.conversationId
         val currentList = _conversations.value
         
-        Log.d("CometChatConvListVM", "clearUnreadCountForMessage() - conversationId=$conversationId, currentListSize=${currentList.size}")
+        CometChatLogger.d("CometChatConvListVM", "clearUnreadCountForMessage() - conversationId=$conversationId, currentListSize=${currentList.size}")
         
         val conversation = currentList.find { it.conversationId == conversationId }
         if (conversation != null) {
-            Log.d("CometChatConvListVM", "clearUnreadCountForMessage() - Found conversation, current unreadCount=${conversation.unreadMessageCount}, updating to 0")
+            CometChatLogger.d("CometChatConvListVM", "clearUnreadCountForMessage() - Found conversation, current unreadCount=${conversation.unreadMessageCount}, updating to 0")
             updateConversationUnreadCount(conversation, 0)
         } else {
-            Log.d("CometChatConvListVM", "clearUnreadCountForMessage() - Conversation NOT found in list. Available conversationIds: ${currentList.map { it.conversationId }}")
+            CometChatLogger.d("CometChatConvListVM", "clearUnreadCountForMessage() - Conversation NOT found in list. Available conversationIds: ${currentList.map { it.conversationId }}")
         }
     }
     

@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatCallLogsViewModel
  * @param repository Optional custom repository (uses default if not provided)
  * @param enableListeners Whether to enable CometChat listeners (default: true)
  */
-class CometChatCallLogsViewModelFactory(
+public class CometChatCallLogsViewModelFactory(
     private val repository: CallLogsRepository? = null,
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {

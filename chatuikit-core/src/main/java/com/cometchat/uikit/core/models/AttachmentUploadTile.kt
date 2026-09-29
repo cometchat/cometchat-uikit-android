@@ -10,7 +10,7 @@ import com.cometchat.chat.models.Attachment
  * the **file** picker is `file` regardless of MIME, gallery/camera picks are `image`/`video`, and
  * the audio picker yields `audio`.
  */
-fun defaultAttachmentCategory(mimeType: String): String {
+public fun defaultAttachmentCategory(mimeType: String): String {
     val mime = mimeType.lowercase()
     return when {
         mime.startsWith("image/") -> CometChatConstants.MESSAGE_TYPE_IMAGE
@@ -31,14 +31,14 @@ fun defaultAttachmentCategory(mimeType: String): String {
  * - [REJECTED]  not retryable (`onFileError`, e.g. size/MIME reject) — show Remove only.
  * - [CANCELLED] cancelled by the user.
  */
-enum class AttachmentUploadStatus { UPLOADING, DONE, FAILED, REJECTED, CANCELLED }
+public enum class AttachmentUploadStatus { UPLOADING, DONE, FAILED, REJECTED, CANCELLED }
 
 /**
  * Where a staged attachment originated. This decides how an `audio/…` file is treated at send
  * time: audio chosen through the **picker** is sent as a `file` (renders in the files section),
  * while audio captured by the **recorder** is sent as media type `audio` (inline player).
  */
-enum class AttachmentSource { PICKER, RECORDER }
+public enum class AttachmentSource { PICKER, RECORDER }
 
 /**
  * One staged item in the composer attachment tray, keyed by the SDK-assigned [fileId].
@@ -68,7 +68,7 @@ enum class AttachmentSource { PICKER, RECORDER }
  * @property attachment The uploaded [Attachment], set on `onFileUploaded` — what gets sent.
  * @property error     The exception held on a `FAILED`/`REJECTED` tile, for an actionable reason.
  */
-data class AttachmentUploadTile(
+public data class AttachmentUploadTile(
     val fileId: String,
     val name: String,
     val size: Long,
@@ -102,7 +102,7 @@ data class AttachmentUploadTile(
  * @property localUri Local preview uri/path; defaults to [file]'s path when not supplied.
  * @property durationMillis Media duration in ms for video/audio, if known.
  */
-data class StagedAttachmentInput(
+public data class StagedAttachmentInput(
     val file: java.io.File,
     val name: String,
     val size: Long,

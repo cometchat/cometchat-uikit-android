@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.MessageComposerRepository
  *
  * @param repository The repository to edit messages through
  */
-open class EditMessageUseCase(
+open public class EditMessageUseCase(
     private val repository: MessageComposerRepository
 ) {
     /**
@@ -33,7 +33,7 @@ open class EditMessageUseCase(
      * @return Result containing the edited BaseMessage with updated metadata on success,
      *         or error on failure
      */
-    open suspend operator fun invoke(message: BaseMessage): Result<BaseMessage> {
+    open suspend operator public fun invoke(message: BaseMessage): Result<BaseMessage> {
         return repository.editMessage(message)
     }
 }

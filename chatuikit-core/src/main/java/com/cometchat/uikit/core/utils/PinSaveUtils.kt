@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core.utils
 
-import android.util.Log
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
@@ -26,7 +25,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  *    error text ("limit of N"), then the app settings the SDK already caches — and only then gives
  *    up on the number (the kit still shows a limit-specific message).
  */
-object PinSaveUtils {
+public object PinSaveUtils {
 
     private const val TAG = "PinSaveUtils"
 
@@ -41,7 +40,7 @@ object PinSaveUtils {
      * @param existing the copy currently held by the caller (may be `null` / a different message)
      * @param incoming the replacement payload
      */
-    fun carryPinSaveForward(existing: BaseMessage?, incoming: BaseMessage): BaseMessage {
+    public fun carryPinSaveForward(existing: BaseMessage?, incoming: BaseMessage): BaseMessage {
         if (existing == null || existing.id != incoming.id) return incoming
         val carryPin = existing.isPinned && !incoming.isPinned
         val carrySave = existing.isSaved && !incoming.isSaved
@@ -59,18 +58,18 @@ object PinSaveUtils {
     }
 
     /** Which cap a limit error refers to. */
-    enum class LimitScope { PINNED_MESSAGES, SAVED_MESSAGES }
+    public enum class LimitScope { PINNED_MESSAGES, SAVED_MESSAGES }
 
     /** A classified pin/save failure, ready to be turned into a toast by the kit. */
-    sealed class Failure {
+    public sealed class Failure {
         /** The cap was hit. [limit] is the cap when it could be resolved, else `null`. */
-        data class LimitReached(val scope: LimitScope, val limit: Int?) : Failure()
+        public data class LimitReached(val scope: LimitScope, val limit: Int?) : Failure()
 
         /** RBAC/SBAC denial — the shared "you don't have permission" copy. */
-        object PermissionDenied : Failure()
+        public object PermissionDenied : Failure()
 
         /** Anything else; [code] is logged so QA builds reveal the real server code. */
-        data class Other(val code: String?) : Failure()
+        public data class Other(val code: String?) : Failure()
     }
 
     /**
@@ -79,7 +78,7 @@ object PinSaveUtils {
      * The limit branches never require `errorParams["limit"]`: the cap is read from the error when
      * present, otherwise from the SDK's cached app settings, otherwise reported as `null`.
      */
-    fun classifyFailure(e: CometChatException?): Failure = when (e?.code) {
+    public fun classifyFailure(e: CometChatException?): Failure = when (e?.code) {
         UIKitConstants.PinSaveErrorCodes.PINNED_MESSAGES_LIMIT_EXCEEDED ->
             Failure.LimitReached(
                 LimitScope.PINNED_MESSAGES,
@@ -95,13 +94,16 @@ object PinSaveUtils {
         UIKitConstants.PinSaveErrorCodes.PERMISSION_DENIED -> Failure.PermissionDenied
 
         else -> {
-            Log.w(TAG, "pin/save action failed: code=${e?.code} message=${e?.message} details=${e?.details}")
+            CometChatLogger.w(
+                TAG,
+                "pin/save action failed: code=${e?.code} message=${e?.message} details=${e?.details}"
+            )
             Failure.Other(e?.code)
         }
     }
 
     /** The structured cap in `errorParams`, when the server included one. */
-    fun limitFromError(e: CometChatException?): Int? =
+    public fun limitFromError(e: CometChatException?): Int? =
         (e?.errorParams?.get(UIKitConstants.PinSaveErrorCodes.PARAM_LIMIT) as? Number)
             ?.toInt()
             ?.takeIf { it > 0 }
@@ -112,7 +114,7 @@ object PinSaveUtils {
      * accepted when it looks like a cap (1..[MAX_PLAUSIBLE_LIMIT]), so a message id or
      * timestamp at the end of a sentence is never repeated back as the limit.
      */
-    fun limitFromErrorText(e: CometChatException?): Int? {
+    public fun limitFromErrorText(e: CometChatException?): Int? {
         val texts = listOfNotNull(e?.message, e?.details).filter { it.isNotBlank() }
         for (text in texts) {
             PHRASED_LIMIT.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let { return it }
@@ -129,10 +131,10 @@ object PinSaveUtils {
     private const val MAX_PLAUSIBLE_LIMIT = 1000
 
     /** Max pinned messages per conversation from app settings, or `null` when not served. */
-    fun pinnedMessagesLimit(): Int? =
+    public fun pinnedMessagesLimit(): Int? =
         runCatching { CometChat.getPinMessageLimit() }.getOrNull()?.takeIf { it > 0 }
 
     /** Max saved messages per user from app settings, or `null` when not served. */
-    fun savedMessagesLimit(): Int? =
+    public fun savedMessagesLimit(): Int? =
         runCatching { CometChat.getSaveMessageLimit() }.getOrNull()?.takeIf { it > 0 }
 }

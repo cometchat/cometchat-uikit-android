@@ -9,6 +9,7 @@ import androidx.annotation.StyleRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.cometchat.calls.model.CallLog
 import com.cometchat.uikit.core.utils.CallLogsUtils
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatCallLogsListItemBinding
 import com.cometchat.uikit.kotlin.presentation.calllogs.style.CometChatCallLogsListItemStyle
@@ -24,13 +25,13 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This component can be used standalone or within a RecyclerView for displaying call logs lists.
  * It supports full customization through styles and custom view slots.
  */
-class CometChatCallLogsListItem @JvmOverloads constructor(
+public class CometChatCallLogsListItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatCallLogsListItem::class.java.simpleName
     }
 
@@ -158,7 +159,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Sets the call log to display.
      */
-    fun setCallLog(callLog: CallLog) {
+    public fun setCallLog(callLog: CallLog) {
         this.callLog = callLog
         bindCallLog()
     }
@@ -166,21 +167,21 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (CallLog) -> Unit) {
+    public fun setOnItemClick(callback: (CallLog) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (CallLog) -> Unit) {
+    public fun setOnItemLongClick(callback: (CallLog) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets the call type icon click callback (for initiating calls).
      */
-    fun setOnCallTypeIconClick(callback: (CallLog) -> Unit) {
+    public fun setOnCallTypeIconClick(callback: (CallLog) -> Unit) {
         onCallTypeIconClick = callback
     }
 
@@ -188,7 +189,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      * Sets custom leading view (replaces avatar section).
      * Pass null to restore the default leading view.
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         customLeadingView = view
         if (view != null) {
             binding.leadingView.removeAllViews()
@@ -202,7 +203,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      * Sets custom title view.
      * Pass null to restore the default title view.
      */
-    fun setTitleView(view: View?) {
+    public fun setTitleView(view: View?) {
         customTitleView = view
         if (view != null) {
             binding.titleView.removeAllViews()
@@ -216,7 +217,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      * Sets custom subtitle view.
      * Pass null to restore the default subtitle view.
      */
-    fun setSubtitleView(view: View?) {
+    public fun setSubtitleView(view: View?) {
         customSubtitleView = view
         if (view != null) {
             binding.subtitleView.removeAllViews()
@@ -230,7 +231,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      * Sets custom trailing view (replaces call type icon).
      * Pass null to restore the default trailing view.
      */
-    fun setTrailingView(view: View?) {
+    public fun setTrailingView(view: View?) {
         customTrailingView = view
         if (view != null) {
             binding.trailingView.removeAllViews()
@@ -243,7 +244,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide item separator.
      */
-    fun setHideSeparator(hide: Boolean) {
+    public fun setHideSeparator(hide: Boolean) {
         hideSeparator = hide
         binding.separator.visibility = if (hide) View.GONE else View.VISIBLE
     }
@@ -251,8 +252,8 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatCallLogsListItemStyle) {
-        android.util.Log.d(TAG, "setStyle called with: incomingCallIcon=${style.incomingCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, missedCallIcon=${style.missedCallIcon}, audioCallIcon=${style.audioCallIcon}, videoCallIcon=${style.videoCallIcon}")
+    public fun setStyle(style: CometChatCallLogsListItemStyle) {
+        CometChatLogger.d(TAG, "setStyle called with: incomingCallIcon=${style.incomingCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, missedCallIcon=${style.missedCallIcon}, audioCallIcon=${style.audioCallIcon}, videoCallIcon=${style.videoCallIcon}")
         this.style = style
         applyStyle()
         callLog?.let { bindCallLog() }
@@ -261,7 +262,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatCallLogs
@@ -276,7 +277,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      *
      * @param formatter The DateTimeFormatterCallback for custom formatting, or null to use default.
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         dateTimeFormatter = formatter
         binding.dateView.setDateTimeFormatterCallback(formatter)
         callLog?.let { bindSubtitle() }
@@ -287,42 +288,42 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
      *
      * @return The current DateTimeFormatterCallback, or null if using default.
      */
-    fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
+    public fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
 
     /**
      * Gets the current call log.
      */
-    fun getCallLog(): CallLog? = callLog
+    public fun getCallLog(): CallLog? = callLog
 
     /**
      * Gets the leading view container for custom view placement.
      */
-    fun getLeadingViewContainer(): ViewGroup = binding.leadingView
+    public fun getLeadingViewContainer(): ViewGroup = binding.leadingView
 
     /**
      * Gets the title view container for custom view placement.
      */
-    fun getTitleViewContainer(): ViewGroup = binding.titleView
+    public fun getTitleViewContainer(): ViewGroup = binding.titleView
 
     /**
      * Gets the subtitle view container for custom view placement.
      */
-    fun getSubtitleViewContainer(): ViewGroup = binding.subtitleView
+    public fun getSubtitleViewContainer(): ViewGroup = binding.subtitleView
 
     /**
      * Gets the trailing view container for custom view placement.
      */
-    fun getTrailingViewContainer(): ViewGroup = binding.trailingView
+    public fun getTrailingViewContainer(): ViewGroup = binding.trailingView
 
     /**
      * Gets the parent layout for full item replacement.
      */
-    fun getParentLayout(): ViewGroup = binding.parentLayout
+    public fun getParentLayout(): ViewGroup = binding.parentLayout
 
     /**
      * Resets the leading view to default.
      */
-    fun resetLeadingView() {
+    public fun resetLeadingView() {
         customLeadingView = null
         binding.leadingView.removeAllViews()
         binding.leadingView.addView(binding.avatar)
@@ -332,7 +333,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Resets the title view to default.
      */
-    fun resetTitleView() {
+    public fun resetTitleView() {
         customTitleView = null
         binding.titleView.removeAllViews()
         binding.titleView.addView(binding.tvTitle)
@@ -342,7 +343,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Resets the subtitle view to default.
      */
-    fun resetSubtitleView() {
+    public fun resetSubtitleView() {
         customSubtitleView = null
         binding.subtitleView.removeAllViews()
         binding.subtitleView.addView(binding.defaultSubtitleLayout)
@@ -352,7 +353,7 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
     /**
      * Resets the trailing view to default.
      */
-    fun resetTrailingView() {
+    public fun resetTrailingView() {
         customTrailingView = null
         binding.trailingView.removeAllViews()
         binding.trailingView.addView(binding.ivCallTypeIcon)
@@ -406,53 +407,53 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
             val isOutgoing = CallLogsUtils.isOutgoingCall(log)
             val isIncoming = CallLogsUtils.isIncomingCall(log)
 
-            android.util.Log.d(TAG, "bindSubtitle: isMissed=$isMissed, isOutgoing=$isOutgoing, isIncoming=$isIncoming")
-            android.util.Log.d(TAG, "bindSubtitle: missedCallIcon=${style.missedCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, incomingCallIcon=${style.incomingCallIcon}")
+            CometChatLogger.d(TAG, "bindSubtitle: isMissed=$isMissed, isOutgoing=$isOutgoing, isIncoming=$isIncoming")
+            CometChatLogger.d(TAG, "bindSubtitle: missedCallIcon=${style.missedCallIcon}, outgoingCallIcon=${style.outgoingCallIcon}, incomingCallIcon=${style.incomingCallIcon}")
 
             // Set direction icon and tint
             binding.ivDirectionIcon.visibility = View.VISIBLE
             when {
                 isMissed -> {
-                    android.util.Log.d(TAG, "bindSubtitle: Setting MISSED call icon")
+                    CometChatLogger.d(TAG, "bindSubtitle: Setting MISSED call icon")
                     if (style.missedCallIcon != 0) {
                         binding.ivDirectionIcon.setImageDrawable(
                             androidx.core.content.ContextCompat.getDrawable(context, style.missedCallIcon)
                         )
                     } else {
-                        android.util.Log.w(TAG, "bindSubtitle: missedCallIcon is 0!")
+                        CometChatLogger.w(TAG, "bindSubtitle: missedCallIcon is 0!")
                     }
                     if (style.missedCallIconTint != 0) {
                         binding.ivDirectionIcon.setColorFilter(style.missedCallIconTint)
                     }
                 }
                 isOutgoing -> {
-                    android.util.Log.d(TAG, "bindSubtitle: Setting OUTGOING call icon")
+                    CometChatLogger.d(TAG, "bindSubtitle: Setting OUTGOING call icon")
                     if (style.outgoingCallIcon != 0) {
                         binding.ivDirectionIcon.setImageDrawable(
                             androidx.core.content.ContextCompat.getDrawable(context, style.outgoingCallIcon)
                         )
                     } else {
-                        android.util.Log.w(TAG, "bindSubtitle: outgoingCallIcon is 0!")
+                        CometChatLogger.w(TAG, "bindSubtitle: outgoingCallIcon is 0!")
                     }
                     if (style.outgoingCallIconTint != 0) {
                         binding.ivDirectionIcon.setColorFilter(style.outgoingCallIconTint)
                     }
                 }
                 isIncoming -> {
-                    android.util.Log.d(TAG, "bindSubtitle: Setting INCOMING call icon")
+                    CometChatLogger.d(TAG, "bindSubtitle: Setting INCOMING call icon")
                     if (style.incomingCallIcon != 0) {
                         binding.ivDirectionIcon.setImageDrawable(
                             androidx.core.content.ContextCompat.getDrawable(context, style.incomingCallIcon)
                         )
                     } else {
-                        android.util.Log.w(TAG, "bindSubtitle: incomingCallIcon is 0!")
+                        CometChatLogger.w(TAG, "bindSubtitle: incomingCallIcon is 0!")
                     }
                     if (style.incomingCallIconTint != 0) {
                         binding.ivDirectionIcon.setColorFilter(style.incomingCallIconTint)
                     }
                 }
                 else -> {
-                    android.util.Log.d(TAG, "bindSubtitle: No call direction detected, hiding icon")
+                    CometChatLogger.d(TAG, "bindSubtitle: No call direction detected, hiding icon")
                     binding.ivDirectionIcon.visibility = View.GONE
                 }
             }
@@ -475,32 +476,32 @@ class CometChatCallLogsListItem @JvmOverloads constructor(
         callLog?.let { log ->
             val isVideoCall = CallLogsUtils.isVideoCall(log)
 
-            android.util.Log.d(TAG, "bindTrailing: isVideoCall=$isVideoCall")
-            android.util.Log.d(TAG, "bindTrailing: videoCallIcon=${style.videoCallIcon}, audioCallIcon=${style.audioCallIcon}")
+            CometChatLogger.d(TAG, "bindTrailing: isVideoCall=$isVideoCall")
+            CometChatLogger.d(TAG, "bindTrailing: videoCallIcon=${style.videoCallIcon}, audioCallIcon=${style.audioCallIcon}")
 
             // Set call type icon
             binding.ivCallTypeIcon.visibility = View.VISIBLE
             if (isVideoCall) {
-                android.util.Log.d(TAG, "bindTrailing: Setting VIDEO call icon")
+                CometChatLogger.d(TAG, "bindTrailing: Setting VIDEO call icon")
                 if (style.videoCallIcon != 0) {
                     binding.ivCallTypeIcon.setImageDrawable(
                         androidx.core.content.ContextCompat.getDrawable(context, style.videoCallIcon)
                     )
                 } else {
-                    android.util.Log.w(TAG, "bindTrailing: videoCallIcon is 0!")
+                    CometChatLogger.w(TAG, "bindTrailing: videoCallIcon is 0!")
                 }
                 if (style.videoCallIconTint != 0) {
                     binding.ivCallTypeIcon.setColorFilter(style.videoCallIconTint)
                 }
                 binding.ivCallTypeIcon.contentDescription = context.getString(R.string.cometchat_video_call)
             } else {
-                android.util.Log.d(TAG, "bindTrailing: Setting AUDIO call icon")
+                CometChatLogger.d(TAG, "bindTrailing: Setting AUDIO call icon")
                 if (style.audioCallIcon != 0) {
                     binding.ivCallTypeIcon.setImageDrawable(
                         androidx.core.content.ContextCompat.getDrawable(context, style.audioCallIcon)
                     )
                 } else {
-                    android.util.Log.w(TAG, "bindTrailing: audioCallIcon is 0!")
+                    CometChatLogger.w(TAG, "bindTrailing: audioCallIcon is 0!")
                 }
                 if (style.audioCallIconTint != 0) {
                     binding.ivCallTypeIcon.setColorFilter(style.audioCallIconTint)

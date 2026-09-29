@@ -54,7 +54,7 @@ package com.cometchat.uikit.core.viewmodel
  *
  * @see CometChatInlineAudioRecorderViewModel
  */
-enum class InlineAudioRecorderStatus {
+public enum class InlineAudioRecorderStatus {
     /**
      * Initial state - not recording, recorder not visible.
      * Composer shows normal input in this state.

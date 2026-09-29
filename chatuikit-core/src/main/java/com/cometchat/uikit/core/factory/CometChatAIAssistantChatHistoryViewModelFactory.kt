@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatAIAssistantChatHistoryViewMod
  * @param enableListeners Whether to enable CometChat listeners. Set to false for previews/testing.
  *                        Defaults to true for production use.
  */
-class CometChatAIAssistantChatHistoryViewModelFactory(
+public class CometChatAIAssistantChatHistoryViewModelFactory(
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {
 

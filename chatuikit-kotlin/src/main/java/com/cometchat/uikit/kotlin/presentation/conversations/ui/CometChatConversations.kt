@@ -76,13 +76,13 @@ import java.util.HashMap
  * }
  * ```
  */
-class CometChatConversations @JvmOverloads constructor(
+public class CometChatConversations @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatConversationsStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatConversations::class.java.simpleName
     }
 
@@ -805,7 +805,7 @@ class CometChatConversations @JvmOverloads constructor(
     }
 
     /** Controls whether the pin/unpin conversation option appears in the long-press menu. */
-    fun setPinConversationOptionVisibility(visibility: Int) {
+    public fun setPinConversationOptionVisibility(visibility: Int) {
         pinConversationOptionVisibility = visibility
     }
 
@@ -905,56 +905,56 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (Conversation) -> Unit) {
+    public fun setOnItemClick(callback: (Conversation) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (Conversation) -> Unit) {
+    public fun setOnItemLongClick(callback: (Conversation) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets the error callback.
      */
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
     /**
      * Sets the load callback.
      */
-    fun setOnLoad(callback: (List<Conversation>) -> Unit) {
+    public fun setOnLoad(callback: (List<Conversation>) -> Unit) {
         onLoad = callback
     }
 
     /**
      * Sets the empty callback.
      */
-    fun setOnEmpty(callback: () -> Unit) {
+    public fun setOnEmpty(callback: () -> Unit) {
         onEmpty = callback
     }
 
     /**
      * Sets the back press callback.
      */
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
     /**
      * Sets the search click callback.
      */
-    fun setOnSearchClick(callback: () -> Unit) {
+    public fun setOnSearchClick(callback: () -> Unit) {
         onSearchClick = callback
     }
 
     /**
      * Sets the selection callback.
      */
-    fun setOnSelection(callback: (List<Conversation>) -> Unit) {
+    public fun setOnSelection(callback: (List<Conversation>) -> Unit) {
         onSelection = callback
     }
 
@@ -989,7 +989,7 @@ class CometChatConversations @JvmOverloads constructor(
      * conversationList.setViewModel(viewModel)
      * ```
      */
-    fun setViewModel(viewModel: CometChatConversationsViewModel?) {
+    public fun setViewModel(viewModel: CometChatConversationsViewModel?) {
         val previousViewModel = this.viewModel
         this.viewModel = viewModel
         this.isExternalViewModel = viewModel != null
@@ -1014,7 +1014,7 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @return The ViewModel instance, or null if not yet initialized
      */
-    fun getViewModel(): CometChatConversationsViewModel? = viewModel
+    public fun getViewModel(): CometChatConversationsViewModel? = viewModel
 
     /**
      * Sets the selection mode.
@@ -1026,7 +1026,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * Matches the Java chatuikit implementation behavior.
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         // Clear existing selections (matches Java implementation)
         selectedConversations.clear()
         conversationsAdapter.selectConversation(selectedConversations)
@@ -1054,7 +1054,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Selects a conversation based on the selection mode.
      */
-    fun selectConversation(conversation: Conversation, mode: UIKitConstants.SelectionMode?) {
+    public fun selectConversation(conversation: Conversation, mode: UIKitConstants.SelectionMode?) {
         if (mode == null) return
 
         selectionMode = mode
@@ -1090,14 +1090,14 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the list of selected conversations.
      */
-    fun getSelectedConversations(): List<Conversation> {
+    public fun getSelectedConversations(): List<Conversation> {
         return selectedConversations.keys.toList()
     }
 
     /**
      * Clears the current selection.
      */
-    fun clearSelection() {
+    public fun clearSelection() {
         selectedConversations.clear()
         binding.toolbar.setSelectionMode(false)
         binding.toolbar.setSelectionCount(0)
@@ -1107,7 +1107,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom item view listener.
      */
-    fun setItemView(listener: ConversationsViewHolderListener?) {
+    public fun setItemView(listener: ConversationsViewHolderListener?) {
         itemViewListener = listener
         conversationsAdapter.setItemView(listener)
     }
@@ -1115,7 +1115,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom leading view listener.
      */
-    fun setLeadingView(listener: ConversationsViewHolderListener?) {
+    public fun setLeadingView(listener: ConversationsViewHolderListener?) {
         leadingViewListener = listener
         conversationsAdapter.setLeadingView(listener)
     }
@@ -1123,7 +1123,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom title view listener.
      */
-    fun setTitleView(listener: ConversationsViewHolderListener?) {
+    public fun setTitleView(listener: ConversationsViewHolderListener?) {
         titleViewListener = listener
         conversationsAdapter.setTitleView(listener)
     }
@@ -1131,7 +1131,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom subtitle view listener.
      */
-    fun setSubtitleView(listener: ConversationsViewHolderListener?) {
+    public fun setSubtitleView(listener: ConversationsViewHolderListener?) {
         subtitleViewListener = listener
         conversationsAdapter.setSubtitleView(listener)
     }
@@ -1139,7 +1139,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom trailing view listener.
      */
-    fun setTrailingView(listener: ConversationsViewHolderListener?) {
+    public fun setTrailingView(listener: ConversationsViewHolderListener?) {
         trailingViewListener = listener
         conversationsAdapter.setTrailingView(listener)
     }
@@ -1147,42 +1147,42 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets custom empty view.
      */
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         customEmptyView = view
     }
 
     /**
      * Sets custom error view.
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         customErrorView = view
     }
 
     /**
      * Sets custom loading view.
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         customLoadingView = view
     }
 
     /**
      * Sets menu options callback.
      */
-    fun setOptions(callback: (Context, Conversation) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun setOptions(callback: (Context, Conversation) -> List<CometChatPopupMenu.MenuItem>) {
         options = callback
     }
 
     /**
      * Sets additional menu options callback.
      */
-    fun setAddOptions(callback: (Context, Conversation) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun setAddOptions(callback: (Context, Conversation) -> List<CometChatPopupMenu.MenuItem>) {
         addOptions = callback
     }
 
     /**
      * Sets text formatters.
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         textFormatters.clear()
         textFormatters.addAll(formatters)
         processFormatters()
@@ -1194,7 +1194,7 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @param style The CometChatMentionStyle to apply
      */
-    fun setMentionsStyle(style: CometChatMentionStyle) {
+    public fun setMentionsStyle(style: CometChatMentionStyle) {
         cometchatMentionsFormatter?.setConversationsMentionStyle(style)
     }
 
@@ -1204,7 +1204,7 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @param styleRes The style resource ID
      */
-    fun setMentionsStyle(@StyleRes styleRes: Int) {
+    public fun setMentionsStyle(@StyleRes styleRes: Int) {
         style = style.copy(mentionsStyleResId = styleRes)
         applyMentionsStyle()
     }
@@ -1212,21 +1212,21 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Disables sound for messages.
      */
-    fun setDisableSoundForMessages(disable: Boolean) {
+    public fun setDisableSoundForMessages(disable: Boolean) {
         disableSoundForMessages = disable
     }
 
     /**
      * Sets custom sound for messages.
      */
-    fun setCustomSoundForMessages(@RawRes soundRes: Int) {
+    public fun setCustomSoundForMessages(@RawRes soundRes: Int) {
         customSoundForMessage = soundRes
     }
 
     /**
      * Sets toolbar visibility.
      */
-    fun setToolbarVisibility(visibility: Int) {
+    public fun setToolbarVisibility(visibility: Int) {
         toolbarVisibility = visibility
         binding.toolbar.visibility = visibility
     }
@@ -1234,7 +1234,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets back icon visibility.
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconVisibility = visibility
         binding.toolbar.setBackIconVisibility(visibility)
     }
@@ -1242,7 +1242,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets search box visibility.
      */
-    fun setSearchBoxVisibility(visibility: Int) {
+    public fun setSearchBoxVisibility(visibility: Int) {
         searchBoxVisibility = visibility
         binding.searchBoxLayout.visibility = visibility
     }
@@ -1250,14 +1250,14 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets delete conversation option visibility.
      */
-    fun setDeleteConversationOptionVisibility(visibility: Int) {
+    public fun setDeleteConversationOptionVisibility(visibility: Int) {
         deleteConversationOptionVisibility = visibility
     }
 
     /**
      * Sets user status visibility.
      */
-    fun setUserStatusVisibility(visibility: Int) {
+    public fun setUserStatusVisibility(visibility: Int) {
         userStatusVisibility = visibility
         conversationsAdapter.setHideUserStatus(visibility != VISIBLE)
     }
@@ -1265,7 +1265,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets group type visibility.
      */
-    fun setGroupTypeVisibility(visibility: Int) {
+    public fun setGroupTypeVisibility(visibility: Int) {
         groupTypeVisibility = visibility
         conversationsAdapter.setHideGroupType(visibility != VISIBLE)
     }
@@ -1273,7 +1273,7 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets receipts visibility.
      */
-    fun setReceiptsVisibility(visibility: Int) {
+    public fun setReceiptsVisibility(visibility: Int) {
         receiptsVisibility = visibility
         conversationsAdapter.setHideReceipts(visibility != VISIBLE)
     }
@@ -1282,7 +1282,7 @@ class CometChatConversations @JvmOverloads constructor(
      * Sets separator visibility.
      * When visibility is View.GONE, the separator between list items will be hidden.
      */
-    fun setSeparatorVisibility(visibility: Int) {
+    public fun setSeparatorVisibility(visibility: Int) {
         separatorVisibility = visibility
         conversationsAdapter.setHideSeparator(visibility != VISIBLE)
     }
@@ -1291,21 +1291,21 @@ class CometChatConversations @JvmOverloads constructor(
      * Sets toolbar separator visibility.
      * When show is false, the separator line at the bottom of the toolbar will be hidden.
      */
-    fun setToolbarSeparatorVisibility(show: Boolean) {
+    public fun setToolbarSeparatorVisibility(show: Boolean) {
         binding.toolbar.setShowSeparator(show)
     }
 
     /**
      * Sets toolbar separator color.
      */
-    fun setToolbarSeparatorColor(@ColorInt color: Int) {
+    public fun setToolbarSeparatorColor(@ColorInt color: Int) {
         binding.toolbar.setSeparatorColor(color)
     }
 
     /**
      * Sets error state visibility.
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         errorStateVisibility = visibility
     }
 
@@ -1314,12 +1314,12 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @return The error state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Sets loading state visibility.
      */
-    fun setLoadingStateVisibility(visibility: Int) {
+    public fun setLoadingStateVisibility(visibility: Int) {
         loadingStateVisibility = visibility
     }
 
@@ -1328,12 +1328,12 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @return The loading state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getLoadingStateVisibility(): Int = loadingStateVisibility
+    public fun getLoadingStateVisibility(): Int = loadingStateVisibility
 
     /**
      * Sets empty state visibility.
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         emptyStateVisibility = visibility
     }
 
@@ -1342,7 +1342,7 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * @return The empty state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getEmptyStateVisibility(): Int = emptyStateVisibility
+    public fun getEmptyStateVisibility(): Int = emptyStateVisibility
 
     /**
      * Hides or shows the loading state.
@@ -1350,7 +1350,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param hide true to hide the loading state, false to show it
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         loadingStateVisibility = if (hide) GONE else VISIBLE
     }
 
@@ -1360,7 +1360,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param hide true to hide the empty state, false to show it
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         emptyStateVisibility = if (hide) GONE else VISIBLE
     }
 
@@ -1370,21 +1370,21 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param hide true to hide the error state, false to show it
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         errorStateVisibility = if (hide) GONE else VISIBLE
     }
 
     /**
      * Sets the title text.
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.toolbar.setTitle(title)
     }
 
     /**
      * Sets overflow menu view.
      */
-    fun setOverflowMenu(view: View?) {
+    public fun setOverflowMenu(view: View?) {
         binding.toolbar.clearActionViews()
         if (view != null) {
             binding.toolbar.addActionView(view)
@@ -1396,7 +1396,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param style The CometChatConversationsStyle to apply
      */
-    fun setStyle(style: CometChatConversationsStyle) {
+    public fun setStyle(style: CometChatConversationsStyle) {
         this.style = style
         applyStyle()
     }
@@ -1406,7 +1406,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param styleRes The style resource ID
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             currentStyleResId = styleRes
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatConversations)
@@ -1421,12 +1421,12 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @return The current CometChatConversationsStyle
      */
-    fun getStyle(): CometChatConversationsStyle = style
+    public fun getStyle(): CometChatConversationsStyle = style
 
     /**
      * Sets the toolbar style programmatically.
      */
-    fun setToolbarStyle(style: CometChatToolbarStyle) {
+    public fun setToolbarStyle(style: CometChatToolbarStyle) {
         binding.toolbar.setStyle(style)
     }
 
@@ -1435,12 +1435,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the title text color.
      */
-    fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getTitleTextColor(): Int = style.titleTextColor
 
     /**
      * Sets the title text color.
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         binding.toolbar.setTitleTextColor(color)
     }
@@ -1448,12 +1448,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the title text appearance.
      */
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
 
     /**
      * Sets the title text appearance.
      */
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) {
             binding.toolbar.setTitleTextAppearance(appearance)
@@ -1463,12 +1463,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the back icon.
      */
-    fun getBackIcon(): Drawable? = style.backIcon
+    public fun getBackIcon(): Drawable? = style.backIcon
 
     /**
      * Sets the back icon.
      */
-    fun setBackIcon(icon: Drawable?) {
+    public fun setBackIcon(icon: Drawable?) {
         style = style.copy(backIcon = icon)
         icon?.let { binding.toolbar.setBackIcon(it) }
     }
@@ -1476,12 +1476,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the back icon tint.
      */
-    fun getBackIconTint(): Int = style.backIconTint
+    public fun getBackIconTint(): Int = style.backIconTint
 
     /**
      * Sets the back icon tint.
      */
-    fun setBackIconTint(@ColorInt tint: Int) {
+    public fun setBackIconTint(@ColorInt tint: Int) {
         style = style.copy(backIconTint = tint)
         binding.toolbar.setBackIconTint(tint)
     }
@@ -1489,12 +1489,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the discard selection icon.
      */
-    fun getDiscardSelectionIcon(): Drawable? = style.discardSelectionIcon
+    public fun getDiscardSelectionIcon(): Drawable? = style.discardSelectionIcon
 
     /**
      * Sets the discard selection icon.
      */
-    fun setDiscardSelectionIcon(icon: Drawable?) {
+    public fun setDiscardSelectionIcon(icon: Drawable?) {
         style = style.copy(discardSelectionIcon = icon)
         icon?.let { binding.toolbar.setDiscardIcon(it) }
     }
@@ -1502,12 +1502,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the discard selection icon tint.
      */
-    fun getDiscardSelectionIconTint(): Int = style.discardSelectionIconTint
+    public fun getDiscardSelectionIconTint(): Int = style.discardSelectionIconTint
 
     /**
      * Sets the discard selection icon tint.
      */
-    fun setDiscardSelectionIconTint(@ColorInt tint: Int) {
+    public fun setDiscardSelectionIconTint(@ColorInt tint: Int) {
         style = style.copy(discardSelectionIconTint = tint)
         binding.toolbar.setDiscardIconTint(tint)
     }
@@ -1515,12 +1515,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the submit selection icon.
      */
-    fun getSubmitSelectionIcon(): Drawable? = style.submitSelectionIcon
+    public fun getSubmitSelectionIcon(): Drawable? = style.submitSelectionIcon
 
     /**
      * Sets the submit selection icon.
      */
-    fun setSubmitSelectionIcon(icon: Drawable?) {
+    public fun setSubmitSelectionIcon(icon: Drawable?) {
         style = style.copy(submitSelectionIcon = icon)
         icon?.let { binding.toolbar.setSubmitIcon(it) }
     }
@@ -1528,12 +1528,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the submit selection icon tint.
      */
-    fun getSubmitSelectionIconTint(): Int = style.submitSelectionIconTint
+    public fun getSubmitSelectionIconTint(): Int = style.submitSelectionIconTint
 
     /**
      * Sets the submit selection icon tint.
      */
-    fun setSubmitSelectionIconTint(@ColorInt tint: Int) {
+    public fun setSubmitSelectionIconTint(@ColorInt tint: Int) {
         style = style.copy(submitSelectionIconTint = tint)
         binding.toolbar.setSubmitIconTint(tint)
     }
@@ -1543,12 +1543,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the background color for the search input.
      */
-    fun getSearchInputBackgroundColor(): Int = style.searchBackgroundColor
+    public fun getSearchInputBackgroundColor(): Int = style.searchBackgroundColor
 
     /**
      * Sets the background color for the search input.
      */
-    fun setSearchInputBackgroundColor(@ColorInt color: Int) {
+    public fun setSearchInputBackgroundColor(@ColorInt color: Int) {
         style = style.copy(searchBackgroundColor = color)
         binding.searchBox.setCardBackgroundColor(color)
     }
@@ -1556,12 +1556,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the text color for the search input.
      */
-    fun getSearchInputTextColor(): Int = style.searchTextColor
+    public fun getSearchInputTextColor(): Int = style.searchTextColor
 
     /**
      * Sets the text color for the search input.
      */
-    fun setSearchInputTextColor(@ColorInt color: Int) {
+    public fun setSearchInputTextColor(@ColorInt color: Int) {
         style = style.copy(searchTextColor = color)
         binding.searchBox.setSearchInputTextColor(color)
     }
@@ -1569,12 +1569,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the text appearance for the search input.
      */
-    fun getSearchInputTextAppearance(): Int = style.searchTextAppearance
+    public fun getSearchInputTextAppearance(): Int = style.searchTextAppearance
 
     /**
      * Sets the text appearance for the search input.
      */
-    fun setSearchInputTextAppearance(@StyleRes appearance: Int) {
+    public fun setSearchInputTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(searchTextAppearance = appearance)
         binding.searchBox.setSearchInputTextAppearance(appearance)
     }
@@ -1582,12 +1582,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the placeholder text color for the search input.
      */
-    fun getSearchInputPlaceHolderTextColor(): Int = style.searchPlaceholderColor
+    public fun getSearchInputPlaceHolderTextColor(): Int = style.searchPlaceholderColor
 
     /**
      * Sets the placeholder text color for the search input.
      */
-    fun setSearchInputPlaceHolderTextColor(@ColorInt color: Int) {
+    public fun setSearchInputPlaceHolderTextColor(@ColorInt color: Int) {
         style = style.copy(searchPlaceholderColor = color)
         binding.searchBox.setSearchInputPlaceHolderTextColor(color)
     }
@@ -1595,12 +1595,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the placeholder text appearance for the search input.
      */
-    fun getSearchInputPlaceHolderTextAppearance(): Int = style.searchPlaceholderTextAppearance
+    public fun getSearchInputPlaceHolderTextAppearance(): Int = style.searchPlaceholderTextAppearance
 
     /**
      * Sets the placeholder text appearance for the search input.
      */
-    fun setSearchInputPlaceHolderTextAppearance(@StyleRes appearance: Int) {
+    public fun setSearchInputPlaceHolderTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(searchPlaceholderTextAppearance = appearance)
         binding.searchBox.setSearchInputPlaceHolderTextAppearance(appearance)
     }
@@ -1608,12 +1608,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the start icon for the search input.
      */
-    fun getSearchInputStartIcon(): Drawable? = style.searchStartIcon
+    public fun getSearchInputStartIcon(): Drawable? = style.searchStartIcon
 
     /**
      * Sets the start icon for the search input.
      */
-    fun setSearchInputStartIcon(icon: Drawable?) {
+    public fun setSearchInputStartIcon(icon: Drawable?) {
         style = style.copy(searchStartIcon = icon)
         icon?.let { binding.searchBox.setSearchInputStartIcon(it) }
     }
@@ -1621,12 +1621,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the start icon tint for the search input.
      */
-    fun getSearchInputStartIconTint(): Int = style.searchStartIconTint
+    public fun getSearchInputStartIconTint(): Int = style.searchStartIconTint
 
     /**
      * Sets the start icon tint for the search input.
      */
-    fun setSearchInputStartIconTint(@ColorInt tint: Int) {
+    public fun setSearchInputStartIconTint(@ColorInt tint: Int) {
         style = style.copy(searchStartIconTint = tint)
         binding.searchBox.setSearchInputStartIconTint(tint)
     }
@@ -1634,12 +1634,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the end icon for the search input.
      */
-    fun getSearchInputEndIcon(): Drawable? = style.searchEndIcon
+    public fun getSearchInputEndIcon(): Drawable? = style.searchEndIcon
 
     /**
      * Sets the end icon for the search input.
      */
-    fun setSearchInputEndIcon(icon: Drawable?) {
+    public fun setSearchInputEndIcon(icon: Drawable?) {
         style = style.copy(searchEndIcon = icon)
         icon?.let { binding.searchBox.setSearchInputEndIcon(it) }
     }
@@ -1647,12 +1647,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the end icon tint for the search input.
      */
-    fun getSearchInputEndIconTint(): Int = style.searchEndIconTint
+    public fun getSearchInputEndIconTint(): Int = style.searchEndIconTint
 
     /**
      * Sets the end icon tint for the search input.
      */
-    fun setSearchInputEndIconTint(@ColorInt tint: Int) {
+    public fun setSearchInputEndIconTint(@ColorInt tint: Int) {
         style = style.copy(searchEndIconTint = tint)
         binding.searchBox.setSearchInputEndIconTint(tint)
     }
@@ -1660,12 +1660,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the corner radius for the search input.
      */
-    fun getSearchInputCornerRadius(): Int = style.searchCornerRadius
+    public fun getSearchInputCornerRadius(): Int = style.searchCornerRadius
 
     /**
      * Sets the corner radius for the search input.
      */
-    fun setSearchInputCornerRadius(@Dimension radius: Int) {
+    public fun setSearchInputCornerRadius(@Dimension radius: Int) {
         style = style.copy(searchCornerRadius = radius)
         binding.searchBox.radius = radius.toFloat()
     }
@@ -1673,12 +1673,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the stroke width for the search input.
      */
-    fun getSearchInputStrokeWidth(): Int = style.searchStrokeWidth
+    public fun getSearchInputStrokeWidth(): Int = style.searchStrokeWidth
 
     /**
      * Sets the stroke width for the search input.
      */
-    fun setSearchInputStrokeWidth(@Dimension width: Int) {
+    public fun setSearchInputStrokeWidth(@Dimension width: Int) {
         style = style.copy(searchStrokeWidth = width)
         binding.searchBox.strokeWidth = width
     }
@@ -1686,12 +1686,12 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Gets the stroke color for the search input.
      */
-    fun getSearchInputStrokeColor(): Int = style.searchStrokeColor
+    public fun getSearchInputStrokeColor(): Int = style.searchStrokeColor
 
     /**
      * Sets the stroke color for the search input.
      */
-    fun setSearchInputStrokeColor(@ColorInt color: Int) {
+    public fun setSearchInputStrokeColor(@ColorInt color: Int) {
         style = style.copy(searchStrokeColor = color)
         binding.searchBox.strokeColor = color
     }
@@ -1699,21 +1699,21 @@ class CometChatConversations @JvmOverloads constructor(
     /**
      * Sets the end icon visibility for the search input.
      */
-    fun setSearchInputEndIconVisibility(visibility: Int) {
+    public fun setSearchInputEndIconVisibility(visibility: Int) {
         binding.searchBox.setSearchInputEndIconVisibility(visibility)
     }
 
     /**
      * Sets the text for the search input.
      */
-    fun setSearchInputText(text: String) {
+    public fun setSearchInputText(text: String) {
         binding.searchBox.setSearchInputText(text)
     }
 
     /**
      * Sets the placeholder text for the search input.
      */
-    fun setSearchPlaceholderText(placeholder: String?) {
+    public fun setSearchPlaceholderText(placeholder: String?) {
         binding.searchBox.setSearchPlaceholderText(placeholder)
     }
 
@@ -1727,7 +1727,7 @@ class CometChatConversations @JvmOverloads constructor(
      * **Requirements:**
      * - 7.1: Theme adaptation for non-customized colors
      */
-    fun refreshStyle() {
+    public fun refreshStyle() {
         // Re-apply style attributes using the stored style resource ID
         val typedArray = if (currentStyleResId != 0) {
             context.theme.obtainStyledAttributes(
@@ -1748,7 +1748,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param styleResId The style resource ID to apply
      */
-    fun setStyleResource(@StyleRes styleResId: Int) {
+    public fun setStyleResource(@StyleRes styleResId: Int) {
         currentStyleResId = styleResId
         refreshStyle()
     }
@@ -1758,7 +1758,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param styleRes The style resource ID to apply to the popup menu
      */
-    fun setOptionListStyle(@StyleRes styleRes: Int) {
+    public fun setOptionListStyle(@StyleRes styleRes: Int) {
         if (styleRes == 0) return
         style = style.copy(optionListStyleResId = styleRes)
         popupMenu.setStyle(styleRes)
@@ -1771,7 +1771,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param width The stroke width in pixels
      */
-    fun setCheckBoxStrokeWidth(@Dimension width: Int) {
+    public fun setCheckBoxStrokeWidth(@Dimension width: Int) {
         style = style.copy(checkBoxStrokeWidth = width)
         conversationsAdapter.setCheckBoxStrokeWidth(width)
     }
@@ -1781,7 +1781,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param radius The corner radius in pixels
      */
-    fun setCheckBoxCornerRadius(@Dimension radius: Int) {
+    public fun setCheckBoxCornerRadius(@Dimension radius: Int) {
         style = style.copy(checkBoxCornerRadius = radius)
         conversationsAdapter.setCheckBoxCornerRadius(radius)
     }
@@ -1791,7 +1791,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param color The stroke color
      */
-    fun setCheckBoxStrokeColor(@ColorInt color: Int) {
+    public fun setCheckBoxStrokeColor(@ColorInt color: Int) {
         style = style.copy(checkBoxStrokeColor = color)
         conversationsAdapter.setCheckBoxStrokeColor(color)
     }
@@ -1801,7 +1801,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param color The background color
      */
-    fun setCheckBoxBackgroundColor(@ColorInt color: Int) {
+    public fun setCheckBoxBackgroundColor(@ColorInt color: Int) {
         style = style.copy(checkBoxBackgroundColor = color)
         conversationsAdapter.setCheckBoxBackgroundColor(color)
     }
@@ -1811,7 +1811,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param color The checked background color
      */
-    fun setCheckBoxCheckedBackgroundColor(@ColorInt color: Int) {
+    public fun setCheckBoxCheckedBackgroundColor(@ColorInt color: Int) {
         style = style.copy(checkBoxCheckedBackgroundColor = color)
         conversationsAdapter.setCheckBoxCheckedBackgroundColor(color)
     }
@@ -1821,7 +1821,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param icon The select icon drawable
      */
-    fun setCheckBoxSelectIcon(icon: Drawable?) {
+    public fun setCheckBoxSelectIcon(icon: Drawable?) {
         style = style.copy(checkBoxSelectIcon = icon)
         conversationsAdapter.setCheckBoxSelectIcon(icon)
     }
@@ -1831,7 +1831,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param tint The select icon tint color
      */
-    fun setCheckBoxSelectIconTint(@ColorInt tint: Int) {
+    public fun setCheckBoxSelectIconTint(@ColorInt tint: Int) {
         style = style.copy(checkBoxSelectIconTint = tint)
         conversationsAdapter.setCheckBoxSelectIconTint(tint)
     }
@@ -1843,7 +1843,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param dateFormat The SimpleDateFormat to use for formatting dates
      */
-    fun setDateFormat(dateFormat: SimpleDateFormat?) {
+    public fun setDateFormat(dateFormat: SimpleDateFormat?) {
         conversationsAdapter.setDateFormat(dateFormat)
     }
 
@@ -1856,7 +1856,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param formatter The DateTimeFormatterCallback to use, or null to use default formatting
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         conversationsAdapter.setDateTimeFormatter(formatter)
     }
 
@@ -1865,7 +1865,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @return The current DateTimeFormatterCallback, or null if using default formatting
      */
-    fun getDateTimeFormatter(): DateTimeFormatterCallback? {
+    public fun getDateTimeFormatter(): DateTimeFormatterCallback? {
         return conversationsAdapter.getDateTimeFormatter()
     }
 
@@ -1877,7 +1877,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param hide true to hide the read receipts, false to show them
      */
-    fun hideReceipts(hide: Boolean) {
+    public fun hideReceipts(hide: Boolean) {
         setReceiptsVisibility(if (hide) GONE else VISIBLE)
     }
 
@@ -1887,7 +1887,7 @@ class CometChatConversations @JvmOverloads constructor(
      * Refreshes the conversation list by clearing existing data and fetching fresh.
      * This resets pagination and fetches conversations from the beginning.
      */
-    fun refreshConversations() {
+    public fun refreshConversations() {
         viewModel?.refreshList()
     }
 
@@ -1898,7 +1898,7 @@ class CometChatConversations @JvmOverloads constructor(
      * 
      * @param builder The ConversationsRequest.ConversationsRequestBuilder to use
      */
-    fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
+    public fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
         viewModel?.setConversationsRequestBuilder(builder)
     }
 
@@ -1912,7 +1912,7 @@ class CometChatConversations @JvmOverloads constructor(
      *
      * If either parameter is null or empty, or if the mentions formatter is not initialized, this method does nothing.
      */
-    fun setMentionAllLabelId(id: String, mentionAllLabel: String) {
+    public fun setMentionAllLabelId(id: String, mentionAllLabel: String) {
         if (id.isNotEmpty() && mentionAllLabel.isNotEmpty()) {
             cometchatMentionsFormatter?.setMentionAllLabel(id, mentionAllLabel)
         }

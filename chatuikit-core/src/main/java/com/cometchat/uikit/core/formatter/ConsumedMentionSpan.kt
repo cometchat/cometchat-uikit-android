@@ -15,7 +15,7 @@ package com.cometchat.uikit.core.formatter
  * @param suggestionItem The original SuggestionItem associated with the mention (typed as Any? for cross-module compatibility)
  * @param textAppearance The original text appearance/style of the mention (typed as Any? for cross-module compatibility)
  */
-data class ConsumedMentionSpan(
+public data class ConsumedMentionSpan(
     val id: Char,
     val text: String?,
     val suggestionItem: Any?,
@@ -25,5 +25,5 @@ data class ConsumedMentionSpan(
      * Returns true if this consumed mention span has enough data to restore
      * the original mention span.
      */
-    fun canRestore(): Boolean = text != null
+    public fun canRestore(): Boolean = text != null
 }

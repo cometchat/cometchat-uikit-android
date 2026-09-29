@@ -9,7 +9,7 @@ import com.cometchat.uikit.core.domain.repository.GroupsRepository
  * 
  * @param repository The repository to perform join operation
  */
-open class JoinGroupUseCase(
+open public class JoinGroupUseCase(
     private val repository: GroupsRepository
 ) {
     /**
@@ -19,7 +19,7 @@ open class JoinGroupUseCase(
      * @param password Optional password for password-protected groups
      * @return Result containing the joined group or error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         groupId: String,
         groupType: String,
         password: String? = null

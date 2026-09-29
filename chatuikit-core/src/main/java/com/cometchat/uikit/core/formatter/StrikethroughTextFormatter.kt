@@ -11,7 +11,7 @@ import java.util.regex.Pattern
  * Applies strikethrough formatting to selected text by wrapping it with double tildes.
  * Renders preview with StrikethroughSpan.
  */
-class StrikethroughTextFormatter : RichTextFormatter {
+public class StrikethroughTextFormatter : RichTextFormatter {
     
     override val formatType: RichTextFormat = RichTextFormat.STRIKETHROUGH
     override val markdownPrefix: String = "~~"

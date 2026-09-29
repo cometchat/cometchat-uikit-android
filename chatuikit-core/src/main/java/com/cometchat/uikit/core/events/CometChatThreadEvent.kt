@@ -11,7 +11,7 @@ package com.cometchat.uikit.core.events
  * resolving *is* the acknowledgement. Every event on this bus is published by the kit itself, from
  * [com.cometchat.uikit.core.utils.CometChatThreadSubscription].
  */
-sealed class CometChatThreadEvent {
+public sealed class CometChatThreadEvent {
     /**
      * The logged-in user's subscription state for a thread changed.
      *
@@ -22,7 +22,7 @@ sealed class CometChatThreadEvent {
      * @param parentMessageId The root message id of the affected thread.
      * @param subscribed The new subscription state.
      */
-    data class SubscriptionChanged(
+    public data class SubscriptionChanged(
         val parentMessageId: Long,
         val subscribed: Boolean
     ) : CometChatThreadEvent()

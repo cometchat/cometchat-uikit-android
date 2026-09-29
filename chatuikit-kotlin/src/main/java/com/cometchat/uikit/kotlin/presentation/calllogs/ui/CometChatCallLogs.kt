@@ -15,6 +15,7 @@ import com.cometchat.calls.exceptions.CometChatException
 import com.cometchat.calls.model.CallLog
 import com.cometchat.uikit.core.factory.CometChatCallLogsViewModelFactory
 import com.cometchat.uikit.core.state.CallLogsUIState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatCallLogsViewModel
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatCallLogsBinding
@@ -58,13 +59,13 @@ import kotlinx.coroutines.launch
  * }
  * ```
  */
-class CometChatCallLogs @JvmOverloads constructor(
+public class CometChatCallLogs @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCallLogsStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatCallLogs::class.java.simpleName
     }
 
@@ -291,8 +292,8 @@ class CometChatCallLogs @JvmOverloads constructor(
      * Updates the adapter's item style.
      */
     private fun updateAdapterItemStyle() {
-        android.util.Log.d(TAG, "updateAdapterItemStyle: itemStyle.incomingCallIcon=${style.itemStyle.incomingCallIcon}, outgoingCallIcon=${style.itemStyle.outgoingCallIcon}, missedCallIcon=${style.itemStyle.missedCallIcon}")
-        android.util.Log.d(TAG, "updateAdapterItemStyle: itemStyle.audioCallIcon=${style.itemStyle.audioCallIcon}, videoCallIcon=${style.itemStyle.videoCallIcon}")
+        CometChatLogger.d(TAG, "updateAdapterItemStyle: itemStyle.incomingCallIcon=${style.itemStyle.incomingCallIcon}, outgoingCallIcon=${style.itemStyle.outgoingCallIcon}, missedCallIcon=${style.itemStyle.missedCallIcon}")
+        CometChatLogger.d(TAG, "updateAdapterItemStyle: itemStyle.audioCallIcon=${style.itemStyle.audioCallIcon}, videoCallIcon=${style.itemStyle.videoCallIcon}")
         callLogsAdapter.setItemStyle(style.itemStyle)
         callLogsAdapter.setHideSeparator(separatorVisibility != View.VISIBLE)
     }
@@ -518,56 +519,56 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (CallLog) -> Unit) {
+    public fun setOnItemClick(callback: (CallLog) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (CallLog) -> Unit) {
+    public fun setOnItemLongClick(callback: (CallLog) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets the call type icon click callback.
      */
-    fun setOnCallTypeIconClick(callback: (CallLog) -> Unit) {
+    public fun setOnCallTypeIconClick(callback: (CallLog) -> Unit) {
         onCallTypeIconClick = callback
     }
 
     /**
      * Sets the error callback.
      */
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
     /**
      * Sets the load callback.
      */
-    fun setOnLoad(callback: (List<CallLog>) -> Unit) {
+    public fun setOnLoad(callback: (List<CallLog>) -> Unit) {
         onLoad = callback
     }
 
     /**
      * Sets the empty callback.
      */
-    fun setOnEmpty(callback: () -> Unit) {
+    public fun setOnEmpty(callback: () -> Unit) {
         onEmpty = callback
     }
 
     /**
      * Sets the back press callback.
      */
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
     /**
      * Sets an external ViewModel instance.
      */
-    fun setViewModel(viewModel: CometChatCallLogsViewModel?) {
+    public fun setViewModel(viewModel: CometChatCallLogsViewModel?) {
         this.viewModel = viewModel
         this.isExternalViewModel = viewModel != null
         
@@ -584,20 +585,20 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Returns the current ViewModel instance.
      */
-    fun getViewModel(): CometChatCallLogsViewModel? = viewModel
+    public fun getViewModel(): CometChatCallLogsViewModel? = viewModel
 
     /**
      * Sets a custom CallLogRequestBuilder for fetching call logs.
      * This allows customization of the call logs query parameters.
      */
-    fun setCallLogRequestBuilder(builder: com.cometchat.calls.core.CallLogRequest.CallLogRequestBuilder) {
+    public fun setCallLogRequestBuilder(builder: com.cometchat.calls.core.CallLogRequest.CallLogRequestBuilder) {
         viewModel?.setCallLogRequestBuilder(builder)
     }
 
     /**
      * Sets custom item view listener.
      */
-    fun setItemView(listener: CallLogsViewHolderListener?) {
+    public fun setItemView(listener: CallLogsViewHolderListener?) {
         itemViewListener = listener
         callLogsAdapter.setItemView(listener)
     }
@@ -605,7 +606,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets custom leading view listener.
      */
-    fun setLeadingView(listener: CallLogsViewHolderListener?) {
+    public fun setLeadingView(listener: CallLogsViewHolderListener?) {
         leadingViewListener = listener
         callLogsAdapter.setLeadingView(listener)
     }
@@ -613,7 +614,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets custom title view listener.
      */
-    fun setTitleView(listener: CallLogsViewHolderListener?) {
+    public fun setTitleView(listener: CallLogsViewHolderListener?) {
         titleViewListener = listener
         callLogsAdapter.setTitleView(listener)
     }
@@ -621,7 +622,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets custom subtitle view listener.
      */
-    fun setSubtitleView(listener: CallLogsViewHolderListener?) {
+    public fun setSubtitleView(listener: CallLogsViewHolderListener?) {
         subtitleViewListener = listener
         callLogsAdapter.setSubtitleView(listener)
     }
@@ -629,7 +630,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets custom trailing view listener.
      */
-    fun setTrailingView(listener: CallLogsViewHolderListener?) {
+    public fun setTrailingView(listener: CallLogsViewHolderListener?) {
         trailingViewListener = listener
         callLogsAdapter.setTrailingView(listener)
     }
@@ -637,28 +638,28 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets custom empty view.
      */
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         customEmptyView = view
     }
 
     /**
      * Sets custom error view.
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         customErrorView = view
     }
 
     /**
      * Sets custom loading view.
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         customLoadingView = view
     }
 
     /**
      * Sets toolbar visibility.
      */
-    fun setToolbarVisibility(visibility: Int) {
+    public fun setToolbarVisibility(visibility: Int) {
         toolbarVisibility = visibility
         binding.toolbar.visibility = visibility
     }
@@ -667,7 +668,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      * Sets title visibility.
      * When hidden, the title text will be empty but the toolbar remains visible.
      */
-    fun setTitleVisibility(visibility: Int) {
+    public fun setTitleVisibility(visibility: Int) {
         if (visibility == View.GONE || visibility == View.INVISIBLE) {
             binding.toolbar.setTitle("")
         }
@@ -676,7 +677,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets back icon visibility.
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconVisibility = visibility
         binding.toolbar.setBackIconVisibility(visibility)
     }
@@ -684,7 +685,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets separator visibility.
      */
-    fun setSeparatorVisibility(visibility: Int) {
+    public fun setSeparatorVisibility(visibility: Int) {
         separatorVisibility = visibility
         callLogsAdapter.setHideSeparator(visibility != View.VISIBLE)
     }
@@ -692,21 +693,21 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets toolbar separator visibility.
      */
-    fun setToolbarSeparatorVisibility(show: Boolean) {
+    public fun setToolbarSeparatorVisibility(show: Boolean) {
         binding.toolbar.setShowSeparator(show)
     }
 
     /**
      * Sets toolbar separator color.
      */
-    fun setToolbarSeparatorColor(@ColorInt color: Int) {
+    public fun setToolbarSeparatorColor(@ColorInt color: Int) {
         binding.toolbar.setSeparatorColor(color)
     }
 
     /**
      * Sets error state visibility.
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         errorStateVisibility = visibility
     }
 
@@ -715,12 +716,12 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The error state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Sets loading state visibility.
      */
-    fun setLoadingStateVisibility(visibility: Int) {
+    public fun setLoadingStateVisibility(visibility: Int) {
         loadingStateVisibility = visibility
     }
 
@@ -729,12 +730,12 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The loading state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getLoadingStateVisibility(): Int = loadingStateVisibility
+    public fun getLoadingStateVisibility(): Int = loadingStateVisibility
 
     /**
      * Sets empty state visibility.
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         emptyStateVisibility = visibility
     }
 
@@ -743,7 +744,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The empty state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getEmptyStateVisibility(): Int = emptyStateVisibility
+    public fun getEmptyStateVisibility(): Int = emptyStateVisibility
 
     /**
      * Hides or shows the loading state.
@@ -751,7 +752,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @param hide true to hide the loading state, false to show it
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         loadingStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -761,7 +762,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @param hide true to hide the empty state, false to show it
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         emptyStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -771,21 +772,21 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @param hide true to hide the error state, false to show it
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         errorStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
     /**
      * Sets the title text.
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.toolbar.setTitle(title)
     }
 
     /**
      * Sets overflow menu view.
      */
-    fun setOverflowMenu(view: View?) {
+    public fun setOverflowMenu(view: View?) {
         binding.toolbar.clearActionViews()
         if (view != null) {
             binding.toolbar.addActionView(view)
@@ -795,7 +796,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets the style programmatically.
      */
-    fun setStyle(style: CometChatCallLogsStyle) {
+    public fun setStyle(style: CometChatCallLogsStyle) {
         // Ensure itemStyle has proper icon resources
         this.style = style.withDefaultItemStyle(context)
         applyStyle()
@@ -804,7 +805,7 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             currentStyleResId = styleRes
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatCallLogs)
@@ -816,12 +817,12 @@ class CometChatCallLogs @JvmOverloads constructor(
     /**
      * Gets the current style.
      */
-    fun getStyle(): CometChatCallLogsStyle = style
+    public fun getStyle(): CometChatCallLogsStyle = style
 
     /**
      * Refreshes the component with current theme colors.
      */
-    fun refreshStyle() {
+    public fun refreshStyle() {
         val typedArray = if (currentStyleResId != 0) {
             context.theme.obtainStyledAttributes(
                 null, R.styleable.CometChatCallLogs, R.attr.cometchatCallLogsStyle, currentStyleResId
@@ -841,7 +842,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @param formatter The DateTimeFormatterCallback for custom formatting, or null to use default.
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         dateTimeFormatter = formatter
         callLogsAdapter.setDateTimeFormatter(formatter)
     }
@@ -851,13 +852,13 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The current DateTimeFormatterCallback, or null if using default.
      */
-    fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
+    public fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
 
     /**
      * Triggers a refresh of the call logs by clearing existing data and fetching fresh.
      * This ensures the call logs are updated with the latest data from the server.
      */
-    fun refreshCallLogs() {
+    public fun refreshCallLogs() {
         viewModel?.refreshCallLogs()
     }
 
@@ -868,7 +869,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      * @param options A function that takes Context and CallLog and returns a list of menu items,
      *                or null to clear custom options.
      */
-    fun setOptions(options: ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)?) {
+    public fun setOptions(options: ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)?) {
         this.options = options
     }
 
@@ -877,7 +878,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The current options function, or null if not set.
      */
-    fun getOptions(): ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)? = options
+    public fun getOptions(): ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)? = options
 
     /**
      * Sets additional menu options that are added to the default options.
@@ -886,7 +887,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      * @param addOptions A function that takes Context and CallLog and returns a list of additional menu items,
      *                   or null to clear additional options.
      */
-    fun setAddOptions(addOptions: ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)?) {
+    public fun setAddOptions(addOptions: ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)?) {
         this.addOptions = addOptions
     }
 
@@ -895,7 +896,7 @@ class CometChatCallLogs @JvmOverloads constructor(
      *
      * @return The current addOptions function, or null if not set.
      */
-    fun getAddOptions(): ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)? = addOptions
+    public fun getAddOptions(): ((Context, CallLog) -> List<CometChatPopupMenu.MenuItem>)? = addOptions
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()

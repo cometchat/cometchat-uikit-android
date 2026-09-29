@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.ReactionListRepository
  *
  * @param repository The repository to fetch reactions from
  */
-open class FetchReactionsUseCase(
+open public class FetchReactionsUseCase(
     private val repository: ReactionListRepository
 ) {
     /**
@@ -27,7 +27,7 @@ open class FetchReactionsUseCase(
      * @param request The configured ReactionsRequest with pagination and filters
      * @return Result containing list of Reaction objects or error
      */
-    open suspend operator fun invoke(request: ReactionsRequest): Result<List<Reaction>> {
+    open suspend operator public fun invoke(request: ReactionsRequest): Result<List<Reaction>> {
         return repository.fetchReactions(request)
     }
 }

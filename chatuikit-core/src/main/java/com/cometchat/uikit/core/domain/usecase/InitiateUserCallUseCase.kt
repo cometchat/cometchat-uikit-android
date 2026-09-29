@@ -8,7 +8,7 @@ import com.cometchat.uikit.core.domain.repository.CallButtonsRepository
  * Use case for initiating a 1-to-1 call with a user.
  * Checks for active calls before initiating a new call.
  */
-open class InitiateUserCallUseCase(
+open public class InitiateUserCallUseCase(
     private val repository: CallButtonsRepository
 ) {
     /**
@@ -17,7 +17,7 @@ open class InitiateUserCallUseCase(
      * @param callType The type of call (audio/video)
      * @return Result containing the initiated Call or an error if active call exists or initiation fails
      */
-    open suspend operator fun invoke(receiverId: String, callType: String): Result<Call> {
+    open suspend operator public fun invoke(receiverId: String, callType: String): Result<Call> {
         if (repository.hasActiveCall()) {
             return Result.failure(
                 CometChatException(

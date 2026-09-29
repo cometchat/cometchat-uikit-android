@@ -10,33 +10,33 @@ import com.cometchat.chat.exceptions.CometChatException
  *
  * @see com.cometchat.uikit.core.viewmodel.CometChatMessageListViewModel
  */
-sealed class ConversationSummaryUIState {
+sealed public class ConversationSummaryUIState {
     
     /**
      * Idle state - no conversation summary request in progress or available.
      *
      * This is the initial state and the state after dismissing the summary.
      */
-    object Idle : ConversationSummaryUIState()
+    public object Idle : ConversationSummaryUIState()
     
     /**
      * Loading state - conversation summary is being fetched.
      *
      * The UI should display a loading indicator while in this state.
      */
-    object Loading : ConversationSummaryUIState()
+    public object Loading : ConversationSummaryUIState()
     
     /**
      * Loaded state - conversation summary has been loaded successfully.
      *
      * @param summary The AI-generated conversation summary text.
      */
-    data class Loaded(val summary: String) : ConversationSummaryUIState()
+    public data class Loaded(val summary: String) : ConversationSummaryUIState()
     
     /**
      * Error state - an error occurred while fetching conversation summary.
      *
      * @param exception The exception that caused the error.
      */
-    data class Error(val exception: CometChatException) : ConversationSummaryUIState()
+    public data class Error(val exception: CometChatException) : ConversationSummaryUIState()
 }

@@ -39,9 +39,9 @@ import com.cometchat.uikit.kotlin.shared.interfaces.ViewHolderCallBack
  * })
  * ```
  */
-abstract class ConversationsViewHolderListener : ViewHolderCallBack {
+abstract public class ConversationsViewHolderListener : ViewHolderCallBack {
 
-    companion object {
+    public companion object {
         private val TAG = ConversationsViewHolderListener::class.java.simpleName
     }
 
@@ -53,7 +53,7 @@ abstract class ConversationsViewHolderListener : ViewHolderCallBack {
      * @param binding The ViewBinding for the conversation list item layout
      * @return The custom view to display
      */
-    abstract fun createView(
+    abstract public fun createView(
         context: Context,
         binding: CometchatConversationsListItemsBinding
     ): View
@@ -71,7 +71,7 @@ abstract class ConversationsViewHolderListener : ViewHolderCallBack {
      * @param conversationList The full list of conversations
      * @param position The position in the list
      */
-    abstract fun bindView(
+    abstract public fun bindView(
         context: Context,
         createdView: View,
         conversation: Conversation,

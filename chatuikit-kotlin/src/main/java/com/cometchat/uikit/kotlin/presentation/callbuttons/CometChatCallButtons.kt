@@ -24,6 +24,8 @@ import com.cometchat.uikit.core.viewmodel.CometChatCallButtonsViewModel
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatCallButtonsBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
+import com.cometchat.uikit.kotlin.presentation.callbuttons.style.CometChatCallButtonStyle
+import com.cometchat.uikit.kotlin.presentation.callbuttons.style.CometChatCallButtonsStyle
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
@@ -58,13 +60,13 @@ import kotlinx.coroutines.launch
  * ```
  */
 @Suppress("unused")
-class CometChatCallButtons @JvmOverloads constructor(
+public class CometChatCallButtons @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCallButtonsStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatCallButtons::class.java.simpleName
     }
 
@@ -424,7 +426,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the user for 1-to-1 calls.
      * @param user The User to call
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         viewModel?.setUser(user)
@@ -434,7 +436,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the group for conference calls.
      * @param group The Group to start a call with
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         this.user = null
         viewModel?.setGroup(group)
@@ -444,13 +446,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the currently set user.
      * @return The User or null if not set
      */
-    fun getUser(): User? = user
+    public fun getUser(): User? = user
 
     /**
      * Gets the currently set group.
      * @return The Group or null if not set
      */
-    fun getGroup(): Group? = group
+    public fun getGroup(): Group? = group
 
     // ========================================
     // Public API Methods - Callbacks
@@ -461,7 +463,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * If set, overrides the default call initiation behavior.
      * @param callback The callback to invoke when voice call button is clicked
      */
-    fun setOnVoiceCallClick(callback: ((User?, Group?) -> Unit)?) {
+    public fun setOnVoiceCallClick(callback: ((User?, Group?) -> Unit)?) {
         this.onVoiceCallClick = callback
     }
 
@@ -470,7 +472,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * If set, overrides the default call initiation behavior.
      * @param callback The callback to invoke when video call button is clicked
      */
-    fun setOnVideoCallClick(callback: ((User?, Group?) -> Unit)?) {
+    public fun setOnVideoCallClick(callback: ((User?, Group?) -> Unit)?) {
         this.onVideoCallClick = callback
     }
 
@@ -478,7 +480,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets a callback for when a user call is successfully initiated.
      * @param callback The callback to invoke with the initiated Call
      */
-    fun setOnCallInitiated(callback: ((Call) -> Unit)?) {
+    public fun setOnCallInitiated(callback: ((Call) -> Unit)?) {
         this.onCallInitiated = callback
     }
 
@@ -486,7 +488,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets a callback for when a group call message is successfully sent.
      * @param callback The callback to invoke with the sent BaseMessage
      */
-    fun setOnStartDirectCall(callback: ((BaseMessage) -> Unit)?) {
+    public fun setOnStartDirectCall(callback: ((BaseMessage) -> Unit)?) {
         this.onStartDirectCall = callback
     }
 
@@ -494,7 +496,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets a callback for when an error occurs.
      * @param callback The callback to invoke with the CometChatException
      */
-    fun setOnError(callback: ((CometChatException) -> Unit)?) {
+    public fun setOnError(callback: ((CometChatException) -> Unit)?) {
         this.onError = callback
     }
 
@@ -507,7 +509,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text for the voice call button.
      * @param text The text to display. If non-empty, makes text visible. If empty/null, hides the text.
      */
-    fun setVoiceButtonText(text: String?) {
+    public fun setVoiceButtonText(text: String?) {
         if (!text.isNullOrEmpty()) {
             voiceCallText = text
             binding.voiceCallText.text = text
@@ -523,7 +525,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text for the video call button.
      * @param text The text to display. If non-empty, makes text visible. If empty/null, hides the text.
      */
-    fun setVideoButtonText(text: String?) {
+    public fun setVideoButtonText(text: String?) {
         if (!text.isNullOrEmpty()) {
             videoCallText = text
             binding.videoCallText.text = text
@@ -539,7 +541,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the visibility of text labels on both buttons.
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setButtonTextVisibility(visibility: Int) {
+    public fun setButtonTextVisibility(visibility: Int) {
         binding.voiceCallText.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
         binding.videoCallText.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
     }
@@ -548,7 +550,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the visibility of icons on both buttons.
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setButtonIconVisibility(visibility: Int) {
+    public fun setButtonIconVisibility(visibility: Int) {
         binding.voiceCallIcon.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
         binding.videoCallIcon.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
     }
@@ -558,7 +560,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * When visible, displays a FloatingActionButton as a circular background.
      * @param hide True to hide the background, false to show it
      */
-    fun hideButtonBackground(hide: Boolean) {
+    public fun hideButtonBackground(hide: Boolean) {
         binding.voiceCallBackground.visibility = if (hide) View.GONE else View.VISIBLE
         binding.videoCallBackground.visibility = if (hide) View.GONE else View.VISIBLE
     }
@@ -567,7 +569,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Hides or shows the circular background behind the voice call button icon.
      * @param hide True to hide the background, false to show it
      */
-    fun hideVoiceCallButtonBackground(hide: Boolean) {
+    public fun hideVoiceCallButtonBackground(hide: Boolean) {
         binding.voiceCallBackground.visibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -575,7 +577,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Hides or shows the circular background behind the video call button icon.
      * @param hide True to hide the background, false to show it
      */
-    fun hideVideoCallButtonBackground(hide: Boolean) {
+    public fun hideVideoCallButtonBackground(hide: Boolean) {
         binding.videoCallBackground.visibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -583,7 +585,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the background color for the voice call button's circular FAB background.
      * @param color The color value (not resource ID)
      */
-    fun setVoiceCallButtonBackgroundTint(@ColorInt color: Int) {
+    public fun setVoiceCallButtonBackgroundTint(@ColorInt color: Int) {
         if (color != 0) {
             binding.voiceCallBackground.backgroundTintList = ColorStateList.valueOf(color)
         }
@@ -593,7 +595,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the background color for the video call button's circular FAB background.
      * @param color The color value (not resource ID)
      */
-    fun setVideoCallButtonBackgroundTint(@ColorInt color: Int) {
+    public fun setVideoCallButtonBackgroundTint(@ColorInt color: Int) {
         if (color != 0) {
             binding.videoCallBackground.backgroundTintList = ColorStateList.valueOf(color)
         }
@@ -607,7 +609,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text color for the voice call button label.
      * @param color The color value (not resource ID)
      */
-    fun setVoiceCallTextColor(@ColorInt color: Int) {
+    public fun setVoiceCallTextColor(@ColorInt color: Int) {
         voiceCallTextColor = color
         binding.voiceCallText.setTextColor(color)
     }
@@ -616,7 +618,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text color for the video call button label.
      * @param color The color value (not resource ID)
      */
-    fun setVideoCallTextColor(@ColorInt color: Int) {
+    public fun setVideoCallTextColor(@ColorInt color: Int) {
         videoCallTextColor = color
         binding.videoCallText.setTextColor(color)
     }
@@ -625,7 +627,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text appearance for the voice call button label.
      * @param appearance The style resource ID
      */
-    fun setVoiceCallTextAppearance(@StyleRes appearance: Int) {
+    public fun setVoiceCallTextAppearance(@StyleRes appearance: Int) {
         voiceCallTextAppearance = appearance
         if (appearance != 0) {
             binding.voiceCallText.setTextAppearance(appearance)
@@ -636,7 +638,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the text appearance for the video call button label.
      * @param appearance The style resource ID
      */
-    fun setVideoCallTextAppearance(@StyleRes appearance: Int) {
+    public fun setVideoCallTextAppearance(@StyleRes appearance: Int) {
         videoCallTextAppearance = appearance
         if (appearance != 0) {
             binding.videoCallText.setTextAppearance(appearance)
@@ -651,7 +653,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the background color for the voice call button container.
      * @param color The color value (not resource ID)
      */
-    fun setVoiceCallBackgroundColor(@ColorInt color: Int) {
+    public fun setVoiceCallBackgroundColor(@ColorInt color: Int) {
         voiceCallBackgroundColor = color
         binding.voiceCallContainer.setCardBackgroundColor(color)
     }
@@ -660,7 +662,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the background color for the video call button container.
      * @param color The color value (not resource ID)
      */
-    fun setVideoCallBackgroundColor(@ColorInt color: Int) {
+    public fun setVideoCallBackgroundColor(@ColorInt color: Int) {
         videoCallBackgroundColor = color
         binding.videoCallContainer.setCardBackgroundColor(color)
     }
@@ -669,7 +671,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the corner radius for the voice call button container.
      * @param radius The radius in pixels
      */
-    fun setVoiceCallCornerRadius(@Dimension radius: Int) {
+    public fun setVoiceCallCornerRadius(@Dimension radius: Int) {
         voiceCallCornerRadius = radius
         binding.voiceCallContainer.radius = radius.toFloat()
     }
@@ -678,7 +680,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the corner radius for the video call button container.
      * @param radius The radius in pixels
      */
-    fun setVideoCallCornerRadius(@Dimension radius: Int) {
+    public fun setVideoCallCornerRadius(@Dimension radius: Int) {
         videoCallCornerRadius = radius
         binding.videoCallContainer.radius = radius.toFloat()
     }
@@ -691,7 +693,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the stroke width for the voice call button container.
      * @param width The stroke width in pixels
      */
-    fun setVoiceCallStrokeWidth(@Dimension width: Int) {
+    public fun setVoiceCallStrokeWidth(@Dimension width: Int) {
         voiceCallStrokeWidth = width
         binding.voiceCallContainer.strokeWidth = width
     }
@@ -700,7 +702,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the stroke width for the video call button container.
      * @param width The stroke width in pixels
      */
-    fun setVideoCallStrokeWidth(@Dimension width: Int) {
+    public fun setVideoCallStrokeWidth(@Dimension width: Int) {
         videoCallStrokeWidth = width
         binding.videoCallContainer.strokeWidth = width
     }
@@ -709,7 +711,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the stroke color for the voice call button container.
      * @param color The color value (not resource ID)
      */
-    fun setVoiceCallStrokeColor(@ColorInt color: Int) {
+    public fun setVoiceCallStrokeColor(@ColorInt color: Int) {
         voiceCallStrokeColor = color
         binding.voiceCallContainer.strokeColor = color
     }
@@ -718,7 +720,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the stroke color for the video call button container.
      * @param color The color value (not resource ID)
      */
-    fun setVideoCallStrokeColor(@ColorInt color: Int) {
+    public fun setVideoCallStrokeColor(@ColorInt color: Int) {
         videoCallStrokeColor = color
         binding.videoCallContainer.strokeColor = color
     }
@@ -732,7 +734,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * This matches Java behavior where padding is applied as margins on the inner container.
      * @param padding The padding in pixels (applied to all sides as margins)
      */
-    fun setVoiceCallButtonPadding(@Dimension padding: Int) {
+    public fun setVoiceCallButtonPadding(@Dimension padding: Int) {
         voiceCallButtonPadding = padding
         val params = binding.voiceCallButtonContainer.layoutParams as? MarginLayoutParams
         params?.let {
@@ -746,7 +748,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * This matches Java behavior where padding is applied as margins on the inner container.
      * @param padding The padding in pixels (applied to all sides as margins)
      */
-    fun setVideoCallButtonPadding(@Dimension padding: Int) {
+    public fun setVideoCallButtonPadding(@Dimension padding: Int) {
         videoCallButtonPadding = padding
         val params = binding.videoCallButtonContainer.layoutParams as? MarginLayoutParams
         params?.let {
@@ -764,7 +766,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the visibility of the voice call button.
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setVoiceCallButtonVisibility(visibility: Int) {
+    public fun setVoiceCallButtonVisibility(visibility: Int) {
         binding.voiceCallContainer.visibility = visibility
     }
 
@@ -772,13 +774,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the visibility of the voice call button.
      * @return The visibility value
      */
-    fun getVoiceCallButtonVisibility(): Int = binding.voiceCallContainer.visibility
+    public fun getVoiceCallButtonVisibility(): Int = binding.voiceCallContainer.visibility
 
     /**
      * Sets the visibility of the video call button.
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setVideoCallButtonVisibility(visibility: Int) {
+    public fun setVideoCallButtonVisibility(visibility: Int) {
         binding.videoCallContainer.visibility = visibility
     }
 
@@ -786,7 +788,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the visibility of the video call button.
      * @return The visibility value
      */
-    fun getVideoCallButtonVisibility(): Int = binding.videoCallContainer.visibility
+    public fun getVideoCallButtonVisibility(): Int = binding.videoCallContainer.visibility
 
     // ========================================
     // Public API Methods - Icon Styling
@@ -796,7 +798,7 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Sets the margin between the voice and video call buttons.
      * @param margin The margin in pixels
      */
-    fun setMarginBetweenButtons(@Dimension margin: Int) {
+    public fun setMarginBetweenButtons(@Dimension margin: Int) {
         marginBetweenButtons = margin
         val params = binding.space.layoutParams as LinearLayout.LayoutParams
         params.width = margin
@@ -807,13 +809,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the margin between buttons.
      * @return The margin in pixels
      */
-    fun getMarginBetweenButtons(): Int = marginBetweenButtons
+    public fun getMarginBetweenButtons(): Int = marginBetweenButtons
 
     /**
      * Sets the voice call button icon.
      * @param icon The drawable to use as the icon
      */
-    fun setVoiceCallIcon(icon: Drawable?) {
+    public fun setVoiceCallIcon(icon: Drawable?) {
         voiceCallIcon = icon
         icon?.let { binding.voiceCallIcon.setImageDrawable(it) }
     }
@@ -822,13 +824,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the voice call button icon.
      * @return The icon drawable
      */
-    fun getVoiceCallIcon(): Drawable? = voiceCallIcon
+    public fun getVoiceCallIcon(): Drawable? = voiceCallIcon
 
     /**
      * Sets the video call button icon.
      * @param icon The drawable to use as the icon
      */
-    fun setVideoCallIcon(icon: Drawable?) {
+    public fun setVideoCallIcon(icon: Drawable?) {
         videoCallIcon = icon
         icon?.let { binding.videoCallIcon.setImageDrawable(it) }
     }
@@ -837,13 +839,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the video call button icon.
      * @return The icon drawable
      */
-    fun getVideoCallIcon(): Drawable? = videoCallIcon
+    public fun getVideoCallIcon(): Drawable? = videoCallIcon
 
     /**
      * Sets the voice call button icon tint.
      * @param color The tint color
      */
-    fun setVoiceCallIconTint(@ColorInt color: Int) {
+    public fun setVoiceCallIconTint(@ColorInt color: Int) {
         voiceCallIconTint = color
         binding.voiceCallIcon.imageTintList = ColorStateList.valueOf(color)
     }
@@ -852,13 +854,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the voice call button icon tint.
      * @return The tint color
      */
-    fun getVoiceCallIconTint(): Int = voiceCallIconTint
+    public fun getVoiceCallIconTint(): Int = voiceCallIconTint
 
     /**
      * Sets the video call button icon tint.
      * @param color The tint color
      */
-    fun setVideoCallIconTint(@ColorInt color: Int) {
+    public fun setVideoCallIconTint(@ColorInt color: Int) {
         videoCallIconTint = color
         binding.videoCallIcon.imageTintList = ColorStateList.valueOf(color)
     }
@@ -867,13 +869,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the video call button icon tint.
      * @return The tint color
      */
-    fun getVideoCallIconTint(): Int = videoCallIconTint
+    public fun getVideoCallIconTint(): Int = videoCallIconTint
 
     /**
      * Sets the voice call button icon size.
      * @param size The size in pixels
      */
-    fun setVoiceCallIconSize(@Dimension size: Int) {
+    public fun setVoiceCallIconSize(@Dimension size: Int) {
         voiceCallIconSize = size
         binding.voiceCallIcon.layoutParams.width = size
         binding.voiceCallIcon.layoutParams.height = size
@@ -884,13 +886,13 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the voice call button icon size.
      * @return The size in pixels
      */
-    fun getVoiceCallIconSize(): Int = voiceCallIconSize
+    public fun getVoiceCallIconSize(): Int = voiceCallIconSize
 
     /**
      * Sets the video call button icon size.
      * @param size The size in pixels
      */
-    fun setVideoCallIconSize(@Dimension size: Int) {
+    public fun setVideoCallIconSize(@Dimension size: Int) {
         videoCallIconSize = size
         binding.videoCallIcon.layoutParams.width = size
         binding.videoCallIcon.layoutParams.height = size
@@ -901,17 +903,57 @@ class CometChatCallButtons @JvmOverloads constructor(
      * Gets the video call button icon size.
      * @return The size in pixels
      */
-    fun getVideoCallIconSize(): Int = videoCallIconSize
+    public fun getVideoCallIconSize(): Int = videoCallIconSize
 
     // ========================================
     // Public API Methods - Style Resource
     // ========================================
 
     /**
+     * Applies a [CometChatCallButtonsStyle]. Any property left at `0` (or `null` for an icon)
+     * keeps the button's current value, matching how [setStyle] treats an attribute the style
+     * resource does not set.
+     *
+     * @param style The style to apply.
+     */
+    public fun setStyle(style: CometChatCallButtonsStyle) {
+        applyButtonStyle(style.voiceCallButtonStyle, isVoice = true)
+        applyButtonStyle(style.videoCallButtonStyle, isVoice = false)
+        if (style.marginBetweenButtons != 0) marginBetweenButtons = style.marginBetweenButtons
+        applyStyle()
+    }
+
+    private fun applyButtonStyle(style: CometChatCallButtonStyle, isVoice: Boolean) {
+        if (isVoice) {
+            style.icon?.let { voiceCallIcon = it }
+            if (style.iconTint != 0) voiceCallIconTint = style.iconTint
+            if (style.iconSize != 0) voiceCallIconSize = style.iconSize
+            if (style.textColor != 0) voiceCallTextColor = style.textColor
+            if (style.textAppearance != 0) voiceCallTextAppearance = style.textAppearance
+            if (style.backgroundColor != 0) voiceCallBackgroundColor = style.backgroundColor
+            if (style.cornerRadius != 0) voiceCallCornerRadius = style.cornerRadius
+            if (style.strokeWidth != 0) voiceCallStrokeWidth = style.strokeWidth
+            if (style.strokeColor != 0) voiceCallStrokeColor = style.strokeColor
+            if (style.buttonPadding != 0) voiceCallButtonPadding = style.buttonPadding
+        } else {
+            style.icon?.let { videoCallIcon = it }
+            if (style.iconTint != 0) videoCallIconTint = style.iconTint
+            if (style.iconSize != 0) videoCallIconSize = style.iconSize
+            if (style.textColor != 0) videoCallTextColor = style.textColor
+            if (style.textAppearance != 0) videoCallTextAppearance = style.textAppearance
+            if (style.backgroundColor != 0) videoCallBackgroundColor = style.backgroundColor
+            if (style.cornerRadius != 0) videoCallCornerRadius = style.cornerRadius
+            if (style.strokeWidth != 0) videoCallStrokeWidth = style.strokeWidth
+            if (style.strokeColor != 0) videoCallStrokeColor = style.strokeColor
+            if (style.buttonPadding != 0) videoCallButtonPadding = style.buttonPadding
+        }
+    }
+
+    /**
      * Applies a style resource to the call buttons.
      * @param styleRes The style resource ID
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatCallButtons)
             try {

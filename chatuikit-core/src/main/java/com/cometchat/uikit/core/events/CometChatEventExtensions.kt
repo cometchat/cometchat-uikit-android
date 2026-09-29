@@ -143,7 +143,7 @@ internal class LifecycleAwareSubscription<T>(
  * @param onEvent Callback invoked when any message event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageEvents(
+public fun LifecycleOwner.onMessageEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatMessageEvent) -> Unit
@@ -165,7 +165,7 @@ fun LifecycleOwner.onMessageEvents(
  * @param onEvent Callback invoked when any user event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onUserEvents(
+public fun LifecycleOwner.onUserEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatUserEvent) -> Unit
@@ -187,7 +187,7 @@ fun LifecycleOwner.onUserEvents(
  * @param onEvent Callback invoked when any group event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onGroupEvents(
+public fun LifecycleOwner.onGroupEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatGroupEvent) -> Unit
@@ -209,7 +209,7 @@ fun LifecycleOwner.onGroupEvents(
  * @param onEvent Callback invoked when any call event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onCallEvents(
+public fun LifecycleOwner.onCallEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatCallEvent) -> Unit
@@ -231,7 +231,7 @@ fun LifecycleOwner.onCallEvents(
  * @param onEvent Callback invoked when any conversation event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onConversationEvents(
+public fun LifecycleOwner.onConversationEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatConversationEvent) -> Unit
@@ -253,7 +253,7 @@ fun LifecycleOwner.onConversationEvents(
  * @param onEvent Callback invoked when any UI event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onUIEvents(
+public fun LifecycleOwner.onUIEvents(
     startEvent: Lifecycle.Event = Lifecycle.Event.ON_START,
     stopEvent: Lifecycle.Event = Lifecycle.Event.ON_STOP,
     onEvent: (CometChatUIEvent) -> Unit
@@ -276,7 +276,7 @@ fun LifecycleOwner.onUIEvents(
  * @param onEvent Callback invoked when a message is sent
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageSent(
+public fun LifecycleOwner.onMessageSent(
     onEvent: (BaseMessage, MessageStatus) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageSent) {
@@ -290,7 +290,7 @@ fun LifecycleOwner.onMessageSent(
  * @param onEvent Callback invoked when a message is edited
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageEdited(
+public fun LifecycleOwner.onMessageEdited(
     onEvent: (BaseMessage, MessageStatus) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageEdited) {
@@ -304,7 +304,7 @@ fun LifecycleOwner.onMessageEdited(
  * @param onEvent Callback invoked when a message is deleted
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageDeleted(
+public fun LifecycleOwner.onMessageDeleted(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageDeleted) {
@@ -318,7 +318,7 @@ fun LifecycleOwner.onMessageDeleted(
  * @param onEvent Callback invoked when a message is pinned
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessagePinned(
+public fun LifecycleOwner.onMessagePinned(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessagePinned) {
@@ -332,7 +332,7 @@ fun LifecycleOwner.onMessagePinned(
  * @param onEvent Callback invoked when a message is unpinned
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageUnpinned(
+public fun LifecycleOwner.onMessageUnpinned(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageUnpinned) {
@@ -346,7 +346,7 @@ fun LifecycleOwner.onMessageUnpinned(
  * @param onEvent Callback invoked when a message is saved
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageSaved(
+public fun LifecycleOwner.onMessageSaved(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageSaved) {
@@ -360,7 +360,7 @@ fun LifecycleOwner.onMessageSaved(
  * @param onEvent Callback invoked when a message is unsaved
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageUnsaved(
+public fun LifecycleOwner.onMessageUnsaved(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageUnsaved) {
@@ -374,7 +374,7 @@ fun LifecycleOwner.onMessageUnsaved(
  * @param onEvent Callback invoked when a message is read
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageRead(
+public fun LifecycleOwner.onMessageRead(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessageRead) {
@@ -388,7 +388,7 @@ fun LifecycleOwner.onMessageRead(
  * @param onEvent Callback invoked when any message is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessageReceived(
+public fun LifecycleOwner.onMessageReceived(
     onEvent: (BaseMessage) -> Unit
 ): Job = onMessageEvents { event ->
     val message: BaseMessage? = when (event) {
@@ -406,7 +406,7 @@ fun LifecycleOwner.onMessageReceived(
  * @param onEvent Callback invoked when a text message is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onTextMessageReceived(
+public fun LifecycleOwner.onTextMessageReceived(
     onEvent: (TextMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.TextMessageReceived) {
@@ -420,7 +420,7 @@ fun LifecycleOwner.onTextMessageReceived(
  * @param onEvent Callback invoked when a media message is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMediaMessageReceived(
+public fun LifecycleOwner.onMediaMessageReceived(
     onEvent: (MediaMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MediaMessageReceived) {
@@ -434,7 +434,7 @@ fun LifecycleOwner.onMediaMessageReceived(
  * @param onEvent Callback invoked when a custom message is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onCustomMessageReceived(
+public fun LifecycleOwner.onCustomMessageReceived(
     onEvent: (CustomMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.CustomMessageReceived) {
@@ -448,7 +448,7 @@ fun LifecycleOwner.onCustomMessageReceived(
  * @param onEvent Callback invoked when typing starts
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onTypingStarted(
+public fun LifecycleOwner.onTypingStarted(
     onEvent: (TypingIndicator) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.TypingStarted) {
@@ -462,7 +462,7 @@ fun LifecycleOwner.onTypingStarted(
  * @param onEvent Callback invoked when typing ends
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onTypingEnded(
+public fun LifecycleOwner.onTypingEnded(
     onEvent: (TypingIndicator) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.TypingEnded) {
@@ -476,7 +476,7 @@ fun LifecycleOwner.onTypingEnded(
  * @param onEvent Callback invoked when messages are delivered
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessagesDelivered(
+public fun LifecycleOwner.onMessagesDelivered(
     onEvent: (MessageReceipt) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessagesDelivered) {
@@ -490,7 +490,7 @@ fun LifecycleOwner.onMessagesDelivered(
  * @param onEvent Callback invoked when messages are read
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMessagesRead(
+public fun LifecycleOwner.onMessagesRead(
     onEvent: (MessageReceipt) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.MessagesRead) {
@@ -504,7 +504,7 @@ fun LifecycleOwner.onMessagesRead(
  * @param onEvent Callback invoked when a reaction is added
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onReactionAdded(
+public fun LifecycleOwner.onReactionAdded(
     onEvent: (ReactionEvent) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.ReactionAdded) {
@@ -518,7 +518,7 @@ fun LifecycleOwner.onReactionAdded(
  * @param onEvent Callback invoked when a reaction is removed
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onReactionRemoved(
+public fun LifecycleOwner.onReactionRemoved(
     onEvent: (ReactionEvent) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.ReactionRemoved) {
@@ -532,7 +532,7 @@ fun LifecycleOwner.onReactionRemoved(
  * @param onEvent Callback invoked when a transient message is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onTransientMessageReceived(
+public fun LifecycleOwner.onTransientMessageReceived(
     onEvent: (TransientMessage) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.TransientMessageReceived) {
@@ -546,7 +546,7 @@ fun LifecycleOwner.onTransientMessageReceived(
  * @param onEvent Callback invoked when a live reaction is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onLiveReaction(
+public fun LifecycleOwner.onLiveReaction(
     onEvent: (Int) -> Unit
 ): Job = onMessageEvents { event ->
     if (event is CometChatMessageEvent.LiveReaction) {
@@ -562,7 +562,7 @@ fun LifecycleOwner.onLiveReaction(
  * @param onEvent Callback invoked when a user is blocked
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onUserBlocked(
+public fun LifecycleOwner.onUserBlocked(
     onEvent: (User) -> Unit
 ): Job = onUserEvents { event ->
     if (event is CometChatUserEvent.UserBlocked) {
@@ -576,7 +576,7 @@ fun LifecycleOwner.onUserBlocked(
  * @param onEvent Callback invoked when a user is unblocked
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onUserUnblocked(
+public fun LifecycleOwner.onUserUnblocked(
     onEvent: (User) -> Unit
 ): Job = onUserEvents { event ->
     if (event is CometChatUserEvent.UserUnblocked) {
@@ -592,7 +592,7 @@ fun LifecycleOwner.onUserUnblocked(
  * @param onEvent Callback invoked when a group is created
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onGroupCreated(
+public fun LifecycleOwner.onGroupCreated(
     onEvent: (Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.GroupCreated) {
@@ -606,7 +606,7 @@ fun LifecycleOwner.onGroupCreated(
  * @param onEvent Callback invoked when a group is deleted
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onGroupDeleted(
+public fun LifecycleOwner.onGroupDeleted(
     onEvent: (Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.GroupDeleted) {
@@ -620,7 +620,7 @@ fun LifecycleOwner.onGroupDeleted(
  * @param onEvent Callback invoked when a user leaves a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onGroupLeft(
+public fun LifecycleOwner.onGroupLeft(
     onEvent: (Action, User, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.GroupLeft) {
@@ -634,7 +634,7 @@ fun LifecycleOwner.onGroupLeft(
  * @param onEvent Callback invoked when a user joins a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMemberJoined(
+public fun LifecycleOwner.onMemberJoined(
     onEvent: (User, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MemberJoined) {
@@ -648,7 +648,7 @@ fun LifecycleOwner.onMemberJoined(
  * @param onEvent Callback invoked when users are added to a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMembersAdded(
+public fun LifecycleOwner.onMembersAdded(
     onEvent: (List<Action>, List<User>, Group, User) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MembersAdded) {
@@ -662,7 +662,7 @@ fun LifecycleOwner.onMembersAdded(
  * @param onEvent Callback invoked when a user is kicked from a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMemberKicked(
+public fun LifecycleOwner.onMemberKicked(
     onEvent: (Action, User, User, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MemberKicked) {
@@ -676,7 +676,7 @@ fun LifecycleOwner.onMemberKicked(
  * @param onEvent Callback invoked when a user is banned from a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMemberBanned(
+public fun LifecycleOwner.onMemberBanned(
     onEvent: (Action, User, User, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MemberBanned) {
@@ -690,7 +690,7 @@ fun LifecycleOwner.onMemberBanned(
  * @param onEvent Callback invoked when a user is unbanned from a group
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMemberUnbanned(
+public fun LifecycleOwner.onMemberUnbanned(
     onEvent: (Action, User, User, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MemberUnbanned) {
@@ -704,7 +704,7 @@ fun LifecycleOwner.onMemberUnbanned(
  * @param onEvent Callback invoked when a group member's scope changes
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onMemberScopeChanged(
+public fun LifecycleOwner.onMemberScopeChanged(
     onEvent: (Action, User, String, String, Group) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.MemberScopeChanged) {
@@ -718,7 +718,7 @@ fun LifecycleOwner.onMemberScopeChanged(
  * @param onEvent Callback invoked when group ownership changes
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onOwnershipChanged(
+public fun LifecycleOwner.onOwnershipChanged(
     onEvent: (Group, GroupMember) -> Unit
 ): Job = onGroupEvents { event ->
     if (event is CometChatGroupEvent.OwnershipChanged) {
@@ -735,7 +735,7 @@ fun LifecycleOwner.onOwnershipChanged(
  * @param onEvent Callback invoked when an outgoing call is initiated
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onOutgoingCall(
+public fun LifecycleOwner.onOutgoingCall(
     onEvent: (Call) -> Unit
 ): Job = onCallEvents { event ->
     if (event is CometChatCallEvent.OutgoingCall) {
@@ -749,7 +749,7 @@ fun LifecycleOwner.onOutgoingCall(
  * @param onEvent Callback invoked when a call is accepted
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onCallAccepted(
+public fun LifecycleOwner.onCallAccepted(
     onEvent: (Call) -> Unit
 ): Job = onCallEvents { event ->
     if (event is CometChatCallEvent.CallAccepted) {
@@ -763,7 +763,7 @@ fun LifecycleOwner.onCallAccepted(
  * @param onEvent Callback invoked when a call is rejected
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onCallRejected(
+public fun LifecycleOwner.onCallRejected(
     onEvent: (Call) -> Unit
 ): Job = onCallEvents { event ->
     if (event is CometChatCallEvent.CallRejected) {
@@ -777,7 +777,7 @@ fun LifecycleOwner.onCallRejected(
  * @param onEvent Callback invoked when a call ends
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onCallEnded(
+public fun LifecycleOwner.onCallEnded(
     onEvent: (Call) -> Unit
 ): Job = onCallEvents { event ->
     if (event is CometChatCallEvent.CallEnded) {
@@ -793,7 +793,7 @@ fun LifecycleOwner.onCallEnded(
  * @param onEvent Callback invoked when a conversation is deleted
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onConversationDeleted(
+public fun LifecycleOwner.onConversationDeleted(
     onEvent: (Conversation) -> Unit
 ): Job = onConversationEvents { event ->
     if (event is CometChatConversationEvent.ConversationDeleted) {
@@ -809,7 +809,7 @@ fun LifecycleOwner.onConversationDeleted(
  * @param onEvent Callback invoked when the active chat changes
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onActiveChatChanged(
+public fun LifecycleOwner.onActiveChatChanged(
     onEvent: (Map<String, String>, BaseMessage?, User?, Group?, Int) -> Unit
 ): Job = onUIEvents { event ->
     if (event is CometChatUIEvent.ActiveChatChanged) {
@@ -823,7 +823,7 @@ fun LifecycleOwner.onActiveChatChanged(
  * @param onEvent Callback invoked for compose message actions
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onComposeMessage(
+public fun LifecycleOwner.onComposeMessage(
     onEvent: (String, String) -> Unit
 ): Job = onUIEvents { event ->
     if (event is CometChatUIEvent.ComposeMessage) {
@@ -837,7 +837,7 @@ fun LifecycleOwner.onComposeMessage(
  * @param onEvent Callback invoked when a chat should be opened
  * @return Job that can be cancelled to stop subscription early
  */
-fun LifecycleOwner.onOpenChat(
+public fun LifecycleOwner.onOpenChat(
     onEvent: (User?, Group?) -> Unit
 ): Job = onUIEvents { event ->
     if (event is CometChatUIEvent.OpenChat) {
@@ -854,7 +854,7 @@ fun LifecycleOwner.onOpenChat(
  * @param onEvent Callback invoked when any message event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onMessageEvents(
+public fun ViewModel.onMessageEvents(
     onEvent: (CometChatMessageEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.messageEvents.collect { event ->
@@ -869,7 +869,7 @@ fun ViewModel.onMessageEvents(
  * @param onEvent Callback invoked when any user event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onUserEvents(
+public fun ViewModel.onUserEvents(
     onEvent: (CometChatUserEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.userEvents.collect { event ->
@@ -884,7 +884,7 @@ fun ViewModel.onUserEvents(
  * @param onEvent Callback invoked when any group event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onGroupEvents(
+public fun ViewModel.onGroupEvents(
     onEvent: (CometChatGroupEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.groupEvents.collect { event ->
@@ -899,7 +899,7 @@ fun ViewModel.onGroupEvents(
  * @param onEvent Callback invoked when any call event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onCallEvents(
+public fun ViewModel.onCallEvents(
     onEvent: (CometChatCallEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.callEvents.collect { event ->
@@ -914,7 +914,7 @@ fun ViewModel.onCallEvents(
  * @param onEvent Callback invoked when any conversation event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onConversationEvents(
+public fun ViewModel.onConversationEvents(
     onEvent: (CometChatConversationEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.conversationEvents.collect { event ->
@@ -929,7 +929,7 @@ fun ViewModel.onConversationEvents(
  * @param onEvent Callback invoked when any UI event is received
  * @return Job that can be cancelled to stop subscription early
  */
-fun ViewModel.onUIEvents(
+public fun ViewModel.onUIEvents(
     onEvent: (CometChatUIEvent) -> Unit
 ): Job = viewModelScope.launch(Dispatchers.Main.immediate) {
     CometChatEvents.uiEvents.collect { event ->
@@ -946,7 +946,7 @@ fun ViewModel.onUIEvents(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of message events
  */
-fun ViewModel.messageEventsAsState(
+public fun ViewModel.messageEventsAsState(
     initial: CometChatMessageEvent? = null
 ): StateFlow<CometChatMessageEvent?> = CometChatEvents.messageEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)
@@ -958,7 +958,7 @@ fun ViewModel.messageEventsAsState(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of user events
  */
-fun ViewModel.userEventsAsState(
+public fun ViewModel.userEventsAsState(
     initial: CometChatUserEvent? = null
 ): StateFlow<CometChatUserEvent?> = CometChatEvents.userEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)
@@ -970,7 +970,7 @@ fun ViewModel.userEventsAsState(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of group events
  */
-fun ViewModel.groupEventsAsState(
+public fun ViewModel.groupEventsAsState(
     initial: CometChatGroupEvent? = null
 ): StateFlow<CometChatGroupEvent?> = CometChatEvents.groupEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)
@@ -982,7 +982,7 @@ fun ViewModel.groupEventsAsState(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of call events
  */
-fun ViewModel.callEventsAsState(
+public fun ViewModel.callEventsAsState(
     initial: CometChatCallEvent? = null
 ): StateFlow<CometChatCallEvent?> = CometChatEvents.callEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)
@@ -994,7 +994,7 @@ fun ViewModel.callEventsAsState(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of conversation events
  */
-fun ViewModel.conversationEventsAsState(
+public fun ViewModel.conversationEventsAsState(
     initial: CometChatConversationEvent? = null
 ): StateFlow<CometChatConversationEvent?> = CometChatEvents.conversationEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)
@@ -1006,7 +1006,7 @@ fun ViewModel.conversationEventsAsState(
  * @param initial The initial value for the StateFlow (default: null)
  * @return StateFlow of UI events
  */
-fun ViewModel.uiEventsAsState(
+public fun ViewModel.uiEventsAsState(
     initial: CometChatUIEvent? = null
 ): StateFlow<CometChatUIEvent?> = CometChatEvents.uiEvents
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initial)

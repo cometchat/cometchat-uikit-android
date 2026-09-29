@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.GroupsRepository
  * 
  * @param repository The repository to fetch groups from
  */
-open class FetchGroupsUseCase(
+open public class FetchGroupsUseCase(
     private val repository: GroupsRepository
 ) {
     /**
@@ -18,7 +18,7 @@ open class FetchGroupsUseCase(
      * @param request The configured GroupsRequest
      * @return Result containing list of groups or error
      */
-    open suspend operator fun invoke(request: GroupsRequest): Result<List<Group>> {
+    open suspend operator public fun invoke(request: GroupsRequest): Result<List<Group>> {
         return repository.fetchGroups(request)
     }
     
@@ -26,5 +26,5 @@ open class FetchGroupsUseCase(
      * Checks if there are more groups available for pagination.
      * @return true if more groups can be fetched
      */
-    open fun hasMore(): Boolean = repository.hasMoreGroups()
+    open public fun hasMore(): Boolean = repository.hasMoreGroups()
 }

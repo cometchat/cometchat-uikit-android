@@ -26,18 +26,18 @@ package com.cometchat.uikit.core.formatter
  *
  * Platform-agnostic — shared by Jetpack Compose and Kotlin XML UI kits.
  */
-class RichTextEditorController(
-    val state: RichTextEditorState = RichTextEditorState()
+public class RichTextEditorController(
+    public val state: RichTextEditorState = RichTextEditorState()
 ) {
 
-    interface Listener {
-        fun onStateChanged()
+    public interface Listener {
+        public fun onStateChanged()
     }
 
     private var listener: Listener? = null
     private var mentionSpanProvider: MentionSpanProvider? = null
 
-    fun setListener(listener: Listener?) {
+    public fun setListener(listener: Listener?) {
         this.listener = listener
     }
 
@@ -45,7 +45,7 @@ class RichTextEditorController(
      * Sets the mention span provider that allows the controller to query and
      * manipulate mention spans when code formatting is applied or removed.
      */
-    fun setMentionSpanProvider(provider: MentionSpanProvider?) {
+    public fun setMentionSpanProvider(provider: MentionSpanProvider?) {
         this.mentionSpanProvider = provider
     }
 
@@ -59,7 +59,7 @@ class RichTextEditorController(
      * Called by the UI layer whenever the text field value changes.
      * Detects insertions/deletions via diff, adjusts spans, applies pending formats.
      */
-    fun onTextChanged(newText: String, newSelectionStart: Int, newSelectionEnd: Int) {
+    public fun onTextChanged(newText: String, newSelectionStart: Int, newSelectionEnd: Int) {
         val oldText = state.text
         val manager = state.spanManager
 
@@ -605,7 +605,7 @@ class RichTextEditorController(
      * Returns true if the pattern was detected (caller should handle code block insertion).
      * This is called by SegmentComposerController, not directly by onTextChanged.
      */
-    fun detectTripleBacktickShortcut(): Boolean {
+    public fun detectTripleBacktickShortcut(): Boolean {
         val text = state.text
         val cursor = state.selectionStart
         if (!state.isCursorCollapsed || cursor < 3) return false
@@ -636,7 +636,7 @@ class RichTextEditorController(
      *
      * Public entry point for custom trailing-toolbar buttons via [ComposerInputController].
      */
-    fun insertAtCursor(textToInsert: String) {
+    public fun insertAtCursor(textToInsert: String) {
         val start = minOf(state.selectionStart, state.selectionEnd)
         val end = maxOf(state.selectionStart, state.selectionEnd)
         val newText = state.text.substring(0, start) + textToInsert + state.text.substring(end)
@@ -648,14 +648,14 @@ class RichTextEditorController(
      * Replace the current selection with [replacement]; degrades to [insertAtCursor] when the
      * caret is collapsed.
      */
-    fun replaceSelection(replacement: String) = insertAtCursor(replacement)
+    public fun replaceSelection(replacement: String): Unit = insertAtCursor(replacement)
 
     // ==================== Format Toggle ====================
 
     /**
      * Toggles a format. Behavior depends on whether there's a selection or just a cursor.
      */
-    fun toggleFormat(format: RichTextFormat) {
+    public fun toggleFormat(format: RichTextFormat) {
         // Check compatibility
         if (!FormatCompatibility.isCompatible(format, state.activeFormats - setOf(format))) {
             return
@@ -826,7 +826,7 @@ class RichTextEditorController(
      * @param start Inclusive start of the range
      * @param end Exclusive end of the range
      */
-    fun consumeMentionsInRange(start: Int, end: Int) {
+    public fun consumeMentionsInRange(start: Int, end: Int) {
         val provider = mentionSpanProvider ?: return
         val mentions = provider.getMentionsInRange(start, end)
         if (mentions.isEmpty()) return
@@ -860,7 +860,7 @@ class RichTextEditorController(
      * @param start Inclusive start of the range
      * @param end Exclusive end of the range
      */
-    fun restoreMentionsInRange(start: Int, end: Int) {
+    public fun restoreMentionsInRange(start: Int, end: Int) {
         val provider = mentionSpanProvider ?: return
         val consumedEntries = state.consumedMentionSpans.entries
             .filter { (pos, _) -> pos in start until end }
@@ -877,7 +877,7 @@ class RichTextEditorController(
 
     // ==================== Link ====================
 
-    fun applyLink(displayText: String, url: String) {
+    public fun applyLink(displayText: String, url: String) {
         val text = state.text
         val selStart = state.selectionStart
         val selEnd = state.selectionEnd
@@ -923,7 +923,7 @@ class RichTextEditorController(
     /**
      * Removes the LINK format from the span at [spanStart]..[spanEnd] but keeps the text.
      */
-    fun removeLink(spanStart: Int, spanEnd: Int) {
+    public fun removeLink(spanStart: Int, spanEnd: Int) {
         state.spanManager.removeFormat(spanStart, spanEnd, RichTextFormat.LINK)
         state.spanManager.removeLinkUrl(spanStart)
         notifyChanged()
@@ -933,7 +933,7 @@ class RichTextEditorController(
      * Replaces an existing link span at [oldStart]..[oldEnd] with new display text and URL.
      * Removes the old link, replaces the text, and applies a new link span.
      */
-    fun editLink(oldStart: Int, oldEnd: Int, newDisplayText: String, newUrl: String) {
+    public fun editLink(oldStart: Int, oldEnd: Int, newDisplayText: String, newUrl: String) {
         val text = state.text
 
         // Remove old link format and URL
@@ -966,9 +966,9 @@ class RichTextEditorController(
 
     // ==================== Serialization ====================
 
-    fun toMarkdown(): String = state.spanManager.toMarkdown(state.text)
+    public fun toMarkdown(): String = state.spanManager.toMarkdown(state.text)
 
-    fun fromMarkdown(markdown: String) {
+    public fun fromMarkdown(markdown: String) {
         val (plainText, spans) = state.spanManager.fromMarkdown(markdown)
         // Save link URLs that were parsed during fromMarkdown before clearing
         val parsedLinkUrls = state.spanManager.linkUrlMap.toMap()
@@ -987,7 +987,7 @@ class RichTextEditorController(
         notifyChanged()
     }
 
-    fun clear() {
+    public fun clear() {
         state.clear()
         notifyChanged()
     }

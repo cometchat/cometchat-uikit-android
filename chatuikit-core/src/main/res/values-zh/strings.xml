@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">复制</string>
+    <string name="cometchat_delete" translatable="true">删除</string>
+    <string name="cometchat_edit" translatable="true">编辑</string>
+    <string name="cometchat_info" translatable="true">"信息"</string>
+    <string name="cometchat_mark_unread" translatable="true">标记为未读</string>
+    <string name="cometchat_message_privately" translatable="true">私信</string>
+    <string name="cometchat_pin" translatable="true">置顶消息</string>
+    <string name="cometchat_reply" translatable="true">回复</string>
+    <string name="cometchat_reply_uppercase" translatable="true">在会话串中回复</string>
+    <string name="cometchat_report" translatable="true">举报</string>
+    <string name="cometchat_save" translatable="true">保存消息</string>
+    <string name="cometchat_share" translatable="true">分享</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">订阅讨论串</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">取消订阅讨论串</string>
+    <string name="cometchat_translate" translatable="true">翻译</string>
+    <string name="cometchat_unpin" translatable="true">取消置顶消息</string>
+    <string name="cometchat_unsave" translatable="true">取消保存消息</string>
+</resources>

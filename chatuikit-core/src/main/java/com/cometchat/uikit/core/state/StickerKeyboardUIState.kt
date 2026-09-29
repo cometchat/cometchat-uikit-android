@@ -16,25 +16,25 @@ import com.cometchat.chat.exceptions.CometChatException
  * Error --> Loading: Retry clicked
  * ```
  */
-sealed class StickerKeyboardUIState {
+sealed public class StickerKeyboardUIState {
     /**
      * Loading state - displayed while fetching stickers from the server.
      * The UI should show a shimmer effect or loading indicator.
      */
-    object Loading : StickerKeyboardUIState()
+    public object Loading : StickerKeyboardUIState()
 
     /**
      * Content state - displayed when stickers are available.
      * The actual sticker data is stored in the ViewModel's stickerSets StateFlow,
      * this state just indicates that content is ready to display.
      */
-    object Content : StickerKeyboardUIState()
+    public object Content : StickerKeyboardUIState()
 
     /**
      * Empty state - displayed when no stickers are available.
      * The UI should show an empty state message.
      */
-    object Empty : StickerKeyboardUIState()
+    public object Empty : StickerKeyboardUIState()
 
     /**
      * Error state - displayed when fetching stickers fails.
@@ -42,5 +42,5 @@ sealed class StickerKeyboardUIState {
      *
      * @property exception The exception that caused the error
      */
-    data class Error(val exception: CometChatException) : StickerKeyboardUIState()
+    public data class Error(val exception: CometChatException) : StickerKeyboardUIState()
 }

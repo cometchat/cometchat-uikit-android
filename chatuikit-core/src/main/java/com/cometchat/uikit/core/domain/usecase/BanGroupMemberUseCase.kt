@@ -8,7 +8,7 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  * 
  * @param repository The repository to perform ban operation
  */
-open class BanGroupMemberUseCase(
+open public class BanGroupMemberUseCase(
     private val repository: GroupMembersRepository
 ) {
     /**
@@ -17,7 +17,7 @@ open class BanGroupMemberUseCase(
      * @param uid The user ID to ban
      * @return Result indicating success or failure
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         guid: String,
         uid: String
     ): Result<Unit> {

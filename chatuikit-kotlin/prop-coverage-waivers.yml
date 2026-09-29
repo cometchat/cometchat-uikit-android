@@ -1,0 +1,32 @@
+# ENG-38678 — prop-coverage waivers for the View (chatuikit-kotlin) toolkit.
+# Format: ENG-38956 WaiverSet (owner / name / reason / by). A waiver removes a
+# prop from the coverage denominator; it is only for props that genuinely cannot
+# be matrixed, never to hide a missing test.
+
+# --- CometChatSearch (component) ---
+- owner: CometChatSearch
+  name: ViewModel
+  reason: DI/infra injection, not an integrator styling or behaviour prop
+  by: ENG-38678
+- owner: CometChatSearch
+  name: Style
+  reason: whole-style object; matrixed field-by-field by the CometChatSearchStyle sweep
+  by: ENG-38678
+
+# --- CometChatSearchStyle (View) nested style objects: matrixed by their own components ---
+- owner: CometChatSearchStyle
+  name: avatarStyle
+  reason: nested CometChatAvatarStyle; matrixed by the Avatar component's own style
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: badgeStyle
+  reason: nested badge style; matrixed by the Badge component's own style
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: dateSeparatorStyle
+  reason: nested date-separator style; matrixed by its own component
+  by: ENG-38678
+- owner: CometChatSearchStyle
+  name: statusIndicatorStyle
+  reason: nested status-indicator style; matrixed by its own component
+  by: ENG-38678

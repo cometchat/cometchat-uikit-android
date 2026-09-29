@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.StickerRepository
  *
  * @param repository The repository to fetch stickers from
  */
-open class GetStickersUseCase(
+open public class GetStickersUseCase(
     private val repository: StickerRepository
 ) {
     /**
@@ -20,7 +20,7 @@ open class GetStickersUseCase(
      *
      * @return Result containing list of StickerSet objects or error
      */
-    open suspend operator fun invoke(): Result<List<StickerSet>> {
+    open suspend operator public fun invoke(): Result<List<StickerSet>> {
         return repository.getStickers()
     }
 }

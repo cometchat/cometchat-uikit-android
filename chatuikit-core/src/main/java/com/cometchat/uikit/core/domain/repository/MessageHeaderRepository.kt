@@ -13,7 +13,7 @@ import com.cometchat.chat.models.User
  * The message header component uses this repository to fetch user and group
  * information for display in the conversation header.
  */
-interface MessageHeaderRepository {
+public interface MessageHeaderRepository {
 
     /**
      * Fetches a user by their UID.
@@ -24,7 +24,7 @@ interface MessageHeaderRepository {
      * @param uid The unique identifier of the user
      * @return Result containing User on success or error on failure
      */
-    suspend fun getUser(uid: String): Result<User>
+    suspend public fun getUser(uid: String): Result<User>
 
     /**
      * Fetches a group by their GUID.
@@ -35,5 +35,5 @@ interface MessageHeaderRepository {
      * @param guid The unique identifier of the group
      * @return Result containing Group on success or error on failure
      */
-    suspend fun getGroup(guid: String): Result<Group>
+    suspend public fun getGroup(guid: String): Result<Group>
 }

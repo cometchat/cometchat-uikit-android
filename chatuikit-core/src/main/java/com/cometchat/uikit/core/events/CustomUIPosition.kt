@@ -4,7 +4,7 @@ package com.cometchat.uikit.core.events
  * Enum representing the position of custom UI panels.
  * Maps to the Java UIKitConstants.CustomUIPosition enum for compatibility.
  */
-enum class CustomUIPosition {
+public enum class CustomUIPosition {
     /**
      * Position at the top of the message composer.
      */

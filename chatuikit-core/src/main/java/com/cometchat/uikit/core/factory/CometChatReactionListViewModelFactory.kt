@@ -18,7 +18,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatReactionListViewModel
  * @param enableListeners Whether to enable CometChat listeners. Set to false for previews/testing.
  *                        Defaults to true for production use.
  */
-class CometChatReactionListViewModelFactory(
+public class CometChatReactionListViewModelFactory(
     private val repository: ReactionListRepository = ReactionListRepositoryImpl(
         ReactionListDataSourceImpl()
     ),

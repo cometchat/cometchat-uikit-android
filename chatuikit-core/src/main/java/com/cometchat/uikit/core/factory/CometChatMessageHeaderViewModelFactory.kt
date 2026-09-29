@@ -21,7 +21,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
  * @param enableListeners Whether to enable CometChat listeners. Set to false for testing
  *                        to avoid side effects from real-time updates.
  */
-class CometChatMessageHeaderViewModelFactory(
+public class CometChatMessageHeaderViewModelFactory(
     private val repository: MessageHeaderRepository = MessageHeaderRepositoryImpl(
         MessageHeaderDataSourceImpl()
     ),

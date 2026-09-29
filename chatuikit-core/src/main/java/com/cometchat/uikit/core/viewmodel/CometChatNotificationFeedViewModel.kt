@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.core.CometChat
@@ -13,6 +12,7 @@ import com.cometchat.chat.models.NotificationFeedItem
 import com.cometchat.uikit.core.state.FilterChipState
 import com.cometchat.uikit.core.state.NotificationFeedUIState
 import com.cometchat.uikit.core.state.TimestampGroup
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @param enableListeners Whether to enable WebSocket listeners (false for testing)
  * @param pollingIntervalMs Interval for unread count polling (default: 30000ms)
  */
-open class CometChatNotificationFeedViewModel(
+open public class CometChatNotificationFeedViewModel(
     private val feedRequestBuilder: NotificationFeedRequest.NotificationFeedRequestBuilder? = null,
     private val categoriesRequestBuilder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder? = null,
     private val enableListeners: Boolean = true,
@@ -52,51 +52,51 @@ open class CometChatNotificationFeedViewModel(
 
     /** Current screen state (Loading, Content, Empty, Error) */
     private val _uiState = MutableStateFlow<NotificationFeedUIState>(NotificationFeedUIState.Loading)
-    val uiState: StateFlow<NotificationFeedUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<NotificationFeedUIState> = _uiState.asStateFlow()
 
     /** Raw feed items list (ungrouped) */
     private val _feedItems = MutableStateFlow<List<NotificationFeedItem>>(emptyList())
-    val feedItems: StateFlow<List<NotificationFeedItem>> = _feedItems.asStateFlow()
+    public val feedItems: StateFlow<List<NotificationFeedItem>> = _feedItems.asStateFlow()
 
     /** Available categories from server */
     private val _categories = MutableStateFlow<List<NotificationCategory>>(emptyList())
-    val categories: StateFlow<List<NotificationCategory>> = _categories.asStateFlow()
+    public val categories: StateFlow<List<NotificationCategory>> = _categories.asStateFlow()
 
     /** Currently active category filter (null = "All") */
     private val _activeCategory = MutableStateFlow<String?>(null)
-    val activeCategory: StateFlow<String?> = _activeCategory.asStateFlow()
+    public val activeCategory: StateFlow<String?> = _activeCategory.asStateFlow()
 
     /** Filter chip states (computed from categories + active + unread counts) */
     private val _filterChips = MutableStateFlow<List<FilterChipState>>(emptyList())
-    val filterChips: StateFlow<List<FilterChipState>> = _filterChips.asStateFlow()
+    public val filterChips: StateFlow<List<FilterChipState>> = _filterChips.asStateFlow()
 
     /** Total unread count */
     private val _totalUnreadCount = MutableStateFlow(0)
-    val totalUnreadCount: StateFlow<Int> = _totalUnreadCount.asStateFlow()
+    public val totalUnreadCount: StateFlow<Int> = _totalUnreadCount.asStateFlow()
 
     /** Per-category unread counts */
     private val _categoryUnreadCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val categoryUnreadCounts: StateFlow<Map<String, Int>> = _categoryUnreadCounts.asStateFlow()
+    public val categoryUnreadCounts: StateFlow<Map<String, Int>> = _categoryUnreadCounts.asStateFlow()
 
     /** Whether more pages are available */
     private val _hasMorePages = MutableStateFlow(true)
-    val hasMorePages: StateFlow<Boolean> = _hasMorePages.asStateFlow()
+    public val hasMorePages: StateFlow<Boolean> = _hasMorePages.asStateFlow()
 
     /** Whether a pagination fetch is in progress */
     private val _isLoadingMore = MutableStateFlow(false)
-    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
+    public val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
     /** Whether a refresh is in progress */
     private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+    public val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     /** Whether pagination failed (show retry) */
     private val _isPaginationError = MutableStateFlow(false)
-    val isPaginationError: StateFlow<Boolean> = _isPaginationError.asStateFlow()
+    public val isPaginationError: StateFlow<Boolean> = _isPaginationError.asStateFlow()
 
     /** Event emitted when a new item is received via WebSocket (for scroll-to-top) */
     private val _newItemEvent = MutableSharedFlow<Unit>()
-    val newItemEvent: SharedFlow<Unit> = _newItemEvent.asSharedFlow()
+    public val newItemEvent: SharedFlow<Unit> = _newItemEvent.asSharedFlow()
 
     // endregion
 
@@ -154,7 +154,7 @@ open class CometChatNotificationFeedViewModel(
      * Fetches notification categories from the server.
      * Populates filter chips with "All" + server categories.
      */
-    fun fetchCategories() {
+    public fun fetchCategories() {
         viewModelScope.launch {
             val request = categoriesRequest ?: run {
                 val builder = categoriesRequestBuilder
@@ -182,7 +182,7 @@ open class CometChatNotificationFeedViewModel(
      * Fetches the initial page of feed items.
      * Shows loading state, then transitions to content/empty/error.
      */
-    fun fetchInitialItems() {
+    public fun fetchInitialItems() {
         if (isFetching) return
         isFetching = true
         _uiState.value = NotificationFeedUIState.Loading
@@ -217,7 +217,7 @@ open class CometChatNotificationFeedViewModel(
      * Fetches the next page of feed items (infinite scroll trigger).
      * Appends results to existing items.
      */
-    fun fetchNextPage() {
+    public fun fetchNextPage() {
         if (isFetching || !_hasMorePages.value || _isLoadingMore.value) return
 
         _isLoadingMore.value = true
@@ -245,7 +245,7 @@ open class CometChatNotificationFeedViewModel(
     /**
      * Pull-to-refresh: resets pagination and fetches fresh data.
      */
-    fun refresh() {
+    public fun refresh() {
         if (_isRefreshing.value) return
         _isRefreshing.value = true
 
@@ -280,7 +280,7 @@ open class CometChatNotificationFeedViewModel(
      *
      * @param categoryId Category ID to filter by, or null for "All"
      */
-    fun switchCategory(categoryId: String?) {
+    public fun switchCategory(categoryId: String?) {
         if (_activeCategory.value == categoryId) return
         _activeCategory.value = categoryId
         updateFilterChips()
@@ -310,7 +310,7 @@ open class CometChatNotificationFeedViewModel(
     /**
      * Reports a single item as delivered.
      */
-    fun reportDelivered(item: NotificationFeedItem) {
+    public fun reportDelivered(item: NotificationFeedItem) {
         CometChat.markFeedItemAsDelivered(item, object : CometChat.CallbackListener<Void?>() {
             override fun onSuccess(result: Void?) {
                 // Fire-and-forget success
@@ -351,7 +351,7 @@ open class CometChatNotificationFeedViewModel(
      *
      * @param item The item that became visible
      */
-    fun onItemBecameVisible(item: NotificationFeedItem) {
+    public fun onItemBecameVisible(item: NotificationFeedItem) {
         if (item.id == null) return
 
         // Start 1-second timer for read
@@ -374,7 +374,7 @@ open class CometChatNotificationFeedViewModel(
      *
      * @param item The item that left the viewport
      */
-    fun onItemBecameHidden(item: NotificationFeedItem) {
+    public fun onItemBecameHidden(item: NotificationFeedItem) {
         if (item.id == null) return
         visibleItems.remove(item.id)
     }
@@ -386,7 +386,7 @@ open class CometChatNotificationFeedViewModel(
     private fun registerListener() {
         CometChat.addNotificationFeedListener(listenerId, object : NotificationFeedListener() {
             override fun onFeedItemReceived(feedItem: NotificationFeedItem) {
-                Log.i("TAG", "onFeedItemReceived: item received via ws: ${feedItem.category}")
+                CometChatLogger.i("TAG", "onFeedItemReceived: item received via ws: ${feedItem.category}")
                 onNewFeedItemReceived(feedItem)
             }
         })
@@ -396,7 +396,7 @@ open class CometChatNotificationFeedViewModel(
      * Handles a new feed item received via WebSocket.
      * Inserts at top of list and reports delivery.
      */
-    fun onNewFeedItemReceived(item: NotificationFeedItem) {
+    public fun onNewFeedItemReceived(item: NotificationFeedItem) {
         viewModelScope.launch {
             // Check if item matches current category filter
             val currentCategory = _activeCategory.value
@@ -431,7 +431,7 @@ open class CometChatNotificationFeedViewModel(
     /**
      * Starts polling for unread counts at the configured interval.
      */
-    fun startUnreadCountPolling() {
+    public fun startUnreadCountPolling() {
         stopUnreadCountPolling()
         pollingJob = viewModelScope.launch {
             while (true) {
@@ -444,7 +444,7 @@ open class CometChatNotificationFeedViewModel(
     /**
      * Stops the unread count polling.
      */
-    fun stopUnreadCountPolling() {
+    public fun stopUnreadCountPolling() {
         pollingJob?.cancel()
         pollingJob = null
     }
@@ -479,7 +479,7 @@ open class CometChatNotificationFeedViewModel(
      * @param locale Locale for date formatting (default: system default)
      * @return List of TimestampGroups ordered newest to oldest
      */
-    fun groupByTimestamp(
+    public fun groupByTimestamp(
         items: List<NotificationFeedItem>,
         locale: Locale = Locale.getDefault()
     ): List<TimestampGroup> {
@@ -643,18 +643,18 @@ open class CometChatNotificationFeedViewModel(
 
     // region ListOperations Implementation
 
-    override fun addItem(item: NotificationFeedItem) = listDelegate.addItem(item)
-    override fun addItems(items: List<NotificationFeedItem>) = listDelegate.addItems(items)
+    override fun addItem(item: NotificationFeedItem): Unit = listDelegate.addItem(item)
+    override fun addItems(items: List<NotificationFeedItem>): Unit = listDelegate.addItems(items)
     override fun removeItem(item: NotificationFeedItem): Boolean = listDelegate.removeItem(item)
     override fun removeItemAt(index: Int): NotificationFeedItem? = listDelegate.removeItemAt(index)
     override fun updateItem(item: NotificationFeedItem, predicate: (NotificationFeedItem) -> Boolean): Boolean =
         listDelegate.updateItem(item, predicate)
-    override fun clearItems() = listDelegate.clearItems()
+    override fun clearItems(): Unit = listDelegate.clearItems()
     override fun getItems(): List<NotificationFeedItem> = listDelegate.getItems()
     override fun getItemAt(index: Int): NotificationFeedItem? = listDelegate.getItemAt(index)
     override fun getItemCount(): Int = listDelegate.getItemCount()
-    override fun moveItemToTop(item: NotificationFeedItem) = listDelegate.moveItemToTop(item)
-    override fun batch(operations: ListOperationsBatchScope<NotificationFeedItem>.() -> Unit) =
+    override fun moveItemToTop(item: NotificationFeedItem): Unit = listDelegate.moveItemToTop(item)
+    override fun batch(operations: ListOperationsBatchScope<NotificationFeedItem>.() -> Unit): Unit =
         listDelegate.batch(operations)
 
     // endregion

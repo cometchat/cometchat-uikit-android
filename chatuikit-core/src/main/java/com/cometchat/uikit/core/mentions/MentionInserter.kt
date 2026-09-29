@@ -6,7 +6,7 @@ package com.cometchat.uikit.core.mentions
  * This utility class provides methods to insert mentions with proper formatting
  * and store the underlying text for message processing.
  */
-object MentionInserter {
+public object MentionInserter {
 
     /**
      * Result of a mention insertion operation.
@@ -16,7 +16,7 @@ object MentionInserter {
      * @property promptText The display text (e.g., "@username")
      * @property underlyingText The underlying text for message processing (e.g., "<@uid:123>")
      */
-    data class InsertionResult(
+    public data class InsertionResult(
         val newText: String,
         val newCursorPosition: Int,
         val promptText: String,
@@ -35,7 +35,7 @@ object MentionInserter {
      * @param underlyingText The underlying text for processing (e.g., "<@uid:123>")
      * @return InsertionResult with the new text and cursor position
      */
-    fun calculateInsertion(
+    public fun calculateInsertion(
         currentText: String,
         triggerIndex: Int,
         cursorPosition: Int,
@@ -74,7 +74,7 @@ object MentionInserter {
      * @param mentions Map of prompt text to underlying text
      * @return The processed text with underlying mention format
      */
-    fun replacePromptsWithUnderlying(
+    public fun replacePromptsWithUnderlying(
         text: String,
         mentions: Map<String, String>
     ): String {
@@ -96,7 +96,7 @@ object MentionInserter {
  * @property spanStart The start index of the span in the text
  * @property spanEnd The end index of the span in the text
  */
-data class SelectedMention(
+public data class SelectedMention(
     val id: String,
     val name: String,
     val promptText: String,
@@ -111,13 +111,13 @@ data class SelectedMention(
  * This class maintains a list of selected mentions and provides methods
  * to add, remove, and process mentions.
  */
-class SelectedMentionsManager {
+public class SelectedMentionsManager {
     private val selectedMentions = mutableListOf<SelectedMention>()
 
     /**
      * Adds a selected mention.
      */
-    fun addMention(mention: SelectedMention) {
+    public fun addMention(mention: SelectedMention) {
         // Remove any existing mention with the same ID
         selectedMentions.removeAll { it.id == mention.id }
         selectedMentions.add(mention)
@@ -126,33 +126,33 @@ class SelectedMentionsManager {
     /**
      * Removes a mention by ID.
      */
-    fun removeMention(id: String) {
+    public fun removeMention(id: String) {
         selectedMentions.removeAll { it.id == id }
     }
 
     /**
      * Removes a mention at a specific position.
      */
-    fun removeMentionAt(position: Int) {
+    public fun removeMentionAt(position: Int) {
         selectedMentions.removeAll { position in it.spanStart..it.spanEnd }
     }
 
     /**
      * Gets all selected mentions.
      */
-    fun getMentions(): List<SelectedMention> = selectedMentions.toList()
+    public fun getMentions(): List<SelectedMention> = selectedMentions.toList()
 
     /**
      * Clears all selected mentions.
      */
-    fun clear() {
+    public fun clear() {
         selectedMentions.clear()
     }
 
     /**
      * Gets the prompt to underlying text mapping.
      */
-    fun getPromptToUnderlyingMap(): Map<String, String> {
+    public fun getPromptToUnderlyingMap(): Map<String, String> {
         return selectedMentions.associate { it.promptText to it.underlyingText }
     }
 
@@ -162,7 +162,7 @@ class SelectedMentionsManager {
      * @param changeStart The start position of the text change
      * @param changeLength The length of the change (positive for insertion, negative for deletion)
      */
-    fun updatePositions(changeStart: Int, changeLength: Int) {
+    public fun updatePositions(changeStart: Int, changeLength: Int) {
         val updatedMentions = selectedMentions.mapNotNull { mention ->
             when {
                 // Mention is before the change - no update needed
@@ -185,14 +185,14 @@ class SelectedMentionsManager {
     /**
      * Checks if a position is within a mention span.
      */
-    fun isPositionInMention(position: Int): Boolean {
+    public fun isPositionInMention(position: Int): Boolean {
         return selectedMentions.any { position in it.spanStart..it.spanEnd }
     }
 
     /**
      * Gets the mention at a specific position.
      */
-    fun getMentionAt(position: Int): SelectedMention? {
+    public fun getMentionAt(position: Int): SelectedMention? {
         return selectedMentions.find { position in it.spanStart..it.spanEnd }
     }
 }

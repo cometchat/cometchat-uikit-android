@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
  * @param initiateCallUseCase Use case for initiating calls
  * @param enableListeners Whether to enable CometChat listeners (set to false for testing)
  */
-open class CometChatCallLogsViewModel(
+open public class CometChatCallLogsViewModel(
     private val fetchCallLogsUseCase: FetchCallLogsUseCase,
     private val initiateCallUseCase: InitiateCallUseCase,
     private val enableListeners: Boolean = true
@@ -38,36 +38,36 @@ open class CometChatCallLogsViewModel(
     
     // UI State
     private val _uiState = MutableStateFlow<CallLogsUIState>(CallLogsUIState.Loading)
-    val uiState: StateFlow<CallLogsUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<CallLogsUIState> = _uiState.asStateFlow()
     
     // Call logs list
     private val _callLogs = MutableStateFlow<List<CallLog>>(emptyList())
-    val callLogs: StateFlow<List<CallLog>> = _callLogs.asStateFlow()
+    public val callLogs: StateFlow<List<CallLog>> = _callLogs.asStateFlow()
     
     // Initiated call event - emitted when a call is successfully initiated
     private val _initiatedCall = MutableSharedFlow<Call>()
-    val initiatedCall: SharedFlow<Call> = _initiatedCall.asSharedFlow()
+    public val initiatedCall: SharedFlow<Call> = _initiatedCall.asSharedFlow()
     
     // Scroll to top event - emits when list should scroll to top
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
-    val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+    public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
     
     // Index-based events for RecyclerView adapter notifications (chatuikit-kotlin compatibility)
     // Insert at top event - emits index 0 when item added to top
     private val _insertAtTopEvent = MutableSharedFlow<Int>()
-    val insertAtTopEvent: SharedFlow<Int> = _insertAtTopEvent.asSharedFlow()
+    public val insertAtTopEvent: SharedFlow<Int> = _insertAtTopEvent.asSharedFlow()
     
     // Move to top event - emits old index when item moved to top
     private val _moveToTopEvent = MutableSharedFlow<Int>()
-    val moveToTopEvent: SharedFlow<Int> = _moveToTopEvent.asSharedFlow()
+    public val moveToTopEvent: SharedFlow<Int> = _moveToTopEvent.asSharedFlow()
     
     // Update call event - emits index of updated item
     private val _updateCallEvent = MutableSharedFlow<Int>()
-    val updateCallEvent: SharedFlow<Int> = _updateCallEvent.asSharedFlow()
+    public val updateCallEvent: SharedFlow<Int> = _updateCallEvent.asSharedFlow()
     
     // Remove call event - emits index of removed item
     private val _removeCallEvent = MutableSharedFlow<Int>()
-    val removeCallEvent: SharedFlow<Int> = _removeCallEvent.asSharedFlow()
+    public val removeCallEvent: SharedFlow<Int> = _removeCallEvent.asSharedFlow()
     
     // List operations delegate
     // Using object equality (equals) like the original Java implementation
@@ -103,7 +103,7 @@ open class CometChatCallLogsViewModel(
      * Uses client's request builder if set, otherwise creates a default one.
      * Prevents concurrent fetches using isFetching flag.
      */
-    fun fetchCallLogs() {
+    public fun fetchCallLogs() {
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
         
@@ -152,7 +152,7 @@ open class CometChatCallLogsViewModel(
      * Refreshes the call logs list from the beginning.
      * Clears existing data and fetches fresh.
      */
-    fun refreshCallLogs() {
+    public fun refreshCallLogs() {
         hasMoreData = true
         isFetching = false
         callLogRequest = null
@@ -196,7 +196,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param callLog The call log to base the new call on
      */
-    fun initiateCall(callLog: CallLog) {
+    public fun initiateCall(callLog: CallLog) {
         // Determine call type from the call log
         val callType = callLog.type ?: CometChatCallsConstants.CALL_TYPE_AUDIO
         initiateCall(callLog, callType)
@@ -209,7 +209,7 @@ open class CometChatCallLogsViewModel(
      * @param callLog The call log to base the new call on
      * @param callType The type of call to initiate (audio/video)
      */
-    fun initiateCall(callLog: CallLog, callType: String) {
+    public fun initiateCall(callLog: CallLog, callType: String) {
         viewModelScope.launch {
             initiateCallUseCase(callLog, callType)
                 .onSuccess { call ->
@@ -229,7 +229,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param builder The custom request builder
      */
-    fun setCallLogRequestBuilder(builder: CallLogRequest.CallLogRequestBuilder) {
+    public fun setCallLogRequestBuilder(builder: CallLogRequest.CallLogRequestBuilder) {
         callLogRequestBuilder = builder
             .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
         callLogRequest = callLogRequestBuilder?.build()
@@ -240,14 +240,14 @@ open class CometChatCallLogsViewModel(
      * 
      * @param limit The maximum number of call logs per fetch
      */
-    fun setLimit(limit: Int) {
+    public fun setLimit(limit: Int) {
         this.limit = limit
     }
     
     /**
      * Clears all call logs from the list.
      */
-    fun clear() {
+    public fun clear() {
         _callLogs.value = emptyList()
         _uiState.value = CallLogsUIState.Empty
     }
@@ -262,7 +262,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param callLog The call log to add
      */
-    fun addToTop(callLog: CallLog) {
+    public fun addToTop(callLog: CallLog) {
         val currentList = _callLogs.value
         // Check if already exists using equals
         val exists = currentList.contains(callLog)
@@ -281,7 +281,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param callLog The call log to move
      */
-    fun moveToTop(callLog: CallLog) {
+    public fun moveToTop(callLog: CallLog) {
         val currentList = _callLogs.value.toMutableList()
         val oldIndex = currentList.indexOf(callLog)
         if (oldIndex > 0) {
@@ -302,7 +302,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param callLog The call log to update
      */
-    fun updateCall(callLog: CallLog) {
+    public fun updateCall(callLog: CallLog) {
         val currentList = _callLogs.value.toMutableList()
         val index = currentList.indexOf(callLog)
         if (index >= 0) {
@@ -322,7 +322,7 @@ open class CometChatCallLogsViewModel(
      * 
      * @param callLog The call log to remove
      */
-    fun removeCall(callLog: CallLog) {
+    public fun removeCall(callLog: CallLog) {
         val currentList = _callLogs.value.toMutableList()
         val index = currentList.indexOf(callLog)
         if (index >= 0) {
@@ -337,9 +337,9 @@ open class CometChatCallLogsViewModel(
     
     // ListOperations implementation
     
-    override fun addItem(item: CallLog) = listDelegate.addItem(item)
+    override fun addItem(item: CallLog): Unit = listDelegate.addItem(item)
     
-    override fun addItems(items: List<CallLog>) = listDelegate.addItems(items)
+    override fun addItems(items: List<CallLog>): Unit = listDelegate.addItems(items)
     
     override fun removeItem(item: CallLog): Boolean {
         val result = listDelegate.removeItem(item)

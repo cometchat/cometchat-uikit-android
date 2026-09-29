@@ -13,7 +13,7 @@ import kotlin.coroutines.resumeWithException
  * Builds a new [GroupMembersRequest] from the provided builder with the search keyword,
  * then fetches the first page of results directly from the CometChat SDK.
  */
-open class SearchGroupMembersUseCase {
+open public class SearchGroupMembersUseCase {
 
     /**
      * Searches group members using the given keyword and request builder.
@@ -22,7 +22,7 @@ open class SearchGroupMembersUseCase {
      * @param builder The request builder to use (search builder or fallback)
      * @return Result containing the list of matching group members or an error
      */
-    open suspend operator fun invoke(
+    open suspend operator public fun invoke(
         keyword: String,
         builder: GroupMembersRequest.GroupMembersRequestBuilder
     ): Result<List<GroupMember>> {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Kopiera</string>
+    <string name="cometchat_delete" translatable="true">Radera</string>
+    <string name="cometchat_edit" translatable="true">Redigera</string>
+    <string name="cometchat_info" translatable="true">"Info"</string>
+    <string name="cometchat_mark_unread" translatable="true">Markera som oläst</string>
+    <string name="cometchat_message_privately" translatable="true">Skicka privat meddelande</string>
+    <string name="cometchat_pin" translatable="true">Fäst meddelande</string>
+    <string name="cometchat_reply" translatable="true">Svara</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Svara i tråden</string>
+    <string name="cometchat_report" translatable="true">Rapportera</string>
+    <string name="cometchat_save" translatable="true">Spara meddelande</string>
+    <string name="cometchat_share" translatable="true">Dela</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Prenumerera på tråden</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Avsluta prenumeration på tråden</string>
+    <string name="cometchat_translate" translatable="true">Översätt</string>
+    <string name="cometchat_unpin" translatable="true">Lossa meddelande</string>
+    <string name="cometchat_unsave" translatable="true">Ta bort meddelande från sparade</string>
+</resources>

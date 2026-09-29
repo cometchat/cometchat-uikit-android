@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat
  * Implements DiffUtil for efficient list updates.
  * Supports custom item views and section views (leading, title, subtitle, trailing).
  */
-class ConversationsAdapter(
+internal class ConversationsAdapter(
 ) : RecyclerView.Adapter<ConversationsViewHolder>() {
 
     companion object {

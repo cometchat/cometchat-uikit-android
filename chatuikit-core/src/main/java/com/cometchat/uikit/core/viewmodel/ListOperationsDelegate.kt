@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  * @param debounceMs Debounce delay in milliseconds (0 = no debounce, immediate updates)
  * @param scope CoroutineScope for debounce operations (defaults to Dispatchers.Default)
  */
-class ListOperationsDelegate<T>(
+public class ListOperationsDelegate<T>(
     private val stateFlow: MutableStateFlow<List<T>>,
     private val equalityChecker: (T, T) -> Boolean = { a, b -> a == b },
     private val debounceMs: Long = 0L,
@@ -38,7 +38,7 @@ class ListOperationsDelegate<T>(
      *
      * @param item The item to add
      */
-    fun addItem(item: T) {
+    public fun addItem(item: T) {
         applyUpdate { it + item }
     }
 
@@ -47,7 +47,7 @@ class ListOperationsDelegate<T>(
      *
      * @param items The items to add
      */
-    fun addItems(items: List<T>) {
+    public fun addItems(items: List<T>) {
         applyUpdate { it + items }
     }
 
@@ -57,7 +57,7 @@ class ListOperationsDelegate<T>(
      * @param item The item to remove
      * @return true if item was found and removed, false otherwise
      */
-    fun removeItem(item: T): Boolean {
+    public fun removeItem(item: T): Boolean {
         val currentList = stateFlow.value
         val index = currentList.indexOfFirst { equalityChecker(it, item) }
         return if (index >= 0) {
@@ -74,7 +74,7 @@ class ListOperationsDelegate<T>(
      * @param index The index of the item to remove
      * @return The removed item, or null if index is out of bounds
      */
-    fun removeItemAt(index: Int): T? {
+    public fun removeItemAt(index: Int): T? {
         val currentList = stateFlow.value
         return if (index in currentList.indices) {
             val removed = currentList[index]
@@ -95,7 +95,7 @@ class ListOperationsDelegate<T>(
      * @param predicate Function to find the item to update
      * @return true if an item was found and updated, false otherwise
      */
-    fun updateItem(item: T, predicate: (T) -> Boolean): Boolean {
+    public fun updateItem(item: T, predicate: (T) -> Boolean): Boolean {
         val currentList = stateFlow.value
         val index = currentList.indexOfFirst(predicate)
         return if (index >= 0) {
@@ -113,7 +113,7 @@ class ListOperationsDelegate<T>(
     /**
      * Removes all items from the list.
      */
-    fun clearItems() {
+    public fun clearItems() {
         applyUpdate { emptyList() }
     }
 
@@ -123,7 +123,7 @@ class ListOperationsDelegate<T>(
      *
      * @return Immutable list of all items
      */
-    fun getItems(): List<T> {
+    public fun getItems(): List<T> {
         if (debounceMs > 0) flush()
         return stateFlow.value.toList()
     }
@@ -134,7 +134,7 @@ class ListOperationsDelegate<T>(
      * @param index The index of the item
      * @return The item at the index, or null if out of bounds
      */
-    fun getItemAt(index: Int): T? {
+    public fun getItemAt(index: Int): T? {
         if (debounceMs > 0) flush()
         return stateFlow.value.getOrNull(index)
     }
@@ -144,7 +144,7 @@ class ListOperationsDelegate<T>(
      *
      * @return The item count
      */
-    fun getItemCount(): Int {
+    public fun getItemCount(): Int {
         if (debounceMs > 0) flush()
         return stateFlow.value.size
     }
@@ -156,7 +156,7 @@ class ListOperationsDelegate<T>(
      *
      * @param item The item to move to top
      */
-    fun moveItemToTop(item: T) {
+    public fun moveItemToTop(item: T) {
         applyUpdate { currentList ->
             val index = currentList.indexOfFirst { equalityChecker(it, item) }
             if (index >= 0) {
@@ -184,7 +184,7 @@ class ListOperationsDelegate<T>(
      *
      * @param operations Lambda that performs multiple list operations on BatchScope
      */
-    fun batch(operations: BatchScope.() -> Unit) {
+    public fun batch(operations: BatchScope.() -> Unit) {
         val batchScope = BatchScope(stateFlow.value)
         operations(batchScope)
         stateFlow.value = batchScope.result
@@ -195,13 +195,13 @@ class ListOperationsDelegate<T>(
      * and the result is emitted only once when batch completes.
      * Implements [ListOperationsBatchScope] for type-safe batch operations.
      */
-    inner class BatchScope(initialList: List<T>) : ListOperationsBatchScope<T> {
+    inner public class BatchScope(initialList: List<T>) : ListOperationsBatchScope<T> {
         private var currentList = initialList
         
         /**
          * The final result after all batch operations.
          */
-        val result: List<T> get() = currentList
+        public val result: List<T> get() = currentList
 
         override fun add(item: T) {
             currentList = currentList + item
@@ -301,7 +301,7 @@ class ListOperationsDelegate<T>(
      * Forces immediate flush of any pending debounced updates.
      * Useful when you need the latest state immediately.
      */
-    fun flush() {
+    public fun flush() {
         debounceJob?.cancel()
         flushPendingUpdates()
     }
@@ -310,7 +310,7 @@ class ListOperationsDelegate<T>(
      * Cancels any pending debounce operations.
      * Call this when the ViewModel is cleared to prevent memory leaks.
      */
-    fun cancel() {
+    public fun cancel() {
         debounceJob?.cancel()
         synchronized(lock) {
             pendingUpdates.clear()

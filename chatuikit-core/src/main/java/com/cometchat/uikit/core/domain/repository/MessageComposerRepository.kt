@@ -18,7 +18,7 @@ import com.cometchat.chat.models.TextMessage
  * All methods return Result type for proper error handling, allowing the
  * ViewModel to handle errors gracefully and maintain the last known valid state.
  */
-interface MessageComposerRepository {
+public interface MessageComposerRepository {
 
     /**
      * Sends a text message to the configured receiver.
@@ -31,7 +31,7 @@ interface MessageComposerRepository {
      * @return Result containing the sent TextMessage with updated metadata (id, sentAt, etc.)
      *         on success, or error on failure
      */
-    suspend fun sendTextMessage(message: TextMessage): Result<TextMessage>
+    suspend public fun sendTextMessage(message: TextMessage): Result<TextMessage>
 
     /**
      * Sends a media message (image, video, audio, file) to the configured receiver.
@@ -44,7 +44,7 @@ interface MessageComposerRepository {
      * @return Result containing the sent MediaMessage with updated metadata (id, sentAt, attachment URL, etc.)
      *         on success, or error on failure
      */
-    suspend fun sendMediaMessage(message: MediaMessage): Result<MediaMessage>
+    suspend public fun sendMediaMessage(message: MediaMessage): Result<MediaMessage>
 
     /**
      * Sends a custom message with custom data payload to the configured receiver.
@@ -57,7 +57,7 @@ interface MessageComposerRepository {
      * @return Result containing the sent CustomMessage with updated metadata (id, sentAt, etc.)
      *         on success, or error on failure
      */
-    suspend fun sendCustomMessage(message: CustomMessage): Result<CustomMessage>
+    suspend public fun sendCustomMessage(message: CustomMessage): Result<CustomMessage>
 
     /**
      * Edits an existing message.
@@ -69,5 +69,5 @@ interface MessageComposerRepository {
      * @return Result containing the edited BaseMessage with updated metadata on success,
      *         or error on failure
      */
-    suspend fun editMessage(message: BaseMessage): Result<BaseMessage>
+    suspend public fun editMessage(message: BaseMessage): Result<BaseMessage>
 }

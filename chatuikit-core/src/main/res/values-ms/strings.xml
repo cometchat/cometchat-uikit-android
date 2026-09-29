@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Salin</string>
+    <string name="cometchat_delete" translatable="true">Padam</string>
+    <string name="cometchat_edit" translatable="true">Sunting</string>
+    <string name="cometchat_info" translatable="true">"Maklumat"</string>
+    <string name="cometchat_mark_unread" translatable="true">Tanda belum dibaca</string>
+    <string name="cometchat_message_privately" translatable="true">Hantar mesej peribadi</string>
+    <string name="cometchat_pin" translatable="true">Semat Mesej</string>
+    <string name="cometchat_reply" translatable="true">Balas</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Balas dalam bebenang</string>
+    <string name="cometchat_report" translatable="true">Laporkan</string>
+    <string name="cometchat_save" translatable="true">Simpan Mesej</string>
+    <string name="cometchat_share" translatable="true">Kongsi</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Langgan bebenang</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Nyahlanggan bebenang</string>
+    <string name="cometchat_translate" translatable="true">Terjemah</string>
+    <string name="cometchat_unpin" translatable="true">Nyahsemat Mesej</string>
+    <string name="cometchat_unsave" translatable="true">Nyahsimpan Mesej</string>
+</resources>

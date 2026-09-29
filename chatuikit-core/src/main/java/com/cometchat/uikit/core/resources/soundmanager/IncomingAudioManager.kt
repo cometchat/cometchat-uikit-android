@@ -17,9 +17,9 @@ import android.os.VibratorManager
  *
  * @param context The application context.
  */
-class IncomingAudioManager(private val context: Context) {
+public class IncomingAudioManager(private val context: Context) {
     
-    companion object {
+    public companion object {
         private val VIBRATE_PATTERN = longArrayOf(0, 1000, 1000)
     }
 
@@ -40,7 +40,7 @@ class IncomingAudioManager(private val context: Context) {
      * @param ringtoneUri The URI of the ringtone to play. If null, uses default ringtone.
      * @param vibrate Whether to vibrate along with the ringtone.
      */
-    fun start(ringtoneUri: Uri?, vibrate: Boolean) {
+    public fun start(ringtoneUri: Uri?, vibrate: Boolean) {
         stop()
         
         val uri = ringtoneUri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
@@ -106,7 +106,7 @@ class IncomingAudioManager(private val context: Context) {
     /**
      * Stops the incoming audio and vibration.
      */
-    fun stop() {
+    public fun stop() {
         try {
             mediaPlayer?.stop()
             mediaPlayer?.release()

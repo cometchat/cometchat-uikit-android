@@ -62,13 +62,26 @@ class MessageListModerationUpdateTest : FunSpec({
      * Builds a VM for a 1:1 chat with [messages] pre-loaded and returns it together
      * with the SDK message listener the VM registered.
      */
+    // Every VM is hosted in a ViewModelStore that afterTest clears — an uncleared VM's leaked
+    // coroutines get pinned on the NEXT spec's first runTest (UncaughtExceptionsBeforeTest).
+    val stores = mutableListOf<androidx.lifecycle.ViewModelStore>()
+
     suspend fun createViewModelWithListener(
         messages: List<BaseMessage>
     ): Pair<CometChatMessageListViewModel, CometChat.MessageListener> {
         whenever(repository.fetchPreviousMessages()).thenReturn(Result.success(messages))
         whenever(repository.hasMorePreviousMessages()).thenReturn(true)
 
-        val vm = CometChatMessageListViewModel(repository = repository, enableListeners = true)
+        val store = androidx.lifecycle.ViewModelStore()
+        stores += store
+        val vm = androidx.lifecycle.ViewModelProvider(
+            store,
+            object : androidx.lifecycle.ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T =
+                    CometChatMessageListViewModel(repository = repository, enableListeners = true) as T
+            }
+        )[CometChatMessageListViewModel::class.java]
         vm.setUser(MockFactory.createUser(uid = "test-user", name = "Test User"))
         vm.fetchMessages()
 
@@ -94,8 +107,25 @@ class MessageListModerationUpdateTest : FunSpec({
         return message
     }
 
-    beforeTest {
+    // Main is installed once for the whole spec, not per test. The VM fires
+    // CometChatEvents.emitMessageEvent, which launches on the bus's own Default-dispatcher scope —
+    // a launch advanceUntilIdle() cannot see. With a per-test resetMain() that stray launch could
+    // resume this spec's Main-bound collectors AFTER Main was torn down, crashing on
+    // "Dispatchers.Main was accessed when the platform dispatcher was absent" and pinning the
+    // leaked exception on the NEXT test's runTest (UncaughtExceptionsBeforeTest). Keeping Main set
+    // across tests makes those late resumes harmless no-ops on cancelled collectors.
+    beforeSpec {
         Dispatchers.setMain(testDispatcher)
+    }
+
+    afterSpec {
+        // Let any still-queued bus emissions run while Main is still installed; every VM is already
+        // cleared, so they resume nobody — this only closes the end-of-spec race window.
+        Thread.sleep(100)
+        Dispatchers.resetMain()
+    }
+
+    beforeTest {
         logMock = Mockito.mockStatic(Log::class.java)
         cometChatMock = Mockito.mockStatic(CometChat::class.java)
         repository = mock()
@@ -106,9 +136,11 @@ class MessageListModerationUpdateTest : FunSpec({
     }
 
     afterTest {
+        // Clear VMs while the CometChat statics are still mocked (onCleared → removeListeners).
+        stores.forEach { it.clear() }
+        stores.clear()
         cometChatMock.close()
         logMock.close()
-        Dispatchers.resetMain()
     }
 
     // ==================== A. Verdict application ====================

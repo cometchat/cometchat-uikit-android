@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatThreadHeaderViewModel
  * @param enableListeners Whether to enable CometChat listeners. Set to false for testing
  *                        to avoid side effects from real-time updates.
  */
-class CometChatThreadHeaderViewModelFactory(
+public class CometChatThreadHeaderViewModelFactory(
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {
 

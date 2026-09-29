@@ -15,7 +15,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
  * 
  * Validates: Requirements 13.1, 13.2, 13.3
  */
-class CometChatIncomingCallViewModelFactory(
+public class CometChatIncomingCallViewModelFactory(
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {
 

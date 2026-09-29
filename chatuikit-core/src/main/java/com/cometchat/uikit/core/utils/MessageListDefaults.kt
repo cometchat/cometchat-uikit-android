@@ -22,7 +22,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  *
  * @return List of message type strings
  */
-fun getDefaultMessagesTypes(): List<String> {
+public fun getDefaultMessagesTypes(): List<String> {
     return listOf(
         CometChatConstants.MESSAGE_TYPE_TEXT,
         CometChatConstants.MESSAGE_TYPE_IMAGE,
@@ -53,7 +53,7 @@ fun getDefaultMessagesTypes(): List<String> {
  *
  * @return List of message category strings
  */
-fun getDefaultMessagesCategories(): List<String> {
+public fun getDefaultMessagesCategories(): List<String> {
     return listOf(
         CometChatConstants.CATEGORY_MESSAGE,
         CometChatConstants.CATEGORY_ACTION,

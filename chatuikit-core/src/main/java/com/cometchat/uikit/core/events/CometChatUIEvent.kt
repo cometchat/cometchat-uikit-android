@@ -8,14 +8,14 @@ import com.cometchat.chat.models.User
  * Sealed class hierarchy representing all UI-related events.
  * Provides type-safe event handling for UI state coordination across components.
  */
-sealed class CometChatUIEvent {
+sealed public class CometChatUIEvent {
     /**
      * Event emitted to show a custom panel.
      * @param id The ID map of the panel
      * @param position The position of the panel
      * @param content The content to display (cast to appropriate UI type in consuming module)
      */
-    data class ShowPanel(
+    public data class ShowPanel(
         val id: Map<String, String>,
         val position: CustomUIPosition,
         val content: Any
@@ -26,7 +26,7 @@ sealed class CometChatUIEvent {
      * @param id The ID map of the panel
      * @param position The position of the panel
      */
-    data class HidePanel(
+    public data class HidePanel(
         val id: Map<String, String>,
         val position: CustomUIPosition
     ) : CometChatUIEvent()
@@ -39,7 +39,7 @@ sealed class CometChatUIEvent {
      * @param group The group associated with the chat (nullable for user chats)
      * @param unreadCount The unread message count
      */
-    data class ActiveChatChanged(
+    public data class ActiveChatChanged(
         val id: Map<String, String>,
         val message: BaseMessage?,
         val user: User?,
@@ -52,7 +52,7 @@ sealed class CometChatUIEvent {
      * @param id The ID of the compose action
      * @param text The text to compose
      */
-    data class ComposeMessage(
+    public data class ComposeMessage(
         val id: String,
         val text: String
     ) : CometChatUIEvent()
@@ -62,7 +62,7 @@ sealed class CometChatUIEvent {
      * @param user The user to open chat with (nullable for group chats)
      * @param group The group to open chat with (nullable for user chats)
      */
-    data class OpenChat(
+    public data class OpenChat(
         val user: User?,
         val group: Group?
     ) : CometChatUIEvent()
@@ -76,7 +76,7 @@ sealed class CometChatUIEvent {
      * @param receiverId The user/group ID of the agent conversation
      * @param parentMessageId The resolved parent message ID for the thread
      */
-    data class AgentChatThreadResolved(
+    public data class AgentChatThreadResolved(
         val receiverId: String,
         val parentMessageId: Long
     ) : CometChatUIEvent()
@@ -90,7 +90,7 @@ sealed class CometChatUIEvent {
      * This event enables the app to receive actions from nested agent-card blocks
      * where a direct callback/lambda path is not reachable (§2.6.1 of the Card Messages spec).
      */
-    data class CardActionClicked(
+    public data class CardActionClicked(
         val message: BaseMessage,
         val actionEvent: Any
     ) : CometChatUIEvent()

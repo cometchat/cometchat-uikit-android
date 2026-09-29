@@ -34,11 +34,11 @@ import kotlin.coroutines.resume
  *
  * @param enableListeners subscribe to the UIKit bus for live upkeep (false for tests/previews)
  */
-open class CometChatSavedMessagesViewModel(
+public open class CometChatSavedMessagesViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
 
-    companion object {
+    public companion object {
         private const val DEFAULT_LIMIT = 30
         private const val MAX_LIMIT = 100
     }
@@ -46,22 +46,22 @@ open class CometChatSavedMessagesViewModel(
     private val _messages = MutableStateFlow<List<BaseMessage>>(emptyList())
 
     /** The current user's saved messages across all conversations, newest save first. */
-    val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
+    public val messages: StateFlow<List<BaseMessage>> = _messages.asStateFlow()
 
     private val _uiState = MutableStateFlow<PinnedSavedListUIState>(PinnedSavedListUIState.Loading)
 
     /** Screen state: [PinnedSavedListUIState.Loading] until the first load settles. */
-    val uiState: StateFlow<PinnedSavedListUIState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<PinnedSavedListUIState> = _uiState.asStateFlow()
 
     private val _count = MutableStateFlow(0)
 
     /** Exact saved-message count (fetch-all-and-count; the backend caps at 100). */
-    val count: StateFlow<Int> = _count.asStateFlow()
+    public val count: StateFlow<Int> = _count.asStateFlow()
 
     private val _unsaveSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     /** One-shot signal emitted when an unsave call succeeds, so the View can show a toast. */
-    val unsaveSuccess: SharedFlow<Unit> = _unsaveSuccess.asSharedFlow()
+    public val unsaveSuccess: SharedFlow<Unit> = _unsaveSuccess.asSharedFlow()
 
     private var request: MessagesRequest? = null
 
@@ -112,7 +112,7 @@ open class CometChatSavedMessagesViewModel(
     }
 
     /** Rebuilds the request and loads all pages (bounded by the 100 cap). */
-    fun reload() {
+    public fun reload() {
         // Same types + categories as the message list — without them the server's own (narrower)
         // defaults silently exclude custom-category messages (polls, stickers, whiteboard, etc.).
         request = MessagesRequest.MessagesRequestBuilder()
@@ -167,7 +167,7 @@ open class CometChatSavedMessagesViewModel(
         }
 
     /** Unsaves a message: optimistic remove, revert on error, broadcast on success. */
-    fun unsave(message: BaseMessage) {
+    public fun unsave(message: BaseMessage) {
         val index = _messages.value.indexOfFirst { it.id == message.id }
         removeRow(message)
 
@@ -214,7 +214,7 @@ open class CometChatSavedMessagesViewModel(
      * Live upkeep. Called both by this ViewModel's own SDK listener (see [addListeners]) and by the
      * View's lifecycle-aware UIKit-bus subscription; both are safe to fire for the same message.
      */
-    fun onMessageSavedExternally(message: BaseMessage) {
+    public fun onMessageSavedExternally(message: BaseMessage) {
         if (_messages.value.none { it.id == message.id }) {
             _messages.update { list ->
                 if (list.any { it.id == message.id }) list else listOf(message) + list
@@ -225,7 +225,7 @@ open class CometChatSavedMessagesViewModel(
     }
 
     /** Removes a row when a message is unsaved elsewhere (see [onMessageSavedExternally]). */
-    fun onMessageUnsavedExternally(message: BaseMessage) {
+    public fun onMessageUnsavedExternally(message: BaseMessage) {
         if (_messages.value.any { it.id == message.id }) {
             removeRow(message)
         }

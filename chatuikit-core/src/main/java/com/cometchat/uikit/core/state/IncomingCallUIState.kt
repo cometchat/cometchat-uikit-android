@@ -9,13 +9,13 @@ import com.cometchat.chat.exceptions.CometChatException
  *
  * Validates: Requirements 6.1-6.7
  */
-sealed class IncomingCallUIState {
+sealed public class IncomingCallUIState {
     /**
      * Idle state - initial state before any call is received.
      *
      * Validates: Requirement 6.2
      */
-    object Idle : IncomingCallUIState()
+    public object Idle : IncomingCallUIState()
 
     /**
      * Ringing state - displayed when an incoming call is being received.
@@ -24,7 +24,7 @@ sealed class IncomingCallUIState {
      *
      * Validates: Requirement 6.3
      */
-    data class Ringing(val call: Call) : IncomingCallUIState()
+    public data class Ringing(val call: Call) : IncomingCallUIState()
 
     /**
      * Accepted state - displayed when the call has been accepted.
@@ -33,7 +33,7 @@ sealed class IncomingCallUIState {
      *
      * Validates: Requirement 6.4
      */
-    data class Accepted(val call: Call) : IncomingCallUIState()
+    public data class Accepted(val call: Call) : IncomingCallUIState()
 
     /**
      * Rejected state - displayed when the call has been rejected.
@@ -42,7 +42,7 @@ sealed class IncomingCallUIState {
      *
      * Validates: Requirement 6.5
      */
-    data class Rejected(val call: Call) : IncomingCallUIState()
+    public data class Rejected(val call: Call) : IncomingCallUIState()
 
     /**
      * Cancelled state - displayed when the call has been cancelled by the caller.
@@ -51,7 +51,7 @@ sealed class IncomingCallUIState {
      *
      * Validates: Requirement 6.6
      */
-    data class Cancelled(val call: Call) : IncomingCallUIState()
+    public data class Cancelled(val call: Call) : IncomingCallUIState()
 
     /**
      * Error state - displayed when an error occurs during call handling.
@@ -60,5 +60,5 @@ sealed class IncomingCallUIState {
      *
      * Validates: Requirement 6.7
      */
-    data class Error(val exception: CometChatException) : IncomingCallUIState()
+    public data class Error(val exception: CometChatException) : IncomingCallUIState()
 }

@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.UsersRepository
  * 
  * @param repository The repository to fetch users from
  */
-open class FetchUsersUseCase(
+open public class FetchUsersUseCase(
     private val repository: UsersRepository
 ) {
     /**
@@ -18,7 +18,7 @@ open class FetchUsersUseCase(
      * @param request The configured UsersRequest
      * @return Result containing list of users or error
      */
-    open suspend operator fun invoke(request: UsersRequest): Result<List<User>> {
+    open suspend operator public fun invoke(request: UsersRequest): Result<List<User>> {
         return repository.getUsers(request)
     }
     
@@ -26,5 +26,5 @@ open class FetchUsersUseCase(
      * Checks if there are more users available for pagination.
      * @return true if more users can be fetched
      */
-    open fun hasMore(): Boolean = repository.hasMoreUsers()
+    open public fun hasMore(): Boolean = repository.hasMoreUsers()
 }

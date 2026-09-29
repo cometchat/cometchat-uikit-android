@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_copy" translatable="true">Copiar</string>
+    <string name="cometchat_delete" translatable="true">Excluir</string>
+    <string name="cometchat_edit" translatable="true">Editar</string>
+    <string name="cometchat_info" translatable="true">"Informações"</string>
+    <string name="cometchat_mark_unread" translatable="true">Marcar como não lida</string>
+    <string name="cometchat_message_privately" translatable="true">Enviar mensagem privada</string>
+    <string name="cometchat_pin" translatable="true">Fixar mensagem</string>
+    <string name="cometchat_reply" translatable="true">Responder</string>
+    <string name="cometchat_reply_uppercase" translatable="true">Responder no tópico</string>
+    <string name="cometchat_report" translatable="true">Denunciar</string>
+    <string name="cometchat_save" translatable="true">Salvar mensagem</string>
+    <string name="cometchat_share" translatable="true">Compartilhar</string>
+    <string name="cometchat_thread_subscription_subscribe" translatable="true">Inscrever-se no tópico</string>
+    <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Cancelar inscrição no tópico</string>
+    <string name="cometchat_translate" translatable="true">Traduzir</string>
+    <string name="cometchat_unpin" translatable="true">Desafixar mensagem</string>
+    <string name="cometchat_unsave" translatable="true">Remover mensagem dos salvos</string>
+</resources>

@@ -12,7 +12,7 @@ import android.text.SpannableStringBuilder
  * 
  * @param configuration The configuration specifying which formatters to enable
  */
-class RichTextFormatterManager(
+public class RichTextFormatterManager(
     private val configuration: RichTextConfiguration
 ) {
     private val formatters = mutableMapOf<RichTextFormat, RichTextFormatter>()
@@ -60,7 +60,7 @@ class RichTextFormatterManager(
     /**
      * Returns a list of enabled format types.
      */
-    fun getEnabledFormats(): List<RichTextFormat> {
+    public fun getEnabledFormats(): List<RichTextFormat> {
         return formatters.keys.toList()
     }
     
@@ -70,7 +70,7 @@ class RichTextFormatterManager(
      * @param format The format type to check
      * @return True if the format is enabled
      */
-    fun isFormatEnabled(format: RichTextFormat): Boolean {
+    public fun isFormatEnabled(format: RichTextFormat): Boolean {
         return formatters.containsKey(format)
     }
     
@@ -83,7 +83,7 @@ class RichTextFormatterManager(
      * @param selectionEnd The end position of the selection
      * @return FormattedResult or null if format is not enabled
      */
-    fun applyFormat(
+    public fun applyFormat(
         format: RichTextFormat,
         text: String,
         selectionStart: Int,
@@ -101,7 +101,7 @@ class RichTextFormatterManager(
      * @param selectionEnd The end position of the selection
      * @return FormattedResult or null if format is not enabled
      */
-    fun removeFormat(
+    public fun removeFormat(
         format: RichTextFormat,
         text: String,
         selectionStart: Int,
@@ -120,7 +120,7 @@ class RichTextFormatterManager(
      * @param selectionEnd The end position of the selection
      * @return FormattedResult or null if format is not enabled
      */
-    fun toggleFormat(
+    public fun toggleFormat(
         format: RichTextFormat,
         text: String,
         selectionStart: Int,
@@ -144,7 +144,7 @@ class RichTextFormatterManager(
      * @param selectionEnd The end position of the selection
      * @return True if the format is applied, false otherwise
      */
-    fun isFormatApplied(
+    public fun isFormatApplied(
         format: RichTextFormat,
         text: String,
         selectionStart: Int,
@@ -161,7 +161,7 @@ class RichTextFormatterManager(
      * @param selectionEnd The end position of the selection
      * @return List of applied format types
      */
-    fun getActiveFormats(
+    public fun getActiveFormats(
         text: String,
         selectionStart: Int,
         selectionEnd: Int
@@ -178,7 +178,7 @@ class RichTextFormatterManager(
      * @param text The text containing markdown formatting
      * @return SpannableString with visual formatting applied
      */
-    fun getFormattedPreview(text: String): SpannableString {
+    public fun getFormattedPreview(text: String): SpannableString {
         if (formatters.isEmpty()) {
             return SpannableString(text)
         }
@@ -201,7 +201,7 @@ class RichTextFormatterManager(
      * @param format The format type
      * @return The formatter or null if not enabled
      */
-    fun getFormatter(format: RichTextFormat): RichTextFormatter? {
+    public fun getFormatter(format: RichTextFormat): RichTextFormatter? {
         return formatters[format]
     }
     
@@ -215,7 +215,7 @@ class RichTextFormatterManager(
      * @param url The URL to link to
      * @return FormattedResult or null if link format is not enabled
      */
-    fun applyLinkFormat(
+    public fun applyLinkFormat(
         text: String,
         selectionStart: Int,
         selectionEnd: Int,

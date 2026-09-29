@@ -9,7 +9,7 @@ package com.cometchat.uikit.core.formatter
  * - All other inline formats are mutually compatible
  * - Link is incompatible with inline code
  */
-object FormatCompatibility {
+public object FormatCompatibility {
 
     private val incompatiblePairs: Set<Pair<RichTextFormat, RichTextFormat>> = setOf(
         // Code block incompatible with everything
@@ -31,7 +31,7 @@ object FormatCompatibility {
     /**
      * Returns the set of formats that should be disabled given the currently active formats.
      */
-    fun getDisabledFormats(activeFormats: Set<RichTextFormat>): Set<RichTextFormat> {
+    public fun getDisabledFormats(activeFormats: Set<RichTextFormat>): Set<RichTextFormat> {
         val disabled = mutableSetOf<RichTextFormat>()
         for (active in activeFormats) {
             for ((a, b) in incompatiblePairs) {
@@ -45,7 +45,7 @@ object FormatCompatibility {
     /**
      * Returns true if [format] is compatible with all [activeFormats].
      */
-    fun isCompatible(format: RichTextFormat, activeFormats: Set<RichTextFormat>): Boolean {
+    public fun isCompatible(format: RichTextFormat, activeFormats: Set<RichTextFormat>): Boolean {
         return format !in getDisabledFormats(activeFormats)
     }
 }

@@ -18,7 +18,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatGroupsViewModel
  * @param enableListeners Whether to enable CometChat listeners. Set to false for previews/testing.
  *                        Defaults to true for production use.
  */
-class CometChatGroupsViewModelFactory(
+public class CometChatGroupsViewModelFactory(
     private val repository: GroupsRepository = GroupsRepositoryImpl(
         GroupsDataSourceImpl()
     ),
