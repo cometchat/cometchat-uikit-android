@@ -11,7 +11,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatBadgeCount component.
  */
-data class CometChatBadgeCountStyle(
+public data class CometChatBadgeCountStyle(
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val textColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
@@ -19,14 +19,14 @@ data class CometChatBadgeCountStyle(
     @ColorInt val borderColor: Int = 0,
     @Dimension val borderWidth: Float = 0f
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatBadgeStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatBadgeCountStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatBadgeCountStyle {
+        public fun default(context: Context): CometChatBadgeCountStyle {
             return extractFromThemeStyle(context, R.attr.cometchatBadgeStyle)
         }
 
@@ -74,7 +74,7 @@ data class CometChatBadgeCountStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatBadgeCountStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatBadgeCountStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatBadgeCountStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

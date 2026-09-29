@@ -10,7 +10,7 @@ import java.util.Locale
 /**
  * Utility object for date and time formatting operations.
  */
-object DateUtils {
+public object DateUtils {
 
     /**
      * Formats a timestamp for display as the last message date in conversations.
@@ -26,7 +26,7 @@ object DateUtils {
      * @param dateTimeFormatter Optional custom formatter callback
      * @return Formatted date/time string
      */
-    fun getLastMessageDate(
+    public fun getLastMessageDate(
         context: Context,
         timestamp: Long,
         dateTimeFormatter: DateTimeFormatterCallback? = null
@@ -76,7 +76,7 @@ object DateUtils {
      * @param text The text to search for URLs
      * @return The first URL found, or null if no URL is present
      */
-    fun extractFirstUrl(text: String?): String? {
+    public fun extractFirstUrl(text: String?): String? {
         if (text.isNullOrEmpty()) return null
 
         val urlPattern = Regex(

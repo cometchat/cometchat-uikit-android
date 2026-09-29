@@ -9,7 +9,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.MediaRecorderState
 import java.io.File
 import java.util.Locale
@@ -22,49 +22,49 @@ import java.util.Locale
  * [CometChatMediaRecorder] component. This interface provides more detailed callbacks
  * for time updates, amplitude changes, and playback progress.
  */
-interface MediaRecorderManagerCallback {
+public interface MediaRecorderManagerCallback {
     /**
      * Called when recording time updates.
      * @param timeMs Time in milliseconds
      * @param formattedTime Formatted time string (MM:SS)
      */
-    fun onTimeUpdate(timeMs: Long, formattedTime: String)
+    public fun onTimeUpdate(timeMs: Long, formattedTime: String)
     
     /**
      * Called when audio amplitude changes (for waveform visualization).
      * @param amplitude Normalized amplitude (0.0 to 1.0)
      */
-    fun onAmplitudeUpdate(amplitude: Float)
+    public fun onAmplitudeUpdate(amplitude: Float)
     
     /**
      * Called when recording state changes.
      * @param state The new recording state (IDLE, RECORDING, or RECORDED)
      */
-    fun onStateChange(state: MediaRecorderState)
+    public fun onStateChange(state: MediaRecorderState)
     
     /**
      * Called when recording is complete.
      * @param file The recorded audio file
      * @param durationMs The recording duration in milliseconds
      */
-    fun onRecordingComplete(file: File, durationMs: Long)
+    public fun onRecordingComplete(file: File, durationMs: Long)
     
     /**
      * Called when playback progress updates.
      * @param progress Playback progress (0.0 to 1.0)
      */
-    fun onPlaybackProgress(progress: Float)
+    public fun onPlaybackProgress(progress: Float)
     
     /**
      * Called when playback reaches the end.
      */
-    fun onPlaybackComplete()
+    public fun onPlaybackComplete()
     
     /**
      * Called when an error occurs.
      * @param exception The exception that occurred
      */
-    fun onError(exception: Exception)
+    public fun onError(exception: Exception)
 }
 
 /**
@@ -103,9 +103,9 @@ interface MediaRecorderManagerCallback {
  * manager.startRecording()
  * ```
  */
-class MediaRecorderManager(private val context: Context) {
+public class MediaRecorderManager(private val context: Context) {
     
-    companion object {
+    public companion object {
         private const val TAG = "MediaRecorderManager"
         private const val AMPLITUDE_UPDATE_INTERVAL = 100L // ms
         private const val TIMER_UPDATE_INTERVAL = 500L // ms
@@ -156,7 +156,7 @@ class MediaRecorderManager(private val context: Context) {
                     val normalizedAmplitude = (amplitude / MAX_AMPLITUDE).coerceIn(0f, 1f)
                     callback?.onAmplitudeUpdate(normalizedAmplitude)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error getting amplitude: ${e.message}")
+                    CometChatLogger.e(TAG, "Error getting amplitude: ${e.message}")
                 }
                 amplitudeHandler.postDelayed(this, AMPLITUDE_UPDATE_INTERVAL)
             }
@@ -181,7 +181,7 @@ class MediaRecorderManager(private val context: Context) {
                         playbackHandler.postDelayed(this, PLAYBACK_UPDATE_INTERVAL)
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating playback progress: ${e.message}")
+                    CometChatLogger.e(TAG, "Error updating playback progress: ${e.message}")
                 }
             }
         }
@@ -199,7 +199,7 @@ class MediaRecorderManager(private val context: Context) {
             AudioManager.AUDIOFOCUS_LOSS -> {
                 // Stop recording when audio focus is lost
                 if (isRecording) {
-                    Log.d(TAG, "Audio focus lost during recording, stopping")
+                    CometChatLogger.d(TAG, "Audio focus lost during recording, stopping")
                     stopRecording()
                 }
             }
@@ -212,7 +212,7 @@ class MediaRecorderManager(private val context: Context) {
             AudioManager.AUDIOFOCUS_LOSS -> {
                 // Pause playback when audio focus is lost
                 if (isPlaybackActive) {
-                    Log.d(TAG, "Audio focus lost during playback, pausing")
+                    CometChatLogger.d(TAG, "Audio focus lost during playback, pausing")
                     pausePlayback()
                 }
             }
@@ -330,34 +330,34 @@ class MediaRecorderManager(private val context: Context) {
     /**
      * Sets the callback for media recorder events.
      */
-    fun setCallback(callback: MediaRecorderManagerCallback) {
+    public fun setCallback(callback: MediaRecorderManagerCallback) {
         this.callback = callback
     }
     
     /**
      * Gets the current recording state.
      */
-    fun getCurrentState(): MediaRecorderState = currentState
+    public fun getCurrentState(): MediaRecorderState = currentState
     
     /**
      * Gets the recorded file path.
      */
-    fun getRecordedFilePath(): String? = recordedFilePath
+    public fun getRecordedFilePath(): String? = recordedFilePath
     
     /**
      * Gets the recorded file.
      */
-    fun getRecordedFile(): File? = recordedFilePath?.let { File(it) }
+    public fun getRecordedFile(): File? = recordedFilePath?.let { File(it) }
     
     /**
      * Gets the recording duration in milliseconds.
      */
-    fun getRecordingDurationMs(): Long = recordingDurationMs
+    public fun getRecordingDurationMs(): Long = recordingDurationMs
     
     /**
      * Checks if playback is currently active.
      */
-    fun isPlaying(): Boolean = isPlaybackActive && (mediaPlayer?.isPlaying == true)
+    public fun isPlaying(): Boolean = isPlaybackActive && (mediaPlayer?.isPlaying == true)
     
     // ==================== Recording Methods ====================
     
@@ -366,9 +366,9 @@ class MediaRecorderManager(private val context: Context) {
      * Transitions from IDLE to RECORDING state.
      * @return true if recording started successfully, false otherwise
      */
-    fun startRecording(): Boolean {
+    public fun startRecording(): Boolean {
         if (currentState != MediaRecorderState.IDLE) {
-            Log.w(TAG, "Cannot start recording: current state is $currentState")
+            CometChatLogger.w(TAG, "Cannot start recording: current state is $currentState")
             return false
         }
         
@@ -406,10 +406,10 @@ class MediaRecorderManager(private val context: Context) {
             amplitudeHandler.postDelayed(amplitudeRunnable, AMPLITUDE_UPDATE_INTERVAL)
             
             callback?.onStateChange(MediaRecorderState.RECORDING)
-            Log.d(TAG, "Recording started: $recordedFilePath")
+            CometChatLogger.d(TAG, "Recording started: $recordedFilePath")
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to start recording: ${e.message}")
             callback?.onError(e)
             currentState = MediaRecorderState.IDLE
             callback?.onStateChange(MediaRecorderState.IDLE)
@@ -423,9 +423,9 @@ class MediaRecorderManager(private val context: Context) {
      * Transitions from RECORDING to RECORDED state.
      * @return the recorded File if successful, null otherwise
      */
-    fun stopRecording(): File? {
+    public fun stopRecording(): File? {
         if (currentState != MediaRecorderState.RECORDING) {
-            Log.w(TAG, "Cannot stop recording: current state is $currentState")
+            CometChatLogger.w(TAG, "Cannot stop recording: current state is $currentState")
             return null
         }
         
@@ -455,14 +455,14 @@ class MediaRecorderManager(private val context: Context) {
                 val file = File(path)
                 if (file.exists()) {
                     callback?.onRecordingComplete(file, recordingDurationMs)
-                    Log.d(TAG, "Recording stopped: $path, duration: ${recordingDurationMs}ms")
+                    CometChatLogger.d(TAG, "Recording stopped: $path, duration: ${recordingDurationMs}ms")
                     return file
                 }
             }
             
             return null
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to stop recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to stop recording: ${e.message}")
             callback?.onError(e)
             currentState = MediaRecorderState.IDLE
             callback?.onStateChange(MediaRecorderState.IDLE)
@@ -475,7 +475,7 @@ class MediaRecorderManager(private val context: Context) {
      * Deletes the current recording and resets state.
      * Transitions to IDLE state.
      */
-    fun deleteRecording() {
+    public fun deleteRecording() {
         // Stop recording if in progress
         if (isRecording) {
             try {
@@ -484,7 +484,7 @@ class MediaRecorderManager(private val context: Context) {
                     release()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error stopping recorder: ${e.message}")
+                CometChatLogger.e(TAG, "Error stopping recorder: ${e.message}")
             }
             mediaRecorder = null
             isRecording = false
@@ -504,10 +504,10 @@ class MediaRecorderManager(private val context: Context) {
                 val file = File(path)
                 if (file.exists()) {
                     file.delete()
-                    Log.d(TAG, "Deleted recording file: $path")
+                    CometChatLogger.d(TAG, "Deleted recording file: $path")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error deleting file: ${e.message}")
+                CometChatLogger.e(TAG, "Error deleting file: ${e.message}")
             }
         }
         recordedFilePath = null
@@ -520,7 +520,7 @@ class MediaRecorderManager(private val context: Context) {
         callback?.onPlaybackProgress(0f)
         
         abandonAudioFocus()
-        Log.d(TAG, "Recording deleted, state reset to IDLE")
+        CometChatLogger.d(TAG, "Recording deleted, state reset to IDLE")
     }
     
     // ==================== Playback Methods ====================
@@ -529,15 +529,15 @@ class MediaRecorderManager(private val context: Context) {
      * Starts playback of the recorded audio.
      * Only valid when in RECORDED state.
      */
-    fun startPlayback() {
+    public fun startPlayback() {
         if (currentState != MediaRecorderState.RECORDED) {
-            Log.w(TAG, "Cannot start playback: current state is $currentState")
+            CometChatLogger.w(TAG, "Cannot start playback: current state is $currentState")
             return
         }
         
         val filePath = recordedFilePath
         if (filePath == null) {
-            Log.w(TAG, "Cannot start playback: no recorded file")
+            CometChatLogger.w(TAG, "Cannot start playback: no recorded file")
             return
         }
         
@@ -552,7 +552,7 @@ class MediaRecorderManager(private val context: Context) {
                 mediaPlayer?.start()
                 isPlaybackActive = true
                 playbackHandler.postDelayed(playbackRunnable, PLAYBACK_UPDATE_INTERVAL)
-                Log.d(TAG, "Playback resumed")
+                CometChatLogger.d(TAG, "Playback resumed")
                 return
             }
             
@@ -569,7 +569,7 @@ class MediaRecorderManager(private val context: Context) {
                     handlePlaybackCompletion()
                 }
                 setOnErrorListener { _, what, extra ->
-                    Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
+                    CometChatLogger.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
                     callback?.onError(Exception("Playback error: $what"))
                     releaseMediaPlayer()
                     true
@@ -580,9 +580,9 @@ class MediaRecorderManager(private val context: Context) {
             
             isPlaybackActive = true
             playbackHandler.postDelayed(playbackRunnable, PLAYBACK_UPDATE_INTERVAL)
-            Log.d(TAG, "Playback started: $filePath")
+            CometChatLogger.d(TAG, "Playback started: $filePath")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start playback: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to start playback: ${e.message}")
             callback?.onError(e)
             releaseMediaPlayer()
         }
@@ -591,9 +591,9 @@ class MediaRecorderManager(private val context: Context) {
     /**
      * Pauses playback of the recorded audio.
      */
-    fun pausePlayback() {
+    public fun pausePlayback() {
         if (!isPlaybackActive) {
-            Log.w(TAG, "Cannot pause playback: not playing")
+            CometChatLogger.w(TAG, "Cannot pause playback: not playing")
             return
         }
         
@@ -602,9 +602,9 @@ class MediaRecorderManager(private val context: Context) {
             isPlaybackActive = false
             playbackHandler.removeCallbacks(playbackRunnable)
             abandonPlaybackAudioFocus()
-            Log.d(TAG, "Playback paused")
+            CometChatLogger.d(TAG, "Playback paused")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to pause playback: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to pause playback: ${e.message}")
             callback?.onError(e)
         }
     }
@@ -613,9 +613,9 @@ class MediaRecorderManager(private val context: Context) {
      * Seeks to a specific position in the playback.
      * @param progress Position to seek to (0.0 to 1.0)
      */
-    fun seekTo(progress: Float) {
+    public fun seekTo(progress: Float) {
         if (currentState != MediaRecorderState.RECORDED) {
-            Log.w(TAG, "Cannot seek: current state is $currentState")
+            CometChatLogger.w(TAG, "Cannot seek: current state is $currentState")
             return
         }
         
@@ -632,10 +632,10 @@ class MediaRecorderManager(private val context: Context) {
                 val seekPosition = (progress.coerceIn(0f, 1f) * duration).toInt()
                 player.seekTo(seekPosition)
                 callback?.onPlaybackProgress(progress.coerceIn(0f, 1f))
-                Log.d(TAG, "Seeked to position: $seekPosition ms (${(progress * 100).toInt()}%)")
+                CometChatLogger.d(TAG, "Seeked to position: $seekPosition ms (${(progress * 100).toInt()}%)")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to seek: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to seek: ${e.message}")
             callback?.onError(e)
         }
     }
@@ -652,13 +652,13 @@ class MediaRecorderManager(private val context: Context) {
         try {
             mediaPlayer?.seekTo(0)
         } catch (e: Exception) {
-            Log.e(TAG, "Error resetting playback position: ${e.message}")
+            CometChatLogger.e(TAG, "Error resetting playback position: ${e.message}")
         }
         
         callback?.onPlaybackProgress(0f)
         callback?.onPlaybackComplete()
         abandonPlaybackAudioFocus()
-        Log.d(TAG, "Playback completed, reset to beginning")
+        CometChatLogger.d(TAG, "Playback completed, reset to beginning")
     }
     
     /**
@@ -673,7 +673,7 @@ class MediaRecorderManager(private val context: Context) {
                 release()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error releasing MediaPlayer: ${e.message}")
+            CometChatLogger.e(TAG, "Error releasing MediaPlayer: ${e.message}")
         }
         mediaPlayer = null
         isPlaybackActive = false
@@ -694,8 +694,8 @@ class MediaRecorderManager(private val context: Context) {
      * - Deletes temporary recording files (if not submitted)
      * - Abandons audio focus
      */
-    fun release() {
-        Log.d(TAG, "Releasing MediaRecorderManager resources")
+    public fun release() {
+        CometChatLogger.d(TAG, "Releasing MediaRecorderManager resources")
         
         // Release MediaRecorder
         try {
@@ -704,7 +704,7 @@ class MediaRecorderManager(private val context: Context) {
             }
             mediaRecorder?.release()
         } catch (e: Exception) {
-            Log.e(TAG, "Error releasing MediaRecorder: ${e.message}")
+            CometChatLogger.e(TAG, "Error releasing MediaRecorder: ${e.message}")
         }
         mediaRecorder = null
         isRecording = false
@@ -723,10 +723,10 @@ class MediaRecorderManager(private val context: Context) {
                 val file = File(path)
                 if (file.exists()) {
                     file.delete()
-                    Log.d(TAG, "Deleted temporary recording file: $path")
+                    CometChatLogger.d(TAG, "Deleted temporary recording file: $path")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error deleting file: ${e.message}")
+                CometChatLogger.e(TAG, "Error deleting file: ${e.message}")
             }
         }
         recordedFilePath = null
@@ -739,16 +739,16 @@ class MediaRecorderManager(private val context: Context) {
         currentState = MediaRecorderState.IDLE
         callback = null
         
-        Log.d(TAG, "MediaRecorderManager released")
+        CometChatLogger.d(TAG, "MediaRecorderManager released")
     }
     
     /**
      * Marks the recording as submitted (prevents deletion on release).
      * Call this before release() if the recording was successfully submitted.
      */
-    fun markAsSubmitted() {
+    public fun markAsSubmitted() {
         // Clear the file path so it won't be deleted on release
         recordedFilePath = null
-        Log.d(TAG, "Recording marked as submitted")
+        CometChatLogger.d(TAG, "Recording marked as submitted")
     }
 }

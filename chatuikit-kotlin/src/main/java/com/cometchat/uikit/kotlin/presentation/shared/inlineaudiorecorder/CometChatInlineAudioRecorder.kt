@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -16,6 +15,7 @@ import android.widget.TextView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatInlineAudioRecorderViewModel
 import com.cometchat.uikit.core.viewmodel.InlineAudioRecorderStatus
 import com.cometchat.uikit.kotlin.R
@@ -56,7 +56,7 @@ import java.io.File
  *
  * **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 2.1, 14.1, 14.5**
  */
-class CometChatInlineAudioRecorder @JvmOverloads constructor(
+public class CometChatInlineAudioRecorder @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -100,7 +100,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
     private var onCancelListener: (() -> Unit)? = null
     private var onErrorListener: ((String) -> Unit)? = null
     
-    companion object {
+    public companion object {
         private const val TAG = "InlineAudioRecorder"
     }
     
@@ -139,7 +139,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Sets the ViewModel for state management.
      * @param viewModel The shared ViewModel
      */
-    fun setViewModel(viewModel: CometChatInlineAudioRecorderViewModel) {
+    public fun setViewModel(viewModel: CometChatInlineAudioRecorderViewModel) {
         this.viewModel = viewModel
         startStateCollection()
     }
@@ -148,7 +148,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Sets the recorder manager for audio operations.
      * @param manager The InlineAudioRecorderManager
      */
-    fun setRecorderManager(manager: InlineAudioRecorderManager) {
+    public fun setRecorderManager(manager: InlineAudioRecorderManager) {
         this.recorderManager = manager
         setupRecorderCallback()
     }
@@ -157,7 +157,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Applies a style to the recorder.
      * @param style The style to apply
      */
-    fun applyStyle(style: CometChatInlineAudioRecorderStyle) {
+    public fun applyStyle(style: CometChatInlineAudioRecorderStyle) {
         this.style = style
         
         // Apply container styling
@@ -202,7 +202,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Sets the submit callback.
      * @param listener Callback with the recorded file
      */
-    fun setOnSubmitListener(listener: (File) -> Unit) {
+    public fun setOnSubmitListener(listener: (File) -> Unit) {
         onSubmitListener = listener
     }
     
@@ -210,7 +210,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Sets the cancel callback.
      * @param listener Callback when recording is cancelled
      */
-    fun setOnCancelListener(listener: () -> Unit) {
+    public fun setOnCancelListener(listener: () -> Unit) {
         onCancelListener = listener
     }
     
@@ -218,7 +218,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * Sets the error callback.
      * @param listener Callback with error message
      */
-    fun setOnErrorListener(listener: (String) -> Unit) {
+    public fun setOnErrorListener(listener: (String) -> Unit) {
         onErrorListener = listener
     }
     
@@ -233,7 +233,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      * 
      * @return true if recording started successfully or permission request was initiated
      */
-    fun startRecording(): Boolean {
+    public fun startRecording(): Boolean {
         val vm = viewModel ?: return false
         val manager = recorderManager ?: return false
         
@@ -247,7 +247,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
         }
         
         // Request permission using the Activity-based handler
-        Log.d(TAG, "RECORD_AUDIO permission not granted, requesting via CometChatPermissionHandler...")
+        CometChatLogger.d(TAG, "RECORD_AUDIO permission not granted, requesting via CometChatPermissionHandler...")
         CometChatPermissionHandler.withContext(context)
             .withPermissions(CometChatPermissionHandler.getPermissionsForType(PermissionType.MICROPHONE))
             .withListener(object : PermissionResultListener {
@@ -255,7 +255,7 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
                     if (deniedPermissions.isEmpty()) {
                         startRecordingInternal()
                     } else {
-                        Log.e(TAG, "RECORD_AUDIO permission denied: $deniedPermissions")
+                        CometChatLogger.e(TAG, "RECORD_AUDIO permission denied: $deniedPermissions")
                         onErrorListener?.invoke("RECORD_AUDIO permission denied")
                     }
                 }
@@ -360,30 +360,30 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
      */
     private fun handleSendClick() {
         val vm = viewModel ?: run {
-            Log.e(TAG, "handleSendClick: viewModel is null")
+            CometChatLogger.e(TAG, "handleSendClick: viewModel is null")
             return
         }
         val manager = recorderManager ?: run {
-            Log.e(TAG, "handleSendClick: recorderManager is null")
+            CometChatLogger.e(TAG, "handleSendClick: recorderManager is null")
             return
         }
         
-        Log.d(TAG, "handleSendClick: current status = ${vm.status}")
+        CometChatLogger.d(TAG, "handleSendClick: current status = ${vm.status}")
         
         var recordedFile: File? = null
         
         // Stop recording BEFORE animation to ensure file is finalized
         if (vm.status == InlineAudioRecorderStatus.RECORDING ||
             vm.status == InlineAudioRecorderStatus.PAUSED) {
-            Log.d(TAG, "handleSendClick: stopping recording...")
+            CometChatLogger.d(TAG, "handleSendClick: stopping recording...")
             // stopRecording() now waits for file to be written and returns it
             recordedFile = manager.stopRecording()
             vm.stopRecording()
-            Log.d(TAG, "handleSendClick: stopRecording returned file = ${recordedFile?.absolutePath}, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
+            CometChatLogger.d(TAG, "handleSendClick: stopRecording returned file = ${recordedFile?.absolutePath}, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
         } else {
             // Already completed, get the existing file
             recordedFile = manager.getRecordedFile()
-            Log.d(TAG, "handleSendClick: already completed, getRecordedFile returned = ${recordedFile?.absolutePath}, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
+            CometChatLogger.d(TAG, "handleSendClick: already completed, getRecordedFile returned = ${recordedFile?.absolutePath}, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
         }
         
         // Slide right towards send button and then submit
@@ -391,12 +391,12 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
         
         // Submit the file only if it exists and has content
         if (recordedFile != null && recordedFile.exists() && recordedFile.length() > 0) {
-            Log.d(TAG, "handleSendClick: invoking onSubmitListener with file size = ${recordedFile.length()}")
+            CometChatLogger.d(TAG, "handleSendClick: invoking onSubmitListener with file size = ${recordedFile.length()}")
             // Mark as submitted BEFORE invoking listener to prevent file deletion during cleanup
             manager.markAsSubmitted()
             onSubmitListener?.invoke(recordedFile)
         } else {
-            Log.e(TAG, "handleSendClick: file is null, doesn't exist, or has 0 bytes. file = $recordedFile, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
+            CometChatLogger.e(TAG, "handleSendClick: file is null, doesn't exist, or has 0 bytes. file = $recordedFile, exists = ${recordedFile?.exists()}, size = ${recordedFile?.length()}")
         }
     }
     
@@ -670,12 +670,17 @@ class CometChatInlineAudioRecorder @JvmOverloads constructor(
     
     private fun updateAccessibility(status: InlineAudioRecorderStatus, displayTime: String) {
         contentDescription = when (status) {
-            InlineAudioRecorderStatus.RECORDING -> "Recording in progress, $displayTime elapsed"
-            InlineAudioRecorderStatus.PAUSED -> "Recording paused at $displayTime"
-            InlineAudioRecorderStatus.COMPLETED -> "Recording complete, $displayTime duration"
-            InlineAudioRecorderStatus.PLAYING -> "Playing recording, $displayTime"
-            InlineAudioRecorderStatus.ERROR -> "Recording error"
-            else -> "Audio recorder"
+            InlineAudioRecorderStatus.RECORDING ->
+                context.getString(R.string.cometchat_a11y_recording_in_progress_elapsed, displayTime)
+            InlineAudioRecorderStatus.PAUSED ->
+                context.getString(R.string.cometchat_a11y_recording_paused_at, displayTime)
+            InlineAudioRecorderStatus.COMPLETED ->
+                context.getString(R.string.cometchat_a11y_recording_complete_duration, displayTime)
+            InlineAudioRecorderStatus.PLAYING ->
+                context.getString(R.string.cometchat_a11y_playing_recording, displayTime)
+            InlineAudioRecorderStatus.ERROR ->
+                context.getString(R.string.cometchat_a11y_recording_error)
+            else -> context.getString(R.string.cometchat_a11y_audio_recorder)
         }
     }
     

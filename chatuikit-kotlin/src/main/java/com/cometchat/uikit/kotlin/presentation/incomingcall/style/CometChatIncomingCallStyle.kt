@@ -39,7 +39,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param rejectButtonTextAppearance Text appearance for the reject button
  * @param avatarStyle Style configuration for the caller's avatar
  */
-data class CometChatIncomingCallStyle private constructor(
+public data class CometChatIncomingCallStyle private constructor(
     // Container styling
     @ColorInt val backgroundColor: Int,
     @Dimension val cornerRadius: Float,
@@ -78,7 +78,7 @@ data class CometChatIncomingCallStyle private constructor(
      *
      * **Validates: Requirements 8a.19** - Builder pattern for construction
      */
-    class Builder(private val context: Context) {
+    public class Builder(private val context: Context) {
         // Container styling
         @ColorInt private var backgroundColor: Int = CometChatTheme.getBackgroundColor3(context)
         @Dimension private var cornerRadius: Float = 0f
@@ -116,120 +116,120 @@ data class CometChatIncomingCallStyle private constructor(
          * Sets the background color for the incoming call container.
          * **Validates: Requirements 8a.2**
          */
-        fun setBackgroundColor(@ColorInt color: Int) = apply { backgroundColor = color }
+        public fun setBackgroundColor(@ColorInt color: Int): Builder = apply { backgroundColor = color }
         
         /**
          * Sets the corner radius of the incoming call container.
          * **Validates: Requirements 8a.3**
          */
-        fun setCornerRadius(@Dimension radius: Float) = apply { cornerRadius = radius }
+        public fun setCornerRadius(@Dimension radius: Float): Builder = apply { cornerRadius = radius }
         
         /**
          * Sets the stroke width of the container border.
          * **Validates: Requirements 8a.4**
          */
-        fun setStrokeWidth(@Dimension width: Int) = apply { strokeWidth = width }
+        public fun setStrokeWidth(@Dimension width: Int): Builder = apply { strokeWidth = width }
         
         /**
          * Sets the stroke color of the container border.
          * **Validates: Requirements 8a.5**
          */
-        fun setStrokeColor(@ColorInt color: Int) = apply { strokeColor = color }
+        public fun setStrokeColor(@ColorInt color: Int): Builder = apply { strokeColor = color }
         
         // Title setters
         /**
          * Sets the text color for the caller name.
          * **Validates: Requirements 8a.6**
          */
-        fun setTitleTextColor(@ColorInt color: Int) = apply { titleTextColor = color }
+        public fun setTitleTextColor(@ColorInt color: Int): Builder = apply { titleTextColor = color }
         
         /**
          * Sets the text appearance for the caller name.
          * **Validates: Requirements 8a.7**
          */
-        fun setTitleTextAppearance(@StyleRes appearance: Int) = apply { titleTextAppearance = appearance }
+        public fun setTitleTextAppearance(@StyleRes appearance: Int): Builder = apply { titleTextAppearance = appearance }
         
         // Subtitle setters
         /**
          * Sets the text color for the call type subtitle.
          * **Validates: Requirements 8a.8**
          */
-        fun setSubtitleTextColor(@ColorInt color: Int) = apply { subtitleTextColor = color }
+        public fun setSubtitleTextColor(@ColorInt color: Int): Builder = apply { subtitleTextColor = color }
         
         /**
          * Sets the text appearance for the call type subtitle.
          * **Validates: Requirements 8a.9**
          */
-        fun setSubtitleTextAppearance(@StyleRes appearance: Int) = apply { subtitleTextAppearance = appearance }
+        public fun setSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { subtitleTextAppearance = appearance }
         
         // Icon setters
         /**
          * Sets the tint color for the call type icon.
          * **Validates: Requirements 8a.10**
          */
-        fun setIconTint(@ColorInt color: Int) = apply { iconTint = color }
+        public fun setIconTint(@ColorInt color: Int): Builder = apply { iconTint = color }
         
         /**
          * Sets the drawable resource for the voice call icon.
          * **Validates: Requirements 8a.11**
          */
-        fun setVoiceCallIcon(@DrawableRes icon: Int) = apply { voiceCallIcon = icon }
+        public fun setVoiceCallIcon(@DrawableRes icon: Int): Builder = apply { voiceCallIcon = icon }
         
         /**
          * Sets the drawable resource for the video call icon.
          * **Validates: Requirements 8a.12**
          */
-        fun setVideoCallIcon(@DrawableRes icon: Int) = apply { videoCallIcon = icon }
+        public fun setVideoCallIcon(@DrawableRes icon: Int): Builder = apply { videoCallIcon = icon }
         
         // Accept button setters
         /**
          * Sets the background color for the accept button.
          * **Validates: Requirements 8a.13**
          */
-        fun setAcceptButtonBackgroundColor(@ColorInt color: Int) = apply { acceptButtonBackgroundColor = color }
+        public fun setAcceptButtonBackgroundColor(@ColorInt color: Int): Builder = apply { acceptButtonBackgroundColor = color }
         
         /**
          * Sets the text color for the accept button.
          * **Validates: Requirements 8a.15**
          */
-        fun setAcceptButtonTextColor(@ColorInt color: Int) = apply { acceptButtonTextColor = color }
+        public fun setAcceptButtonTextColor(@ColorInt color: Int): Builder = apply { acceptButtonTextColor = color }
         
         /**
          * Sets the text appearance for the accept button.
          * **Validates: Requirements 8a.16**
          */
-        fun setAcceptButtonTextAppearance(@StyleRes appearance: Int) = apply { acceptButtonTextAppearance = appearance }
+        public fun setAcceptButtonTextAppearance(@StyleRes appearance: Int): Builder = apply { acceptButtonTextAppearance = appearance }
         
         // Reject button setters
         /**
          * Sets the background color for the reject button.
          * **Validates: Requirements 8a.14**
          */
-        fun setRejectButtonBackgroundColor(@ColorInt color: Int) = apply { rejectButtonBackgroundColor = color }
+        public fun setRejectButtonBackgroundColor(@ColorInt color: Int): Builder = apply { rejectButtonBackgroundColor = color }
         
         /**
          * Sets the text color for the reject button.
          * **Validates: Requirements 8a.16**
          */
-        fun setRejectButtonTextColor(@ColorInt color: Int) = apply { rejectButtonTextColor = color }
+        public fun setRejectButtonTextColor(@ColorInt color: Int): Builder = apply { rejectButtonTextColor = color }
         
         /**
          * Sets the text appearance for the reject button.
          * **Validates: Requirements 8a.17**
          */
-        fun setRejectButtonTextAppearance(@StyleRes appearance: Int) = apply { rejectButtonTextAppearance = appearance }
+        public fun setRejectButtonTextAppearance(@StyleRes appearance: Int): Builder = apply { rejectButtonTextAppearance = appearance }
         
         // Avatar setter
         /**
          * Sets the avatar style configuration.
          * **Validates: Requirements 8a.17**
          */
-        fun setAvatarStyle(style: CometChatAvatarStyle?) = apply { avatarStyle = style }
+        public fun setAvatarStyle(style: CometChatAvatarStyle?): Builder = apply { avatarStyle = style }
 
         /**
          * Builds the CometChatIncomingCallStyle instance.
          */
-        fun build() = CometChatIncomingCallStyle(
+        public fun build(): CometChatIncomingCallStyle = CometChatIncomingCallStyle(
             backgroundColor = backgroundColor,
             cornerRadius = cornerRadius,
             strokeWidth = strokeWidth,
@@ -251,7 +251,7 @@ data class CometChatIncomingCallStyle private constructor(
         )
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors and typography are derived from the current theme.
@@ -259,7 +259,7 @@ data class CometChatIncomingCallStyle private constructor(
          * @param context The Android context for accessing theme attributes
          * @return A fully configured CometChatIncomingCallStyle with theme defaults
          */
-        fun default(context: Context): CometChatIncomingCallStyle {
+        public fun default(context: Context): CometChatIncomingCallStyle {
             return Builder(context).build()
         }
 
@@ -269,7 +269,7 @@ data class CometChatIncomingCallStyle private constructor(
          * @param context The Android context for accessing theme attributes
          * @return A new Builder instance with theme defaults
          */
-        fun builder(context: Context) = Builder(context)
+        public fun builder(context: Context): Builder = Builder(context)
         
         /**
          * Creates a style by extracting values from the theme's cometchatIncomingCallStyle.
@@ -277,7 +277,7 @@ data class CometChatIncomingCallStyle private constructor(
          * @param context The context to access theme resources
          * @return A CometChatIncomingCallStyle with values from theme or fallback defaults
          */
-        fun fromTheme(context: Context): CometChatIncomingCallStyle {
+        public fun fromTheme(context: Context): CometChatIncomingCallStyle {
             val themeTypedArray = context.obtainStyledAttributes(intArrayOf(R.attr.cometchatIncomingCallStyle))
             val styleResId = themeTypedArray.getResourceId(0, 0)
             themeTypedArray.recycle()
@@ -304,7 +304,7 @@ data class CometChatIncomingCallStyle private constructor(
          * @param typedArray The TypedArray containing XML attribute values
          * @return A CometChatIncomingCallStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatIncomingCallStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatIncomingCallStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

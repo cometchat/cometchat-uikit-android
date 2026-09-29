@@ -17,18 +17,18 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param binding The ViewBinding for the date separator layout
  */
-class DateItemHolder(
-    val binding: CometchatSearchStickyHeaderBinding
+public class DateItemHolder(
+    public val binding: CometchatSearchStickyHeaderBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    companion object {
+    public companion object {
         /**
          * Creates a new DateItemHolder.
          *
          * @param parent The parent ViewGroup
          * @return A new DateItemHolder instance
          */
-        fun create(parent: ViewGroup): DateItemHolder {
+        public fun create(parent: ViewGroup): DateItemHolder {
             val binding = CometchatSearchStickyHeaderBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -45,7 +45,7 @@ class DateItemHolder(
      * @param style The style configuration
      * @param dateTimeFormatter Optional custom date/time formatter
      */
-    fun bind(
+    public fun bind(
         timestamp: Long,
         style: CometChatSearchStyle?,
         dateTimeFormatter: DateTimeFormatterCallback?
@@ -68,7 +68,7 @@ class DateItemHolder(
      * @param formattedDate The pre-formatted date string
      * @param style The style configuration
      */
-    fun bind(
+    public fun bind(
         formattedDate: String,
         style: CometChatSearchStyle?
     ) {

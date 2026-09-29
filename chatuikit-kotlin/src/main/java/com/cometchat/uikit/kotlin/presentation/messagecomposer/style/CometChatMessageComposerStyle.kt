@@ -16,7 +16,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * across both UI implementations. All style properties can be customized either
  * programmatically or via XML attributes.
  */
-data class CometChatMessageComposerStyle(
+public data class CometChatMessageComposerStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -126,11 +126,11 @@ data class CometChatMessageComposerStyle(
     @ColorInt val linkDialogButtonTextColor: Int = 0,
     @StyleRes val linkDialogButtonTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatMessageComposerStyle.
          */
-        fun default(context: Context): CometChatMessageComposerStyle {
+        public fun default(context: Context): CometChatMessageComposerStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -154,7 +154,7 @@ data class CometChatMessageComposerStyle(
         }
 
         @Suppress("DEPRECATION")
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageComposerStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageComposerStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

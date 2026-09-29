@@ -25,7 +25,7 @@ import com.cometchat.uikit.kotlin.R
  * - Current member scope is pre-selected
  * - Single selection via radio buttons
  */
-class ScopeAdapter(
+internal class ScopeAdapter(
     private val context: Context,
     private var roles: List<String>?
 ) : RecyclerView.Adapter<ScopeAdapter.RoleViewHolder>() {

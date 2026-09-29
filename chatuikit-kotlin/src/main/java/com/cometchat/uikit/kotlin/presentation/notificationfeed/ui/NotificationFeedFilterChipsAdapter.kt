@@ -19,7 +19,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Shows unread badge count inside the chip when count > 0.
  * Uses CometChatTheme for all colors — fully theme-aware.
  */
-class NotificationFeedFilterChipsAdapter(
+internal class NotificationFeedFilterChipsAdapter(
     private var style: CometChatNotificationFeedStyle,
     private val onChipClick: (String) -> Unit
 ) : RecyclerView.Adapter<NotificationFeedFilterChipsAdapter.ChipViewHolder>() {

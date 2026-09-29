@@ -13,7 +13,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * A [AppCompatTextView] that displays a shimmer animation effect over its text.
  * Used to indicate loading/thinking states in the AI assistant stream bubble.
  */
-class ShimmerTextView @JvmOverloads constructor(
+public class ShimmerTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -49,7 +49,7 @@ class ShimmerTextView @JvmOverloads constructor(
         }
     }
 
-    fun startShimmer() {
+    public fun startShimmer() {
         isShimmerEnabled = true
         if (linearGradient != null && paintObj != null) {
             paintObj?.shader = linearGradient
@@ -57,9 +57,9 @@ class ShimmerTextView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun isShimmerEnabled(): Boolean = isShimmerEnabled
+    public fun isShimmerEnabled(): Boolean = isShimmerEnabled
 
-    fun stopShimmer() {
+    public fun stopShimmer() {
         isShimmerEnabled = false
         paintObj?.shader = null
         invalidate()

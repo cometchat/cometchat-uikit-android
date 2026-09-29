@@ -40,27 +40,27 @@ import kotlin.math.ceil
 /**
  * Type alias reusing the existing MenuItem from CometChatPopupMenu.
  */
-typealias MenuItem = CometChatPopupMenu.MenuItem
+public typealias MenuItem = CometChatPopupMenu.MenuItem
 
 /**
  * Callback interface for menu item clicks.
  */
-fun interface OnMenuItemClickListener {
-    fun onMenuItemClick(id: String, item: String)
+public fun interface OnMenuItemClickListener {
+    public fun onMenuItemClick(id: String, item: String)
 }
 
 /**
  * Callback interface for reaction clicks.
  */
-fun interface ReactionClickListener {
-    fun onReactionClick(baseMessage: BaseMessage, reaction: String)
+public fun interface ReactionClickListener {
+    public fun onReactionClick(baseMessage: BaseMessage, reaction: String)
 }
 
 /**
  * Callback interface for emoji picker clicks.
  */
-fun interface EmojiPickerClickListener {
-    fun onEmojiPickerClick()
+public fun interface EmojiPickerClickListener {
+    public fun onEmojiPickerClick()
 }
 
 /**
@@ -71,13 +71,13 @@ fun interface EmojiPickerClickListener {
  *
  * This is NOT a View subclass — it is a plain Kotlin class.
  */
-class CometChatMessagePopupMenu(
+public class CometChatMessagePopupMenu(
     private val context: android.content.Context,
     @StyleRes style: Int = 0
 ) {
-    companion object {
+    public companion object {
         private val TAG = CometChatMessagePopupMenu::class.java.simpleName
-        val DEFAULT_REACTIONS = listOf("😍", "👍🏻", "🔥", "😊", "❤️")
+        public val DEFAULT_REACTIONS: List<String> = listOf("😍", "👍🏻", "🔥", "😊", "❤️")
     }
 
     // PopupWindow and blur overlay
@@ -136,7 +136,7 @@ class CometChatMessagePopupMenu(
     /**
      * Applies style attributes from a style resource.
      */
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style == 0) return
         val typedArray = context.theme.obtainStyledAttributes(style, R.styleable.CometChatPopupMenu)
         try {
@@ -172,19 +172,19 @@ class CometChatMessagePopupMenu(
         }
     }
 
-    fun setAddReactionIcon(@DrawableRes icon: Int) {
+    public fun setAddReactionIcon(@DrawableRes icon: Int) {
         this.addReactionIcon = icon
     }
 
-    fun setOnMenuItemClickListener(listener: OnMenuItemClickListener?) {
+    public fun setOnMenuItemClickListener(listener: OnMenuItemClickListener?) {
         this.onMenuItemClickListener = listener
     }
 
-    fun setMessageAlignment(alignment: UIKitConstants.MessageListAlignment) {
+    public fun setMessageAlignment(alignment: UIKitConstants.MessageListAlignment) {
         this.messageAlignment = alignment
     }
 
-    fun setMenuItems(items: List<MenuItem>) {
+    public fun setMenuItems(items: List<MenuItem>) {
         this.menuItems = items
     }
 
@@ -192,37 +192,37 @@ class CometChatMessagePopupMenu(
      * Stores message templates for future use. The message bubble in the popup
      * preview gets its templates from the adapter during normal rendering.
      */
-    fun setMessageTemplates(templates: List<Any>) {
+    public fun setMessageTemplates(templates: List<Any>) {
         // Templates are stored for potential future use but not directly
         // applied to the bubble preview since CometChatMessageBubble
         // doesn't expose a setMessageTemplates method.
     }
 
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         this.textFormatters = formatters
     }
 
-    fun setQuickReactions(reactions: List<String>) {
+    public fun setQuickReactions(reactions: List<String>) {
         this.quickReactions = reactions.ifEmpty { DEFAULT_REACTIONS }
     }
 
-    fun setReactionClickListener(listener: ReactionClickListener?) {
+    public fun setReactionClickListener(listener: ReactionClickListener?) {
         this.reactionClickListener = listener
     }
 
-    fun setEmojiPickerClickListener(listener: EmojiPickerClickListener?) {
+    public fun setEmojiPickerClickListener(listener: EmojiPickerClickListener?) {
         this.emojiPickerClickListener = listener
     }
 
-    fun setQuickReactionsVisibility(visibility: Int) {
+    public fun setQuickReactionsVisibility(visibility: Int) {
         this.quickReactionsVisibility = visibility
     }
 
-    fun setReceiptsVisibility(visibility: Int) {
+    public fun setReceiptsVisibility(visibility: Int) {
         this.receiptsVisibility = visibility
     }
 
-    fun getReceiptsVisibility(): Int = receiptsVisibility
+    public fun getReceiptsVisibility(): Int = receiptsVisibility
 
     /**
      * Shows the popup menu anchored to the given view.
@@ -231,7 +231,7 @@ class CometChatMessagePopupMenu(
      * @param parentView The parent view (typically CometChatMessageList)
      * @param baseMessage The message to show options for
      */
-    fun show(anchorView: View, parentView: View, baseMessage: BaseMessage) {
+    public fun show(anchorView: View, parentView: View, baseMessage: BaseMessage) {
         val activity = Utils.getActivity(context) ?: return
         if (!isActivityUsable(activity)) return
 
@@ -763,7 +763,7 @@ class CometChatMessagePopupMenu(
     /**
      * Dismisses the popup and removes the blur overlay.
      */
-    fun dismiss() {
+    public fun dismiss() {
         try {
             popupWindow?.let {
                 if (it.isShowing) {
@@ -783,7 +783,7 @@ class CometChatMessagePopupMenu(
     /**
      * Returns the message currently displayed in the popup, if any.
      */
-    fun getCurrentMessage(): BaseMessage? = currentMessage
+    public fun getCurrentMessage(): BaseMessage? = currentMessage
 
     /**
      * Checks if an activity is usable (not null, not finishing, not destroyed).

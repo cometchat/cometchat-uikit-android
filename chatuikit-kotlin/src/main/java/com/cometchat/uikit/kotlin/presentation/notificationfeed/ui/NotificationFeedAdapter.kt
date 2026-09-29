@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
  * Handles both timestamp group headers and feed item cards.
  * Uses DiffUtil for efficient updates.
  */
-class NotificationFeedAdapter(
+internal class NotificationFeedAdapter(
     private var style: CometChatNotificationFeedStyle,
     private val onItemClick: (NotificationFeedItem) -> Unit,
     private val onActionClick: (NotificationFeedItem, Map<String, Any>) -> Unit,

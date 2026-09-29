@@ -14,7 +14,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This class holds all styling properties for the suggestion list including
  * background colors, stroke properties, text styles, and avatar styles.
  */
-data class CometChatSuggestionListStyle(
+public data class CometChatSuggestionListStyle(
     @ColorInt var backgroundColor: Int = 0,
     @ColorInt var strokeColor: Int = 0,
     @Dimension var strokeWidth: Int = 0,
@@ -28,7 +28,7 @@ data class CometChatSuggestionListStyle(
     @ColorInt var separatorColor: Int = 0,
     @Dimension var separatorHeight: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatSuggestionListStyle by extracting values from the theme's
          * cometchatSuggestionListStyle attribute.
@@ -36,7 +36,7 @@ data class CometChatSuggestionListStyle(
          * @param context The context to resolve theme colors
          * @return A CometChatSuggestionListStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatSuggestionListStyle {
+        public fun default(context: Context): CometChatSuggestionListStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -83,7 +83,7 @@ data class CometChatSuggestionListStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatSuggestionListStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatSuggestionListStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatSuggestionListStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

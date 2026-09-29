@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the confirmation dialog,
  * matching the XML attributes defined in attr_cometchat_confirm_dialog.xml.
  */
-data class CometChatConfirmDialogStyle(
+public data class CometChatConfirmDialogStyle(
     // Container styling
     @ColorInt val strokeColor: Int = 0,
     @Dimension val strokeWidth: Int = 0,
@@ -52,14 +52,14 @@ data class CometChatConfirmDialogStyle(
     @ColorInt val negativeButtonStrokeColor: Int = 0,
     @Dimension val negativeButtonRadius: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatConfirmDialogStyle with default values
          */
-        fun default(context: Context): CometChatConfirmDialogStyle {
+        public fun default(context: Context): CometChatConfirmDialogStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -73,7 +73,7 @@ data class CometChatConfirmDialogStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatConfirmDialogStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConfirmDialogStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatConfirmDialogStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -88,7 +88,7 @@ data class CometChatConfirmDialogStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatConfirmDialogStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatConfirmDialogStyle {

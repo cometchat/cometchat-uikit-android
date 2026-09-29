@@ -22,7 +22,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param binding The ViewBinding for the document message item layout
  */
-class SearchDocumentMessageViewHolder(
+internal class SearchDocumentMessageViewHolder(
     val binding: CometchatSearchMessageItemDocumentBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

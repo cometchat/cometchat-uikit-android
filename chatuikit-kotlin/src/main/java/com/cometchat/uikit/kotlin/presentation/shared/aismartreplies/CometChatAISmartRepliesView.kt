@@ -49,13 +49,13 @@ import com.google.android.material.card.MaterialCardView
  *
  * @see AISmartRepliesAdapter
  */
-class CometChatAISmartRepliesView @JvmOverloads constructor(
+public class CometChatAISmartRepliesView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAISmartRepliesStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatAISmartRepliesView::class.java.simpleName
     }
 
@@ -332,7 +332,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param state The UI state to set.
      */
-    fun setUIState(state: SmartRepliesUIState) {
+    public fun setUIState(state: SmartRepliesUIState) {
         when (state) {
             is SmartRepliesUIState.Idle -> {
                 isVisible = false
@@ -357,7 +357,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param replies List of smart reply options.
      */
-    fun setSmartReplies(replies: List<String>) {
+    public fun setSmartReplies(replies: List<String>) {
         if (replies.isNotEmpty()) {
             binding.recyclerView.isVisible = true
             smartRepliesAdapter.setList(replies)
@@ -370,7 +370,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Displays the error view and hides other content views.
      */
-    fun showErrorView() {
+    public fun showErrorView() {
         binding.errorViewLayout.isVisible = true
         binding.loadingViewLayout.isVisible = false
         binding.recyclerView.isVisible = false
@@ -380,7 +380,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Displays the loading view with a shimmer effect.
      */
-    fun showLoadingView() {
+    public fun showLoadingView() {
         binding.errorViewLayout.isVisible = false
         binding.loadingViewLayout.isVisible = true
         setShimmerVisibility(View.VISIBLE)
@@ -392,7 +392,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param view The custom view to display in place of the default loaded view.
      */
-    fun setCustomView(view: View?) {
+    public fun setCustomView(view: View?) {
         if (view != null) {
             binding.loadedViewParentLayout.removeAllViews()
             binding.loadingViewLayout.isVisible = false
@@ -405,7 +405,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param errorText Text to display for error.
      */
-    fun setErrorStateText(errorText: String?) {
+    public fun setErrorStateText(errorText: String?) {
         if (!errorText.isNullOrEmpty()) {
             binding.tvError.text = errorText
         }
@@ -416,7 +416,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param title The title text to display.
      */
-    fun setTitle(title: String?) {
+    public fun setTitle(title: String?) {
         if (!title.isNullOrEmpty()) {
             binding.title.text = title
         }
@@ -446,7 +446,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the corner radius for the view's card.
      */
-    fun setCornerRadius(@Dimension cornerRadius: Int) {
+    public fun setCornerRadius(@Dimension cornerRadius: Int) {
         this.viewCornerRadius = cornerRadius
         super.setRadius(cornerRadius.toFloat())
     }
@@ -470,7 +470,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the text color for the title.
      */
-    fun setTitleTextColor(@ColorInt titleTextColor: Int) {
+    public fun setTitleTextColor(@ColorInt titleTextColor: Int) {
         this.titleTextColor = titleTextColor
         binding.title.setTextColor(titleTextColor)
     }
@@ -478,7 +478,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the text appearance for the title.
      */
-    fun setTitleTextAppearance(@StyleRes titleTextAppearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes titleTextAppearance: Int) {
         this.titleTextAppearance = titleTextAppearance
         if (titleTextAppearance != 0) {
             binding.title.setTextAppearance(titleTextAppearance)
@@ -488,7 +488,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the close icon drawable.
      */
-    fun setCloseIcon(closeIcon: Drawable?) {
+    public fun setCloseIcon(closeIcon: Drawable?) {
         this.closeIcon = closeIcon
         closeIcon?.let { binding.ivClose.setImageDrawable(it) }
     }
@@ -496,7 +496,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the tint color for the close icon.
      */
-    fun setCloseIconTint(@ColorInt closeIconTint: Int) {
+    public fun setCloseIconTint(@ColorInt closeIconTint: Int) {
         this.closeIconTint = closeIconTint
         binding.ivClose.setColorFilter(closeIconTint)
     }
@@ -504,7 +504,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the background color for each item in the list.
      */
-    fun setItemBackgroundColor(@ColorInt itemBackgroundColor: Int) {
+    public fun setItemBackgroundColor(@ColorInt itemBackgroundColor: Int) {
         this.itemBackgroundColor = itemBackgroundColor
         smartRepliesAdapter.setItemBackgroundColor(itemBackgroundColor)
     }
@@ -512,7 +512,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets a custom drawable as the background for each item in the list.
      */
-    fun setItemBackgroundDrawable(itemBackgroundDrawable: Drawable?) {
+    public fun setItemBackgroundDrawable(itemBackgroundDrawable: Drawable?) {
         this.itemBackgroundDrawable = itemBackgroundDrawable
         smartRepliesAdapter.setItemBackgroundDrawable(itemBackgroundDrawable)
     }
@@ -520,7 +520,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the corner radius for each item in the list.
      */
-    fun setItemCornerRadius(@Dimension itemCornerRadius: Int) {
+    public fun setItemCornerRadius(@Dimension itemCornerRadius: Int) {
         this.itemCornerRadius = itemCornerRadius
         smartRepliesAdapter.setItemCornerRadius(itemCornerRadius)
     }
@@ -528,7 +528,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the width of the stroke for each item in the list.
      */
-    fun setItemStrokeWidth(@Dimension itemStrokeWidth: Int) {
+    public fun setItemStrokeWidth(@Dimension itemStrokeWidth: Int) {
         this.itemStrokeWidth = itemStrokeWidth
         smartRepliesAdapter.setItemStrokeWidth(itemStrokeWidth)
     }
@@ -536,7 +536,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the color of the stroke for each item in the list.
      */
-    fun setItemStrokeColor(@ColorInt itemStrokeColor: Int) {
+    public fun setItemStrokeColor(@ColorInt itemStrokeColor: Int) {
         this.itemStrokeColor = itemStrokeColor
         smartRepliesAdapter.setItemStrokeColor(itemStrokeColor)
     }
@@ -544,7 +544,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the text color for each item in the list.
      */
-    fun setItemTextColor(@ColorInt itemTextColor: Int) {
+    public fun setItemTextColor(@ColorInt itemTextColor: Int) {
         this.itemTextColor = itemTextColor
         smartRepliesAdapter.setItemTextColor(itemTextColor)
     }
@@ -552,7 +552,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the text appearance for each item in the list.
      */
-    fun setItemTextAppearance(@StyleRes itemTextAppearance: Int) {
+    public fun setItemTextAppearance(@StyleRes itemTextAppearance: Int) {
         this.itemTextAppearance = itemTextAppearance
         smartRepliesAdapter.setItemTextAppearance(itemTextAppearance)
     }
@@ -560,7 +560,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the text color of the error state.
      */
-    fun setErrorStateTextColor(@ColorInt color: Int) {
+    public fun setErrorStateTextColor(@ColorInt color: Int) {
         this.errorStateTextColor = color
         binding.tvError.setTextColor(color)
     }
@@ -568,7 +568,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the appearance of the error state text.
      */
-    fun setErrorStateTextAppearance(@StyleRes errorStateTextAppearance: Int) {
+    public fun setErrorStateTextAppearance(@StyleRes errorStateTextAppearance: Int) {
         this.errorStateTextAppearance = errorStateTextAppearance
         if (errorStateTextAppearance != 0) {
             binding.tvError.setTextAppearance(errorStateTextAppearance)
@@ -578,7 +578,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the layout resource to use for the error view.
      */
-    fun setErrorViewLayout(@LayoutRes errorViewLayout: Int) {
+    public fun setErrorViewLayout(@LayoutRes errorViewLayout: Int) {
         if (errorViewLayout != 0) {
             this.errorViewLayout = errorViewLayout
             binding.errorViewLayout.removeAllViews()
@@ -590,7 +590,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the layout resource to use for the loading view.
      */
-    fun setLoadingViewLayout(@LayoutRes loadingViewLayout: Int) {
+    public fun setLoadingViewLayout(@LayoutRes loadingViewLayout: Int) {
         if (loadingViewLayout != 0) {
             this.loadingViewLayout = loadingViewLayout
             binding.loadingViewLayout.removeAllViews()
@@ -602,7 +602,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the style of the AI smart replies from a specific style resource.
      */
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             this.viewStyle = style
             val typedArray = context.theme.obtainStyledAttributes(
@@ -620,7 +620,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param style The [CometChatAISmartRepliesStyle] to apply
      */
-    fun setStyle(style: CometChatAISmartRepliesStyle) {
+    public fun setStyle(style: CometChatAISmartRepliesStyle) {
         // Title styling
         setTitleTextColor(style.titleTextColor)
         if (style.titleTextAppearance != 0) {
@@ -661,7 +661,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      *
      * @param maxHeightInDp Maximum height in dp for the view.
      */
-    fun setMaxHeight(maxHeightInDp: Int) {
+    public fun setMaxHeight(maxHeightInDp: Int) {
         if (maxHeightInDp > 0) {
             this.maxHeight = Utils.convertDpToPx(context, maxHeightInDp)
             requestLayout()
@@ -671,21 +671,21 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Sets the user ID or group ID associated with the component.
      */
-    fun setUid(uid: String) {
+    public fun setUid(uid: String) {
         this.uid = uid
     }
 
     /**
      * Sets the click listener to handle item selection events in the RecyclerView.
      */
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         this.onClick = onClick
     }
 
     /**
      * Sets the click listener for the close icon.
      */
-    fun setOnCloseIconClick(onCloseIconClick: OnCloseIconClick?) {
+    public fun setOnCloseIconClick(onCloseIconClick: OnCloseIconClick?) {
         this.onCloseIconClick = onCloseIconClick
     }
 
@@ -695,18 +695,18 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      * Gets the background color applied to the component.
      */
     @ColorInt
-    fun getBackgroundColor(): Int = viewBackgroundColor
+    public fun getBackgroundColor(): Int = viewBackgroundColor
 
     /**
      * Retrieves the background drawable for the component.
      */
-    fun getBackgroundDrawable(): Drawable? = backgroundDrawable
+    public fun getBackgroundDrawable(): Drawable? = backgroundDrawable
 
     /**
      * Gets the corner radius for the component.
      */
     @Dimension
-    fun getCornerRadius(): Int = viewCornerRadius
+    public fun getCornerRadius(): Int = viewCornerRadius
 
     /**
      * Retrieves the stroke width for the component's border.
@@ -724,126 +724,126 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
      * Gets the title text color.
      */
     @ColorInt
-    fun getTitleTextColor(): Int = titleTextColor
+    public fun getTitleTextColor(): Int = titleTextColor
 
     /**
      * Gets the title text appearance.
      */
     @StyleRes
-    fun getTitleTextAppearance(): Int = titleTextAppearance
+    public fun getTitleTextAppearance(): Int = titleTextAppearance
 
     /**
      * Gets the close icon drawable.
      */
-    fun getCloseIcon(): Drawable? = closeIcon
+    public fun getCloseIcon(): Drawable? = closeIcon
 
     /**
      * Gets the close icon tint color.
      */
     @ColorInt
-    fun getCloseIconTint(): Int = closeIconTint
+    public fun getCloseIconTint(): Int = closeIconTint
 
     /**
      * Retrieves the background color for each item in the list.
      */
     @ColorInt
-    fun getItemBackgroundColor(): Int = itemBackgroundColor
+    public fun getItemBackgroundColor(): Int = itemBackgroundColor
 
     /**
      * Gets the background drawable for each item in the list.
      */
-    fun getItemBackgroundDrawable(): Drawable? = itemBackgroundDrawable
+    public fun getItemBackgroundDrawable(): Drawable? = itemBackgroundDrawable
 
     /**
      * Retrieves the corner radius for each item in the list.
      */
     @Dimension
-    fun getItemCornerRadius(): Int = itemCornerRadius
+    public fun getItemCornerRadius(): Int = itemCornerRadius
 
     /**
      * Gets the stroke width for each item in the list.
      */
     @Dimension
-    fun getItemStrokeWidth(): Int = itemStrokeWidth
+    public fun getItemStrokeWidth(): Int = itemStrokeWidth
 
     /**
      * Retrieves the color of the stroke for each item in the list.
      */
     @ColorInt
-    fun getItemStrokeColor(): Int = itemStrokeColor
+    public fun getItemStrokeColor(): Int = itemStrokeColor
 
     /**
      * Gets the text color for each item in the list.
      */
     @ColorInt
-    fun getItemTextColor(): Int = itemTextColor
+    public fun getItemTextColor(): Int = itemTextColor
 
     /**
      * Retrieves the text appearance style resource for each item.
      */
     @StyleRes
-    fun getItemTextAppearance(): Int = itemTextAppearance
+    public fun getItemTextAppearance(): Int = itemTextAppearance
 
     /**
      * Gets the text color for error state messages.
      */
     @ColorInt
-    fun getErrorStateTextColor(): Int = errorStateTextColor
+    public fun getErrorStateTextColor(): Int = errorStateTextColor
 
     /**
      * Retrieves the text appearance style for error state messages.
      */
     @StyleRes
-    fun getErrorStateTextAppearance(): Int = errorStateTextAppearance
+    public fun getErrorStateTextAppearance(): Int = errorStateTextAppearance
 
     /**
      * Gets the layout resource for the error view.
      */
     @LayoutRes
-    fun getErrorViewLayout(): Int = errorViewLayout
+    public fun getErrorViewLayout(): Int = errorViewLayout
 
     /**
      * Retrieves the layout resource for the loading view.
      */
     @LayoutRes
-    fun getLoadingViewLayout(): Int = loadingViewLayout
+    public fun getLoadingViewLayout(): Int = loadingViewLayout
 
     /**
      * Gets the style resource associated with the component.
      */
     @StyleRes
-    fun getStyle(): Int = viewStyle
+    public fun getStyle(): Int = viewStyle
 
     /**
      * Retrieves the maximum height for the component.
      */
     @Dimension
-    fun getMaxHeight(): Int = maxHeight
+    public fun getMaxHeight(): Int = maxHeight
 
     /**
      * Returns the user ID or group ID associated with the component.
      */
-    fun getUid(): String = uid
+    public fun getUid(): String = uid
 
     /**
      * Retrieves the OnClick listener for click events on the component.
      */
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
     /**
      * Retrieves the OnCloseIconClick listener for close icon click events.
      */
-    fun getOnCloseIconClick(): OnCloseIconClick? = onCloseIconClick
+    public fun getOnCloseIconClick(): OnCloseIconClick? = onCloseIconClick
 
     /**
      * Provides access to the binding instance associated with this component.
      */
-    fun getBinding(): CometchatAiSmartRepliesBinding = binding
+    public fun getBinding(): CometchatAiSmartRepliesBinding = binding
 
     /**
      * Provides the adapter for managing smart reply items.
      */
-    fun getSmartRepliesAdapter(): AISmartRepliesAdapter = smartRepliesAdapter
+    internal fun getSmartRepliesAdapter(): AISmartRepliesAdapter = smartRepliesAdapter
 
     // ==================== Private Helper Methods ====================
 
@@ -880,7 +880,7 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
     /**
      * Interface for handling click events on reply items.
      */
-    fun interface OnClick {
+    public fun interface OnClick {
         /**
          * Called when a reply item is clicked.
          *
@@ -889,18 +889,18 @@ class CometChatAISmartRepliesView @JvmOverloads constructor(
          * @param reply The selected reply text.
          * @param position Position of the clicked item.
          */
-        fun onClick(view: View, id: String, reply: String, position: Int)
+        public fun onClick(view: View, id: String, reply: String, position: Int)
     }
 
     /**
      * Interface for handling click events on the close icon.
      */
-    fun interface OnCloseIconClick {
+    public fun interface OnCloseIconClick {
         /**
          * Called when the close icon is clicked.
          *
          * @param view The clicked close icon view.
          */
-        fun onClick(view: View)
+        public fun onClick(view: View)
     }
 }

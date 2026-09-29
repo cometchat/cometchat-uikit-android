@@ -42,7 +42,7 @@ import com.cometchat.uikit.kotlin.shared.views.cometchatedittext.CometChatEditTe
  * })
  * ```
  */
-class CometChatMessageInput @JvmOverloads constructor(
+public class CometChatMessageInput @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -164,7 +164,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param watcher The CometChatTextWatcher to set, or null to remove
      */
-    fun setTextWatcher(watcher: CometChatTextWatcher?) {
+    public fun setTextWatcher(watcher: CometChatTextWatcher?) {
         editText.setTextWatcher(watcher)
     }
 
@@ -173,14 +173,14 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The current CometChatTextWatcher, or null if not set
      */
-    fun getTextWatcher(): CometChatTextWatcher? = editText.getTextWatcher()
+    public fun getTextWatcher(): CometChatTextWatcher? = editText.getTextWatcher()
 
     /**
      * Adds a standard Android TextWatcher for external text change observation.
      * 
      * @param watcher The TextWatcher to add
      */
-    fun addTextChangedListener(watcher: TextWatcher) {
+    public fun addTextChangedListener(watcher: TextWatcher) {
         editText.addTextChangedListener(watcher)
         externalTextWatcher = watcher
     }
@@ -190,7 +190,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param watcher The TextWatcher to remove
      */
-    fun removeTextChangedListener(watcher: TextWatcher) {
+    public fun removeTextChangedListener(watcher: TextWatcher) {
         editText.removeTextChangedListener(watcher)
         if (externalTextWatcher == watcher) {
             externalTextWatcher = null
@@ -204,21 +204,21 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The selection start position, or -1 if no selection
      */
-    fun getSelectionStart(): Int = editText.selectionStart
+    public fun getSelectionStart(): Int = editText.selectionStart
 
     /**
      * Gets the ending position of the current selection.
      * 
      * @return The selection end position, or -1 if no selection
      */
-    fun getSelectionEnd(): Int = editText.selectionEnd
+    public fun getSelectionEnd(): Int = editText.selectionEnd
 
     /**
      * Sets the cursor position to the specified index.
      * 
      * @param index The position to set the cursor to
      */
-    fun setSelection(index: Int) {
+    public fun setSelection(index: Int) {
         if (index >= 0 && index <= (editText.text?.length ?: 0)) {
             editText.setSelection(index)
         }
@@ -230,7 +230,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * @param start The start position of the selection
      * @param stop The end position of the selection
      */
-    fun setSelection(start: Int, stop: Int) {
+    public fun setSelection(start: Int, stop: Int) {
         val textLength = editText.text?.length ?: 0
         if (start >= 0 && stop >= start && stop <= textLength) {
             editText.setSelection(start, stop)
@@ -240,7 +240,7 @@ class CometChatMessageInput @JvmOverloads constructor(
     /**
      * Selects all text in the input.
      */
-    fun selectAll() {
+    public fun selectAll() {
         editText.selectAll()
     }
 
@@ -249,7 +249,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param listener The listener to set, or null to remove
      */
-    fun setOnSelectionChangedListener(listener: OnSelectionChangedListener?) {
+    public fun setOnSelectionChangedListener(listener: OnSelectionChangedListener?) {
         this.onSelectionChangedListener = listener
     }
 
@@ -260,21 +260,21 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The editable text, or null if not available
      */
-    fun getText(): Editable? = editText.text
+    public fun getText(): Editable? = editText.text
 
     /**
      * Gets the current text as a String.
      * 
      * @return The text string
      */
-    fun getTextString(): String = editText.text?.toString() ?: ""
+    public fun getTextString(): String = editText.text?.toString() ?: ""
 
     /**
      * Sets the text content.
      * 
      * @param text The text to set
      */
-    fun setText(text: CharSequence?) {
+    public fun setText(text: CharSequence?) {
         editText.setText(text)
     }
 
@@ -283,7 +283,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param hint The hint text to display when empty
      */
-    fun setHint(hint: CharSequence?) {
+    public fun setHint(hint: CharSequence?) {
         editText.hint = hint
     }
 
@@ -292,12 +292,12 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The current hint text
      */
-    fun getHint(): CharSequence? = editText.hint
+    public fun getHint(): CharSequence? = editText.hint
 
     /**
      * Clears all text from the input.
      */
-    fun clearText() {
+    public fun clearText() {
         editText.text?.clear()
     }
 
@@ -306,7 +306,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The Editable text object
      */
-    fun getEditableText(): Editable? = editText.editableText
+    public fun getEditableText(): Editable? = editText.editableText
 
     // ==================== EditText Access ====================
 
@@ -320,7 +320,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The CometChatEditText instance
      */
-    fun getEditText(): CometChatEditText = editText
+    public fun getEditText(): CometChatEditText = editText
 
     /**
      * Requests focus on the input field.
@@ -346,7 +346,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param view The view to set as secondary button, or null to clear
      */
-    fun setSecondaryButtonView(view: View?) {
+    public fun setSecondaryButtonView(view: View?) {
         secondaryButtonContainer.removeAllViews()
         if (view != null) {
             secondaryButtonContainer.addView(view)
@@ -363,14 +363,14 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The FrameLayout containing the secondary button
      */
-    fun getSecondaryButtonContainer(): FrameLayout = secondaryButtonContainer
+    public fun getSecondaryButtonContainer(): FrameLayout = secondaryButtonContainer
 
     /**
      * Adds an auxiliary button to the auxiliary button container.
      * 
      * @param view The view to add as an auxiliary button
      */
-    fun addAuxiliaryButton(view: View) {
+    public fun addAuxiliaryButton(view: View) {
         auxiliaryButtonContainer.addView(view)
     }
 
@@ -379,14 +379,14 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param view The view to remove
      */
-    fun removeAuxiliaryButton(view: View) {
+    public fun removeAuxiliaryButton(view: View) {
         auxiliaryButtonContainer.removeView(view)
     }
 
     /**
      * Clears all auxiliary buttons.
      */
-    fun clearAuxiliaryButtons() {
+    public fun clearAuxiliaryButtons() {
         auxiliaryButtonContainer.removeAllViews()
     }
 
@@ -395,14 +395,14 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The LinearLayout containing auxiliary buttons
      */
-    fun getAuxiliaryButtonContainer(): LinearLayout = auxiliaryButtonContainer
+    public fun getAuxiliaryButtonContainer(): LinearLayout = auxiliaryButtonContainer
 
     /**
      * Sets the send button view.
      * 
      * @param view The view to set as send button, or null to clear
      */
-    fun setSendButtonView(view: View?) {
+    public fun setSendButtonView(view: View?) {
         sendButtonContainer.removeAllViews()
         if (view != null) {
             sendButtonContainer.addView(view)
@@ -417,7 +417,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @return The FrameLayout containing the send button
      */
-    fun getSendButtonContainer(): FrameLayout = sendButtonContainer
+    public fun getSendButtonContainer(): FrameLayout = sendButtonContainer
 
     // ==================== Separator Methods ====================
 
@@ -426,7 +426,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param color The color to set
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         separatorView.setBackgroundColor(color)
     }
 
@@ -435,7 +435,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param visible true to show, false to hide
      */
-    fun setSeparatorVisible(visible: Boolean) {
+    public fun setSeparatorVisible(visible: Boolean) {
         separatorView.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
@@ -446,7 +446,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param color The color to set
      */
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         editText.setTextColor(color)
     }
 
@@ -455,7 +455,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param color The color to set
      */
-    fun setHintTextColor(@ColorInt color: Int) {
+    public fun setHintTextColor(@ColorInt color: Int) {
         editText.setHintTextColor(color)
     }
 
@@ -464,7 +464,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param resId The style resource ID
      */
-    fun setTextAppearance(resId: Int) {
+    public fun setTextAppearance(resId: Int) {
         editText.setTextAppearance(resId)
     }
 
@@ -473,7 +473,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param maxLines The maximum number of lines
      */
-    fun setMaxLines(maxLines: Int) {
+    public fun setMaxLines(maxLines: Int) {
         editText.maxLines = maxLines
     }
 
@@ -482,7 +482,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param minLines The minimum number of lines
      */
-    fun setMinLines(minLines: Int) {
+    public fun setMinLines(minLines: Int) {
         editText.minLines = minLines
     }
 
@@ -493,7 +493,7 @@ class CometChatMessageInput @JvmOverloads constructor(
      * 
      * @param listener The listener to set
      */
-    fun setOnEditTextMediaListener(listener: CometChatEditText.OnEditTextMediaListener?) {
+    public fun setOnEditTextMediaListener(listener: CometChatEditText.OnEditTextMediaListener?) {
         editText.onEditTextMediaListener = listener
     }
 
@@ -502,17 +502,17 @@ class CometChatMessageInput @JvmOverloads constructor(
     /**
      * Interface for receiving selection change callbacks.
      */
-    interface OnSelectionChangedListener {
+    public interface OnSelectionChangedListener {
         /**
          * Called when the selection changes.
          * 
          * @param selStart The new selection start position
          * @param selEnd The new selection end position
          */
-        fun onSelectionChanged(selStart: Int, selEnd: Int)
+        public fun onSelectionChanged(selStart: Int, selEnd: Int)
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatMessageInput"
     }
 }

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @param recyclerView The RecyclerView to attach the listener to
  * @param clickListener The listener for click events
  */
-class RecyclerTouchListener(
+public class RecyclerTouchListener(
     context: Context,
     private val recyclerView: RecyclerView,
     private val clickListener: ClickListener
@@ -59,14 +59,14 @@ class RecyclerTouchListener(
 /**
  * Interface for handling click events on RecyclerView items.
  */
-interface ClickListener {
+public interface ClickListener {
     /**
      * Called when an item is clicked.
      * 
      * @param view The clicked view
      * @param position The position of the item
      */
-    fun onClick(view: View, position: Int)
+    public fun onClick(view: View, position: Int)
 
     /**
      * Called when an item is long-clicked.
@@ -74,5 +74,5 @@ interface ClickListener {
      * @param view The long-clicked view
      * @param position The position of the item
      */
-    fun onLongClick(view: View, position: Int)
+    public fun onLongClick(view: View, position: Int)
 }

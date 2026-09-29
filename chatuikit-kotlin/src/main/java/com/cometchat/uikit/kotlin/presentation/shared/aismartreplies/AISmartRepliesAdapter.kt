@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.databinding.CometchatAiSmartRepliesRowBinding
  *
  * @see CometChatAISmartRepliesView
  */
-class AISmartRepliesAdapter : RecyclerView.Adapter<AISmartRepliesAdapter.ViewHolder>() {
+internal class AISmartRepliesAdapter : RecyclerView.Adapter<AISmartRepliesAdapter.ViewHolder>() {
 
     companion object {
         private val TAG = AISmartRepliesAdapter::class.java.simpleName

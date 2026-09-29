@@ -10,13 +10,13 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatTypingIndicator component.
  */
-data class CometChatTypingIndicatorStyle(
+public data class CometChatTypingIndicatorStyle(
     @ColorInt val textColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
     @ColorInt val dotColor: Int = 0,
     val animationDuration: Long = 300L
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatTypingIndicatorStyle.
          *
@@ -26,7 +26,7 @@ data class CometChatTypingIndicatorStyle(
          * @param context The context to access theme resources
          * @return A CometChatTypingIndicatorStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatTypingIndicatorStyle {
+        public fun default(context: Context): CometChatTypingIndicatorStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -73,7 +73,7 @@ data class CometChatTypingIndicatorStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatTypingIndicatorStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatTypingIndicatorStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatTypingIndicatorStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

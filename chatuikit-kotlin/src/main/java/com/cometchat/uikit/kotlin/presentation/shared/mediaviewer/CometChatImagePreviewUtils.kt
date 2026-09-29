@@ -7,7 +7,7 @@ import android.widget.ImageView
  * Utility object providing factory methods to create [CometChatImagePreview] instances
  * and convenience wrappers for setting listeners.
  */
-object CometChatImagePreviewUtils {
+public object CometChatImagePreviewUtils {
 
     /**
      * Creates a [CometChatImagePreview] instance attached to the given [imageView] and [container].
@@ -16,7 +16,7 @@ object CometChatImagePreviewUtils {
      * [CometChatImagePreview.onLayoutChange] callback.
      */
     @JvmStatic
-    fun createImagePreview(imageView: ImageView, container: ViewGroup): CometChatImagePreview {
+    public fun createImagePreview(imageView: ImageView, container: ViewGroup): CometChatImagePreview {
         return CometChatImagePreview.create(imageView, container)
     }
 
@@ -24,7 +24,7 @@ object CometChatImagePreviewUtils {
      * Sets an [OnScaleChangedListener] on the given [cometChatImagePreview].
      */
     @JvmStatic
-    fun setOnScaleChangedListener(
+    public fun setOnScaleChangedListener(
         cometChatImagePreview: CometChatImagePreview,
         onScaleChangedListener: OnScaleChangedListener
     ) {
@@ -39,7 +39,7 @@ object CometChatImagePreviewUtils {
      * Sets an [OnViewTranslateListener] on the given [cometChatImagePreview].
      */
     @JvmStatic
-    fun setOnViewTranslateListener(
+    public fun setOnViewTranslateListener(
         cometChatImagePreview: CometChatImagePreview,
         onViewTranslateListener: OnViewTranslateListener
     ) {
@@ -65,17 +65,17 @@ object CometChatImagePreviewUtils {
     /**
      * Listener interface for scale change events.
      */
-    interface OnScaleChangedListener {
-        fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float)
+    public interface OnScaleChangedListener {
+        public fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float)
     }
 
     /**
      * Listener interface for view translation events during drag-to-dismiss gestures.
      */
-    interface OnViewTranslateListener {
-        fun onStart(view: ImageView)
-        fun onViewTranslate(view: ImageView, amount: Float)
-        fun onRestore(view: ImageView)
-        fun onDismiss(view: ImageView)
+    public interface OnViewTranslateListener {
+        public fun onStart(view: ImageView)
+        public fun onViewTranslate(view: ImageView, amount: Float)
+        public fun onRestore(view: ImageView)
+        public fun onDismiss(view: ImageView)
     }
 }

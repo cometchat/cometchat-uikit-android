@@ -23,13 +23,13 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This component can be used standalone or within a RecyclerView for displaying user lists.
  * It supports full customization through styles and custom view slots.
  */
-class CometChatUsersListItem @JvmOverloads constructor(
+public class CometChatUsersListItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatUsersListItem::class.java.simpleName
     }
 
@@ -147,7 +147,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the user to display.
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         bindUser()
     }
@@ -155,7 +155,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the selection state.
      */
-    fun setItemSelected(selected: Boolean) {
+    public fun setItemSelected(selected: Boolean) {
         this.isSelected = selected
         updateSelectionState()
     }
@@ -163,7 +163,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the selection mode.
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         this.selectionMode = mode
         updateSelectionState()
     }
@@ -171,21 +171,21 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (User) -> Unit) {
+    public fun setOnItemClick(callback: (User) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (User) -> Unit) {
+    public fun setOnItemLongClick(callback: (User) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets custom leading view (replaces avatar section).
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         customLeadingView = view
         if (view != null) {
             binding.userLeadingView.removeAllViews()
@@ -198,7 +198,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets custom title view.
      */
-    fun setTitleView(view: View?) {
+    public fun setTitleView(view: View?) {
         customTitleView = view
         if (view != null) {
             binding.userTitleView.removeAllViews()
@@ -211,7 +211,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets custom subtitle view.
      */
-    fun setSubtitleView(view: View?) {
+    public fun setSubtitleView(view: View?) {
         customSubtitleView = view
         if (view != null) {
             binding.subtitleView.removeAllViews()
@@ -226,7 +226,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets custom trailing view.
      */
-    fun setTrailingView(view: View?) {
+    public fun setTrailingView(view: View?) {
         customTrailingView = view
         if (view != null) {
             binding.tailView.removeAllViews()
@@ -239,7 +239,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets whether to hide user status indicator.
      */
-    fun setHideUserStatus(hide: Boolean) {
+    public fun setHideUserStatus(hide: Boolean) {
         hideUserStatus = hide
         bindLeading()
     }
@@ -248,7 +248,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
      * Sets whether to hide item separator.
      * Matches CometChatGroupsItem implementation.
      */
-    fun setHideSeparator(hide: Boolean) {
+    public fun setHideSeparator(hide: Boolean) {
         hideSeparator = hide
         binding.separator.visibility = if (hide) View.GONE else View.VISIBLE
     }
@@ -256,7 +256,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the separator color.
      */
-    fun setSeparatorColor(@androidx.annotation.ColorInt color: Int) {
+    public fun setSeparatorColor(@androidx.annotation.ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         if (color != 0) binding.separator.setBackgroundColor(color)
     }
@@ -264,7 +264,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the separator height.
      */
-    fun setSeparatorHeight(@androidx.annotation.Dimension height: Int) {
+    public fun setSeparatorHeight(@androidx.annotation.Dimension height: Int) {
         style = style.copy(separatorHeight = height)
         if (height > 0) {
             val params = binding.separator.layoutParams
@@ -276,7 +276,7 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatUsersListItemStyle) {
+    public fun setStyle(style: CometChatUsersListItemStyle) {
         this.style = style
         applyStyle()
         user?.let { bindUser() }
@@ -285,12 +285,12 @@ class CometChatUsersListItem @JvmOverloads constructor(
     /**
      * Gets the parent layout for full item replacement.
      */
-    fun getParentLayout(): ViewGroup = binding.parentLayout
+    public fun getParentLayout(): ViewGroup = binding.parentLayout
 
     /**
      * Restores the entire default layout.
      */
-    fun restoreDefaultLayout() {
+    public fun restoreDefaultLayout() {
         customLeadingView = null
         customTitleView = null
         customSubtitleView = null

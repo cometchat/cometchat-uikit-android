@@ -13,7 +13,7 @@ import org.json.JSONObject
  * This mirrors the Java MessageReceiptUtils implementation
  * for use in the Kotlin Views UIKit module.
  */
-object MessageReceiptUtils {
+public object MessageReceiptUtils {
 
     /**
      * Determines the receipt status for a given message.
@@ -24,7 +24,7 @@ object MessageReceiptUtils {
      * @param baseMessage The message to get receipt status for, can be null
      * @return The appropriate [ReceiptStatus] for the message
      */
-    fun getMessageReceipt(baseMessage: BaseMessage?): ReceiptStatus {
+    public fun getMessageReceipt(baseMessage: BaseMessage?): ReceiptStatus {
         if (baseMessage == null) {
             return ReceiptStatus.ERROR
         }
@@ -84,7 +84,7 @@ object MessageReceiptUtils {
      * @param baseMessage The message to check
      * @return true if the receipt should be hidden, false otherwise
      */
-    fun shouldHideReceipt(baseMessage: BaseMessage?): Boolean {
+    public fun shouldHideReceipt(baseMessage: BaseMessage?): Boolean {
         if (baseMessage == null || baseMessage.deletedAt != 0L) {
             return true
         }

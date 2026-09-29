@@ -11,7 +11,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatStatusIndicator component.
  */
-data class CometChatStatusIndicatorStyle(
+public data class CometChatStatusIndicatorStyle(
     @ColorInt val strokeColor: Int = 0,
     @Dimension val strokeWidth: Float = 0f,
     @Dimension val cornerRadius: Float = 0f,
@@ -19,14 +19,14 @@ data class CometChatStatusIndicatorStyle(
     val privateGroupIcon: Drawable? = null,
     val protectedGroupIcon: Drawable? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatStatusIndicatorStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatStatusIndicatorStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatStatusIndicatorStyle {
+        public fun default(context: Context): CometChatStatusIndicatorStyle {
             return extractFromThemeStyle(context, R.attr.cometchatStatusIndicatorStyle)
         }
 
@@ -74,7 +74,7 @@ data class CometChatStatusIndicatorStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatStatusIndicatorStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStatusIndicatorStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStatusIndicatorStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

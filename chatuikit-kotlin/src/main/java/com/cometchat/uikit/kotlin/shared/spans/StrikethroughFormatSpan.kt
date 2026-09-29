@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see RichTextFormat.STRIKETHROUGH
  */
-class StrikethroughFormatSpan : StrikethroughSpan(), RichTextFormatSpan {
+public class StrikethroughFormatSpan : StrikethroughSpan(), RichTextFormatSpan {
 
     override fun getFormatType(): RichTextFormat = RichTextFormat.STRIKETHROUGH
 }

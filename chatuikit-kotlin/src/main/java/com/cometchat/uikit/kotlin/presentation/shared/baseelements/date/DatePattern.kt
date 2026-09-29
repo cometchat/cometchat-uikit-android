@@ -3,7 +3,7 @@ package com.cometchat.uikit.kotlin.presentation.shared.baseelements.date
 /**
  * Enum representing different date display patterns.
  */
-enum class DatePattern {
+public enum class DatePattern {
     /**
      * Displays only the time (e.g., "2:30 PM")
      */

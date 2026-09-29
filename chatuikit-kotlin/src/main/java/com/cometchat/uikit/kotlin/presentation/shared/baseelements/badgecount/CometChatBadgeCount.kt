@@ -21,13 +21,13 @@ import com.google.android.material.card.MaterialCardView
  * Created on: 06 September 2024 Modified on: 10 September 2024
  */
 @Suppress("unused")
-class CometChatBadgeCount @JvmOverloads constructor(
+public class CometChatBadgeCount @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatBadgeStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatBadgeCount::class.java.simpleName
     }
 
@@ -161,7 +161,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param styleRes The style resource to apply.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatBadge)
             // fromTypedArray handles recycling internally
@@ -172,7 +172,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
     /**
      * Sets the style from a CometChatBadgeCountStyle object.
      */
-    fun setStyle(style: CometChatBadgeCountStyle) {
+    public fun setStyle(style: CometChatBadgeCountStyle) {
         this.style = style
         applyStyle()
     }
@@ -186,42 +186,42 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @return The count text color.
      */
-    fun getBadgeTextColor(): Int = style.textColor
+    public fun getBadgeTextColor(): Int = style.textColor
 
     /**
      * Gets the count text style.
      *
      * @return The count text style.
      */
-    fun getBadgeTextAppearance(): Int = style.textAppearance
+    public fun getBadgeTextAppearance(): Int = style.textAppearance
 
     /**
      * Gets the badge corner radius.
      *
      * @return The badge corner radius.
      */
-    fun getBadgeCornerRadius(): Float = style.cornerRadius
+    public fun getBadgeCornerRadius(): Float = style.cornerRadius
 
     /**
      * Gets the badge background color.
      *
      * @return The badge background color.
      */
-    fun getBadgeBackgroundColor(): Int = style.backgroundColor
+    public fun getBadgeBackgroundColor(): Int = style.backgroundColor
 
     /**
      * Gets the badge stroke width.
      *
      * @return The badge stroke width.
      */
-    fun getBadgeStrokeWidth(): Float = style.borderWidth
+    public fun getBadgeStrokeWidth(): Float = style.borderWidth
 
     /**
      * Gets the badge stroke color.
      *
      * @return The badge stroke color.
      */
-    fun getBadgeStrokeColor(): Int = style.borderColor
+    public fun getBadgeStrokeColor(): Int = style.borderColor
 
     // ========================================
     // Setters (update style object + apply)
@@ -232,14 +232,14 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @return The count of the badge.
      */
-    fun getCount(): Int = count
+    public fun getCount(): Int = count
 
     /**
      * Sets the count for the badge.
      *
      * @param count The count to set.
      */
-    fun setCount(count: Int) {
+    public fun setCount(count: Int) {
         this.count = count
         if(count<10){
             tvMessageCount.text = buildString {
@@ -267,7 +267,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeTextColor The count text color to set.
      */
-    fun setBadgeTextColor(@ColorInt badgeTextColor: Int) {
+    public fun setBadgeTextColor(@ColorInt badgeTextColor: Int) {
         style = style.copy(textColor = badgeTextColor)
         applyTextColor(badgeTextColor)
     }
@@ -277,7 +277,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeTextAppearance The count text style to set.
      */
-    fun setBadgeTextAppearance(@StyleRes badgeTextAppearance: Int) {
+    public fun setBadgeTextAppearance(@StyleRes badgeTextAppearance: Int) {
         style = style.copy(textAppearance = badgeTextAppearance)
         applyTextAppearance(badgeTextAppearance)
     }
@@ -287,7 +287,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeCornerRadius The badge corner radius to set.
      */
-    fun setBadgeCornerRadius(@Dimension badgeCornerRadius: Float) {
+    public fun setBadgeCornerRadius(@Dimension badgeCornerRadius: Float) {
         style = style.copy(cornerRadius = badgeCornerRadius)
         applyCornerRadius(badgeCornerRadius)
     }
@@ -297,7 +297,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeBackgroundColor The badge background color to set.
      */
-    fun setBadgeBackgroundColor(@ColorInt badgeBackgroundColor: Int) {
+    public fun setBadgeBackgroundColor(@ColorInt badgeBackgroundColor: Int) {
         style = style.copy(backgroundColor = badgeBackgroundColor)
         applyBackgroundColor(badgeBackgroundColor)
     }
@@ -307,7 +307,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeStrokeWidth The badge stroke width to set.
      */
-    fun setBadgeStrokeWidth(@Dimension badgeStrokeWidth: Float) {
+    public fun setBadgeStrokeWidth(@Dimension badgeStrokeWidth: Float) {
         style = style.copy(borderWidth = badgeStrokeWidth)
         applyStrokeWidth(badgeStrokeWidth)
     }
@@ -317,7 +317,7 @@ class CometChatBadgeCount @JvmOverloads constructor(
      *
      * @param badgeStrokeColor The badge stroke color to set.
      */
-    fun setBadgeStrokeColor(@ColorInt badgeStrokeColor: Int) {
+    public fun setBadgeStrokeColor(@ColorInt badgeStrokeColor: Int) {
         style = style.copy(borderColor = badgeStrokeColor)
         applyStrokeColor(badgeStrokeColor)
     }

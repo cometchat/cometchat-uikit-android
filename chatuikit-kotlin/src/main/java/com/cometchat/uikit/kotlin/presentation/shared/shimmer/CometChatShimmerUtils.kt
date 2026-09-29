@@ -10,7 +10,7 @@ import com.cometchat.uikit.kotlin.R
 /**
  * CometChatShimmerUtils provides utility methods for managing shimmer effects.
  */
-object CometChatShimmerUtils {
+public object CometChatShimmerUtils {
 
     private val TAG = CometChatShimmerUtils::class.java.simpleName
 
@@ -19,7 +19,7 @@ object CometChatShimmerUtils {
      *
      * @param shimmerFrameLayout The shimmer frame layout to show the effect on.
      */
-    fun showShimmer(shimmerFrameLayout: CometChatShimmerFrameLayout) {
+    public fun showShimmer(shimmerFrameLayout: CometChatShimmerFrameLayout) {
         showShimmerWithItems(shimmerFrameLayout, null, 0, 0)
     }
 
@@ -31,7 +31,7 @@ object CometChatShimmerUtils {
      * @param itemLayout The layout resource for each shimmer item.
      * @param itemCount The number of shimmer items to display.
      */
-    fun showShimmerWithItems(
+    public fun showShimmerWithItems(
         shimmerFrameLayout: CometChatShimmerFrameLayout,
         shimmer: CometChatShimmer? = null,
         @LayoutRes itemLayout: Int = 0,
@@ -61,7 +61,7 @@ object CometChatShimmerUtils {
      *
      * @param shimmerFrameLayout The shimmer frame layout to hide the effect on.
      */
-    fun hideShimmer(shimmerFrameLayout: CometChatShimmerFrameLayout) {
+    public fun hideShimmer(shimmerFrameLayout: CometChatShimmerFrameLayout) {
         shimmerFrameLayout.stopShimmer()
         shimmerFrameLayout.visibility = View.GONE
     }
@@ -72,7 +72,7 @@ object CometChatShimmerUtils {
      * @param context The context to get resources from.
      * @return A configured CometChatShimmer instance.
      */
-    fun getCometChatShimmerConfig(context: Context): CometChatShimmer {
+    public fun getCometChatShimmerConfig(context: Context): CometChatShimmer {
         return CometChatShimmer.ColorHighlightBuilder()
             .setBaseAlpha(1f)
             .setTilt(1f)

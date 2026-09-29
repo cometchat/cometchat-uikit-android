@@ -33,13 +33,13 @@ import com.google.android.material.shape.ShapeAppearanceModel
  * - Progress indicator on save button during SDK call
  * - Top-only rounded corners for bottom sheet usage
  */
-class CometChatScopeChange @JvmOverloads constructor(
+public class CometChatScopeChange @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatScopeChangeStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatScopeChange::class.java.simpleName
     }
 
@@ -176,32 +176,32 @@ class CometChatScopeChange @JvmOverloads constructor(
 
     // ==================== Public Setters ====================
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         this.titleTextAppearance = appearance
         if (appearance != 0) binding.cometchatScopeChangeTitle.setTextAppearance(appearance)
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         this.subtitleTextAppearance = appearance
         if (appearance != 0) binding.cometchatScopeChangeSubtitle.setTextAppearance(appearance)
     }
 
-    fun setTitleColor(@ColorInt color: Int) {
+    public fun setTitleColor(@ColorInt color: Int) {
         this.titleColor = color
         binding.cometchatScopeChangeTitle.setTextColor(color)
     }
 
-    fun setSubtitleColor(@ColorInt color: Int) {
+    public fun setSubtitleColor(@ColorInt color: Int) {
         this.subtitleColor = color
         binding.cometchatScopeChangeSubtitle.setTextColor(color)
     }
 
-    fun setScopeIcon(icon: Drawable?) {
+    public fun setScopeIcon(icon: Drawable?) {
         this.scopeIcon = icon
         icon?.let { binding.ivScopeChange.setImageDrawable(it) }
     }
 
-    fun setIconTint(@ColorInt color: Int) {
+    public fun setIconTint(@ColorInt color: Int) {
         this.iconTint = color
         binding.ivScopeChange.setColorFilter(color)
     }
@@ -211,7 +211,7 @@ class CometChatScopeChange @JvmOverloads constructor(
         super.setCardBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension cornerRadius: Int) {
+    public fun setCornerRadius(@Dimension cornerRadius: Int) {
         this.cRadius = cornerRadius
         val model = ShapeAppearanceModel.Builder()
             .setTopLeftCorner(CornerFamily.ROUNDED, cornerRadius.toFloat())
@@ -222,47 +222,47 @@ class CometChatScopeChange @JvmOverloads constructor(
         shapeAppearanceModel = model
     }
 
-    fun setItemTextColor(@ColorInt color: Int) {
+    public fun setItemTextColor(@ColorInt color: Int) {
         this.itemTextColor = color
         scopeAdapter.setItemTextColor(color)
     }
 
-    fun setDisableItemTextColor(@ColorInt color: Int) {
+    public fun setDisableItemTextColor(@ColorInt color: Int) {
         this.disableItemTextColor = color
         scopeAdapter.setDisableItemTextColor(color)
     }
 
-    fun setItemTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemTextAppearance(@StyleRes appearance: Int) {
         this.itemTextAppearance = appearance
         scopeAdapter.setItemTextAppearance(appearance)
     }
 
-    fun setItemRadioButtonTint(@ColorInt color: Int) {
+    public fun setItemRadioButtonTint(@ColorInt color: Int) {
         this.itemRadioButtonTint = color
         scopeAdapter.setRadioButtonTint(color)
     }
 
-    fun setItemDisableRadioButtonTint(@ColorInt color: Int) {
+    public fun setItemDisableRadioButtonTint(@ColorInt color: Int) {
         this.itemDisableRadioButtonTint = color
         scopeAdapter.setDisableRadioButtonTint(color)
     }
 
-    fun setDragHandleColor(@ColorInt color: Int) {
+    public fun setDragHandleColor(@ColorInt color: Int) {
         this.dragHandleColor = color
         binding.cometchatScopeChangeDragHandle.setCardBackgroundColor(color)
     }
 
-    fun setPositiveButtonTextColor(@ColorInt color: Int) {
+    public fun setPositiveButtonTextColor(@ColorInt color: Int) {
         this.positiveButtonTextColor = color
         binding.cometchatScopeChangeSaveText.setTextColor(color)
     }
 
-    fun setNegativeButtonTextColor(@ColorInt color: Int) {
+    public fun setNegativeButtonTextColor(@ColorInt color: Int) {
         this.negativeButtonTextColor = color
         binding.cometchatScopeChangeCancelText.setTextColor(color)
     }
 
-    fun setButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setButtonTextAppearance(@StyleRes appearance: Int) {
         this.buttonTextAppearance = appearance
         if (appearance != 0) {
             binding.cometchatScopeChangeCancelText.setTextAppearance(appearance)
@@ -270,17 +270,17 @@ class CometChatScopeChange @JvmOverloads constructor(
         }
     }
 
-    fun setPositiveButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setPositiveButtonBackgroundColor(@ColorInt color: Int) {
         this.positiveButtonBackgroundColor = color
         binding.cometchatScopeChangeSaveButton.setCardBackgroundColor(color)
     }
 
-    fun setNegativeButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setNegativeButtonBackgroundColor(@ColorInt color: Int) {
         this.negativeButtonBackgroundColor = color
         binding.cometchatScopeChangeCancelButton.setCardBackgroundColor(color)
     }
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val typedArray = context.theme.obtainStyledAttributes(style, R.styleable.CometChatScopeChange)
             extractAttributesAndApplyDefaults(typedArray)
@@ -289,7 +289,7 @@ class CometChatScopeChange @JvmOverloads constructor(
 
     // ==================== Data & Callbacks ====================
 
-    fun setRoleData(group: Group, groupMember: GroupMember) {
+    public fun setRoleData(group: Group, groupMember: GroupMember) {
         this.group = group
         this.groupMember = groupMember
         scopeAdapter.setGroupData(
@@ -299,17 +299,17 @@ class CometChatScopeChange @JvmOverloads constructor(
         )
     }
 
-    fun getScopeAdapter(): ScopeAdapter = scopeAdapter
+    internal fun getScopeAdapter(): ScopeAdapter = scopeAdapter
 
-    fun setOnNegativeButtonClick(listener: () -> Unit) {
+    public fun setOnNegativeButtonClick(listener: () -> Unit) {
         onNegativeButtonClick = listener
     }
 
-    fun setOnPositiveButtonClick(listener: () -> Unit) {
+    public fun setOnPositiveButtonClick(listener: () -> Unit) {
         onPositiveButtonClick = listener
     }
 
-    fun setScopeChangeCallback(callback: CometChat.CallbackListener<GroupMember>) {
+    public fun setScopeChangeCallback(callback: CometChat.CallbackListener<GroupMember>) {
         this.scopeChangeCallback = callback
     }
 

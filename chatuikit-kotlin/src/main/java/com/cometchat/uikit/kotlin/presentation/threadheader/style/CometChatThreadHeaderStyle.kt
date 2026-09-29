@@ -53,7 +53,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  *
  * @see CometChatTheme
  */
-data class CometChatThreadHeaderStyle(
+public data class CometChatThreadHeaderStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -70,7 +70,7 @@ data class CometChatThreadHeaderStyle(
     val incomingMessageBubbleStyle: CometChatMessageBubbleStyle? = null,
     val outgoingMessageBubbleStyle: CometChatMessageBubbleStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatThreadHeaderStyle.
          *
@@ -81,7 +81,7 @@ data class CometChatThreadHeaderStyle(
          * @param context The Android context to access theme resources.
          * @return A [CometChatThreadHeaderStyle] with values from theme or fallback defaults.
          */
-        fun default(context: Context): CometChatThreadHeaderStyle {
+        public fun default(context: Context): CometChatThreadHeaderStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -132,7 +132,7 @@ data class CometChatThreadHeaderStyle(
          * @param typedArray The [TypedArray] containing XML attribute values (will be recycled).
          * @return A [CometChatThreadHeaderStyle] with values from XML or theme defaults.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatThreadHeaderStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatThreadHeaderStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

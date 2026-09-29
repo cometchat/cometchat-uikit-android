@@ -13,7 +13,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Chronometer
@@ -23,6 +22,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
 import androidx.core.content.ContextCompat
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatMediaRecorderBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
@@ -33,7 +33,7 @@ import java.io.File
 /**
  * Recording state enum for the media recorder.
  */
-enum class RecordingState {
+public enum class RecordingState {
     IDLE,
     RECORDING,
     PAUSED,
@@ -44,25 +44,25 @@ enum class RecordingState {
 /**
  * Callback interface for media recorder events.
  */
-interface MediaRecorderCallback {
+public interface MediaRecorderCallback {
     /**
      * Called when the recording is submitted.
      *
      * @param file The recorded audio file
      */
-    fun onSubmit(file: File)
+    public fun onSubmit(file: File)
     
     /**
      * Called when the recording is cancelled/closed.
      */
-    fun onClose()
+    public fun onClose()
     
     /**
      * Called when an error occurs during recording.
      *
      * @param exception The exception that occurred
      */
-    fun onError(exception: Exception) {}
+    public fun onError(exception: Exception) {}
 }
 
 /**
@@ -70,13 +70,13 @@ interface MediaRecorderCallback {
  * It provides functionality for recording audio, playing recorded audio,
  * and visualizing the audio recording.
  */
-class CometChatMediaRecorder @JvmOverloads constructor(
+public class CometChatMediaRecorder @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMediaRecorderStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMediaRecorder::class.java.simpleName
     }
 
@@ -356,7 +356,7 @@ class CometChatMediaRecorder @JvmOverloads constructor(
     /**
      * Starts audio recording.
      */
-    fun startRecording() {
+    public fun startRecording() {
         try {
             requestAudioFocus()
             
@@ -386,9 +386,9 @@ class CometChatMediaRecorder @JvmOverloads constructor(
             updateUI()
             startVisualizerUpdate()
 
-            Log.d(TAG, "Recording started: $recordedFilePath")
+            CometChatLogger.d(TAG, "Recording started: $recordedFilePath")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to start recording: ${e.message}")
             callback?.onError(e)
             recordingState = RecordingState.IDLE
             updateUI()
@@ -406,10 +406,10 @@ class CometChatMediaRecorder @JvmOverloads constructor(
                 binding.recordingTime.stop()
                 recordingState = RecordingState.PAUSED
                 updateUI()
-                Log.d(TAG, "Recording paused")
+                CometChatLogger.d(TAG, "Recording paused")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to pause recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to pause recording: ${e.message}")
         }
     }
 
@@ -424,10 +424,10 @@ class CometChatMediaRecorder @JvmOverloads constructor(
                 binding.recordingTime.start()
                 recordingState = RecordingState.RECORDING
                 updateUI()
-                Log.d(TAG, "Recording resumed")
+                CometChatLogger.d(TAG, "Recording resumed")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to resume recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to resume recording: ${e.message}")
         }
     }
 
@@ -457,9 +457,9 @@ class CometChatMediaRecorder @JvmOverloads constructor(
             recordingState = RecordingState.RECORDED
             updateUI()
 
-            Log.d(TAG, "Recording stopped")
+            CometChatLogger.d(TAG, "Recording stopped")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to stop recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to stop recording: ${e.message}")
             recordingState = RecordingState.IDLE
             updateUI()
         }
@@ -475,7 +475,7 @@ class CometChatMediaRecorder @JvmOverloads constructor(
                 release()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error stopping recorder: ${e.message}")
+            CometChatLogger.e(TAG, "Error stopping recorder: ${e.message}")
         }
         
         mediaRecorder = null
@@ -494,7 +494,7 @@ class CometChatMediaRecorder @JvmOverloads constructor(
         updateUI()
         callback?.onClose()
 
-        Log.d(TAG, "Recording deleted")
+        CometChatLogger.d(TAG, "Recording deleted")
     }
 
     /**
@@ -534,7 +534,7 @@ class CometChatMediaRecorder @JvmOverloads constructor(
                 recordingState = RecordingState.PLAYING
                 updateUI()
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to play recording: ${e.message}")
+                CometChatLogger.e(TAG, "Failed to play recording: ${e.message}")
                 callback?.onError(e)
             }
         }
@@ -600,14 +600,14 @@ class CometChatMediaRecorder @JvmOverloads constructor(
     /**
      * Sets the callback for media recorder events.
      */
-    fun setCallback(callback: MediaRecorderCallback) {
+    public fun setCallback(callback: MediaRecorderCallback) {
         this.callback = callback
     }
 
     /**
      * Applies a style to the media recorder.
      */
-    fun setStyle(style: CometChatMediaRecorderStyle) {
+    public fun setStyle(style: CometChatMediaRecorderStyle) {
         if (style.backgroundColor != 0) {
             containerBackgroundColor = style.backgroundColor
         }
@@ -651,14 +651,14 @@ class CometChatMediaRecorder @JvmOverloads constructor(
     /**
      * Sets whether recording should start automatically when the view is attached.
      */
-    fun setAutoStartRecording(autoStart: Boolean) {
+    public fun setAutoStartRecording(autoStart: Boolean) {
         this.autoStartRecording = autoStart
     }
 
     /**
      * Returns whether auto-start recording is enabled.
      */
-    fun isAutoStartRecordingEnabled(): Boolean {
+    public fun isAutoStartRecordingEnabled(): Boolean {
         return autoStartRecording
     }
 
@@ -678,7 +678,7 @@ class CometChatMediaRecorder @JvmOverloads constructor(
                 release()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error releasing recorder: ${e.message}")
+            CometChatLogger.e(TAG, "Error releasing recorder: ${e.message}")
         }
         mediaRecorder = null
         

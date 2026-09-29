@@ -30,7 +30,7 @@ import com.cometchat.uikit.kotlin.presentation.reactionlist.utils.ReactionListVi
  * The adapter follows the pattern from the Java implementation in
  * chatuikit/src/main/java/com/cometchat/chatuikit/reactionlist/adapter/ReactedUsersAdapter.java
  */
-class ReactedUsersAdapter(
+internal class ReactedUsersAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<ReactedUsersAdapter.ReactedUserViewHolder>() {
 

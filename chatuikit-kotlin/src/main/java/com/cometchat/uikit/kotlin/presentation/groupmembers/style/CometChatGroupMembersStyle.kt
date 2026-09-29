@@ -21,7 +21,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Use [default] to create a style from the current theme, or [fromTypedArray] to
  * extract values from XML attributes.
  */
-data class CometChatGroupMembersStyle(
+public data class CometChatGroupMembersStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -90,14 +90,14 @@ data class CometChatGroupMembersStyle(
     val avatarStyle: CometChatAvatarStyle = CometChatAvatarStyle(),
     val statusIndicatorStyle: CometChatStatusIndicatorStyle = CometChatStatusIndicatorStyle()
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatGroupMembersStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatGroupMembersStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatGroupMembersStyle {
+        public fun default(context: Context): CometChatGroupMembersStyle {
             return extractFromThemeStyle(context, R.attr.cometchatGroupMembersStyle)
         }
 
@@ -135,7 +135,7 @@ data class CometChatGroupMembersStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatGroupMembersStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatGroupMembersStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatGroupMembersStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -373,7 +373,7 @@ data class CometChatGroupMembersStyle(
      *
      * @param cardView The MaterialCardView to style
      */
-    fun applyToContainer(cardView: com.google.android.material.card.MaterialCardView) {
+    public fun applyToContainer(cardView: com.google.android.material.card.MaterialCardView) {
         if (backgroundColor != 0) cardView.setCardBackgroundColor(backgroundColor)
         if (strokeColor != 0) cardView.strokeColor = strokeColor
         if (strokeWidth > 0) cardView.strokeWidth = strokeWidth
@@ -387,7 +387,7 @@ data class CometChatGroupMembersStyle(
      * @param titleView The TextView displaying the toolbar title
      * @param backIconView The ImageView displaying the back icon (nullable)
      */
-    fun applyToToolbar(
+    public fun applyToToolbar(
         titleView: android.widget.TextView,
         backIconView: android.widget.ImageView? = null
     ) {
@@ -408,7 +408,7 @@ data class CometChatGroupMembersStyle(
      * @param searchIconView The ImageView for the search start icon (nullable)
      * @param clearIconView The ImageView for the search end/clear icon (nullable)
      */
-    fun applyToSearchBox(
+    public fun applyToSearchBox(
         searchContainer: android.view.View,
         searchInput: android.widget.EditText,
         searchIconView: android.widget.ImageView? = null,
@@ -434,7 +434,7 @@ data class CometChatGroupMembersStyle(
      *
      * @param titleView The TextView displaying the member name
      */
-    fun applyToListItem(titleView: android.widget.TextView) {
+    public fun applyToListItem(titleView: android.widget.TextView) {
         if (itemTitleTextColor != 0) titleView.setTextColor(itemTitleTextColor)
         if (itemTitleTextAppearance != 0) titleView.setTextAppearance(itemTitleTextAppearance)
     }
@@ -444,7 +444,7 @@ data class CometChatGroupMembersStyle(
      *
      * @param separatorView The View used as a list item separator
      */
-    fun applyToSeparator(separatorView: android.view.View) {
+    public fun applyToSeparator(separatorView: android.view.View) {
         if (separatorColor != 0) separatorView.setBackgroundColor(separatorColor)
     }
 
@@ -454,7 +454,7 @@ data class CometChatGroupMembersStyle(
      * @param titleView The TextView for the empty state title
      * @param subtitleView The TextView for the empty state subtitle (nullable)
      */
-    fun applyToEmptyState(
+    public fun applyToEmptyState(
         titleView: android.widget.TextView,
         subtitleView: android.widget.TextView? = null
     ) {
@@ -472,7 +472,7 @@ data class CometChatGroupMembersStyle(
      * @param titleView The TextView for the error state title
      * @param subtitleView The TextView for the error state subtitle (nullable)
      */
-    fun applyToErrorState(
+    public fun applyToErrorState(
         titleView: android.widget.TextView,
         subtitleView: android.widget.TextView? = null
     ) {

@@ -5,12 +5,13 @@ import android.text.SpannableStringBuilder
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 
 /**
  * Utility class for formatting text with multiple formatters.
  * Applies a list of formatters sequentially to a given text.
  */
-object FormatterUtils {
+public object FormatterUtils {
     private const val TAG = "FormatterUtils"
 
     /**
@@ -25,7 +26,7 @@ object FormatterUtils {
      * @param formatters The list of formatters to apply sequentially
      * @return The formatted CharSequence after applying all formatters
      */
-    fun getFormattedText(
+    public fun getFormattedText(
         context: Context,
         baseMessage: BaseMessage,
         formattingType: UIKitConstants.FormattingType,
@@ -35,14 +36,13 @@ object FormatterUtils {
     ): CharSequence {
         if (text.isEmpty()) return text
 
-        android.util.Log.d(TAG, "getFormattedText: text='$text', messageId=${baseMessage.id}, muid=${baseMessage.muid}")
-        android.util.Log.d(TAG, "getFormattedText: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
-        android.util.Log.d(TAG, "getFormattedText: formatters count=${formatters.size}")
+        CometChatLogger.d(TAG, "getFormattedText: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
+        CometChatLogger.d(TAG, "getFormattedText: formatters count=${formatters.size}")
 
         var spannable = SpannableStringBuilder(text)
 
         for (formatter in formatters) {
-            android.util.Log.d(TAG, "getFormattedText: applying formatter ${formatter.javaClass.simpleName}")
+            CometChatLogger.d(TAG, "getFormattedText: applying formatter ${formatter.javaClass.simpleName}")
             val result = formatter.prepareMessageString(
                 context,
                 baseMessage,
@@ -51,12 +51,12 @@ object FormatterUtils {
                 formattingType
             )
             if (result != null) {
-                android.util.Log.d(TAG, "getFormattedText: formatter result='${result}'")
+                CometChatLogger.d(TAG, "getFormattedText: formatter result='${result}'")
                 spannable = result
             }
         }
 
-        android.util.Log.d(TAG, "getFormattedText: final result='$spannable'")
+        CometChatLogger.d(TAG, "getFormattedText: final result='$spannable'")
         return spannable
     }
 
@@ -66,7 +66,7 @@ object FormatterUtils {
      * @param message The message to extract text from
      * @return The plain text content
      */
-    fun getMessageText(message: BaseMessage): String {
+    public fun getMessageText(message: BaseMessage): String {
         return when (message) {
             is TextMessage -> message.text ?: ""
             else -> ""

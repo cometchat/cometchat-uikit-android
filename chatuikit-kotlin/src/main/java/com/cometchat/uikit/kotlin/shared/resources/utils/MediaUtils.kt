@@ -17,6 +17,7 @@ import android.provider.OpenableColumns
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import java.io.File
 import java.io.FileOutputStream
@@ -29,7 +30,7 @@ import java.util.Locale
  * Utility object for media-related operations including creating intents for
  * camera, file pickers, and handling file URIs.
  */
-object MediaUtils {
+public object MediaUtils {
     
     private const val TAG = "MediaUtils"
     
@@ -38,14 +39,14 @@ object MediaUtils {
      * Used to retrieve the file after camera capture completes.
      */
     @JvmStatic
-    var pictureImagePath: String? = null
+    public var pictureImagePath: String? = null
         private set
     
     /**
      * Stores the URI of the captured image (for Android 10+).
      */
     @JvmStatic
-    var uri: Uri? = null
+    public var uri: Uri? = null
         private set
     
     /**
@@ -55,7 +56,7 @@ object MediaUtils {
      * @return Intent configured to launch the camera
      */
     @JvmStatic
-    fun openCamera(context: Context): Intent {
+    public fun openCamera(context: Context): Intent {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val imageFileName = "$timeStamp.jpg"
         val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
@@ -65,7 +66,7 @@ object MediaUtils {
         var outputFileUri: Uri?
         
         // Use the app's package name for FileProvider authority
-        val authority = "${context.packageName}.provider"
+        val authority = context.cometchatFileProviderAuthority
         outputFileUri = FileProvider.getUriForFile(context, authority, file)
         
         if (Build.VERSION.SDK_INT >= 29) {
@@ -103,7 +104,7 @@ object MediaUtils {
      * @param remaining Selection cap — typically the tray's remaining attachment slots.
      */
     @JvmStatic
-    fun openVisualMediaPicker(context: Context, mimeType: String, remaining: Int): Intent {
+    public fun openVisualMediaPicker(context: Context, mimeType: String, remaining: Int): Intent {
         val systemMax = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             MediaStore.getPickImagesMaxLimit()
         } else {
@@ -124,7 +125,7 @@ object MediaUtils {
      * single-pick gallery intent.
      */
     @JvmStatic
-    fun openImagePicker(context: Context, allowMultiple: Boolean, maxSelection: Int): Intent =
+    public fun openImagePicker(context: Context, allowMultiple: Boolean, maxSelection: Int): Intent =
         if (allowMultiple) openVisualMediaPicker(context, "image/*", maxSelection)
         else openImagePicker()
 
@@ -134,7 +135,7 @@ object MediaUtils {
      * single-pick intent.
      */
     @JvmStatic
-    fun openVideoPicker(context: Context, allowMultiple: Boolean, maxSelection: Int): Intent =
+    public fun openVideoPicker(context: Context, allowMultiple: Boolean, maxSelection: Int): Intent =
         if (allowMultiple) openVisualMediaPicker(context, "video/*", maxSelection)
         else openVideoPicker()
 
@@ -145,7 +146,7 @@ object MediaUtils {
      * chooser wrapper (the chooser ignores extras that aren't its own).
      */
     @JvmStatic
-    fun openAudioPicker(context: Context, allowMultiple: Boolean): Intent =
+    public fun openAudioPicker(context: Context, allowMultiple: Boolean): Intent =
         buildAudioPicker(context, allowMultiple)
 
     /**
@@ -153,7 +154,7 @@ object MediaUtils {
      * only toggles multi-select — the caller's staging guard trims any over-selection.
      */
     @JvmStatic
-    fun openFilePicker(allowMultiple: Boolean): Intent =
+    public fun openFilePicker(allowMultiple: Boolean): Intent =
         openFilePicker().apply {
             if (allowMultiple) putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
@@ -164,7 +165,7 @@ object MediaUtils {
      * @return Intent configured to pick images
      */
     @JvmStatic
-    fun openImagePicker(): Intent {
+    public fun openImagePicker(): Intent {
         return Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "image/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
@@ -177,7 +178,7 @@ object MediaUtils {
      * @return Intent configured to pick videos
      */
     @JvmStatic
-    fun openVideoPicker(): Intent {
+    public fun openVideoPicker(): Intent {
         return Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "video/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
@@ -191,7 +192,7 @@ object MediaUtils {
      * @return Intent configured to pick audio files
      */
     @JvmStatic
-    fun openAudioPicker(context: Context): Intent = buildAudioPicker(context, allowMultiple = false)
+    public fun openAudioPicker(context: Context): Intent = buildAudioPicker(context, allowMultiple = false)
 
     private fun buildAudioPicker(context: Context, allowMultiple: Boolean): Intent {
         val allIntents = mutableListOf<Intent>()
@@ -237,7 +238,7 @@ object MediaUtils {
      * @return Intent configured to pick files
      */
     @JvmStatic
-    fun openFilePicker(): Intent {
+    public fun openFilePicker(): Intent {
         return Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
@@ -250,7 +251,7 @@ object MediaUtils {
      * @return The path to the captured image file
      */
     @JvmStatic
-    fun handleCameraImage(): String? {
+    public fun handleCameraImage(): String? {
         return pictureImagePath
     }
     
@@ -263,7 +264,7 @@ object MediaUtils {
      * @return The File object for the URI
      */
     @JvmStatic
-    fun getRealPath(context: Context, fileUri: Uri, isThirdParty: Boolean = false): File? {
+    public fun getRealPath(context: Context, fileUri: Uri, isThirdParty: Boolean = false): File? {
         return when {
             isGoogleDrive(fileUri) || isThirdParty -> downloadFile(context, fileUri)
             Build.VERSION.SDK_INT < 28 -> {
@@ -299,7 +300,7 @@ object MediaUtils {
             }
             file
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error downloading file: ${e.message}")
+            CometChatLogger.e(TAG, "Error downloading file: ${e.message}")
             null
         }
     }
@@ -308,7 +309,7 @@ object MediaUtils {
      * Gets the file name from a URI.
      */
     @JvmStatic
-    fun getFileName(context: Context, uri: Uri): String {
+    public fun getFileName(context: Context, uri: Uri): String {
         var result: String? = null
         if (uri.scheme == "content") {
             context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
@@ -353,7 +354,7 @@ object MediaUtils {
                 file.path
             }
         } catch (e: Exception) {
-            android.util.Log.e(TAG, e.toString())
+            CometChatLogger.e(TAG, e.toString())
             null
         }
     }
@@ -470,9 +471,9 @@ object MediaUtils {
      * @param file The file to open
      */
     @JvmStatic
-    fun openFile(context: Context, file: File) {
+    public fun openFile(context: Context, file: File) {
         try {
-            val authority = "${context.packageName}.provider"
+            val authority = context.cometchatFileProviderAuthority
             val uri = FileProvider.getUriForFile(context, authority, file)
             val mimeType = context.contentResolver.getType(uri) 
                 ?: getMimeType(file.name)
@@ -483,7 +484,7 @@ object MediaUtils {
             }
             context.startActivity(intent)
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error opening file: ${e.message}")
+            CometChatLogger.e(TAG, "Error opening file: ${e.message}")
         }
     }
     
@@ -495,7 +496,7 @@ object MediaUtils {
      * @param mimeType The MIME type of the media
      */
     @JvmStatic
-    fun openMediaInPlayer(context: Context, url: String?, mimeType: String?) {
+    public fun openMediaInPlayer(context: Context, url: String?, mimeType: String?) {
         if (url.isNullOrEmpty()) return
         
         try {
@@ -505,7 +506,7 @@ object MediaUtils {
             }
             context.startActivity(intent)
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error opening media: ${e.message}")
+            CometChatLogger.e(TAG, "Error opening media: ${e.message}")
         }
     }
     
@@ -518,7 +519,7 @@ object MediaUtils {
      * @param extension The file extension
      */
     @JvmStatic
-    fun downloadFile(context: Context, url: String, fileName: String, extension: String) {
+    public fun downloadFile(context: Context, url: String, fileName: String, extension: String) {
         try {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
             val request = android.app.DownloadManager.Request(Uri.parse(url))
@@ -531,7 +532,7 @@ object MediaUtils {
             )
             downloadManager.enqueue(request)
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error downloading file: ${e.message}")
+            CometChatLogger.e(TAG, "Error downloading file: ${e.message}")
         }
     }
     
@@ -552,7 +553,7 @@ object MediaUtils {
      * @return The content type string (image, video, audio, or file)
      */
     @JvmStatic
-    fun getContentType(context: Context, uri: Uri?): String {
+    public fun getContentType(context: Context, uri: Uri?): String {
         if (uri == null) return "file"
         
         val mimeType = context.contentResolver.getType(uri)
@@ -578,7 +579,7 @@ object MediaUtils {
      * @param onError Optional callback invoked on the main thread if download fails
      */
     @JvmStatic
-    fun downloadFileAndShare(
+    public fun downloadFileAndShare(
         context: Context,
         fileUrl: String,
         fileName: String,
@@ -620,12 +621,12 @@ object MediaUtils {
                         shareFile(context, file, mimeType)
                         onComplete?.invoke()
                     } catch (e: Exception) {
-                        android.util.Log.e(TAG, "Error sharing file: ${e.message}")
+                        CometChatLogger.e(TAG, "Error sharing file: ${e.message}")
                         onError?.invoke(e)
                     }
                 }
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "Error downloading file: ${e.message}")
+                CometChatLogger.e(TAG, "Error downloading file: ${e.message}")
                 android.os.Handler(android.os.Looper.getMainLooper()).post {
                     onError?.invoke(e)
                 }
@@ -641,9 +642,9 @@ object MediaUtils {
      * @param mimeType The MIME type of the file
      */
     @JvmStatic
-    fun shareFile(context: Context, file: File, mimeType: String) {
+    public fun shareFile(context: Context, file: File, mimeType: String) {
         try {
-            val authority = "${context.packageName}.provider"
+            val authority = context.cometchatFileProviderAuthority
             val fileUri = FileProvider.getUriForFile(context, authority, file)
             
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -655,8 +656,18 @@ object MediaUtils {
                 Intent.createChooser(shareIntent, context.getString(R.string.cometchat_share))
             )
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error sharing file: ${e.message}")
+            CometChatLogger.e(TAG, "Error sharing file: ${e.message}")
             throw e
         }
     }
 }
+
+/**
+ * ENG-38657 (T3): the single source of truth for this toolkit's FileProvider
+ * authority. Must match android:authorities in the manifest. Namespaced so it
+ * cannot collide with a host app's own provider or the compose toolkit's.
+ * (One legacy call site used ".fileprovider", which matched no declared
+ * provider at all and crashed when reached - fixed by this constant.)
+ */
+internal val android.content.Context.cometchatFileProviderAuthority: String
+    get() = "$packageName.cometchat.kotlin.provider"

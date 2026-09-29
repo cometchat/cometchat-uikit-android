@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  * This adapter uses ListAdapter with DiffUtil for efficient updates and supports
  * custom ViewHolder listeners for view customization.
  */
-class CometChatSearchConversationsAdapter : ListAdapter<Conversation, SearchConversationViewHolder>(
+internal class CometChatSearchConversationsAdapter : ListAdapter<Conversation, SearchConversationViewHolder>(
     ConversationDiffCallback()
 ) {
 

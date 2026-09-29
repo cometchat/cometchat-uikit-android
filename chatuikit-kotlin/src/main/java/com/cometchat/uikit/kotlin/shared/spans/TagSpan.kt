@@ -14,7 +14,7 @@ import com.cometchat.uikit.kotlin.shared.formatters.style.PromptTextStyle
  * The background color is automatically applied with 20% opacity (alpha 51)
  * to match the chatuikit Java implementation.
  */
-class TagSpan(
+public class TagSpan(
     private var id: Char,
     private var text: String,
     private var suggestionItem: SuggestionItem,
@@ -57,19 +57,19 @@ class TagSpan(
         return (alpha shl 24) or (color and 0x00FFFFFF)
     }
 
-    fun getId(): Char = id
-    fun setId(id: Char) { this.id = id }
-    fun getText(): String = text
-    fun setText(text: String) { this.text = text }
-    fun getSuggestionItem(): SuggestionItem = suggestionItem
-    fun setSuggestionItem(item: SuggestionItem) { 
+    public fun getId(): Char = id
+    public fun setId(id: Char) { this.id = id }
+    public fun getText(): String = text
+    public fun setText(text: String) { this.text = text }
+    public fun getSuggestionItem(): SuggestionItem = suggestionItem
+    public fun setSuggestionItem(item: SuggestionItem) { 
         this.suggestionItem = item 
         this.textAppearance = item.promptTextStyle
     }
-    fun getTextAppearance(): PromptTextStyle? = textAppearance
-    fun setTextAppearance(style: PromptTextStyle?) { this.textAppearance = style }
+    public fun getTextAppearance(): PromptTextStyle? = textAppearance
+    public fun setTextAppearance(style: PromptTextStyle?) { this.textAppearance = style }
 
-    companion object {
+    public companion object {
         /**
          * Alpha value for background color (51/255 ≈ 20% opacity)
          * Matches the chatuikit Java implementation.

@@ -7,7 +7,7 @@ import androidx.annotation.ColorInt
  * A style class for customizing the appearance of mention text in various contexts.
  * Provides separate styling options for regular mentions and mentions of the logged-in user.
  */
-class MentionTextAppearance {
+public class MentionTextAppearance {
     private var textColor: Int = 0
     private var textAppearance: Typeface? = null
     private var textBackgroundColor: Int = 0
@@ -21,7 +21,7 @@ class MentionTextAppearance {
      * @param textColor The text color to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setTextColor(@ColorInt textColor: Int): MentionTextAppearance {
+    public fun setTextColor(@ColorInt textColor: Int): MentionTextAppearance {
         this.textColor = textColor
         return this
     }
@@ -32,7 +32,7 @@ class MentionTextAppearance {
      * @param textAppearance The typeface to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setTextAppearance(textAppearance: Typeface?): MentionTextAppearance {
+    public fun setTextAppearance(textAppearance: Typeface?): MentionTextAppearance {
         this.textAppearance = textAppearance
         return this
     }
@@ -43,7 +43,7 @@ class MentionTextAppearance {
      * @param textBackgroundColor The background color to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setTextBackgroundColor(@ColorInt textBackgroundColor: Int): MentionTextAppearance {
+    public fun setTextBackgroundColor(@ColorInt textBackgroundColor: Int): MentionTextAppearance {
         this.textBackgroundColor = textBackgroundColor
         return this
     }
@@ -54,7 +54,7 @@ class MentionTextAppearance {
      * @param loggedInUserTextColor The text color to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setLoggedInUserTextColor(@ColorInt loggedInUserTextColor: Int): MentionTextAppearance {
+    public fun setLoggedInUserTextColor(@ColorInt loggedInUserTextColor: Int): MentionTextAppearance {
         this.loggedInUserTextColor = loggedInUserTextColor
         return this
     }
@@ -65,7 +65,7 @@ class MentionTextAppearance {
      * @param loggedInUserTextAppearance The typeface to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setLoggedInUserTextAppearance(loggedInUserTextAppearance: Typeface?): MentionTextAppearance {
+    public fun setLoggedInUserTextAppearance(loggedInUserTextAppearance: Typeface?): MentionTextAppearance {
         this.loggedInUserTextAppearance = loggedInUserTextAppearance
         return this
     }
@@ -76,7 +76,7 @@ class MentionTextAppearance {
      * @param loggedInUserTextBackgroundColor The background color to set
      * @return This MentionTextAppearance instance for method chaining
      */
-    fun setLoggedInUserTextBackgroundColor(@ColorInt loggedInUserTextBackgroundColor: Int): MentionTextAppearance {
+    public fun setLoggedInUserTextBackgroundColor(@ColorInt loggedInUserTextBackgroundColor: Int): MentionTextAppearance {
         this.loggedInUserTextBackgroundColor = loggedInUserTextBackgroundColor
         return this
     }
@@ -86,40 +86,40 @@ class MentionTextAppearance {
      *
      * @return The text color
      */
-    fun getTextColor(): Int = textColor
+    public fun getTextColor(): Int = textColor
 
     /**
      * Gets the text appearance (typeface) for regular mentions.
      *
      * @return The typeface
      */
-    fun getTextAppearance(): Typeface? = textAppearance
+    public fun getTextAppearance(): Typeface? = textAppearance
 
     /**
      * Gets the background color for regular mentions.
      *
      * @return The background color
      */
-    fun getTextBackgroundColor(): Int = textBackgroundColor
+    public fun getTextBackgroundColor(): Int = textBackgroundColor
 
     /**
      * Gets the text color for mentions of the logged-in user.
      *
      * @return The text color
      */
-    fun getLoggedInUserTextColor(): Int = loggedInUserTextColor
+    public fun getLoggedInUserTextColor(): Int = loggedInUserTextColor
 
     /**
      * Gets the text appearance (typeface) for mentions of the logged-in user.
      *
      * @return The typeface
      */
-    fun getLoggedInUserTextAppearance(): Typeface? = loggedInUserTextAppearance
+    public fun getLoggedInUserTextAppearance(): Typeface? = loggedInUserTextAppearance
 
     /**
      * Gets the background color for mentions of the logged-in user.
      *
      * @return The background color
      */
-    fun getLoggedInUserTextBackgroundColor(): Int = loggedInUserTextBackgroundColor
+    public fun getLoggedInUserTextBackgroundColor(): Int = loggedInUserTextBackgroundColor
 }

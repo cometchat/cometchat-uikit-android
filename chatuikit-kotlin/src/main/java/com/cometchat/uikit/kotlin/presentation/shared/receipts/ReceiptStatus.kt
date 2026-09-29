@@ -3,7 +3,7 @@ package com.cometchat.uikit.kotlin.presentation.shared.receipts
 /**
  * Enum representing message receipt/delivery status.
  */
-enum class ReceiptStatus {
+public enum class ReceiptStatus {
     /**
      * Message is being sent (in progress)
      */

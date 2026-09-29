@@ -44,13 +44,13 @@ import kotlinx.coroutines.launch
  * This component uses the shared CometChatUsersViewModel from chatuikit-core,
  * ensuring consistent business logic with the Jetpack Compose version.
  */
-class CometChatUsers @JvmOverloads constructor(
+public class CometChatUsers @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatUsersStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatUsers::class.java.simpleName
     }
 
@@ -452,7 +452,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the ViewModel externally.
      */
-    fun setViewModel(viewModel: CometChatUsersViewModel) {
+    public fun setViewModel(viewModel: CometChatUsersViewModel) {
         this.viewModel = viewModel
         this.isExternalViewModel = true
         startObservingViewModel()
@@ -461,7 +461,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the lifecycle owner for observing flows.
      */
-    fun setLifecycleOwner(owner: LifecycleOwner) {
+    public fun setLifecycleOwner(owner: LifecycleOwner) {
         this.lifecycleOwner = owner
         startObservingViewModel()
     }
@@ -592,49 +592,49 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (User) -> Unit) {
+    public fun setOnItemClick(callback: (User) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (User) -> Unit) {
+    public fun setOnItemLongClick(callback: (User) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets the error callback.
      */
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
     /**
      * Sets the load callback.
      */
-    fun setOnLoad(callback: (List<User>) -> Unit) {
+    public fun setOnLoad(callback: (List<User>) -> Unit) {
         onLoad = callback
     }
 
     /**
      * Sets the empty callback.
      */
-    fun setOnEmpty(callback: () -> Unit) {
+    public fun setOnEmpty(callback: () -> Unit) {
         onEmpty = callback
     }
 
     /**
      * Sets the back press callback.
      */
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
     /**
      * Sets the selection callback.
      */
-    fun setOnSelection(callback: (List<User>) -> Unit) {
+    public fun setOnSelection(callback: (List<User>) -> Unit) {
         onSelection = callback
     }
 
@@ -645,7 +645,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param callback Callback invoked with the current list of selected users
      */
-    fun setOnSelectionChange(callback: (List<User>) -> Unit) {
+    public fun setOnSelectionChange(callback: (List<User>) -> Unit) {
         onSelectionChange = callback
     }
 
@@ -653,7 +653,7 @@ class CometChatUsers @JvmOverloads constructor(
      * Sets the selection mode.
      * Clears existing selections when mode changes (matches ConversationList behavior).
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         // Clear existing selections (matches ConversationList/Java implementation)
         usersAdapter.selectUsers(emptySet())
         
@@ -675,7 +675,7 @@ class CometChatUsers @JvmOverloads constructor(
      * @param user The user to select or deselect.
      * @param mode The selection mode to apply.
      */
-    fun selectUser(user: User, mode: UIKitConstants.SelectionMode? = null) {
+    public fun selectUser(user: User, mode: UIKitConstants.SelectionMode? = null) {
         val effectiveMode = mode ?: selectionMode
         viewModel?.selectUser(user, effectiveMode)
     }
@@ -685,14 +685,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return List of selected users.
      */
-    fun getSelectedUsers(): List<User> {
+    public fun getSelectedUsers(): List<User> {
         return viewModel?.getSelectedUsers() ?: emptyList()
     }
 
     /**
      * Sets custom item view listener.
      */
-    fun setItemView(listener: UsersViewHolderListener?) {
+    public fun setItemView(listener: UsersViewHolderListener?) {
         itemViewListener = listener
         usersAdapter.setItemView(listener)
     }
@@ -700,7 +700,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets custom leading view listener.
      */
-    fun setLeadingView(listener: UsersViewHolderListener?) {
+    public fun setLeadingView(listener: UsersViewHolderListener?) {
         leadingViewListener = listener
         usersAdapter.setLeadingView(listener)
     }
@@ -708,7 +708,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets custom title view listener.
      */
-    fun setTitleView(listener: UsersViewHolderListener?) {
+    public fun setTitleView(listener: UsersViewHolderListener?) {
         titleViewListener = listener
         usersAdapter.setTitleView(listener)
     }
@@ -716,7 +716,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets custom subtitle view listener.
      */
-    fun setSubtitleView(listener: UsersViewHolderListener?) {
+    public fun setSubtitleView(listener: UsersViewHolderListener?) {
         subtitleViewListener = listener
         usersAdapter.setSubtitleView(listener)
     }
@@ -724,7 +724,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets custom trailing view listener.
      */
-    fun setTrailingView(listener: UsersViewHolderListener?) {
+    public fun setTrailingView(listener: UsersViewHolderListener?) {
         trailingViewListener = listener
         usersAdapter.setTrailingView(listener)
     }
@@ -732,35 +732,35 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets custom empty view.
      */
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         customEmptyView = view
     }
 
     /**
      * Sets custom error view.
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         customErrorView = view
     }
 
     /**
      * Sets custom loading view.
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         customLoadingView = view
     }
 
     /**
      * Sets menu options.
      */
-    fun setOptions(options: ((Context, User) -> List<CometChatPopupMenu.MenuItem>)?) {
+    public fun setOptions(options: ((Context, User) -> List<CometChatPopupMenu.MenuItem>)?) {
         this.options = options
     }
 
     /**
      * Sets additional menu options.
      */
-    fun setAddOptions(addOptions: ((Context, User) -> List<CometChatPopupMenu.MenuItem>)?) {
+    public fun setAddOptions(addOptions: ((Context, User) -> List<CometChatPopupMenu.MenuItem>)?) {
         this.addOptions = addOptions
     }
 
@@ -769,7 +769,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setToolbarVisibility(visibility: Int) {
+    public fun setToolbarVisibility(visibility: Int) {
         toolbarVisibility = visibility
         binding.toolbar.visibility = visibility
     }
@@ -779,14 +779,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The toolbar visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getToolbarVisibility(): Int = toolbarVisibility
+    public fun getToolbarVisibility(): Int = toolbarVisibility
 
     /**
      * Sets back icon visibility.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconVisibility = visibility
         binding.toolbar.setBackIconVisibility(visibility)
     }
@@ -796,14 +796,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The back icon visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getBackIconVisibility(): Int = backIconVisibility
+    public fun getBackIconVisibility(): Int = backIconVisibility
 
     /**
      * Sets search box visibility.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setSearchBoxVisibility(visibility: Int) {
+    public fun setSearchBoxVisibility(visibility: Int) {
         searchBoxVisibility = visibility
         binding.searchBoxLayout.visibility = visibility
     }
@@ -813,14 +813,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The search box visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getSearchBoxVisibility(): Int = searchBoxVisibility
+    public fun getSearchBoxVisibility(): Int = searchBoxVisibility
 
     /**
      * Sets user status visibility.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setUserStatusVisibility(visibility: Int) {
+    public fun setUserStatusVisibility(visibility: Int) {
         userStatusVisibility = visibility
         usersAdapter.setHideUserStatus(visibility == View.GONE)
     }
@@ -830,14 +830,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The user status visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getUserStatusVisibility(): Int = userStatusVisibility
+    public fun getUserStatusVisibility(): Int = userStatusVisibility
 
     /**
      * Sets separator visibility.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setSeparatorVisibility(visibility: Int) {
+    public fun setSeparatorVisibility(visibility: Int) {
         usersAdapter.setHideSeparator(visibility != View.VISIBLE)
     }
 
@@ -846,7 +846,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setStickyHeaderVisibility(visibility: Int) {
+    public fun setStickyHeaderVisibility(visibility: Int) {
         stickyHeaderVisibility = visibility
         if (visibility == View.VISIBLE) {
             setupStickyHeaders()
@@ -860,14 +860,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The sticky header visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getStickyHeaderVisibility(): Int = stickyHeaderVisibility
+    public fun getStickyHeaderVisibility(): Int = stickyHeaderVisibility
 
     /**
      * Sets the visibility of the empty state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         emptyStateVisibility = visibility
     }
 
@@ -876,14 +876,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The empty state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getEmptyStateVisibility(): Int = emptyStateVisibility
+    public fun getEmptyStateVisibility(): Int = emptyStateVisibility
 
     /**
      * Sets the visibility of the error state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         errorStateVisibility = visibility
     }
 
@@ -892,14 +892,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The error state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Sets the visibility of the loading state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setLoadingStateVisibility(visibility: Int) {
+    public fun setLoadingStateVisibility(visibility: Int) {
         loadingStateVisibility = visibility
     }
 
@@ -908,7 +908,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The loading state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getLoadingStateVisibility(): Int = loadingStateVisibility
+    public fun getLoadingStateVisibility(): Int = loadingStateVisibility
 
     /**
      * Hides or shows the loading state.
@@ -916,7 +916,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param hide true to hide the loading state, false to show it
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         loadingStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -926,7 +926,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param hide true to hide the empty state, false to show it
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         emptyStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -936,14 +936,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param hide true to hide the error state, false to show it
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         errorStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
     /**
      * Sets the background color for the search input.
      */
-    fun setSearchInputBackgroundColor(@androidx.annotation.ColorInt color: Int) {
+    public fun setSearchInputBackgroundColor(@androidx.annotation.ColorInt color: Int) {
         style = style.copy(searchBackgroundColor = color)
         binding.searchBox.setCardBackgroundColor(color)
     }
@@ -951,7 +951,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the text color for the search input.
      */
-    fun setSearchInputTextColor(@androidx.annotation.ColorInt color: Int) {
+    public fun setSearchInputTextColor(@androidx.annotation.ColorInt color: Int) {
         style = style.copy(searchTextColor = color)
         binding.searchBox.setSearchInputTextColor(color)
     }
@@ -959,7 +959,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the corner radius for the search input.
      */
-    fun setSearchInputCornerRadius(@androidx.annotation.Dimension radius: Int) {
+    public fun setSearchInputCornerRadius(@androidx.annotation.Dimension radius: Int) {
         style = style.copy(searchCornerRadius = radius)
         binding.searchBox.radius = radius.toFloat()
     }
@@ -967,7 +967,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the stroke width for the search input.
      */
-    fun setSearchInputStrokeWidth(@androidx.annotation.Dimension width: Int) {
+    public fun setSearchInputStrokeWidth(@androidx.annotation.Dimension width: Int) {
         style = style.copy(searchStrokeWidth = width)
         binding.searchBox.strokeWidth = width
     }
@@ -975,7 +975,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the stroke color for the search input.
      */
-    fun setSearchInputStrokeColor(@androidx.annotation.ColorInt color: Int) {
+    public fun setSearchInputStrokeColor(@androidx.annotation.ColorInt color: Int) {
         style = style.copy(searchStrokeColor = color)
         binding.searchBox.strokeColor = color
     }
@@ -983,7 +983,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the title text color.
      */
-    fun setTitleTextColor(@androidx.annotation.ColorInt color: Int) {
+    public fun setTitleTextColor(@androidx.annotation.ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         applyToolbarStyle()
     }
@@ -991,7 +991,7 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Sets the style.
      */
-    fun setStyle(style: CometChatUsersStyle) {
+    public fun setStyle(style: CometChatUsersStyle) {
         this.style = style
         applyStyle()
     }
@@ -999,14 +999,14 @@ class CometChatUsers @JvmOverloads constructor(
     /**
      * Gets the current style.
      */
-    fun getStyle(): CometChatUsersStyle = style
+    public fun getStyle(): CometChatUsersStyle = style
 
     /**
      * Sets the users request builder for customizing fetch parameters.
      *
      * @param usersRequestBuilder The users request builder to set.
      */
-    fun setUsersRequestBuilder(usersRequestBuilder: UsersRequest.UsersRequestBuilder) {
+    public fun setUsersRequestBuilder(usersRequestBuilder: UsersRequest.UsersRequestBuilder) {
         viewModel?.setUsersRequestBuilder(usersRequestBuilder)
     }
 
@@ -1015,7 +1015,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param usersRequestBuilder The search request builder to set.
      */
-    fun setSearchRequestBuilder(usersRequestBuilder: UsersRequest.UsersRequestBuilder?) {
+    public fun setSearchRequestBuilder(usersRequestBuilder: UsersRequest.UsersRequestBuilder?) {
         viewModel?.setSearchRequestBuilder(usersRequestBuilder)
     }
 
@@ -1024,7 +1024,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param keyword The search keyword to set.
      */
-    fun setSearchKeyword(keyword: String) {
+    public fun setSearchKeyword(keyword: String) {
         binding.searchBox.setSearchInputText(keyword)
         viewModel?.searchUsers(keyword.ifEmpty { null })
     }
@@ -1034,7 +1034,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param view The view to be set as the overflow menu.
      */
-    fun setOverflowMenu(view: View?) {
+    public fun setOverflowMenu(view: View?) {
         this.overflowMenu = view
         binding.toolbar.clearActionViews()
         if (view != null) {
@@ -1047,14 +1047,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The overflow menu view, or null if not set.
      */
-    fun getOverflowMenu(): View? = overflowMenu
+    public fun getOverflowMenu(): View? = overflowMenu
 
     /**
      * Sets a custom adapter for the users list.
      *
      * @param usersAdapter The UsersAdapter instance to be set.
      */
-    fun setAdapter(usersAdapter: UsersAdapter) {
+    public fun setAdapter(usersAdapter: UsersAdapter) {
         this.usersAdapter = usersAdapter
         binding.recyclerviewUsersList.adapter = usersAdapter
     }
@@ -1064,14 +1064,14 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @return The UsersAdapter instance.
      */
-    fun getUsersAdapter(): UsersAdapter = usersAdapter
+    public fun getUsersAdapter(): UsersAdapter = usersAdapter
 
     /**
      * Sets the toolbar title text.
      *
      * @param title The title text to display in the toolbar.
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.toolbar.setTitle(title)
     }
 
@@ -1080,7 +1080,7 @@ class CometChatUsers @JvmOverloads constructor(
      *
      * @param placeholder The placeholder text to display in the search box.
      */
-    fun setSearchPlaceholderText(placeholder: String) {
+    public fun setSearchPlaceholderText(placeholder: String) {
         binding.searchBox.setSearchPlaceholderText(placeholder)
     }
 
@@ -1088,7 +1088,7 @@ class CometChatUsers @JvmOverloads constructor(
      * Refreshes the users list by clearing and re-fetching from the server.
      * This is a public convenience method that delegates to the ViewModel.
      */
-    fun refreshUsers() {
+    public fun refreshUsers() {
         viewModel?.refreshList()
     }
 

@@ -98,13 +98,13 @@ import kotlinx.coroutines.launch
  * }
  * ```
  */
-class CometChatSearch @JvmOverloads constructor(
+public class CometChatSearch @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatSearchStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatSearch::class.java.simpleName
     }
 
@@ -1519,7 +1519,7 @@ class CometChatSearch @JvmOverloads constructor(
      * Sets an externally created ViewModel.
      * Use this when you want to share a ViewModel across multiple components.
      */
-    fun setViewModel(viewModel: CometChatSearchViewModel) {
+    public fun setViewModel(viewModel: CometChatSearchViewModel) {
         this.viewModel = viewModel
         this.isExternalViewModel = true
         applyViewModelConfiguration()
@@ -1529,7 +1529,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the style for the search component.
      */
-    fun setStyle(style: CometChatSearchStyle) {
+    public fun setStyle(style: CometChatSearchStyle) {
         this.style = style
         applyStyle()
     }
@@ -1537,7 +1537,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the search scopes to determine which types of data to search.
      */
-    fun setSearchScopes(scopes: List<SearchScope>) {
+    public fun setSearchScopes(scopes: List<SearchScope>) {
         this.searchScopes = scopes
         viewModel?.setSearchScopes(scopes)
     }
@@ -1545,7 +1545,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the available filter chips.
      */
-    fun setSearchFilters(filters: List<SearchFilter>) {
+    public fun setSearchFilters(filters: List<SearchFilter>) {
         this.searchFilters = filters
         setupFilterChips()
     }
@@ -1553,7 +1553,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the UID for contextual search within a specific user conversation.
      */
-    fun setUid(uid: String?) {
+    public fun setUid(uid: String?) {
         this.uid = uid
         viewModel?.setUid(uid)
         messagesAdapter.setUid(uid)
@@ -1562,7 +1562,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the GUID for contextual search within a specific group conversation.
      */
-    fun setGuid(guid: String?) {
+    public fun setGuid(guid: String?) {
         this.guid = guid
         viewModel?.setGuid(guid)
         messagesAdapter.setGuid(guid)
@@ -1571,21 +1571,21 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets a custom ConversationsRequest builder.
      */
-    fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
+    public fun setConversationsRequestBuilder(builder: ConversationsRequest.ConversationsRequestBuilder) {
         viewModel?.setConversationsRequestBuilder(builder)
     }
 
     /**
      * Sets a custom MessagesRequest builder.
      */
-    fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder) {
+    public fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder) {
         viewModel?.setMessagesRequestBuilder(builder)
     }
 
     /**
      * Sets the date/time formatter for timestamps.
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         this.dateTimeFormatter = formatter
         conversationsAdapter.setDateTimeFormatter(formatter)
         messagesAdapter.setDateTimeFormatter(formatter)
@@ -1596,7 +1596,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets whether to hide the search bar.
      */
-    fun setHideSearchBar(hide: Boolean) {
+    public fun setHideSearchBar(hide: Boolean) {
         this.hideSearchBar = hide
         binding.searchBarLayout.isVisible = !hide
     }
@@ -1604,7 +1604,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets whether to hide the filter chips.
      */
-    fun setHideFilterChips(hide: Boolean) {
+    public fun setHideFilterChips(hide: Boolean) {
         this.hideFilterChips = hide
         binding.chipGroup.isVisible = !hide
     }
@@ -1612,35 +1612,35 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets whether to hide the loading state.
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         this.hideLoadingState = hide
     }
 
     /**
      * Sets whether to hide the empty state.
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         this.hideEmptyState = hide
     }
 
     /**
      * Sets whether to hide the error state.
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         this.hideErrorState = hide
     }
 
     /**
      * Sets whether to hide the initial state.
      */
-    fun setHideInitialState(hide: Boolean) {
+    public fun setHideInitialState(hide: Boolean) {
         this.hideInitialState = hide
     }
 
     /**
      * Sets whether to hide user online status indicator.
      */
-    fun setHideUserStatus(hide: Boolean) {
+    public fun setHideUserStatus(hide: Boolean) {
         this.hideUserStatus = hide
         conversationsAdapter.setHideUserStatus(hide)
     }
@@ -1648,7 +1648,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets whether to hide group type indicator.
      */
-    fun setHideGroupType(hide: Boolean) {
+    public fun setHideGroupType(hide: Boolean) {
         this.hideGroupType = hide
         conversationsAdapter.setHideGroupType(hide)
     }
@@ -1658,28 +1658,28 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets a custom loading view.
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         this.customLoadingView = view
     }
 
     /**
      * Sets a custom empty view.
      */
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         this.customEmptyView = view
     }
 
     /**
      * Sets a custom error view.
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         this.customErrorView = view
     }
 
     /**
      * Sets a custom initial view.
      */
-    fun setInitialView(view: View?) {
+    public fun setInitialView(view: View?) {
         this.customInitialView = view
     }
 
@@ -1688,7 +1688,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom item view listener for conversations.
      */
-    fun setConversationItemViewListener(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationItemViewListener(listener: SearchConversationsViewHolderListener?) {
         this.conversationItemViewListener = listener
         conversationsAdapter.setItemViewListener(listener)
     }
@@ -1696,7 +1696,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom leading view listener for conversations.
      */
-    fun setConversationLeadingViewListener(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationLeadingViewListener(listener: SearchConversationsViewHolderListener?) {
         this.conversationLeadingViewListener = listener
         conversationsAdapter.setLeadingViewListener(listener)
     }
@@ -1704,7 +1704,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom title view listener for conversations.
      */
-    fun setConversationTitleViewListener(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationTitleViewListener(listener: SearchConversationsViewHolderListener?) {
         this.conversationTitleViewListener = listener
         conversationsAdapter.setTitleViewListener(listener)
     }
@@ -1712,7 +1712,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom subtitle view listener for conversations.
      */
-    fun setConversationSubtitleViewListener(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationSubtitleViewListener(listener: SearchConversationsViewHolderListener?) {
         this.conversationSubtitleViewListener = listener
         conversationsAdapter.setSubtitleViewListener(listener)
     }
@@ -1720,7 +1720,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom trailing view listener for conversations.
      */
-    fun setConversationTrailingViewListener(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationTrailingViewListener(listener: SearchConversationsViewHolderListener?) {
         this.conversationTrailingViewListener = listener
         conversationsAdapter.setTrailingViewListener(listener)
     }
@@ -1730,7 +1730,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for text message items.
      */
-    fun setTextMessageItemViewListener(listener: SearchMessagesViewHolderListener<TextMessage>?) {
+    public fun setTextMessageItemViewListener(listener: SearchMessagesViewHolderListener<TextMessage>?) {
         this.textMessageItemViewListener = listener
         messagesAdapter.setTextMessageItemViewListener(listener)
     }
@@ -1738,7 +1738,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for image message items.
      */
-    fun setImageMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setImageMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         this.imageMessageItemViewListener = listener
         messagesAdapter.setImageMessageItemViewListener(listener)
     }
@@ -1746,7 +1746,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for video message items.
      */
-    fun setVideoMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setVideoMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         this.videoMessageItemViewListener = listener
         messagesAdapter.setVideoMessageItemViewListener(listener)
     }
@@ -1754,7 +1754,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for audio message items.
      */
-    fun setAudioMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setAudioMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         this.audioMessageItemViewListener = listener
         messagesAdapter.setAudioMessageItemViewListener(listener)
     }
@@ -1762,7 +1762,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for document message items.
      */
-    fun setDocumentMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setDocumentMessageItemViewListener(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         this.documentMessageItemViewListener = listener
         messagesAdapter.setDocumentMessageItemViewListener(listener)
     }
@@ -1770,7 +1770,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the custom view listener for link message items.
      */
-    fun setLinkMessageItemViewListener(listener: SearchMessagesViewHolderListener<TextMessage>?) {
+    public fun setLinkMessageItemViewListener(listener: SearchMessagesViewHolderListener<TextMessage>?) {
         this.linkMessageItemViewListener = listener
         messagesAdapter.setLinkMessageItemViewListener(listener)
     }
@@ -1780,49 +1780,49 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Sets the callback for back button press.
      */
-    fun setOnBackPress(callback: (() -> Unit)?) {
+    public fun setOnBackPress(callback: (() -> Unit)?) {
         this.onBackPress = callback
     }
 
     /**
      * Sets the callback for conversation item click.
      */
-    fun setOnConversationClick(callback: ((Conversation) -> Unit)?) {
+    public fun setOnConversationClick(callback: ((Conversation) -> Unit)?) {
         this.onConversationClick = callback
     }
 
     /**
      * Sets the callback for message item click.
      */
-    fun setOnMessageClick(callback: ((BaseMessage) -> Unit)?) {
+    public fun setOnMessageClick(callback: ((BaseMessage) -> Unit)?) {
         this.onMessageClick = callback
     }
 
     /**
      * Sets the callback for errors.
      */
-    fun setOnError(callback: ((CometChatException) -> Unit)?) {
+    public fun setOnError(callback: ((CometChatException) -> Unit)?) {
         this.onError = callback
     }
 
     /**
      * Sets the callback when conversations are loaded.
      */
-    fun setOnLoadConversations(callback: ((List<Conversation>) -> Unit)?) {
+    public fun setOnLoadConversations(callback: ((List<Conversation>) -> Unit)?) {
         this.onLoadConversations = callback
     }
 
     /**
      * Sets the callback when messages are loaded.
      */
-    fun setOnLoadMessages(callback: ((List<BaseMessage>) -> Unit)?) {
+    public fun setOnLoadMessages(callback: ((List<BaseMessage>) -> Unit)?) {
         this.onLoadMessages = callback
     }
 
     /**
      * Sets the callback when search results are empty.
      */
-    fun setOnEmpty(callback: (() -> Unit)?) {
+    public fun setOnEmpty(callback: (() -> Unit)?) {
         this.onEmpty = callback
     }
 
@@ -1836,7 +1836,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param filter The [SearchFilter] to be initially selected.
      */
-    fun setInitialSearchFilter(filter: SearchFilter?) {
+    public fun setInitialSearchFilter(filter: SearchFilter?) {
         if (filter == null) return
 
         if (searchFilters.isEmpty()) {
@@ -1859,7 +1859,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param scopes List of [SearchScope] enums indicating where to search.
      */
-    fun setSearchIn(scopes: List<SearchScope>) {
+    public fun setSearchIn(scopes: List<SearchScope>) {
         setSearchScopes(scopes)
     }
 
@@ -1870,7 +1870,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param visibility The visibility state (e.g., [View.VISIBLE], [View.GONE]).
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         hideEmptyState = visibility != View.VISIBLE
     }
 
@@ -1881,7 +1881,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param visibility The visibility state (e.g., [View.VISIBLE], [View.GONE]).
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         hideErrorState = visibility != View.VISIBLE
     }
 
@@ -1893,7 +1893,7 @@ class CometChatSearch @JvmOverloads constructor(
      * @param id The unique identifier (such as a group or user ID) for which the mention-all label should be set.
      * @param mentionAllLabel The custom label to display when mentioning all members.
      */
-    fun setMentionAllLabelId(id: String, mentionAllLabel: String) {
+    public fun setMentionAllLabelId(id: String, mentionAllLabel: String) {
         if (id.isNotEmpty() && mentionAllLabel.isNotEmpty()) {
             this.mentionAllId = id
             this.mentionAllLabel = mentionAllLabel
@@ -1906,7 +1906,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param text The hint text to display in the search bar.
      */
-    fun setHintText(text: String) {
+    public fun setHintText(text: String) {
         binding.searchInput.hint = text
     }
 
@@ -1917,7 +1917,7 @@ class CometChatSearch @JvmOverloads constructor(
      *
      * @param formatters The list of [CometChatTextFormatter] instances to apply.
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         textFormatters.clear()
         textFormatters.addAll(formatters)
         conversationsAdapter.setTextFormatters(textFormatters)
@@ -1929,7 +1929,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Clears the search and resets to initial state.
      */
-    fun clear() {
+    public fun clear() {
         binding.searchInput.text?.clear()
         currentSearchText = ""
         viewModel?.clear()
@@ -1938,7 +1938,7 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Performs a search with the given text.
      */
-    fun search(text: String) {
+    public fun search(text: String) {
         binding.searchInput.setText(text)
         currentSearchText = text
         viewModel?.searchConversationsAndMessages(text, viewModel?.selectedFilters?.value ?: emptySet())
@@ -1947,22 +1947,22 @@ class CometChatSearch @JvmOverloads constructor(
     /**
      * Gets the current search text.
      */
-    fun getSearchText(): String = currentSearchText
+    public fun getSearchText(): String = currentSearchText
 
     /**
      * Gets the current selected filters.
      */
-    fun getSelectedFilters(): Set<SearchFilter> = viewModel?.selectedFilters?.value ?: emptySet()
+    public fun getSelectedFilters(): Set<SearchFilter> = viewModel?.selectedFilters?.value ?: emptySet()
 
     /**
      * Gets the current conversations list.
      */
-    fun getConversations(): List<Conversation> = viewModel?.conversations?.value ?: emptyList()
+    public fun getConversations(): List<Conversation> = viewModel?.conversations?.value ?: emptyList()
 
     /**
      * Gets the current messages list.
      */
-    fun getMessages(): List<BaseMessage> = viewModel?.messages?.value ?: emptyList()
+    public fun getMessages(): List<BaseMessage> = viewModel?.messages?.value ?: emptyList()
 
     // ==================== Programmatic Style Setters ====================
 
@@ -2058,213 +2058,213 @@ class CometChatSearch @JvmOverloads constructor(
     // --- Conversation Item Setters ---
 
     /** Sets the background color for conversation items. */
-    fun setConversationItemBackgroundColor(@ColorInt color: Int) {
+    public fun setConversationItemBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setConversationItemBackgroundColor(color) }
     }
 
     /** Sets the text color for conversation titles. */
-    fun setConversationTitleTextColor(@ColorInt color: Int) {
+    public fun setConversationTitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setConversationTitleTextColor(color) }
     }
 
     /** Sets the text appearance for conversation titles. */
-    fun setConversationTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setConversationTitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setConversationTitleTextAppearance(appearance) }
     }
 
     /** Sets the text color for conversation subtitles. */
-    fun setConversationSubtitleTextColor(@ColorInt color: Int) {
+    public fun setConversationSubtitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setConversationSubtitleTextColor(color) }
     }
 
     /** Sets the text appearance for conversation subtitles. */
-    fun setConversationSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setConversationSubtitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setConversationSubtitleTextAppearance(appearance) }
     }
 
     /** Sets the text color for conversation timestamps. */
-    fun setConversationTimestampTextColor(@ColorInt color: Int) {
+    public fun setConversationTimestampTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setConversationTimestampTextColor(color) }
     }
 
     /** Sets the text appearance for conversation timestamps. */
-    fun setConversationTimestampTextAppearance(@StyleRes appearance: Int) {
+    public fun setConversationTimestampTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setConversationTimestampTextAppearance(appearance) }
     }
 
     // --- Message Item Setters ---
 
     /** Sets the background color for message items. */
-    fun setMessageItemBackgroundColor(@ColorInt color: Int) {
+    public fun setMessageItemBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setMessageItemBackgroundColor(color) }
     }
 
     /** Sets the text color for message titles. */
-    fun setMessageTitleTextColor(@ColorInt color: Int) {
+    public fun setMessageTitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setMessageTitleTextColor(color) }
     }
 
     /** Sets the text appearance for message titles. */
-    fun setMessageTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessageTitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setMessageTitleTextAppearance(appearance) }
     }
 
     /** Sets the text color for message subtitles. */
-    fun setMessageSubtitleTextColor(@ColorInt color: Int) {
+    public fun setMessageSubtitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setMessageSubtitleTextColor(color) }
     }
 
     /** Sets the text appearance for message subtitles. */
-    fun setMessageSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessageSubtitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setMessageSubtitleTextAppearance(appearance) }
     }
 
     /** Sets the text color for message timestamps. */
-    fun setMessageTimestampTextColor(@ColorInt color: Int) {
+    public fun setMessageTimestampTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setMessageTimestampTextColor(color) }
     }
 
     /** Sets the text appearance for message timestamps. */
-    fun setMessageTimestampTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessageTimestampTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setMessageTimestampTextAppearance(appearance) }
     }
 
     /** Sets the text color for message links. */
-    fun setMessageLinkTextColor(@ColorInt color: Int) {
+    public fun setMessageLinkTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setMessageLinkTextColor(color) }
     }
 
     /** Sets the text appearance for message links. */
-    fun setMessageLinkTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessageLinkTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setMessageLinkTextAppearance(appearance) }
     }
 
     // --- Search Bar Setters ---
 
     /** Sets the background color of the search bar. */
-    fun setSearchBarBackgroundColor(@ColorInt color: Int) {
+    public fun setSearchBarBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setSearchBarBackgroundColor(color) }
     }
 
     /** Sets the stroke width of the search bar. */
-    fun setSearchBarStrokeWidth(width: Int) {
+    public fun setSearchBarStrokeWidth(width: Int) {
         updateStyleAndApply { setSearchBarStrokeWidth(width.toFloat()) }
     }
 
     /** Sets the stroke color of the search bar. */
-    fun setSearchBarStrokeColor(@ColorInt color: Int) {
+    public fun setSearchBarStrokeColor(@ColorInt color: Int) {
         updateStyleAndApply { setSearchBarStrokeColor(color) }
     }
 
     /** Sets the corner radius of the search bar. */
-    fun setSearchBarCornerRadius(radius: Int) {
+    public fun setSearchBarCornerRadius(radius: Int) {
         updateStyleAndApply { setSearchBarCornerRadius(radius.toFloat()) }
     }
 
     /** Sets the text color of the search bar input. */
-    fun setSearchBarTextColor(@ColorInt color: Int) {
+    public fun setSearchBarTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setSearchBarTextColor(color) }
     }
 
     /** Sets the text appearance of the search bar input. */
-    fun setSearchBarTextAppearance(@StyleRes appearance: Int) {
+    public fun setSearchBarTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setSearchBarTextAppearance(appearance) }
     }
 
     /** Sets the hint text color of the search bar input. */
-    fun setSearchBarHintTextColor(@ColorInt color: Int) {
+    public fun setSearchBarHintTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setSearchBarHintTextColor(color) }
     }
 
     // --- Icon Setters ---
 
     /** Sets the back icon drawable. */
-    fun setBackIcon(drawable: Drawable) {
+    public fun setBackIcon(drawable: Drawable) {
         updateStyleAndApply { setBackIcon(drawable) }
     }
 
     /** Sets the back icon tint color. */
-    fun setBackIconTint(@ColorInt color: Int) {
+    public fun setBackIconTint(@ColorInt color: Int) {
         updateStyleAndApply { setBackIconTint(color) }
     }
 
     /** Sets the clear icon drawable. */
-    fun setClearIcon(drawable: Drawable) {
+    public fun setClearIcon(drawable: Drawable) {
         updateStyleAndApply { setClearIcon(drawable) }
     }
 
     /** Sets the clear icon tint color. */
-    fun setClearIconTint(@ColorInt color: Int) {
+    public fun setClearIconTint(@ColorInt color: Int) {
         updateStyleAndApply { setClearIconTint(color) }
     }
 
     /** Sets the search icon drawable. */
-    fun setSearchIcon(drawable: Drawable) {
+    public fun setSearchIcon(drawable: Drawable) {
         updateStyleAndApply { setSearchIcon(drawable) }
     }
 
     /** Sets the search icon tint color. */
-    fun setSearchIconTint(@ColorInt color: Int) {
+    public fun setSearchIconTint(@ColorInt color: Int) {
         updateStyleAndApply { setSearchIconTint(color) }
     }
 
     // --- Section Header Setters ---
 
     /** Sets the text color for section headers. */
-    fun setSectionHeaderTextColor(@ColorInt color: Int) {
+    public fun setSectionHeaderTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setSectionHeaderTextColor(color) }
     }
 
     /** Sets the text appearance for section headers. */
-    fun setSectionHeaderTextAppearance(@StyleRes appearance: Int) {
+    public fun setSectionHeaderTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setSectionHeaderTextAppearance(appearance) }
     }
 
     /** Sets the background color for section headers. */
-    fun setSectionHeaderBackgroundColor(@ColorInt color: Int) {
+    public fun setSectionHeaderBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setSectionHeaderBackgroundColor(color) }
     }
 
     // --- See More Setters ---
 
     /** Sets the text color for the "See More" button. */
-    fun setSeeMoreTextColor(@ColorInt color: Int) {
+    public fun setSeeMoreTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setSeeMoreTextColor(color) }
     }
 
     /** Sets the text appearance for the "See More" button. */
-    fun setSeeMoreTextAppearance(@StyleRes appearance: Int) {
+    public fun setSeeMoreTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setSeeMoreTextAppearance(appearance) }
     }
 
     // --- Date Separator Setters ---
 
     /** Sets the text color for date separators. */
-    fun setDateSeparatorTextColor(@ColorInt color: Int) {
+    public fun setDateSeparatorTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setDateSeparatorTextColor(color) }
     }
 
     /** Sets the text appearance for date separators. */
-    fun setDateSeparatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setDateSeparatorTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setDateSeparatorTextAppearance(appearance) }
     }
 
     /** Sets the background color for date separators. */
-    fun setDateSeparatorBackgroundColor(@ColorInt color: Int) {
+    public fun setDateSeparatorBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setDateSeparatorBackgroundColor(color) }
     }
 
     // --- Component Style Setters ---
 
     /** Sets the avatar style resource. */
-    fun setAvatarStyle(@StyleRes style: Int) {
+    public fun setAvatarStyle(@StyleRes style: Int) {
         // Store the style res for future use; avatar style in CometChatSearchStyle uses CometChatAvatarStyle object
         // Apply via adapter's style propagation
         conversationsAdapter.notifyDataSetChanged()
     }
 
     /** Sets the badge style resource. */
-    fun setBadgeStyle(@StyleRes style: Int) {
+    public fun setBadgeStyle(@StyleRes style: Int) {
         // Store the style res for future use; badge style in CometChatSearchStyle uses CometChatBadgeCountStyle object
         // Apply via adapter's style propagation
         conversationsAdapter.notifyDataSetChanged()
@@ -2273,55 +2273,55 @@ class CometChatSearch @JvmOverloads constructor(
     // --- Filter Chip Setters ---
 
     /** Sets the background color for unselected filter chips. */
-    fun setFilterChipBackgroundColor(@ColorInt color: Int) {
+    public fun setFilterChipBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipBackgroundColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the background color for selected filter chips. */
-    fun setFilterChipSelectedBackgroundColor(@ColorInt color: Int) {
+    public fun setFilterChipSelectedBackgroundColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipSelectedBackgroundColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the text color for unselected filter chips. */
-    fun setFilterChipTextColor(@ColorInt color: Int) {
+    public fun setFilterChipTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipTextColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the text color for selected filter chips. */
-    fun setFilterChipSelectedTextColor(@ColorInt color: Int) {
+    public fun setFilterChipSelectedTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipSelectedTextColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the text appearance for filter chips. */
-    fun setFilterChipTextAppearance(@StyleRes appearance: Int) {
+    public fun setFilterChipTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setFilterChipTextAppearance(appearance) }
         refreshChipSelectionState()
     }
 
     /** Sets the stroke color for unselected filter chips. */
-    fun setFilterChipStrokeColor(@ColorInt color: Int) {
+    public fun setFilterChipStrokeColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipStrokeColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the stroke color for selected filter chips. */
-    fun setFilterChipSelectedStrokeColor(@ColorInt color: Int) {
+    public fun setFilterChipSelectedStrokeColor(@ColorInt color: Int) {
         updateStyleAndApply { setFilterChipSelectedStrokeColor(color) }
         refreshChipSelectionState()
     }
 
     /** Sets the stroke width for filter chips. */
-    fun setFilterChipStrokeWidth(width: Int) {
+    public fun setFilterChipStrokeWidth(width: Int) {
         updateStyleAndApply { setFilterChipStrokeWidth(width.toFloat()) }
         refreshChipSelectionState()
     }
 
     /** Sets the corner radius for filter chips. */
-    fun setFilterChipCornerRadius(radius: Float) {
+    public fun setFilterChipCornerRadius(radius: Float) {
         updateStyleAndApply { setFilterChipCornerRadius(radius) }
         refreshChipSelectionState()
     }
@@ -2329,116 +2329,116 @@ class CometChatSearch @JvmOverloads constructor(
     // --- Empty State Setters ---
 
     /** Sets the text color for the empty state title. */
-    fun setEmptyStateTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setEmptyStateTextColor(color) }
     }
 
     /** Sets the text appearance for the empty state title. */
-    fun setEmptyStateTextAppearance(@StyleRes appearance: Int) {
+    public fun setEmptyStateTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setEmptyStateTextAppearance(appearance) }
     }
 
     /** Sets the text color for the empty state subtitle. */
-    fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setEmptyStateSubtitleTextColor(color) }
     }
 
     /** Sets the text appearance for the empty state subtitle. */
-    fun setEmptyStateSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setEmptyStateSubtitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setEmptyStateSubtitleTextAppearance(appearance) }
     }
 
     /** Sets the icon for the empty state. */
-    fun setEmptyStateIcon(drawable: Drawable) {
+    public fun setEmptyStateIcon(drawable: Drawable) {
         updateStyleAndApply { setEmptyStateIcon(drawable) }
     }
 
     /** Sets the icon tint for the empty state. */
-    fun setEmptyStateIconTint(@ColorInt color: Int) {
+    public fun setEmptyStateIconTint(@ColorInt color: Int) {
         updateStyleAndApply { setEmptyStateIconTint(color) }
     }
 
     // --- Error State Setters ---
 
     /** Sets the text color for the error state title. */
-    fun setErrorStateTextColor(@ColorInt color: Int) {
+    public fun setErrorStateTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setErrorStateTextColor(color) }
     }
 
     /** Sets the text appearance for the error state title. */
-    fun setErrorStateTextAppearance(@StyleRes appearance: Int) {
+    public fun setErrorStateTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setErrorStateTextAppearance(appearance) }
     }
 
     /** Sets the text color for the error state subtitle. */
-    fun setErrorStateSubtitleTextColor(@ColorInt color: Int) {
+    public fun setErrorStateSubtitleTextColor(@ColorInt color: Int) {
         updateStyleAndApply { setErrorStateSubtitleTextColor(color) }
     }
 
     /** Sets the text appearance for the error state subtitle. */
-    fun setErrorStateSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setErrorStateSubtitleTextAppearance(@StyleRes appearance: Int) {
         updateStyleAndApply { setErrorStateSubtitleTextAppearance(appearance) }
     }
 
     /** Sets the icon for the error state. */
-    fun setErrorStateIcon(drawable: Drawable) {
+    public fun setErrorStateIcon(drawable: Drawable) {
         updateStyleAndApply { setErrorStateIcon(drawable) }
     }
 
     /** Sets the icon tint for the error state. */
-    fun setErrorStateIconTint(@ColorInt color: Int) {
+    public fun setErrorStateIconTint(@ColorInt color: Int) {
         updateStyleAndApply { setErrorStateIconTint(color) }
     }
 
     // ==================== Reference API Name Aliases ====================
 
     /** Alias for [setConversationItemViewListener] matching the reference API name. */
-    fun setConversationItemView(listener: SearchConversationsViewHolderListener?) {
+    public fun setConversationItemView(listener: SearchConversationsViewHolderListener?) {
         setConversationItemViewListener(listener)
     }
 
     /** Alias for [setTextMessageItemViewListener] matching the reference API name. */
-    fun setTextMessageItemView(listener: SearchMessagesViewHolderListener<TextMessage>?) {
+    public fun setTextMessageItemView(listener: SearchMessagesViewHolderListener<TextMessage>?) {
         setTextMessageItemViewListener(listener)
     }
 
     /** Alias for [setImageMessageItemViewListener] matching the reference API name. */
-    fun setImageMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setImageMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         setImageMessageItemViewListener(listener)
     }
 
     /** Alias for [setVideoMessageItemViewListener] matching the reference API name. */
-    fun setVideoMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setVideoMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         setVideoMessageItemViewListener(listener)
     }
 
     /** Alias for [setAudioMessageItemViewListener] matching the reference API name. */
-    fun setAudioMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setAudioMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         setAudioMessageItemViewListener(listener)
     }
 
     /** Alias for [setDocumentMessageItemViewListener] matching the reference API name. */
-    fun setDocumentMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
+    public fun setDocumentMessageItemView(listener: SearchMessagesViewHolderListener<MediaMessage>?) {
         setDocumentMessageItemViewListener(listener)
     }
 
     /** Alias for [setLinkMessageItemViewListener] matching the reference API name. */
-    fun setLinkMessageItemView(listener: SearchMessagesViewHolderListener<TextMessage>?) {
+    public fun setLinkMessageItemView(listener: SearchMessagesViewHolderListener<TextMessage>?) {
         setLinkMessageItemViewListener(listener)
     }
 
     /** Alias for [setOnConversationClick] matching the reference API name. */
-    fun setOnConversationClicked(callback: ((Conversation) -> Unit)?) {
+    public fun setOnConversationClicked(callback: ((Conversation) -> Unit)?) {
         setOnConversationClick(callback)
     }
 
     /** Alias for [setOnMessageClick] matching the reference API name. */
-    fun setOnMessageClicked(callback: ((BaseMessage) -> Unit)?) {
+    public fun setOnMessageClicked(callback: ((BaseMessage) -> Unit)?) {
         setOnMessageClick(callback)
     }
 
     /** Alias for [setOnBackPress] matching the reference API name. */
-    fun setOnBackPressListener(callback: (() -> Unit)?) {
+    public fun setOnBackPressListener(callback: (() -> Unit)?) {
         setOnBackPress(callback)
     }
 
@@ -2448,7 +2448,7 @@ class CometChatSearch @JvmOverloads constructor(
      * Sets a custom initial view from a layout resource.
      * @param layoutRes The layout resource ID to inflate.
      */
-    fun setInitialView(@LayoutRes layoutRes: Int) {
+    public fun setInitialView(@LayoutRes layoutRes: Int) {
         if (layoutRes != 0) {
             try {
                 val view = LayoutInflater.from(context).inflate(layoutRes, this, false)
@@ -2463,7 +2463,7 @@ class CometChatSearch @JvmOverloads constructor(
      * Sets a custom empty view from a layout resource.
      * @param layoutRes The layout resource ID to inflate.
      */
-    fun setEmptyView(@LayoutRes layoutRes: Int) {
+    public fun setEmptyView(@LayoutRes layoutRes: Int) {
         if (layoutRes != 0) {
             try {
                 val view = LayoutInflater.from(context).inflate(layoutRes, this, false)

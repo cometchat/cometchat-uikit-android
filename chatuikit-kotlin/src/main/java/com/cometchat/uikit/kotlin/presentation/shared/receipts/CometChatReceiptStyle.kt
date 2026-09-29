@@ -11,7 +11,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatReceipt component.
  */
-data class CometChatReceiptStyle(
+public data class CometChatReceiptStyle(
     val waitIcon: Drawable? = null,
     val sentIcon: Drawable? = null,
     val deliveredIcon: Drawable? = null,
@@ -24,14 +24,14 @@ data class CometChatReceiptStyle(
     @ColorInt val errorIconTint: Int = 0,
     @Dimension val iconSize: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatMessageReceiptStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatReceiptStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatReceiptStyle {
+        public fun default(context: Context): CometChatReceiptStyle {
             return extractFromThemeStyle(context, R.attr.cometchatMessageReceiptStyle)
         }
 
@@ -58,7 +58,7 @@ data class CometChatReceiptStyle(
          * @param styleResId The style resource ID to extract from (0 for defaults only)
          * @return A CometChatReceiptStyle with values from the style resource or defaults
          */
-        fun fromStyleResource(context: Context, styleResId: Int): CometChatReceiptStyle {
+        public fun fromStyleResource(context: Context, styleResId: Int): CometChatReceiptStyle {
             return extractFromStyleResource(context, styleResId)
         }
 
@@ -91,7 +91,7 @@ data class CometChatReceiptStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatReceiptStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReceiptStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReceiptStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

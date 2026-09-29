@@ -61,13 +61,13 @@ import kotlinx.coroutines.launch
  * ongoingCall.startCall()
  * ```
  */
-class CometChatOngoingCall @JvmOverloads constructor(
+public class CometChatOngoingCall @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(context, attrs, defStyleAttr), DefaultLifecycleObserver {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatOngoingCall"
     }
 
@@ -173,7 +173,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param sessionId The unique identifier for the call session
      */
-    fun setSessionId(sessionId: String) {
+    public fun setSessionId(sessionId: String) {
         viewModel?.setSessionId(sessionId)
     }
 
@@ -184,7 +184,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param callType The type of call ("audio" or "video")
      */
-    fun setCallType(callType: String) {
+    public fun setCallType(callType: String) {
         viewModel?.setCallType(callType)
     }
 
@@ -195,7 +195,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param workFlow DEFAULT for 1:1 calls, MEETING for group calls
      */
-    fun setCallWorkFlow(workFlow: CallWorkFlow) {
+    public fun setCallWorkFlow(workFlow: CallWorkFlow) {
         viewModel?.setCallWorkFlow(workFlow)
     }
 
@@ -206,7 +206,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param builder The CometChatCalls.SessionSettingsBuilder to use for session configuration
      */
-    fun setSessionSettingsBuilder(builder: CometChatCalls.SessionSettingsBuilder?) {
+    public fun setSessionSettingsBuilder(builder: CometChatCalls.SessionSettingsBuilder?) {
         viewModel?.setSessionSettingsBuilder(builder)
     }
 
@@ -216,7 +216,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * **Validates: Requirements 3.1-3.8**
      */
-    fun startCall() {
+    public fun startCall() {
         viewModel?.startCall(callView)
     }
 
@@ -227,7 +227,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param onError The error callback
      */
-    fun setOnError(onError: ((CometChatException) -> Unit)?) {
+    public fun setOnError(onError: ((CometChatException) -> Unit)?) {
         this.onError = onError
     }
 
@@ -236,7 +236,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @return The current error callback
      */
-    fun getOnError(): ((CometChatException) -> Unit)? = onError
+    public fun getOnError(): ((CometChatException) -> Unit)? = onError
 
     /**
      * Sets the style for this component.
@@ -245,7 +245,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param style The CometChatOngoingCallStyle to apply
      */
-    fun setStyle(style: CometChatOngoingCallStyle) {
+    public fun setStyle(style: CometChatOngoingCallStyle) {
         this.style = style
         applyStyle()
     }
@@ -255,21 +255,21 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @return The current CometChatOngoingCallStyle
      */
-    fun getStyle(): CometChatOngoingCallStyle = style
+    public fun getStyle(): CometChatOngoingCallStyle = style
 
     /**
      * Gets the ViewModel associated with this component.
      *
      * @return The CometChatOngoingCallViewModel instance
      */
-    fun getViewModel(): CometChatOngoingCallViewModel? = viewModel
+    public fun getViewModel(): CometChatOngoingCallViewModel? = viewModel
 
     /**
      * Gets the call view container.
      *
      * @return The RelativeLayout container for the call UI
      */
-    fun getCallView(): RelativeLayout = callView
+    public fun getCallView(): RelativeLayout = callView
 
     // ==================== Lifecycle Methods ====================
 
@@ -326,7 +326,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * **Validates: Requirements 4.1, 4.2, 5.1, 5.2, 5.3, 14.5, 16.4**
      */
-    fun attachObservers() {
+    public fun attachObservers() {
         val scope = viewScope ?: return
         val vm = viewModel ?: return
 
@@ -350,7 +350,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * **Validates: Requirement 11.3, 11.4**
      */
-    fun disposeObservers() {
+    public fun disposeObservers() {
         uiStateJob?.cancel()
         eventsJob?.cancel()
         uiStateJob = null
@@ -449,10 +449,10 @@ class CometChatOngoingCall @JvmOverloads constructor(
      * **Validates: Requirement 5.3**
      */
     private fun setStatusBarColor() {
-        if (activity != null && !activity!!.isFinishing && !activity!!.isDestroyed) {
-            val callingBackgroundColor = ContextCompat.getColor(context, R.color.cometchat_calling_background)
-            activity!!.window.statusBarColor = callingBackgroundColor
-        }
+        // ENG-38657 (T5): intentionally empty. window.statusBarColor is a no-op
+        // on targetSdk 35+ (edge-to-edge is mandatory; the bar is transparent and
+        // shows whatever the layout draws beneath it). The call screen's own
+        // full-screen background provides the color.
     }
 
     /**
@@ -463,7 +463,7 @@ class CometChatOngoingCall @JvmOverloads constructor(
      *
      * @param callWorkFlow The current call workflow
      */
-    fun handlePiPExit(callWorkFlow: CallWorkFlow) {
+    public fun handlePiPExit(callWorkFlow: CallWorkFlow) {
         viewModel?.removeListeners()
         if (callWorkFlow != CallWorkFlow.MEETING) {
             viewModel?.endCall()

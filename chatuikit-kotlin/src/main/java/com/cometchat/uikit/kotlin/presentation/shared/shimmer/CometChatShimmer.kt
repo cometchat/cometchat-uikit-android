@@ -18,77 +18,77 @@ import kotlin.math.min
  * CometChatShimmer is a configuration class for shimmer effects.
  * It defines the appearance and animation properties of the shimmer effect.
  */
-class CometChatShimmer internal constructor() {
+public class CometChatShimmer internal constructor() {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatShimmer::class.java.simpleName
         private const val COMPONENT_COUNT = 4
     }
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(Shape.LINEAR, Shape.RADIAL)
-    annotation class Shape {
-        companion object {
-            const val LINEAR = 0
-            const val RADIAL = 1
+    public annotation class Shape {
+        public companion object {
+            public const val LINEAR: Int = 0
+            public const val RADIAL: Int = 1
         }
     }
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(Direction.LEFT_TO_RIGHT, Direction.TOP_TO_BOTTOM, Direction.RIGHT_TO_LEFT, Direction.BOTTOM_TO_TOP)
-    annotation class Direction {
-        companion object {
-            const val LEFT_TO_RIGHT = 0
-            const val TOP_TO_BOTTOM = 1
-            const val RIGHT_TO_LEFT = 2
-            const val BOTTOM_TO_TOP = 3
+    public annotation class Direction {
+        public companion object {
+            public const val LEFT_TO_RIGHT: Int = 0
+            public const val TOP_TO_BOTTOM: Int = 1
+            public const val RIGHT_TO_LEFT: Int = 2
+            public const val BOTTOM_TO_TOP: Int = 3
         }
     }
 
-    val positions = FloatArray(COMPONENT_COUNT)
-    val colors = IntArray(COMPONENT_COUNT)
-    val bounds = RectF()
+    public val positions: FloatArray = FloatArray(COMPONENT_COUNT)
+    public val colors: IntArray = IntArray(COMPONENT_COUNT)
+    public val bounds: RectF = RectF()
 
     @Direction
-    var direction: Int = Direction.LEFT_TO_RIGHT
+    public var direction: Int = Direction.LEFT_TO_RIGHT
 
     @ColorInt
-    var highlightColor: Int = Color.WHITE
+    public var highlightColor: Int = Color.WHITE
 
     @ColorInt
-    var baseColor: Int = 0x4cffffff
+    public var baseColor: Int = 0x4cffffff
 
     @Shape
-    var shape: Int = Shape.LINEAR
+    public var shape: Int = Shape.LINEAR
 
-    var fixedWidth: Int = 0
-    var fixedHeight: Int = 0
+    public var fixedWidth: Int = 0
+    public var fixedHeight: Int = 0
 
-    var widthRatio: Float = 1f
-    var heightRatio: Float = 1f
-    var intensity: Float = 0f
-    var dropOff: Float = 0.5f
-    var tilt: Float = 20f
+    public var widthRatio: Float = 1f
+    public var heightRatio: Float = 1f
+    public var intensity: Float = 0f
+    public var dropOff: Float = 0.5f
+    public var tilt: Float = 20f
 
-    var clipToChildren: Boolean = true
-    var autoStart: Boolean = true
-    var alphaShimmer: Boolean = true
+    public var clipToChildren: Boolean = true
+    public var autoStart: Boolean = true
+    public var alphaShimmer: Boolean = true
 
-    var repeatCount: Int = ValueAnimator.INFINITE
-    var repeatMode: Int = ValueAnimator.RESTART
-    var animationDuration: Long = 1000L
-    var repeatDelay: Long = 0L
-    var startDelay: Long = 0L
+    public var repeatCount: Int = ValueAnimator.INFINITE
+    public var repeatMode: Int = ValueAnimator.RESTART
+    public var animationDuration: Long = 1000L
+    public var repeatDelay: Long = 0L
+    public var startDelay: Long = 0L
 
-    fun width(width: Int): Int {
+    public fun width(width: Int): Int {
         return if (fixedWidth > 0) fixedWidth else (widthRatio * width).toInt()
     }
 
-    fun height(height: Int): Int {
+    public fun height(height: Int): Int {
         return if (fixedHeight > 0) fixedHeight else (heightRatio * height).toInt()
     }
 
-    fun updateColors() {
+    public fun updateColors() {
         when (shape) {
             Shape.RADIAL -> {
                 colors[0] = highlightColor
@@ -105,7 +105,7 @@ class CometChatShimmer internal constructor() {
         }
     }
 
-    fun updatePositions() {
+    public fun updatePositions() {
         when (shape) {
             Shape.RADIAL -> {
                 positions[0] = 0f
@@ -122,7 +122,7 @@ class CometChatShimmer internal constructor() {
         }
     }
 
-    fun updateBounds(viewWidth: Int, viewHeight: Int) {
+    public fun updateBounds(viewWidth: Int, viewHeight: Int) {
         val magnitude = max(viewWidth, viewHeight)
         val rad = Math.PI / 2f - Math.toRadians((tilt % 90f).toDouble())
         val hyp = magnitude / kotlin.math.sin(rad)
@@ -138,17 +138,17 @@ class CometChatShimmer internal constructor() {
     /**
      * Abstract builder class for creating CometChatShimmer instances.
      */
-    abstract class Builder<T : Builder<T>> {
-        protected val shimmer = CometChatShimmer()
+    abstract public class Builder<T : Builder<T>> {
+        protected val shimmer: CometChatShimmer = CometChatShimmer()
 
         protected abstract fun getThis(): T
 
-        fun consumeAttributes(context: Context, attrs: AttributeSet?): T {
+        public fun consumeAttributes(context: Context, attrs: AttributeSet?): T {
             val a = context.obtainStyledAttributes(attrs, R.styleable.CometChatShimmerFrameLayout, 0, 0)
             return consumeAttributes(a)
         }
 
-        open fun consumeAttributes(a: TypedArray): T {
+        open public fun consumeAttributes(a: TypedArray): T {
             if (a.hasValue(R.styleable.CometChatShimmerFrameLayout_cometchatShimmerClipToChildren)) {
                 setClipToChildren(a.getBoolean(R.styleable.CometChatShimmerFrameLayout_cometchatShimmerClipToChildren, shimmer.clipToChildren))
             }
@@ -214,7 +214,7 @@ class CometChatShimmer internal constructor() {
             return getThis()
         }
 
-        fun copyFrom(other: CometChatShimmer): T {
+        public fun copyFrom(other: CometChatShimmer): T {
             setDirection(other.direction)
             setShape(other.shape)
             setFixedWidth(other.fixedWidth)
@@ -236,108 +236,108 @@ class CometChatShimmer internal constructor() {
             return getThis()
         }
 
-        fun setDirection(@Direction direction: Int): T {
+        public fun setDirection(@Direction direction: Int): T {
             shimmer.direction = direction
             return getThis()
         }
 
-        fun setShape(@Shape shape: Int): T {
+        public fun setShape(@Shape shape: Int): T {
             shimmer.shape = shape
             return getThis()
         }
 
-        fun setFixedWidth(@Px fixedWidth: Int): T {
+        public fun setFixedWidth(@Px fixedWidth: Int): T {
             require(fixedWidth >= 0) { "Given invalid width: $fixedWidth" }
             shimmer.fixedWidth = fixedWidth
             return getThis()
         }
 
-        fun setFixedHeight(@Px fixedHeight: Int): T {
+        public fun setFixedHeight(@Px fixedHeight: Int): T {
             require(fixedHeight >= 0) { "Given invalid height: $fixedHeight" }
             shimmer.fixedHeight = fixedHeight
             return getThis()
         }
 
-        fun setWidthRatio(widthRatio: Float): T {
+        public fun setWidthRatio(widthRatio: Float): T {
             require(widthRatio >= 0f) { "Given invalid width ratio: $widthRatio" }
             shimmer.widthRatio = widthRatio
             return getThis()
         }
 
-        fun setHeightRatio(heightRatio: Float): T {
+        public fun setHeightRatio(heightRatio: Float): T {
             require(heightRatio >= 0f) { "Given invalid height ratio: $heightRatio" }
             shimmer.heightRatio = heightRatio
             return getThis()
         }
 
-        fun setIntensity(intensity: Float): T {
+        public fun setIntensity(intensity: Float): T {
             require(intensity >= 0f) { "Given invalid intensity value: $intensity" }
             shimmer.intensity = intensity
             return getThis()
         }
 
-        fun setDropOff(dropOff: Float): T {
+        public fun setDropOff(dropOff: Float): T {
             require(dropOff >= 0f) { "Given invalid dropOff value: $dropOff" }
             shimmer.dropOff = dropOff
             return getThis()
         }
 
-        fun setTilt(tilt: Float): T {
+        public fun setTilt(tilt: Float): T {
             shimmer.tilt = tilt
             return getThis()
         }
 
-        fun setBaseAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
+        public fun setBaseAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
             val intAlpha = (clamp(0f, 1f, alpha) * 255f).toInt()
             shimmer.baseColor = (intAlpha shl 24) or (shimmer.baseColor and 0x00FFFFFF)
             return getThis()
         }
 
-        fun setHighlightAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
+        public fun setHighlightAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
             val intAlpha = (clamp(0f, 1f, alpha) * 255f).toInt()
             shimmer.highlightColor = (intAlpha shl 24) or (shimmer.highlightColor and 0x00FFFFFF)
             return getThis()
         }
 
-        fun setClipToChildren(status: Boolean): T {
+        public fun setClipToChildren(status: Boolean): T {
             shimmer.clipToChildren = status
             return getThis()
         }
 
-        fun setAutoStart(status: Boolean): T {
+        public fun setAutoStart(status: Boolean): T {
             shimmer.autoStart = status
             return getThis()
         }
 
-        fun setRepeatCount(repeatCount: Int): T {
+        public fun setRepeatCount(repeatCount: Int): T {
             shimmer.repeatCount = repeatCount
             return getThis()
         }
 
-        fun setRepeatMode(mode: Int): T {
+        public fun setRepeatMode(mode: Int): T {
             shimmer.repeatMode = mode
             return getThis()
         }
 
-        fun setRepeatDelay(millis: Long): T {
+        public fun setRepeatDelay(millis: Long): T {
             require(millis >= 0) { "Given a negative repeat delay: $millis" }
             shimmer.repeatDelay = millis
             return getThis()
         }
 
-        fun setStartDelay(millis: Long): T {
+        public fun setStartDelay(millis: Long): T {
             require(millis >= 0) { "Given a negative start delay: $millis" }
             shimmer.startDelay = millis
             return getThis()
         }
 
-        fun setDuration(millis: Long): T {
+        public fun setDuration(millis: Long): T {
             require(millis >= 0) { "Given a negative duration: $millis" }
             shimmer.animationDuration = millis
             return getThis()
         }
 
-        fun build(): CometChatShimmer {
+        public fun build(): CometChatShimmer {
             shimmer.updateColors()
             shimmer.updatePositions()
             return shimmer
@@ -351,7 +351,7 @@ class CometChatShimmer internal constructor() {
     /**
      * Builder for alpha-based shimmer effects.
      */
-    class AlphaHighlightBuilder : Builder<AlphaHighlightBuilder>() {
+    public class AlphaHighlightBuilder : Builder<AlphaHighlightBuilder>() {
         init {
             shimmer.alphaShimmer = true
         }
@@ -362,17 +362,17 @@ class CometChatShimmer internal constructor() {
     /**
      * Builder for color-based shimmer effects.
      */
-    class ColorHighlightBuilder : Builder<ColorHighlightBuilder>() {
+    public class ColorHighlightBuilder : Builder<ColorHighlightBuilder>() {
         init {
             shimmer.alphaShimmer = false
         }
 
-        fun setHighlightColor(@ColorInt color: Int): ColorHighlightBuilder {
+        public fun setHighlightColor(@ColorInt color: Int): ColorHighlightBuilder {
             shimmer.highlightColor = color
             return getThis()
         }
 
-        fun setBaseColor(@ColorInt color: Int): ColorHighlightBuilder {
+        public fun setBaseColor(@ColorInt color: Int): ColorHighlightBuilder {
             shimmer.baseColor = (shimmer.baseColor and 0xFF000000.toInt()) or (color and 0x00FFFFFF)
             return getThis()
         }

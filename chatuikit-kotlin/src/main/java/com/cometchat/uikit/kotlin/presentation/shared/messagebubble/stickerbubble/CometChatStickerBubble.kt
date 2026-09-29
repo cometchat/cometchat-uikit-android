@@ -32,7 +32,7 @@ import com.google.android.material.card.MaterialCardView
  * - Error state handling
  * - Customizable styling via XML attributes or programmatically
  */
-class CometChatStickerBubble @JvmOverloads constructor(
+public class CometChatStickerBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -113,7 +113,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param message The custom message containing sticker data
      */
-    fun setMessage(message: CustomMessage?) {
+    public fun setMessage(message: CustomMessage?) {
         if (message == null) {
             setStickerUrl("")
             return
@@ -128,7 +128,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param url The URL of the sticker image
      */
-    fun setStickerUrl(url: String) {
+    public fun setStickerUrl(url: String) {
         stickerUrl = url
         loadSticker()
     }
@@ -139,7 +139,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param url The URL of the sticker image
      */
-    fun setImageUrl(url: String) {
+    public fun setImageUrl(url: String) {
         setStickerUrl(url)
     }
 
@@ -148,7 +148,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param drawable The drawable to display
      */
-    fun setDrawable(drawable: Drawable) {
+    public fun setDrawable(drawable: Drawable) {
         stickerImageView.setImageDrawable(drawable)
     }
 
@@ -157,7 +157,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param alignment The message bubble alignment (left/right)
      */
-    fun setAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
+    public fun setAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
         // Alignment is typically handled by the parent container
         // This method is provided for API compatibility
     }
@@ -167,12 +167,12 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @return The ImageView displaying the sticker
      */
-    fun getStickerImageView(): ImageView = stickerImageView
+    public fun getStickerImageView(): ImageView = stickerImageView
 
     /**
      * Gets the current sticker URL.
      */
-    fun getStickerUrl(): String = stickerUrl
+    public fun getStickerUrl(): String = stickerUrl
 
     private fun loadSticker() {
         if (stickerUrl.isEmpty()) {
@@ -203,7 +203,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param listener The click listener
      */
-    fun setOnStickerClickListener(listener: (() -> Unit)?) {
+    public fun setOnStickerClickListener(listener: (() -> Unit)?) {
         onClickListener = listener
     }
 
@@ -214,7 +214,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatStickerBubbleStyle) {
+    public fun setStyle(style: CometChatStickerBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -222,7 +222,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatStickerBubble
@@ -236,15 +236,15 @@ class CometChatStickerBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: Color.TRANSPARENT
-    fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
-    fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
-    fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
-    fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
-    fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
-    fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
-    fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
-    fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
+    public fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: Color.TRANSPARENT
+    public fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
+    public fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
+    public fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
+    public fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
+    public fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
+    public fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
+    public fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
+    public fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
 
     // ========================================
     // Setters (update style object + apply)
@@ -255,17 +255,17 @@ class CometChatStickerBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         style = style?.copy(cornerRadius = radius) ?: CometChatStickerBubbleStyle(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Float) {
+    public fun setBubbleStrokeWidth(@Dimension width: Float) {
         style = style?.copy(strokeWidth = width) ?: CometChatStickerBubbleStyle(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style?.copy(strokeColor = color) ?: CometChatStickerBubbleStyle(strokeColor = color)
         applyStrokeColor(color)
     }
@@ -280,23 +280,23 @@ class CometChatStickerBubble @JvmOverloads constructor(
         drawable?.let { applyBackgroundDrawable(it) }
     }
 
-    fun setSenderNameTextColor(@ColorInt color: Int) {
+    public fun setSenderNameTextColor(@ColorInt color: Int) {
         style = style?.copy(senderNameTextColor = color) ?: CometChatStickerBubbleStyle(senderNameTextColor = color)
     }
 
-    fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
+    public fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(senderNameTextAppearance = appearance) ?: CometChatStickerBubbleStyle(senderNameTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorTextColor(@ColorInt color: Int) {
+    public fun setThreadIndicatorTextColor(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorTextColor = color) ?: CometChatStickerBubbleStyle(threadIndicatorTextColor = color)
     }
 
-    fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(threadIndicatorTextAppearance = appearance) ?: CometChatStickerBubbleStyle(threadIndicatorTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorIconTint(@ColorInt color: Int) {
+    public fun setThreadIndicatorIconTint(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorIconTint = color) ?: CometChatStickerBubbleStyle(threadIndicatorIconTint = color)
     }
 

@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.StatusIndi
  * This component can be used standalone or within a RecyclerView for displaying group lists.
  * It supports full customization through styles and custom view slots.
  */
-class CometChatGroupsItem @JvmOverloads constructor(
+public class CometChatGroupsItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -64,7 +64,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets the group to display.
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         bindGroup()
     }
@@ -72,12 +72,12 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Gets the current group.
      */
-    fun getGroup(): Group? = group
+    public fun getGroup(): Group? = group
 
     /**
      * Sets whether this item is selected.
      */
-    fun setItemSelected(selected: Boolean) {
+    public fun setItemSelected(selected: Boolean) {
         this.isItemSelected = selected
         updateSelectionState()
     }
@@ -85,7 +85,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets the selection mode.
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         this.selectionMode = mode
         updateSelectionState()
     }
@@ -93,21 +93,21 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets the item click callback.
      */
-    fun setOnItemClick(callback: (Group) -> Unit) {
+    public fun setOnItemClick(callback: (Group) -> Unit) {
         onItemClick = callback
     }
 
     /**
      * Sets the item long click callback.
      */
-    fun setOnItemLongClick(callback: (Group) -> Unit) {
+    public fun setOnItemLongClick(callback: (Group) -> Unit) {
         onItemLongClick = callback
     }
 
     /**
      * Sets a custom leading view (replaces avatar area).
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         customLeadingView = view
         if (view != null) {
             binding.leadingViewContainer.removeAllViews()
@@ -122,7 +122,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets a custom title view (replaces group name).
      */
-    fun setTitleView(view: View?) {
+    public fun setTitleView(view: View?) {
         customTitleView = view
         if (view != null) {
             binding.titleViewContainer.removeAllViews()
@@ -136,7 +136,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets a custom subtitle view (replaces member count).
      */
-    fun setSubtitleView(view: View?) {
+    public fun setSubtitleView(view: View?) {
         customSubtitleView = view
         if (view != null) {
             binding.subtitleViewContainer.removeAllViews()
@@ -150,7 +150,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets a custom trailing view.
      */
-    fun setTrailingView(view: View?) {
+    public fun setTrailingView(view: View?) {
         customTrailingView = view
         if (view != null) {
             binding.trailingViewContainer.removeAllViews()
@@ -165,7 +165,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets whether to hide the group type indicator.
      */
-    fun setHideGroupType(hide: Boolean) {
+    public fun setHideGroupType(hide: Boolean) {
         hideGroupType = hide
         bindLeading()
     }
@@ -173,7 +173,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets whether to hide the separator.
      */
-    fun setHideSeparator(hide: Boolean) {
+    public fun setHideSeparator(hide: Boolean) {
         hideSeparator = hide
         binding.separator.visibility = if (hide) View.GONE else View.VISIBLE
     }
@@ -181,7 +181,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
     /**
      * Sets the style for this item.
      */
-    fun setStyle(style: CometChatGroupsItemStyle) {
+    public fun setStyle(style: CometChatGroupsItemStyle) {
         this.style = style
         applyStyle()
         bindGroup()
@@ -380,7 +380,7 @@ class CometChatGroupsItem @JvmOverloads constructor(
      * This method rebuilds all default views (leading, title, subtitle, trailing)
      * and re-binds the current group data.
      */
-    fun restoreDefaultLayout() {
+    public fun restoreDefaultLayout() {
         // Clear all custom views
         customLeadingView = null
         customTitleView = null

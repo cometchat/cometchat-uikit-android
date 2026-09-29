@@ -480,4 +480,15 @@
     <!-- Thread subscription option titles -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">Subscribe to thread</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Unsubscribe from thread</string>
+    <!-- ENG-38656 (X4): accessibility descriptions extracted from hardcoded literals -->
+    <string name="cometchat_a11y_back">Back</string>
+    <string name="cometchat_a11y_audio_waveform">Audio waveform</string>
+    <string name="cometchat_a11y_recording_in_progress_elapsed">Recording in progress, %1$s elapsed</string>
+    <string name="cometchat_a11y_recording_paused_at">Recording paused at %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration">Recording complete, %1$s duration</string>
+    <string name="cometchat_a11y_playing_recording">Playing recording, %1$s</string>
+    <string name="cometchat_a11y_recording_error">Recording error</string>
+    <string name="cometchat_a11y_audio_recorder">Audio recorder</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude">Audio waveform showing recording amplitude</string>
+    <string name="cometchat_a11y_waveform_playback_progress">Audio waveform showing playback progress</string>
 </resources>

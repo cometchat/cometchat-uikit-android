@@ -23,9 +23,9 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.LINK
  */
-class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
+public class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
 
-    var url: String
+    public var url: String
         private set
 
     @ColorInt
@@ -38,7 +38,7 @@ class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
     /**
      * Creates a new LinkFormatSpan with the specified URL.
      */
-    constructor(url: String) {
+    public constructor(url: String) {
         this.url = url
         this.linkColor = 0
         this.underlineEnabled = true
@@ -48,7 +48,7 @@ class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
     /**
      * Creates a new LinkFormatSpan with the specified URL and context for theme colors.
      */
-    constructor(url: String, context: Context) {
+    public constructor(url: String, context: Context) {
         this.url = url
         this.context = context
         this.linkColor = CometChatTheme.getPrimaryColor(context)
@@ -58,7 +58,7 @@ class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
     /**
      * Creates a new LinkFormatSpan with custom styling.
      */
-    constructor(url: String, @ColorInt linkColor: Int, underlineEnabled: Boolean) {
+    public constructor(url: String, @ColorInt linkColor: Int, underlineEnabled: Boolean) {
         this.url = url
         this.linkColor = linkColor
         this.underlineEnabled = underlineEnabled
@@ -101,17 +101,17 @@ class LinkFormatSpan : ClickableSpan, RichTextFormatSpan {
 
     // region Getters and Setters
 
-    fun setUrl(value: String) { url = value }
+    public fun setUrl(value: String) { url = value }
 
-    fun getLinkColor(): Int = linkColor
-    fun setLinkColor(@ColorInt color: Int) { linkColor = color }
+    public fun getLinkColor(): Int = linkColor
+    public fun setLinkColor(@ColorInt color: Int) { linkColor = color }
 
-    fun isUnderlineEnabled(): Boolean = underlineEnabled
-    fun setUnderlineEnabled(enabled: Boolean) { underlineEnabled = enabled }
+    public fun isUnderlineEnabled(): Boolean = underlineEnabled
+    public fun setUnderlineEnabled(enabled: Boolean) { underlineEnabled = enabled }
 
     // endregion
 
-    companion object {
+    public companion object {
         @ColorInt
         private const val DEFAULT_LINK_COLOR = 0xFF3D88F5.toInt()
     }

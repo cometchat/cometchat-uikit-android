@@ -22,7 +22,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * message bubble view. Common bubble properties use sentinel values and can be
  * resolved against a [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatCollaborativeBubbleStyle(
+public data class CometChatCollaborativeBubbleStyle(
     // Content-specific properties
     @StyleRes val titleTextAppearance: Int = 0,
     @ColorInt val titleTextColor: Int = 0,
@@ -59,10 +59,10 @@ data class CometChatCollaborativeBubbleStyle(
      * Resolves this style against a [CometChatMessageBubbleStyle], using the bubble style's
      * values as fallbacks for any properties set to sentinel values.
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatCollaborativeBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatCollaborativeBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to outgoing).
          *
@@ -73,7 +73,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatCollaborativeBubbleStyle with default values
          */
-        fun default(context: Context): CometChatCollaborativeBubbleStyle {
+        public fun default(context: Context): CometChatCollaborativeBubbleStyle {
             return outgoing(context)
         }
 
@@ -88,7 +88,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatCollaborativeBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatCollaborativeBubbleStyle {
+        public fun outgoing(context: Context): CometChatCollaborativeBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatOutgoingMessageBubbleStyle,
@@ -107,7 +107,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatCollaborativeBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatCollaborativeBubbleStyle {
+        public fun incoming(context: Context): CometChatCollaborativeBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatIncomingMessageBubbleStyle,
@@ -167,7 +167,7 @@ data class CometChatCollaborativeBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatCollaborativeBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCollaborativeBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCollaborativeBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray, isOutgoing = false)
             } finally {

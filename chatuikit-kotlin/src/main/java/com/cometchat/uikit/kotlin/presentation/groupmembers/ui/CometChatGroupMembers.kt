@@ -96,13 +96,13 @@ import kotlinx.coroutines.launch
  * @see CometChatGroupMembersStyle
  * @see GroupMembersAdapter
  */
-class CometChatGroupMembers @JvmOverloads constructor(
+public class CometChatGroupMembers @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatGroupMembersStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatGroupMembers::class.java.simpleName
         private const val SEARCH_DEBOUNCE_MS = 300L
     }
@@ -734,7 +734,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      * @param member The group member to select/deselect
      * @param mode The selection mode to apply
      */
-    fun selectGroupMember(member: GroupMember, mode: UIKitConstants.SelectionMode?) {
+    public fun selectGroupMember(member: GroupMember, mode: UIKitConstants.SelectionMode?) {
         if (mode == null) return
         selectionMode = mode
 
@@ -769,12 +769,12 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @return List of selected [GroupMember] objects
      */
-    fun getSelectedMembers(): List<GroupMember> = selectedMembers.keys.toList()
+    public fun getSelectedMembers(): List<GroupMember> = selectedMembers.keys.toList()
 
     /**
      * Clears all member selections and resets the toolbar selection UI.
      */
-    fun clearSelection() {
+    public fun clearSelection() {
         selectedMembers.clear()
         selectionMode = UIKitConstants.SelectionMode.NONE
         binding.toolbar.setSelectionMode(false)
@@ -788,7 +788,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      * Sets the group for which to display members.
      * This triggers fetching of group members.
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         membersAdapter.setGroup(group)
         viewModel?.setGroup(group)
@@ -798,12 +798,12 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Gets the current group.
      */
-    fun getGroup(): Group? = group
+    public fun getGroup(): Group? = group
 
     /**
      * Sets a custom request builder for fetching members.
      */
-    fun setGroupMembersRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
+    public fun setGroupMembersRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
         this.groupMembersRequestBuilder = builder
         viewModel?.setGroupMembersRequestBuilder(builder)
     }
@@ -811,7 +811,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Sets a custom request builder for searching members.
      */
-    fun setSearchRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
+    public fun setSearchRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
         this.searchRequestBuilder = builder
         viewModel?.setSearchRequestBuilder(builder)
     }
@@ -819,7 +819,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Sets the selection mode.
      */
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         selectedMembers.clear()
         membersAdapter.selectMembers(selectedMembers)
         selectionMode = mode
@@ -843,14 +843,14 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Gets the current selection mode.
      */
-    fun getSelectionMode(): UIKitConstants.SelectionMode = selectionMode
+    public fun getSelectionMode(): UIKitConstants.SelectionMode = selectionMode
 
     // ==================== Public API - Style ====================
 
     /**
      * Sets the style programmatically.
      */
-    fun setStyle(style: CometChatGroupMembersStyle) {
+    public fun setStyle(style: CometChatGroupMembersStyle) {
         this.style = style
         applyStyle()
     }
@@ -858,7 +858,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             currentStyleResId = styleRes
             val typedArray = context.theme.obtainStyledAttributes(
@@ -872,12 +872,12 @@ class CometChatGroupMembers @JvmOverloads constructor(
     /**
      * Gets the current style.
      */
-    fun getStyle(): CometChatGroupMembersStyle = style
+    public fun getStyle(): CometChatGroupMembersStyle = style
 
     /**
      * Refreshes the style from the current theme.
      */
-    fun refreshStyle() {
+    public fun refreshStyle() {
         val typedArray = if (currentStyleResId != 0) {
             context.theme.obtainStyledAttributes(
                 null, R.styleable.CometChatGroupMembers,
@@ -900,7 +900,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setToolbarVisibility(visibility: Int) {
+    public fun setToolbarVisibility(visibility: Int) {
         toolbarVisibility = visibility
         binding.toolbar.visibility = visibility
     }
@@ -910,7 +910,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconVisibility = visibility
         binding.toolbar.setBackIconVisibility(visibility)
     }
@@ -920,7 +920,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setSearchBoxVisibility(visibility: Int) {
+    public fun setSearchBoxVisibility(visibility: Int) {
         searchBoxVisibility = visibility
         binding.searchBoxLayout.visibility = visibility
     }
@@ -930,7 +930,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setSeparatorVisibility(visibility: Int) {
+    public fun setSeparatorVisibility(visibility: Int) {
         separatorVisibility = visibility
         membersAdapter.setHideSeparator(visibility != View.VISIBLE)
     }
@@ -940,7 +940,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setUserStatusVisibility(visibility: Int) {
+    public fun setUserStatusVisibility(visibility: Int) {
         userStatusVisibility = visibility
         membersAdapter.setHideUserStatus(visibility != View.VISIBLE)
     }
@@ -950,7 +950,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         errorStateVisibility = visibility
     }
 
@@ -959,14 +959,14 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @return The error state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Sets the visibility of the loading state view.
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setLoadingStateVisibility(visibility: Int) {
+    public fun setLoadingStateVisibility(visibility: Int) {
         loadingStateVisibility = visibility
     }
 
@@ -975,14 +975,14 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @return The loading state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getLoadingStateVisibility(): Int = loadingStateVisibility
+    public fun getLoadingStateVisibility(): Int = loadingStateVisibility
 
     /**
      * Sets the visibility of the empty state view.
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         emptyStateVisibility = visibility
     }
 
@@ -991,7 +991,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @return The empty state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getEmptyStateVisibility(): Int = emptyStateVisibility
+    public fun getEmptyStateVisibility(): Int = emptyStateVisibility
 
     /**
      * Hides or shows the loading state.
@@ -999,7 +999,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param hide true to hide the loading state, false to show it
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         loadingStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -1009,7 +1009,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param hide true to hide the empty state, false to show it
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         emptyStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -1019,7 +1019,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param hide true to hide the error state, false to show it
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         errorStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -1030,36 +1030,36 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param visibility [View.VISIBLE] to show, [View.GONE] to hide
      */
-    fun setKickMemberOptionVisibility(visibility: Int) {
+    public fun setKickMemberOptionVisibility(visibility: Int) {
         kickMemberOptionVisibility = visibility
     }
 
     /** Returns the current visibility of the kick member option. */
-    fun getKickMemberOptionVisibility(): Int = kickMemberOptionVisibility
+    public fun getKickMemberOptionVisibility(): Int = kickMemberOptionVisibility
 
     /**
      * Sets the visibility of the ban member option in the overflow menu.
      *
      * @param visibility [View.VISIBLE] to show, [View.GONE] to hide
      */
-    fun setBanMemberOptionVisibility(visibility: Int) {
+    public fun setBanMemberOptionVisibility(visibility: Int) {
         banMemberOptionVisibility = visibility
     }
 
     /** Returns the current visibility of the ban member option. */
-    fun getBanMemberOptionVisibility(): Int = banMemberOptionVisibility
+    public fun getBanMemberOptionVisibility(): Int = banMemberOptionVisibility
 
     /**
      * Sets the visibility of the scope change option in the overflow menu.
      *
      * @param visibility [View.VISIBLE] to show, [View.GONE] to hide
      */
-    fun setScopeChangeOptionVisibility(visibility: Int) {
+    public fun setScopeChangeOptionVisibility(visibility: Int) {
         scopeChangeOptionVisibility = visibility
     }
 
     /** Returns the current visibility of the scope change option. */
-    fun getScopeChangeOptionVisibility(): Int = scopeChangeOptionVisibility
+    public fun getScopeChangeOptionVisibility(): Int = scopeChangeOptionVisibility
 
     // ==================== Public API - Custom Views ====================
 
@@ -1069,7 +1069,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param listener The [GroupMembersViewHolderListener] for creating and binding custom item views, or null to use default
      */
-    fun setItemView(listener: GroupMembersViewHolderListener?) {
+    public fun setItemView(listener: GroupMembersViewHolderListener?) {
         itemViewListener = listener
         membersAdapter.setItemView(listener)
     }
@@ -1079,7 +1079,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param listener The [GroupMembersViewHolderListener] for creating and binding custom leading views, or null to use default
      */
-    fun setLeadingView(listener: GroupMembersViewHolderListener?) {
+    public fun setLeadingView(listener: GroupMembersViewHolderListener?) {
         leadingViewListener = listener
         membersAdapter.setLeadingView(listener)
     }
@@ -1089,7 +1089,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param listener The [GroupMembersViewHolderListener] for creating and binding custom title views, or null to use default
      */
-    fun setTitleView(listener: GroupMembersViewHolderListener?) {
+    public fun setTitleView(listener: GroupMembersViewHolderListener?) {
         titleViewListener = listener
         membersAdapter.setTitleView(listener)
     }
@@ -1099,7 +1099,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param listener The [GroupMembersViewHolderListener] for creating and binding custom subtitle views, or null to use default
      */
-    fun setSubtitleView(listener: GroupMembersViewHolderListener?) {
+    public fun setSubtitleView(listener: GroupMembersViewHolderListener?) {
         subtitleViewListener = listener
         membersAdapter.setSubtitleView(listener)
     }
@@ -1109,7 +1109,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param listener The [GroupMembersViewHolderListener] for creating and binding custom trailing views, or null to use default
      */
-    fun setTrailingView(listener: GroupMembersViewHolderListener?) {
+    public fun setTrailingView(listener: GroupMembersViewHolderListener?) {
         trailingViewListener = listener
         membersAdapter.setTrailingView(listener)
     }
@@ -1119,7 +1119,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param view The custom empty state view, or null to use default
      */
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         customEmptyView = view
     }
 
@@ -1128,7 +1128,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param view The custom error state view, or null to use default
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         customErrorView = view
     }
 
@@ -1137,7 +1137,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param view The custom loading state view, or null to use default
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         customLoadingView = view
     }
 
@@ -1146,7 +1146,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param view The custom overflow menu view, or null to remove
      */
-    fun setOverflowMenu(view: View?) {
+    public fun setOverflowMenu(view: View?) {
         binding.toolbar.clearActionViews()
         if (view != null) {
             binding.toolbar.addActionView(view)
@@ -1160,60 +1160,60 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param callback Invoked with the clicked [GroupMember]
      */
-    fun setOnItemClick(callback: (GroupMember) -> Unit) {
+    public fun setOnItemClick(callback: (GroupMember) -> Unit) {
         onItemClick = callback
     }
 
     /** Returns the current item click callback. */
-    fun getOnItemClick(): ((GroupMember) -> Unit)? = onItemClick
+    public fun getOnItemClick(): ((GroupMember) -> Unit)? = onItemClick
 
     /**
      * Sets the callback for member item long-clicks.
      *
      * @param callback Invoked with the long-clicked [GroupMember]
      */
-    fun setOnItemLongClick(callback: (GroupMember) -> Unit) {
+    public fun setOnItemLongClick(callback: (GroupMember) -> Unit) {
         onItemLongClick = callback
     }
 
     /** Returns the current item long-click callback. */
-    fun getOnItemLongClick(): ((GroupMember) -> Unit)? = onItemLongClick
+    public fun getOnItemLongClick(): ((GroupMember) -> Unit)? = onItemLongClick
 
     /**
      * Sets the callback for error events.
      *
      * @param callback Invoked with the [CometChatException] that occurred
      */
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
     /** Returns the current error callback. */
-    fun getOnError(): ((CometChatException) -> Unit)? = onError
+    public fun getOnError(): ((CometChatException) -> Unit)? = onError
 
     /**
      * Sets the callback for back button press.
      *
      * @param callback Invoked when the back button is pressed
      */
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
     /** Returns the current back press callback. */
-    fun getOnBackPress(): (() -> Unit)? = onBackPress
+    public fun getOnBackPress(): (() -> Unit)? = onBackPress
 
     /**
      * Sets the callback for selection submission.
      *
      * @param callback Invoked with the list of selected [GroupMember] objects
      */
-    fun setOnSelection(callback: (List<GroupMember>) -> Unit) {
+    public fun setOnSelection(callback: (List<GroupMember>) -> Unit) {
         onSelection = callback
     }
 
     /** Returns the current selection callback. */
-    fun getOnSelection(): ((List<GroupMember>) -> Unit)? = onSelection
+    public fun getOnSelection(): ((List<GroupMember>) -> Unit)? = onSelection
 
     // ==================== Public API - Menu Options ====================
 
@@ -1222,7 +1222,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param callback Function that returns a list of [CometChatPopupMenu.MenuItem] for the given member and group
      */
-    fun setOptions(callback: (Context, GroupMember, Group) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun setOptions(callback: (Context, GroupMember, Group) -> List<CometChatPopupMenu.MenuItem>) {
         options = callback
     }
 
@@ -1231,7 +1231,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param callback Function that returns additional [CometChatPopupMenu.MenuItem] items
      */
-    fun addOptions(callback: (Context, GroupMember, Group) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun addOptions(callback: (Context, GroupMember, Group) -> List<CometChatPopupMenu.MenuItem>) {
         addOptions = callback
     }
 
@@ -1243,7 +1243,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param viewModel The external [CometChatGroupMembersViewModel], or null to use internal
      */
-    fun setViewModel(viewModel: CometChatGroupMembersViewModel?) {
+    public fun setViewModel(viewModel: CometChatGroupMembersViewModel?) {
         this.viewModel = viewModel
         this.isExternalViewModel = viewModel != null
 
@@ -1260,7 +1260,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
     }
 
     /** Returns the current ViewModel instance. */
-    fun getViewModel(): CometChatGroupMembersViewModel? = viewModel
+    public fun getViewModel(): CometChatGroupMembersViewModel? = viewModel
 
     // ==================== Public API - Misc ====================
 
@@ -1269,7 +1269,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param title The title string to display
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.toolbar.setTitle(title)
     }
 
@@ -1278,7 +1278,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param placeholder The placeholder string to display when search is empty
      */
-    fun setSearchPlaceholderText(placeholder: String) {
+    public fun setSearchPlaceholderText(placeholder: String) {
         binding.searchBox.setSearchPlaceholderText(placeholder)
     }
 
@@ -1287,7 +1287,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param keyword The search keyword to set
      */
-    fun setSearchKeyword(keyword: String) {
+    public fun setSearchKeyword(keyword: String) {
         binding.searchBox.setSearchInputText(keyword)
     }
 
@@ -1296,18 +1296,18 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param exclude true to exclude the owner
      */
-    fun excludeOwner(exclude: Boolean) {
+    public fun excludeOwner(exclude: Boolean) {
         viewModel?.setExcludeOwner(exclude)
     }
 
     /** Returns the internal RecyclerView. */
-    fun getRecyclerView(): RecyclerView = binding.recyclerviewGroupMembers
+    public fun getRecyclerView(): RecyclerView = binding.recyclerviewGroupMembers
 
     /** Returns the internal [GroupMembersAdapter]. */
-    fun getAdapter(): GroupMembersAdapter = membersAdapter
+    internal fun getAdapter(): GroupMembersAdapter = membersAdapter
 
     /** Returns the ViewBinding for advanced customization. */
-    fun getBinding(): CometchatGroupMembersBinding = binding
+    public fun getBinding(): CometchatGroupMembersBinding = binding
 
     /**
      * Sets whether further member selection is allowed.
@@ -1315,63 +1315,63 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param enabled true to allow further selections
      */
-    fun setFurtherSelectionEnabled(enabled: Boolean) {
+    public fun setFurtherSelectionEnabled(enabled: Boolean) {
         isFurtherSelectionEnabled = enabled
     }
 
     /** Returns whether further selection is currently enabled. */
-    fun isFurtherSelectionEnabled(): Boolean = isFurtherSelectionEnabled
+    public fun isFurtherSelectionEnabled(): Boolean = isFurtherSelectionEnabled
 
     // ==================== Public API - Toolbar Styling ====================
 
     /** Returns the current toolbar title text color. */
-    fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getTitleTextColor(): Int = style.titleTextColor
 
     /**
      * Sets the toolbar title text color.
      *
      * @param color The color int to apply
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         binding.toolbar.setTitleTextColor(color)
     }
 
     /** Returns the current toolbar title text appearance resource ID. */
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
 
     /**
      * Sets the toolbar title text appearance.
      *
      * @param appearance The style resource ID for text appearance
      */
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) binding.toolbar.setTitleTextAppearance(appearance)
     }
 
     /** Returns the current back icon drawable. */
-    fun getBackIcon(): Drawable? = style.backIcon
+    public fun getBackIcon(): Drawable? = style.backIcon
 
     /**
      * Sets the toolbar back icon drawable.
      *
      * @param icon The drawable to use as back icon
      */
-    fun setBackIcon(icon: Drawable?) {
+    public fun setBackIcon(icon: Drawable?) {
         style = style.copy(backIcon = icon)
         icon?.let { binding.toolbar.setBackIcon(it) }
     }
 
     /** Returns the current back icon tint color. */
-    fun getBackIconTint(): Int = style.backIconTint
+    public fun getBackIconTint(): Int = style.backIconTint
 
     /**
      * Sets the toolbar back icon tint color.
      *
      * @param tint The color int to apply
      */
-    fun setBackIconTint(@ColorInt tint: Int) {
+    public fun setBackIconTint(@ColorInt tint: Int) {
         style = style.copy(backIconTint = tint)
         binding.toolbar.setBackIconTint(tint)
     }
@@ -1379,79 +1379,79 @@ class CometChatGroupMembers @JvmOverloads constructor(
     // ==================== Public API - Search Styling ====================
 
     /** Returns the current search input background color. */
-    fun getSearchInputBackgroundColor(): Int = style.searchBackgroundColor
+    public fun getSearchInputBackgroundColor(): Int = style.searchBackgroundColor
 
     /**
      * Sets the search input background color.
      *
      * @param color The color int to apply
      */
-    fun setSearchInputBackgroundColor(@ColorInt color: Int) {
+    public fun setSearchInputBackgroundColor(@ColorInt color: Int) {
         style = style.copy(searchBackgroundColor = color)
         binding.searchBox.setCardBackgroundColor(color)
     }
 
     /** Returns the current search input text color. */
-    fun getSearchInputTextColor(): Int = style.searchTextColor
+    public fun getSearchInputTextColor(): Int = style.searchTextColor
 
     /**
      * Sets the search input text color.
      *
      * @param color The color int to apply
      */
-    fun setSearchInputTextColor(@ColorInt color: Int) {
+    public fun setSearchInputTextColor(@ColorInt color: Int) {
         style = style.copy(searchTextColor = color)
         binding.searchBox.setSearchInputTextColor(color)
     }
 
     /** Returns the current search input placeholder text color. */
-    fun getSearchInputPlaceHolderTextColor(): Int = style.searchPlaceholderColor
+    public fun getSearchInputPlaceHolderTextColor(): Int = style.searchPlaceholderColor
 
     /**
      * Sets the search input placeholder text color.
      *
      * @param color The color int to apply
      */
-    fun setSearchInputPlaceHolderTextColor(@ColorInt color: Int) {
+    public fun setSearchInputPlaceHolderTextColor(@ColorInt color: Int) {
         style = style.copy(searchPlaceholderColor = color)
         binding.searchBox.setSearchInputPlaceHolderTextColor(color)
     }
 
     /** Returns the current search input corner radius in pixels. */
-    fun getSearchInputCornerRadius(): Int = style.searchCornerRadius
+    public fun getSearchInputCornerRadius(): Int = style.searchCornerRadius
 
     /**
      * Sets the search input corner radius.
      *
      * @param radius The corner radius in pixels
      */
-    fun setSearchInputCornerRadius(@Dimension radius: Int) {
+    public fun setSearchInputCornerRadius(@Dimension radius: Int) {
         style = style.copy(searchCornerRadius = radius)
         binding.searchBox.radius = radius.toFloat()
     }
 
     /** Returns the current search input stroke width in pixels. */
-    fun getSearchInputStrokeWidth(): Int = style.searchStrokeWidth
+    public fun getSearchInputStrokeWidth(): Int = style.searchStrokeWidth
 
     /**
      * Sets the search input stroke width.
      *
      * @param width The stroke width in pixels
      */
-    fun setSearchInputStrokeWidth(@Dimension width: Int) {
+    public fun setSearchInputStrokeWidth(@Dimension width: Int) {
         style = style.copy(searchStrokeWidth = width)
         binding.searchBox.strokeWidth = width
     }
 
     /** Returns the current search input stroke color. */
-    fun getSearchInputStrokeColor(): Int = style.searchStrokeColor
+    public fun getSearchInputStrokeColor(): Int = style.searchStrokeColor
 
     /**
      * Sets the search input stroke color.
      *
      * @param color The color int to apply
      */
-    fun setSearchInputStrokeColor(@ColorInt color: Int) {
+    public fun setSearchInputStrokeColor(@ColorInt color: Int) {
         style = style.copy(searchStrokeColor = color)
         binding.searchBox.strokeColor = color
     }
@@ -1459,27 +1459,27 @@ class CometChatGroupMembers @JvmOverloads constructor(
     // ==================== Public API - Item Styling ====================
 
     /** Returns the current item title text color. */
-    fun getItemTitleTextColor(): Int = style.itemTitleTextColor
+    public fun getItemTitleTextColor(): Int = style.itemTitleTextColor
 
     /**
      * Sets the item title text color.
      *
      * @param color The color int to apply
      */
-    fun setItemTitleTextColor(@ColorInt color: Int) {
+    public fun setItemTitleTextColor(@ColorInt color: Int) {
         style = style.copy(itemTitleTextColor = color)
         membersAdapter.setStyle(style)
     }
 
     /** Returns the current separator color. */
-    fun getSeparatorColor(): Int = style.separatorColor
+    public fun getSeparatorColor(): Int = style.separatorColor
 
     /**
      * Sets the list item separator color.
      *
      * @param color The color int to apply
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         membersAdapter.setStyle(style)
     }
@@ -1489,19 +1489,19 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param height The height in pixels
      */
-    fun setSeparatorHeight(@Dimension height: Int) {
+    public fun setSeparatorHeight(@Dimension height: Int) {
         membersAdapter.setSeparatorHeight(height)
     }
 
     /** Returns the current corner radius in pixels. */
-    fun getCornerRadius(): Int = style.cornerRadius
+    public fun getCornerRadius(): Int = style.cornerRadius
 
     /**
      * Sets the container corner radius.
      *
      * @param radius The corner radius in pixels
      */
-    fun setCornerRadius(@Dimension radius: Int) {
+    public fun setCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         this.radius = radius.toFloat()
     }
@@ -1513,7 +1513,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param width The stroke width in pixels
      */
-    fun setCheckBoxStrokeWidth(@Dimension width: Int) {
+    public fun setCheckBoxStrokeWidth(@Dimension width: Int) {
         membersAdapter.setCheckBoxStrokeWidth(width)
     }
 
@@ -1522,7 +1522,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param radius The corner radius in pixels
      */
-    fun setCheckBoxCornerRadius(@Dimension radius: Int) {
+    public fun setCheckBoxCornerRadius(@Dimension radius: Int) {
         membersAdapter.setCheckBoxCornerRadius(radius)
     }
 
@@ -1531,7 +1531,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setCheckBoxStrokeColor(@ColorInt color: Int) {
+    public fun setCheckBoxStrokeColor(@ColorInt color: Int) {
         membersAdapter.setCheckBoxStrokeColor(color)
     }
 
@@ -1540,7 +1540,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setCheckBoxBackgroundColor(@ColorInt color: Int) {
+    public fun setCheckBoxBackgroundColor(@ColorInt color: Int) {
         membersAdapter.setCheckBoxBackgroundColor(color)
     }
 
@@ -1549,7 +1549,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setCheckBoxCheckedBackgroundColor(@ColorInt color: Int) {
+    public fun setCheckBoxCheckedBackgroundColor(@ColorInt color: Int) {
         membersAdapter.setCheckBoxCheckedBackgroundColor(color)
     }
 
@@ -1560,7 +1560,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param icon The drawable to use as discard selection icon
      */
-    fun setDiscardSelectionIcon(icon: Drawable?) {
+    public fun setDiscardSelectionIcon(icon: Drawable?) {
         style = style.copy(discardSelectionIcon = icon)
         icon?.let { binding.toolbar.setDiscardIcon(it) }
     }
@@ -1570,7 +1570,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param tint The color int to apply
      */
-    fun setDiscardSelectionIconTint(@ColorInt tint: Int) {
+    public fun setDiscardSelectionIconTint(@ColorInt tint: Int) {
         style = style.copy(discardSelectionIconTint = tint)
         binding.toolbar.setDiscardIconTint(tint)
     }
@@ -1580,7 +1580,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param icon The drawable to use as submit selection icon
      */
-    fun setSubmitSelectionIcon(icon: Drawable?) {
+    public fun setSubmitSelectionIcon(icon: Drawable?) {
         style = style.copy(submitSelectionIcon = icon)
         icon?.let { binding.toolbar.setSubmitIcon(it) }
     }
@@ -1590,7 +1590,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param tint The color int to apply
      */
-    fun setSubmitSelectionIconTint(@ColorInt tint: Int) {
+    public fun setSubmitSelectionIconTint(@ColorInt tint: Int) {
         style = style.copy(submitSelectionIconTint = tint)
         binding.toolbar.setSubmitIconTint(tint)
     }
@@ -1600,7 +1600,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param icon The drawable to use as select icon
      */
-    fun setSelectIcon(icon: Drawable?) {
+    public fun setSelectIcon(icon: Drawable?) {
         style = style.copy(checkBoxSelectIcon = icon)
         membersAdapter.setCheckBoxSelectIcon(icon)
     }
@@ -1610,7 +1610,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param tint The color int to apply
      */
-    fun setSelectIconTint(@ColorInt tint: Int) {
+    public fun setSelectIconTint(@ColorInt tint: Int) {
         style = style.copy(checkBoxSelectIconTint = tint)
         membersAdapter.setCheckBoxSelectIconTint(tint)
     }
@@ -1622,7 +1622,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param appearance The style resource ID for text appearance
      */
-    fun setSearchInputTextAppearance(@StyleRes appearance: Int) {
+    public fun setSearchInputTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(searchTextAppearance = appearance)
         if (appearance != 0) binding.searchBox.setSearchInputTextAppearance(appearance)
     }
@@ -1632,7 +1632,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param appearance The style resource ID for text appearance
      */
-    fun setSearchInputPlaceHolderTextAppearance(@StyleRes appearance: Int) {
+    public fun setSearchInputPlaceHolderTextAppearance(@StyleRes appearance: Int) {
         if (appearance != 0) binding.searchBox.setSearchInputPlaceHolderTextAppearance(appearance)
     }
 
@@ -1641,7 +1641,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param icon The drawable to use as search icon
      */
-    fun setSearchInputIcon(icon: Drawable?) {
+    public fun setSearchInputIcon(icon: Drawable?) {
         style = style.copy(searchStartIcon = icon)
         icon?.let { binding.searchBox.setSearchInputStartIcon(it) }
     }
@@ -1651,7 +1651,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param tint The color int to apply
      */
-    fun setSearchInputIconTint(@ColorInt tint: Int) {
+    public fun setSearchInputIconTint(@ColorInt tint: Int) {
         style = style.copy(searchStartIconTint = tint)
         binding.searchBox.setSearchInputStartIconTint(tint)
     }
@@ -1661,7 +1661,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param icon The drawable to use as end/clear icon
      */
-    fun setSearchInputEndIcon(icon: Drawable?) {
+    public fun setSearchInputEndIcon(icon: Drawable?) {
         style = style.copy(searchEndIcon = icon)
         icon?.let { binding.searchBox.setSearchInputEndIcon(it) }
     }
@@ -1671,7 +1671,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param tint The color int to apply
      */
-    fun setSearchInputEndIconTint(@ColorInt tint: Int) {
+    public fun setSearchInputEndIconTint(@ColorInt tint: Int) {
         style = style.copy(searchEndIconTint = tint)
         binding.searchBox.setSearchInputEndIconTint(tint)
     }
@@ -1683,7 +1683,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param avatarStyle The avatar style to apply
      */
-    fun setAvatarStyle(avatarStyle: com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatarStyle) {
+    public fun setAvatarStyle(avatarStyle: com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatarStyle) {
         style = style.copy(avatarStyle = avatarStyle)
         membersAdapter.setAvatarStyle(avatarStyle)
     }
@@ -1693,7 +1693,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param appearance The style resource ID for text appearance
      */
-    fun setItemTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemTitleTextAppearance = appearance)
         membersAdapter.setItemTitleTextAppearance(appearance)
     }
@@ -1703,7 +1703,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param statusIndicatorStyle The status indicator style to apply
      */
-    fun setStatusIndicatorStyle(statusIndicatorStyle: com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatStatusIndicatorStyle) {
+    public fun setStatusIndicatorStyle(statusIndicatorStyle: com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatStatusIndicatorStyle) {
         style = style.copy(statusIndicatorStyle = statusIndicatorStyle)
         membersAdapter.setStatusIndicatorStyle(statusIndicatorStyle)
     }
@@ -1715,7 +1715,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setEmptyStateTitleTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateTitleTextColor(@ColorInt color: Int) {
         style = style.copy(emptyStateTitleTextColor = color)
         binding.tvEmptyTitle.setTextColor(color)
     }
@@ -1725,7 +1725,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(emptyStateSubtitleTextColor = color)
         binding.tvEmptySubtitle.setTextColor(color)
     }
@@ -1735,7 +1735,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setErrorStateTitleTextColor(@ColorInt color: Int) {
+    public fun setErrorStateTitleTextColor(@ColorInt color: Int) {
         style = style.copy(errorStateTitleTextColor = color)
         binding.tvErrorTitle.setTextColor(color)
     }
@@ -1745,7 +1745,7 @@ class CometChatGroupMembers @JvmOverloads constructor(
      *
      * @param color The color int to apply
      */
-    fun setErrorStateSubtitleTextColor(@ColorInt color: Int) {
+    public fun setErrorStateSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(errorStateSubtitleTextColor = color)
         binding.tvErrorSubtitle.setTextColor(color)
     }

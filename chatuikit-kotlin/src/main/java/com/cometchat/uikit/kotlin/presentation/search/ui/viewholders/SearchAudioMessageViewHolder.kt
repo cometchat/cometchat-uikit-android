@@ -23,7 +23,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param binding The ViewBinding for the audio message item layout
  */
-class SearchAudioMessageViewHolder(
+internal class SearchAudioMessageViewHolder(
     val binding: CometchatSearchMessageItemAudioBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

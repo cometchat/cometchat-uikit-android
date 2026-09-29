@@ -47,7 +47,7 @@ import com.google.android.material.card.MaterialCardView
  *
  * @see CometChatMessagePreviewStyle
  */
-class CometChatMessagePreview @JvmOverloads constructor(
+public class CometChatMessagePreview @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -211,7 +211,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param maxWidth Maximum width in dp, or -1 for no constraint
      */
-    fun setMaxWidth(maxWidth: Int) {
+    public fun setMaxWidth(maxWidth: Int) {
         this.maxWidthDp = maxWidth
         measure(measuredWidth, measuredHeight)
     }
@@ -225,7 +225,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param listener The click listener, or null to remove
      */
-    fun setOnMessagePreviewClickListener(listener: (() -> Unit)?) {
+    public fun setOnMessagePreviewClickListener(listener: (() -> Unit)?) {
         this.onMessagePreviewClick = listener
     }
 
@@ -234,7 +234,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param listener The click listener, or null to remove
      */
-    fun setOnCloseClickListener(listener: (() -> Unit)?) {
+    public fun setOnCloseClickListener(listener: (() -> Unit)?) {
         this.onCloseClick = listener
     }
 
@@ -247,7 +247,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param text The title text
      */
-    fun setMessagePreviewTitleText(text: String) {
+    public fun setMessagePreviewTitleText(text: String) {
         binding.tvMessageLayoutTitle.text = text
     }
 
@@ -256,7 +256,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param text The subtitle text
      */
-    fun setMessagePreviewSubtitleText(text: CharSequence) {
+    public fun setMessagePreviewSubtitleText(text: CharSequence) {
         binding.tvMessageLayoutSubtitle.text = text
     }
 
@@ -265,7 +265,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param visibility View visibility constant
      */
-    fun setMessageIconVisibility(visibility: Int) {
+    public fun setMessageIconVisibility(visibility: Int) {
         binding.messageIcon.visibility = visibility
     }
 
@@ -274,7 +274,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param visibility View visibility constant
      */
-    fun setCloseIconVisibility(visibility: Int) {
+    public fun setCloseIconVisibility(visibility: Int) {
         binding.ivMessageClose.visibility = visibility
     }
 
@@ -300,7 +300,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param dimension The stroke width in pixels
      */
-    fun setStrokeWidth(@Dimension dimension: Float) {
+    public fun setStrokeWidth(@Dimension dimension: Float) {
         binding.messagePreviewParent.strokeWidth = dimension.toInt()
     }
 
@@ -309,7 +309,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param color The tint color
      */
-    fun setMessageIconTint(@ColorInt color: Int) {
+    public fun setMessageIconTint(@ColorInt color: Int) {
         binding.messageIcon.setColorFilter(color)
     }
 
@@ -318,7 +318,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param radius The corner radius in pixels
      */
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         binding.messagePreviewParent.radius = radius
     }
 
@@ -327,7 +327,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param color The separator color
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         binding.separatorView.setBackgroundColor(color)
     }
 
@@ -336,7 +336,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param color The text color
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         binding.tvMessageLayoutTitle.setTextColor(color)
     }
 
@@ -345,7 +345,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param resourceId The text appearance resource ID
      */
-    fun setTitleTextAppearance(@StyleRes resourceId: Int) {
+    public fun setTitleTextAppearance(@StyleRes resourceId: Int) {
         if (resourceId != 0) {
             binding.tvMessageLayoutTitle.setTextAppearance(resourceId)
         }
@@ -356,7 +356,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param color The text color
      */
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         binding.tvMessageLayoutSubtitle.setTextColor(color)
     }
 
@@ -365,7 +365,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param resourceId The text appearance resource ID
      */
-    fun setSubtitleTextAppearance(@StyleRes resourceId: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes resourceId: Int) {
         if (resourceId != 0) {
             binding.tvMessageLayoutSubtitle.setTextAppearance(resourceId)
         }
@@ -376,7 +376,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param drawable The close icon drawable
      */
-    fun setCloseIcon(drawable: Drawable?) {
+    public fun setCloseIcon(drawable: Drawable?) {
         binding.ivMessageClose.setImageDrawable(drawable)
     }
 
@@ -385,7 +385,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param icon The drawable resource ID
      */
-    fun setMessageIcon(@DrawableRes icon: Int) {
+    public fun setMessageIcon(@DrawableRes icon: Int) {
         val drawable = AppCompatResources.getDrawable(context, icon)
         binding.messageIcon.setImageDrawable(drawable)
     }
@@ -395,7 +395,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param drawable The message icon drawable
      */
-    fun setMessageIcon(drawable: Drawable?) {
+    public fun setMessageIcon(drawable: Drawable?) {
         binding.messageIcon.setImageDrawable(drawable)
     }
 
@@ -404,7 +404,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param color The tint color
      */
-    fun setCloseIconTint(@ColorInt color: Int) {
+    public fun setCloseIconTint(@ColorInt color: Int) {
         binding.ivMessageClose.setColorFilter(color)
     }
 
@@ -413,7 +413,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param messagePreviewStyle The style resource ID
      */
-    fun setStyle(@StyleRes messagePreviewStyle: Int) {
+    public fun setStyle(@StyleRes messagePreviewStyle: Int) {
         if (messagePreviewStyle != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 messagePreviewStyle,
@@ -428,7 +428,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @param style The style to apply
      */
-    fun setStyle(style: CometChatMessagePreviewStyle) {
+    public fun setStyle(style: CometChatMessagePreviewStyle) {
         setBackgroundColor(style.backgroundColor)
         setStrokeWidth(style.strokeWidth)
         setCornerRadius(style.cornerRadius)
@@ -453,35 +453,35 @@ class CometChatMessagePreview @JvmOverloads constructor(
      *
      * @return The subtitle TextView
      */
-    fun getSubtitleView(): TextView = binding.tvMessageLayoutSubtitle
+    public fun getSubtitleView(): TextView = binding.tvMessageLayoutSubtitle
 
     /**
      * Gets the title TextView for advanced customization.
      *
      * @return The title TextView
      */
-    fun getTitleView(): TextView = binding.tvMessageLayoutTitle
+    public fun getTitleView(): TextView = binding.tvMessageLayoutTitle
 
     /**
      * Gets the message icon ImageView for advanced customization.
      *
      * @return The message icon ImageView
      */
-    fun getMessageIconView(): ImageView = binding.messageIcon
+    public fun getMessageIconView(): ImageView = binding.messageIcon
 
     /**
      * Gets the close icon ImageView for advanced customization.
      *
      * @return The close icon ImageView
      */
-    fun getCloseIconView(): ImageView = binding.ivMessageClose
+    public fun getCloseIconView(): ImageView = binding.ivMessageClose
 
     /**
      * Gets the separator View for advanced customization.
      *
      * @return The separator View
      */
-    fun getSeparatorView(): View = binding.separatorView
+    public fun getSeparatorView(): View = binding.separatorView
 
     // ========================================
     // Message Binding
@@ -497,7 +497,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
      * @param formattingType The formatting type context
      * @param alignment The bubble alignment
      */
-    fun setMessage(
+    public fun setMessage(
         context: Context,
         message: BaseMessage,
         textFormatters: List<CometChatTextFormatter> = emptyList(),
@@ -651,7 +651,7 @@ class CometChatMessagePreview @JvmOverloads constructor(
         }
     }
 
-    companion object {
+    public companion object {
         // Extension type constants
         private const val EXTENSION_POLL = "extension_poll"
         private const val EXTENSION_STICKER = "extension_sticker"

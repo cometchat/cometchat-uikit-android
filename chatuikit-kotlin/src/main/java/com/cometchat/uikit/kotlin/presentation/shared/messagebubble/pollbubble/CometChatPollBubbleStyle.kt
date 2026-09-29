@@ -24,7 +24,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * [DIMENSION_NOT_SET]) to indicate "not set". When not set, they fall back to
  * values from [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatPollBubbleStyle(
+public data class CometChatPollBubbleStyle(
     // Content-specific properties - Title
     @StyleRes val titleTextAppearance: Int = 0,
     @ColorInt val titleTextColor: Int = 0,
@@ -84,10 +84,10 @@ data class CometChatPollBubbleStyle(
      * @param messageBubbleStyle The message bubble style to use as fallback
      * @return A new [CometChatPollBubbleStyle] with all sentinel values resolved
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatPollBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatPollBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to outgoing).
          *
@@ -98,7 +98,7 @@ data class CometChatPollBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatPollBubbleStyle with default values
          */
-        fun default(context: Context): CometChatPollBubbleStyle {
+        public fun default(context: Context): CometChatPollBubbleStyle {
             return outgoing(context)
         }
 
@@ -113,7 +113,7 @@ data class CometChatPollBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatPollBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatPollBubbleStyle {
+        public fun outgoing(context: Context): CometChatPollBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatOutgoingMessageBubbleStyle
@@ -131,7 +131,7 @@ data class CometChatPollBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatPollBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatPollBubbleStyle {
+        public fun incoming(context: Context): CometChatPollBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatIncomingMessageBubbleStyle
@@ -189,7 +189,7 @@ data class CometChatPollBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatPollBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatPollBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatPollBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

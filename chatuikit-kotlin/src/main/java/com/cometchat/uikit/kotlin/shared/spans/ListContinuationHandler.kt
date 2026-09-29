@@ -21,7 +21,7 @@ import android.text.Spanned
  * @see NumberedListFormatSpan
  * @see BlockquoteFormatSpan
  */
-object ListContinuationHandler {
+public object ListContinuationHandler {
 
     /**
      * Called after a newline is inserted. Checks the previous line for a
@@ -35,7 +35,7 @@ object ListContinuationHandler {
      * @return `true` if the handler modified the editable; `false` if no
      *         list/blockquote handling was needed.
      */
-    fun handleNewline(editable: Editable, cursorPos: Int, context: Context?): Boolean {
+    public fun handleNewline(editable: Editable, cursorPos: Int, context: Context?): Boolean {
         if (cursorPos <= 0 || cursorPos > editable.length) return false
 
         // The newline was already inserted at cursorPos - 1.
@@ -104,7 +104,7 @@ object ListContinuationHandler {
      * @param editable  The editable text to modify.
      * @param lineStart A position within the numbered list block to renumber.
      */
-    fun renumberList(editable: Editable, lineStart: Int) {
+    public fun renumberList(editable: Editable, lineStart: Int) {
         if (editable.isEmpty()) return
 
         val allSpans = editable.getSpans(0, editable.length, NumberedListFormatSpan::class.java)

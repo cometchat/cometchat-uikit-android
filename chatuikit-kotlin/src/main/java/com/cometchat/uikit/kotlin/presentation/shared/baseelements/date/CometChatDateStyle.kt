@@ -11,7 +11,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatDate component.
  */
-data class CometChatDateStyle(
+public data class CometChatDateStyle(
     @ColorInt val backgroundColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
     @ColorInt val textColor: Int = 0,
@@ -19,14 +19,14 @@ data class CometChatDateStyle(
     @Dimension val strokeWidth: Int = 0,
     @ColorInt val strokeColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatDateStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatDateStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatDateStyle {
+        public fun default(context: Context): CometChatDateStyle {
             return extractFromThemeStyle(context, R.attr.cometchatDateStyle)
         }
 
@@ -53,7 +53,7 @@ data class CometChatDateStyle(
          * @param styleResId The style resource ID to extract from (0 for defaults only)
          * @return A CometChatDateStyle with values from the style resource or defaults
          */
-        fun fromStyleResource(context: Context, styleResId: Int): CometChatDateStyle {
+        public fun fromStyleResource(context: Context, styleResId: Int): CometChatDateStyle {
             return extractFromStyleResource(context, styleResId)
         }
 
@@ -86,7 +86,7 @@ data class CometChatDateStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatDateStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatDateStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatDateStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

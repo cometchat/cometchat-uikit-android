@@ -7,7 +7,7 @@ import com.cometchat.chat.models.GroupMember
  * DiffUtil callback for efficient RecyclerView updates of group members.
  * Compares members by their unique UID and content.
  */
-class GroupMembersDiffCallback(
+public class GroupMembersDiffCallback(
     private val oldList: List<GroupMember>,
     private val newList: List<GroupMember>
 ) : DiffUtil.Callback() {

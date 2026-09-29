@@ -7,6 +7,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.shared.formatters.style.PromptTextStyle
 import org.json.JSONObject
 
@@ -15,13 +16,13 @@ import org.json.JSONObject
  * It provides fundamental methods to handle, format, and track changes of the text.
  * All concrete text formatter classes should extend this class and implement its abstract methods.
  */
-abstract class CometChatTextFormatter(
+abstract public class CometChatTextFormatter(
     /**
      * The character for which suggestion search will be triggered.
      */
     private val trackingCharacter: Char
 ) : Formatter {
-    companion object {
+    public companion object {
         private val TAG = CometChatTextFormatter::class.java.simpleName
     }
 
@@ -44,44 +45,44 @@ abstract class CometChatTextFormatter(
     /**
      * To set the list of suggestion items.
      */
-    fun setSuggestionItemList(items: List<SuggestionItem>) {
-        android.util.Log.d("MentionDebug", "[$TAG] setSuggestionItemList() - posting ${items.size} items to LiveData")
-        android.util.Log.d("MentionDebug", "[$TAG] setSuggestionItemList() - items: ${items.map { it.name }}")
+    public fun setSuggestionItemList(items: List<SuggestionItem>) {
+        CometChatLogger.d("MentionDebug", "[$TAG] setSuggestionItemList() - posting ${items.size} items to LiveData")
+        CometChatLogger.d("MentionDebug", "[$TAG] setSuggestionItemList() - items: ${items.map { it.name }}")
         suggestionItemList.postValue(items)
     }
 
     /**
      * To show or hide the loading indicator.
      */
-    fun setShowLoadingIndicator(show: Boolean) {
-        android.util.Log.d("MentionDebug", "[$TAG] setShowLoadingIndicator($show)")
+    public fun setShowLoadingIndicator(show: Boolean) {
+        CometChatLogger.d("MentionDebug", "[$TAG] setShowLoadingIndicator($show)")
         showLoadingIndicator.postValue(show)
     }
 
     /**
      * This method is used to search for suggestions based on the passed queryString.
      */
-    abstract fun search(context: Context, queryString: String?)
+    abstract public fun search(context: Context, queryString: String?)
 
     /**
      * This method is called when an item on the suggestion list is clicked.
      */
-    open fun onItemClick(context: Context, suggestionItem: SuggestionItem, user: User?, group: Group?) {}
+    open public fun onItemClick(context: Context, suggestionItem: SuggestionItem, user: User?, group: Group?) {}
 
     /**
      * Method called before the message is sent.
      */
-    open fun handlePreMessageSend(context: Context, baseMessage: BaseMessage) {}
+    open public fun handlePreMessageSend(context: Context, baseMessage: BaseMessage) {}
 
     /**
      * This method is called whenever the user scrolls to the bottom of the suggestion list.
      */
-    abstract fun onScrollToBottom()
+    abstract public fun onScrollToBottom()
 
     /**
      * Method to prepare the text of the message.
      */
-    fun prepareMessageString(
+    public fun prepareMessageString(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder,
@@ -108,7 +109,7 @@ abstract class CometChatTextFormatter(
     /**
      * Method to prepare the text to be shown in the left message bubble.
      */
-    open fun prepareLeftMessageBubbleSpan(
+    open public fun prepareLeftMessageBubbleSpan(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder
@@ -117,7 +118,7 @@ abstract class CometChatTextFormatter(
     /**
      * Method to prepare the text to be shown in the right message bubble.
      */
-    open fun prepareRightMessageBubbleSpan(
+    open public fun prepareRightMessageBubbleSpan(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder
@@ -126,7 +127,7 @@ abstract class CometChatTextFormatter(
     /**
      * Method to prepare the text to be shown in the composer.
      */
-    open fun prepareComposerSpan(
+    open public fun prepareComposerSpan(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder
@@ -135,7 +136,7 @@ abstract class CometChatTextFormatter(
     /**
      * Method to prepare the text to be shown in the conversation view.
      */
-    open fun prepareConversationSpan(
+    open public fun prepareConversationSpan(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder
@@ -148,7 +149,7 @@ abstract class CometChatTextFormatter(
      * override this to strip the token and apply its style, so the preview shows styled text rather
      * than the raw token.
      */
-    open fun preparePreviewSpan(
+    open public fun preparePreviewSpan(
         context: Context,
         baseMessage: BaseMessage,
         spannable: SpannableStringBuilder
@@ -165,7 +166,7 @@ abstract class CometChatTextFormatter(
      * surface. Call it when reading composer text whose display form differs from the stored token
      * (e.g. before send, or when populating the composer to edit an existing message).
      */
-    open fun getOriginalText(text: String): String = text
+    open public fun getOriginalText(text: String): String = text
 
     /**
      * Optional live-composer rendering: style THIS formatter's tokens directly on the editable input
@@ -178,14 +179,14 @@ abstract class CometChatTextFormatter(
      * stays in the [editable] and still goes on the wire. Implementations should remove their own
      * previously-applied spans first so repeated calls are idempotent.
      */
-    open fun applyComposerSpans(editable: android.text.Editable) {}
+    open public fun applyComposerSpans(editable: android.text.Editable) {}
 
-    open fun observeSelectionList(context: Context, selectedSuggestionItemList: List<SuggestionItem>) {}
+    open public fun observeSelectionList(context: Context, selectedSuggestionItemList: List<SuggestionItem>) {}
 
     /**
      * To set the selected list of suggestions.
      */
-    fun setSelectedList(context: Context, selectedItems: List<SuggestionItem>) {
+    public fun setSelectedList(context: Context, selectedItems: List<SuggestionItem>) {
         selectedSuggestionItemList.clear()
         selectedSuggestionItemList.addAll(selectedItems)
         observeSelectionList(context, selectedItems)
@@ -194,56 +195,56 @@ abstract class CometChatTextFormatter(
     /**
      * To set the tag information message.
      */
-    fun setInfoText(message: String) {
+    public fun setInfoText(message: String) {
         tagInfoMessage.postValue(message)
     }
 
     /**
      * To show or hide the tag information visibility.
      */
-    fun setInfoVisibility(visible: Boolean) {
+    public fun setInfoVisibility(visible: Boolean) {
         tagInfoVisible.postValue(visible)
     }
 
     /**
      * Sets the group for this formatter.
      */
-    open fun setGroup(group: Group?) {
+    open public fun setGroup(group: Group?) {
         this.group = group
     }
 
     /**
      * Sets the user for this formatter.
      */
-    open fun setUser(user: User?) {
+    open public fun setUser(user: User?) {
         this.user = user
     }
 
-    fun getSelectedList(): List<SuggestionItem> = selectedSuggestionItemList.toList()
+    public fun getSelectedList(): List<SuggestionItem> = selectedSuggestionItemList.toList()
 
-    fun getSuggestionItemList(): MutableLiveData<List<SuggestionItem>> = suggestionItemList
+    public fun getSuggestionItemList(): MutableLiveData<List<SuggestionItem>> = suggestionItemList
 
-    fun getTagInfoMessage(): MutableLiveData<String> = tagInfoMessage
+    public fun getTagInfoMessage(): MutableLiveData<String> = tagInfoMessage
 
-    fun getTagInfoVisibility(): MutableLiveData<Boolean> = tagInfoVisible
+    public fun getTagInfoVisibility(): MutableLiveData<Boolean> = tagInfoVisible
 
-    fun getShowLoadingIndicator(): MutableLiveData<Boolean> = showLoadingIndicator
+    public fun getShowLoadingIndicator(): MutableLiveData<Boolean> = showLoadingIndicator
 
-    open fun getDisableSuggestions(): Boolean = disableSuggestions
+    open public fun getDisableSuggestions(): Boolean = disableSuggestions
 
-    fun getTrackingCharacter(): Char = trackingCharacter
+    public fun getTrackingCharacter(): Char = trackingCharacter
 
-    fun getId(): Char = trackingCharacter
+    public fun getId(): Char = trackingCharacter
 
-    fun getUser(): User? = user
+    public fun getUser(): User? = user
 
-    fun getGroup(): Group? = group
+    public fun getGroup(): Group? = group
 }
 
 /**
  * Represents a suggestion item in the suggestion list.
  */
-data class SuggestionItem(
+public data class SuggestionItem(
     val id: String,
     val name: String,
     val leadingIconUrl: String? = null,
@@ -256,5 +257,5 @@ data class SuggestionItem(
     val hideLeadingIcon: Boolean = false,
     val leadingIconStyle: Int = 0
 ) {
-    fun getPromptTextAppearance(): PromptTextStyle? = promptTextStyle
+    public fun getPromptTextAppearance(): PromptTextStyle? = promptTextStyle
 }

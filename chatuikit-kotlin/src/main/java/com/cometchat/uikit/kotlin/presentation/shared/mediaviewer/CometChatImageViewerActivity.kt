@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -23,6 +22,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -34,9 +34,9 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This is a 1:1 Kotlin port of the Java CometChatImageViewerActivity from the
  * chatuikit module.
  */
-class CometChatImageViewerActivity : AppCompatActivity() {
+public class CometChatImageViewerActivity : AppCompatActivity() {
 
-    companion object {
+    public companion object {
         private const val ARGS_IMAGE_URLS = "ARGS_IMAGE_URLS"
         private const val ARGS_FILE_NAME = "ARGS_FILE_NAME"
         private const val MIME_TYPE_URL = "MIME_TYPE_URL"
@@ -54,7 +54,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
          */
         @JvmStatic
         @JvmOverloads
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             urls: List<String>,
             mimeType: List<String>,
@@ -104,12 +104,9 @@ class CometChatImageViewerActivity : AppCompatActivity() {
             .coerceIn(0, (urls?.lastIndex ?: 0).coerceAtLeast(0))
 
         initViews()
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                adapter?.clear()
-                finish()
-            }
-        })
+        // ENG-38657 (T5): the back interceptor only did cleanup-then-finish,
+        // which is the default back behavior - but its permanent registration
+        // disabled predictive back. Cleanup moved to onDestroy().
     }
 
     private fun initViews() {
@@ -137,7 +134,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
 
     private fun downloadMessage() {
         if (urls.isNullOrEmpty() || filenames.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot download image, urls or filenames are null")
+            CometChatLogger.e(TAG, "Cannot download image, urls or filenames are null")
             return
         }
         val currentPos = adapter?.currentPos ?: 0
@@ -153,7 +150,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
 
     private fun shareMessage() {
         if (urls.isNullOrEmpty() || mimeTypes.isNullOrEmpty() || filenames.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot share image, urls or mimeTypes or filenames are null")
+            CometChatLogger.e(TAG, "Cannot share image, urls or mimeTypes or filenames are null")
             return
         }
         val currentPos = adapter?.currentPos ?: 0
@@ -176,6 +173,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        adapter?.clear() // ENG-38657 (T5): moved from the removed back interceptor
         adapter = null
         super.onDestroy()
     }
@@ -198,7 +196,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
             .translationY(-toolbar.height.toFloat())
     }
 
-    inner class ImageAdapter(
+    inner public class ImageAdapter(
         private val context: Context,
         private val urls: List<String>,
         private val mimeTypes: List<String> = emptyList()
@@ -206,7 +204,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
 
         private val previewMap = HashMap<Int, CometChatImagePreview>()
         private val views = HashMap<Int, ImageView>()
-        var currentPos = 0
+        public var currentPos: Int = 0
             private set
 
         override fun getCount(): Int = urls.size
@@ -332,7 +330,7 @@ class CometChatImageViewerActivity : AppCompatActivity() {
                 .into(image)
         }
 
-        fun clear() {
+        public fun clear() {
             for (cometChatImagePreview in previewMap.values) {
                 cometChatImagePreview.cleanup()
             }

@@ -8,7 +8,7 @@ package com.cometchat.uikit.kotlin.shared.interfaces
  * @param T2 The type of the second argument
  * @param R The type of the result
  */
-fun interface Function2<T1, T2, R> {
+public fun interface Function2<T1, T2, R> {
     /**
      * Applies this function to the given arguments.
      *
@@ -16,5 +16,5 @@ fun interface Function2<T1, T2, R> {
      * @param t2 The second function argument
      * @return The function result
      */
-    fun apply(t1: T1, t2: T2): R
+    public fun apply(t1: T1, t2: T2): R
 }

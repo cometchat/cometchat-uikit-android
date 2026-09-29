@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the AI conversation starter view,
  * matching the XML attributes defined in attr_cometchat_ai_conversation_starter.xml.
  */
-data class CometChatAIConversationStarterStyle(
+public data class CometChatAIConversationStarterStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     val backgroundDrawable: Drawable? = null,
@@ -36,14 +36,14 @@ data class CometChatAIConversationStarterStyle(
     @ColorInt val errorStateTextColor: Int = 0,
     @StyleRes val errorStateTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatAIConversationStarterStyle with default values
          */
-        fun default(context: Context): CometChatAIConversationStarterStyle {
+        public fun default(context: Context): CometChatAIConversationStarterStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -57,7 +57,7 @@ data class CometChatAIConversationStarterStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatAIConversationStarterStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIConversationStarterStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIConversationStarterStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -72,7 +72,7 @@ data class CometChatAIConversationStarterStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatAIConversationStarterStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatAIConversationStarterStyle {

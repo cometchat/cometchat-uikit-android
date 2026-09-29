@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the AI smart replies view,
  * matching the XML attributes defined in attr_cometchat_ai_smart_replies.xml.
  */
-data class CometChatAISmartRepliesStyle(
+public data class CometChatAISmartRepliesStyle(
     // Title styling
     @ColorInt val titleTextColor: Int = 0,
     @StyleRes val titleTextAppearance: Int = 0,
@@ -44,14 +44,14 @@ data class CometChatAISmartRepliesStyle(
     @ColorInt val errorStateTextColor: Int = 0,
     @StyleRes val errorStateTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatAISmartRepliesStyle with default values
          */
-        fun default(context: Context): CometChatAISmartRepliesStyle {
+        public fun default(context: Context): CometChatAISmartRepliesStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -65,7 +65,7 @@ data class CometChatAISmartRepliesStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatAISmartRepliesStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAISmartRepliesStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAISmartRepliesStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -80,7 +80,7 @@ data class CometChatAISmartRepliesStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatAISmartRepliesStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatAISmartRepliesStyle {

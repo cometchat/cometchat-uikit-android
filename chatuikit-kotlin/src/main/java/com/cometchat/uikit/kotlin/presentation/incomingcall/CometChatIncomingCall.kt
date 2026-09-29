@@ -72,13 +72,13 @@ import kotlinx.coroutines.launch
  * incomingCall.setOnRejectClickListener { /* handle reject */ }
  * ```
  */
-class CometChatIncomingCall @JvmOverloads constructor(
+public class CometChatIncomingCall @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatIncomingCallStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatIncomingCall"
     }
 
@@ -432,7 +432,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param call The incoming Call object
      */
-    fun setCall(call: Call) {
+    public fun setCall(call: Call) {
         this.call = call
         viewModel?.setCall(call)
         updateCallerInfo()
@@ -443,7 +443,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The current Call or null if not set
      */
-    fun getCall(): Call? = call
+    public fun getCall(): Call? = call
 
     /**
      * Sets the style for this component.
@@ -452,7 +452,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param style The CometChatIncomingCallStyle to apply
      */
-    fun setStyle(style: CometChatIncomingCallStyle) {
+    public fun setStyle(style: CometChatIncomingCallStyle) {
         this.style = style
         applyStyle()
     }
@@ -462,7 +462,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param styleRes The style resource ID
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatIncomingCall
@@ -477,7 +477,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The current CometChatIncomingCallStyle
      */
-    fun getStyle(): CometChatIncomingCallStyle = style
+    public fun getStyle(): CometChatIncomingCallStyle = style
 
     /**
      * Sets the accept button click listener.
@@ -486,7 +486,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param listener The click listener or null to use default behavior
      */
-    fun setOnAcceptClickListener(listener: OnClick?) {
+    public fun setOnAcceptClickListener(listener: OnClick?) {
         this.onAcceptClick = listener
     }
 
@@ -495,7 +495,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The current OnClick listener
      */
-    fun getOnAcceptClickListener(): OnClick? = onAcceptClick
+    public fun getOnAcceptClickListener(): OnClick? = onAcceptClick
 
     /**
      * Sets the reject button click listener.
@@ -504,7 +504,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param listener The click listener or null to use default behavior
      */
-    fun setOnRejectClickListener(listener: OnClick?) {
+    public fun setOnRejectClickListener(listener: OnClick?) {
         this.onRejectClick = listener
     }
 
@@ -513,7 +513,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The current OnClick listener
      */
-    fun getOnRejectClickListener(): OnClick? = onRejectClick
+    public fun getOnRejectClickListener(): OnClick? = onRejectClick
 
     /**
      * Sets the error callback.
@@ -522,7 +522,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param onError The error callback
      */
-    fun setOnError(onError: ((CometChatException) -> Unit)?) {
+    public fun setOnError(onError: ((CometChatException) -> Unit)?) {
         this.onError = onError
     }
 
@@ -531,7 +531,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The current error callback
      */
-    fun getOnError(): ((CometChatException) -> Unit)? = onError
+    public fun getOnError(): ((CometChatException) -> Unit)? = onError
 
     /**
      * Disables or enables sound for incoming calls.
@@ -540,7 +540,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param disable True to disable sound, false to enable
      */
-    fun setDisableSoundForCalls(disable: Boolean) {
+    public fun setDisableSoundForCalls(disable: Boolean) {
         this.disableSoundForCalls = disable
     }
 
@@ -549,7 +549,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return True if sound is disabled
      */
-    fun isDisableSoundForCalls(): Boolean = disableSoundForCalls
+    public fun isDisableSoundForCalls(): Boolean = disableSoundForCalls
 
     /**
      * Sets a custom sound resource for incoming calls.
@@ -558,7 +558,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param soundRes The raw resource ID of the custom sound
      */
-    fun setCustomSoundForCalls(@RawRes soundRes: Int) {
+    public fun setCustomSoundForCalls(@RawRes soundRes: Int) {
         this.customSoundForCalls = soundRes
     }
 
@@ -567,14 +567,14 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The raw resource ID of the custom sound
      */
-    fun getCustomSoundForCalls(): Int = customSoundForCalls
+    public fun getCustomSoundForCalls(): Int = customSoundForCalls
 
     /**
      * Sets the call settings builder for ongoing call configuration.
      * 
      * @param builder The CallSettingsBuilder instance
      */
-    fun setCallSettingsBuilder(builder: Any?) {
+    public fun setCallSettingsBuilder(builder: Any?) {
         this.callSettingsBuilder = builder
     }
 
@@ -583,7 +583,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The CallSettingsBuilder instance
      */
-    fun getCallSettingsBuilder(): Any? = callSettingsBuilder
+    public fun getCallSettingsBuilder(): Any? = callSettingsBuilder
 
     // ==================== Custom View Methods ====================
 
@@ -594,7 +594,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param view The custom view or null to use default
      */
-    fun setItemView(view: View?) {
+    public fun setItemView(view: View?) {
         this.customItemView = view
         Utils.handleView(itemViewContainer, view, false)
     }
@@ -604,7 +604,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The custom item view
      */
-    fun getItemView(): View? = customItemView
+    public fun getItemView(): View? = customItemView
 
     /**
      * Sets a custom leading view.
@@ -613,7 +613,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param view The custom view or null to use default
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         this.customLeadingView = view
         Utils.handleView(leadingViewContainer, view, true)
     }
@@ -623,7 +623,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The custom leading view
      */
-    fun getLeadingView(): View? = customLeadingView
+    public fun getLeadingView(): View? = customLeadingView
 
     /**
      * Sets a custom title view.
@@ -632,7 +632,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param view The custom view or null to use default
      */
-    fun setTitleView(view: View?) {
+    public fun setTitleView(view: View?) {
         this.customTitleView = view
         Utils.handleView(titleContainer, view, true)
     }
@@ -642,7 +642,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The custom title view
      */
-    fun getTitleView(): View? = customTitleView
+    public fun getTitleView(): View? = customTitleView
 
     /**
      * Sets a custom subtitle view.
@@ -651,7 +651,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param view The custom view or null to use default
      */
-    fun setSubtitleView(view: View?) {
+    public fun setSubtitleView(view: View?) {
         this.customSubtitleView = view
         Utils.handleView(subtitleContainer, view, true)
     }
@@ -661,7 +661,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The custom subtitle view
      */
-    fun getSubtitleView(): View? = customSubtitleView
+    public fun getSubtitleView(): View? = customSubtitleView
 
     /**
      * Sets a custom trailing view.
@@ -670,7 +670,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @param view The custom view or null to use default
      */
-    fun setTrailingView(view: View?) {
+    public fun setTrailingView(view: View?) {
         this.customTrailingView = view
         Utils.handleView(trailingViewContainer, view, true)
     }
@@ -680,7 +680,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The custom trailing view
      */
-    fun getTrailingView(): View? = customTrailingView
+    public fun getTrailingView(): View? = customTrailingView
 
     // ==================== ViewModel Access ====================
 
@@ -689,7 +689,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * @return The CometChatIncomingCallViewModel instance
      */
-    fun getViewModel(): CometChatIncomingCallViewModel? = viewModel
+    public fun getViewModel(): CometChatIncomingCallViewModel? = viewModel
 
     // ==================== Observer Management ====================
 
@@ -698,7 +698,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * **Validates: Requirements 7a.20**
      */
-    fun attachObservers() {
+    public fun attachObservers() {
         val scope = viewScope ?: return
         val vm = viewModel ?: return
 
@@ -727,7 +727,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Disposes observers from the ViewModel.
      */
-    fun disposeObservers() {
+    public fun disposeObservers() {
         acceptedCallJob?.cancel()
         rejectedCallJob?.cancel()
         errorJob?.cancel()
@@ -856,7 +856,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
      * 
      * **Validates: Requirements 7a.15**
      */
-    fun playSound() {
+    public fun playSound() {
         if (!disableSoundForCalls) {
             soundManager.play(Sound.INCOMING_CALL, customSoundForCalls)
         }
@@ -865,7 +865,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Pauses the incoming call sound.
      */
-    fun pauseSound() {
+    public fun pauseSound() {
         soundManager.pauseSilently()
     }
 
@@ -904,12 +904,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the background color.
      */
-    fun getBackgroundColorValue(): Int = style.backgroundColor
+    public fun getBackgroundColorValue(): Int = style.backgroundColor
 
     /**
      * Sets the corner radius.
      */
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         style = style.copy(cornerRadius = radius)
         innerCard.radius = radius
     }
@@ -917,7 +917,7 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the corner radius.
      */
-    fun getCornerRadiusValue(): Float = style.cornerRadius
+    public fun getCornerRadiusValue(): Float = style.cornerRadius
 
     /**
      * Sets the stroke width.
@@ -945,12 +945,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the stroke color.
      */
-    fun getStrokeColorValue(): Int = style.strokeColor
+    public fun getStrokeColorValue(): Int = style.strokeColor
 
     /**
      * Sets the title text color.
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         callerNameTextView.setTextColor(color)
     }
@@ -958,12 +958,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the title text color.
      */
-    fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getTitleTextColor(): Int = style.titleTextColor
 
     /**
      * Sets the title text appearance.
      */
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) {
             callerNameTextView.setTextAppearance(appearance)
@@ -973,12 +973,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the title text appearance.
      */
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
 
     /**
      * Sets the subtitle text color.
      */
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(subtitleTextColor = color)
         callTypeTextView.setTextColor(color)
     }
@@ -986,12 +986,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the subtitle text color.
      */
-    fun getSubtitleTextColor(): Int = style.subtitleTextColor
+    public fun getSubtitleTextColor(): Int = style.subtitleTextColor
 
     /**
      * Sets the subtitle text appearance.
      */
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(subtitleTextAppearance = appearance)
         if (appearance != 0) {
             callTypeTextView.setTextAppearance(appearance)
@@ -1001,12 +1001,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the subtitle text appearance.
      */
-    fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
+    public fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
 
     /**
      * Sets the icon tint color.
      */
-    fun setIconTint(@ColorInt color: Int) {
+    public fun setIconTint(@ColorInt color: Int) {
         style = style.copy(iconTint = color)
         callTypeIcon.setColorFilter(color)
     }
@@ -1014,12 +1014,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the icon tint color.
      */
-    fun getIconTint(): Int = style.iconTint
+    public fun getIconTint(): Int = style.iconTint
 
     /**
      * Sets the accept button background color.
      */
-    fun setAcceptButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setAcceptButtonBackgroundColor(@ColorInt color: Int) {
         style = style.copy(acceptButtonBackgroundColor = color)
         acceptButton.setBackgroundColor(color)
     }
@@ -1027,12 +1027,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the accept button background color.
      */
-    fun getAcceptButtonBackgroundColor(): Int = style.acceptButtonBackgroundColor
+    public fun getAcceptButtonBackgroundColor(): Int = style.acceptButtonBackgroundColor
 
     /**
      * Sets the reject button background color.
      */
-    fun setRejectButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setRejectButtonBackgroundColor(@ColorInt color: Int) {
         style = style.copy(rejectButtonBackgroundColor = color)
         declineButton.setBackgroundColor(color)
     }
@@ -1040,12 +1040,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the reject button background color.
      */
-    fun getRejectButtonBackgroundColor(): Int = style.rejectButtonBackgroundColor
+    public fun getRejectButtonBackgroundColor(): Int = style.rejectButtonBackgroundColor
 
     /**
      * Sets the accept button text color.
      */
-    fun setAcceptButtonTextColor(@ColorInt color: Int) {
+    public fun setAcceptButtonTextColor(@ColorInt color: Int) {
         style = style.copy(acceptButtonTextColor = color)
         acceptButton.setTextColor(color)
     }
@@ -1053,12 +1053,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the accept button text color.
      */
-    fun getAcceptButtonTextColor(): Int = style.acceptButtonTextColor
+    public fun getAcceptButtonTextColor(): Int = style.acceptButtonTextColor
 
     /**
      * Sets the reject button text color.
      */
-    fun setRejectButtonTextColor(@ColorInt color: Int) {
+    public fun setRejectButtonTextColor(@ColorInt color: Int) {
         style = style.copy(rejectButtonTextColor = color)
         declineButton.setTextColor(color)
     }
@@ -1066,12 +1066,12 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the reject button text color.
      */
-    fun getRejectButtonTextColor(): Int = style.rejectButtonTextColor
+    public fun getRejectButtonTextColor(): Int = style.rejectButtonTextColor
 
     /**
      * Sets the avatar style.
      */
-    fun setAvatarStyle(avatarStyle: CometChatAvatarStyle) {
+    public fun setAvatarStyle(avatarStyle: CometChatAvatarStyle) {
         style = style.copy(avatarStyle = avatarStyle)
         callerAvatar.setStyle(avatarStyle)
     }
@@ -1079,5 +1079,5 @@ class CometChatIncomingCall @JvmOverloads constructor(
     /**
      * Gets the avatar style.
      */
-    fun getAvatarStyle(): CometChatAvatarStyle? = style.avatarStyle
+    public fun getAvatarStyle(): CometChatAvatarStyle? = style.avatarStyle
 }

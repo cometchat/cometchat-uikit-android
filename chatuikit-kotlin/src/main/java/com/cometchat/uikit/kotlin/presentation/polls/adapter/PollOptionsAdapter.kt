@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
  * @param isOptionsFilled LiveData to notify when at least 2 options are filled
  * @param recyclerView The RecyclerView this adapter is attached to (for scrolling)
  */
-class PollOptionsAdapter(
+internal class PollOptionsAdapter(
     private val isOptionsFilled: MutableLiveData<Boolean>,
     private val recyclerView: RecyclerView
 ) : RecyclerView.Adapter<PollOptionsAdapter.OptionViewHolder>() {

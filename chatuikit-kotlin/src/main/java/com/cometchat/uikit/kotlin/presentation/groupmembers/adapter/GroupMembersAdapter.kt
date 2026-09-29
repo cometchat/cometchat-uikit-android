@@ -32,7 +32,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Supports DiffUtil for efficient list updates, selection modes, click listeners,
  * and overflow menu with permission-based options.
  */
-class GroupMembersAdapter(
+internal class GroupMembersAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<GroupMembersAdapter.MemberViewHolder>() {
 

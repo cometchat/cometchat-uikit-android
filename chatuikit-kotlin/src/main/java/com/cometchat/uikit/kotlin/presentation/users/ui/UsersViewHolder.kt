@@ -19,15 +19,15 @@ import com.cometchat.uikit.kotlin.presentation.users.utils.UsersViewHolderListen
  * - bindView() is called during bind operations with user data
  * - Custom views replace default views when listeners are set
  */
-class UsersViewHolder(
-    val usersListItem: CometChatUsersListItem
+public class UsersViewHolder(
+    public val usersListItem: CometChatUsersListItem
 ) : RecyclerView.ViewHolder(usersListItem) {
 
-    companion object {
+    public companion object {
         /**
          * Creates a new UsersViewHolder with CometChatUsersListItem as the row view.
          */
-        fun create(parent: ViewGroup): UsersViewHolder {
+        public fun create(parent: ViewGroup): UsersViewHolder {
             val context = parent.context
             val usersListItem = CometChatUsersListItem(context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -66,7 +66,7 @@ class UsersViewHolder(
      * Creates or updates custom views using the provided listeners.
      * Custom views are recreated when listeners change.
      */
-    fun createCustomViews(
+    public fun createCustomViews(
         itemViewListener: UsersViewHolderListener?,
         leadingViewListener: UsersViewHolderListener?,
         titleViewListener: UsersViewHolderListener?,
@@ -160,7 +160,7 @@ class UsersViewHolder(
     /**
      * Binds user data to the views.
      */
-    fun bind(
+    public fun bind(
         user: User,
         userList: List<User>,
         position: Int,

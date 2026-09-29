@@ -27,14 +27,14 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * `getAttachments()` first (that's where a split-send puts them), then the legacy
  * `metadata.attachments[]`, then the single `getAttachment()`.
  */
-object MultiAttachmentUtils {
+public object MultiAttachmentUtils {
 
-    const val KIND_IMAGE = "image"
-    const val KIND_VIDEO = "video"
-    const val KIND_AUDIO = "audio"
-    const val KIND_FILE = "file"
+    public const val KIND_IMAGE: String = "image"
+    public const val KIND_VIDEO: String = "video"
+    public const val KIND_AUDIO: String = "audio"
+    public const val KIND_FILE: String = "file"
 
-    fun resolveAttachments(message: MediaMessage): List<Attachment> {
+    public fun resolveAttachments(message: MediaMessage): List<Attachment> {
         message.attachments?.takeIf { it.isNotEmpty() }?.let { return it }
         resolveFromMetadata(message)?.let { return it }
         return message.attachment?.let { listOf(it) } ?: emptyList()
@@ -48,7 +48,7 @@ object MultiAttachmentUtils {
      * stripped. Null when the extension is disabled or the metadata is absent — callers fall
      * back to the attachment's fileUrl.
      */
-    fun thumbnailUrl(message: MediaMessage): String? {
+    public fun thumbnailUrl(message: MediaMessage): String? {
         return try {
             val thumbnailGeneration = message.metadata
                 ?.optJSONObject("@injected")
@@ -94,7 +94,7 @@ object MultiAttachmentUtils {
         }
     }
 
-    fun kindOf(attachment: Attachment): String {
+    public fun kindOf(attachment: Attachment): String {
         val mime = attachment.fileMimeType?.lowercase().orEmpty()
         return when {
             mime.startsWith("image/") -> KIND_IMAGE
@@ -109,7 +109,7 @@ object MultiAttachmentUtils {
      * `metaData["audioType"] == "voice_note"`, falling back to the legacy `metaData["voiceNote"]`
      * Bool for messages sent before the key change.
      */
-    fun isVoiceNote(message: MediaMessage): Boolean {
+    public fun isVoiceNote(message: MediaMessage): Boolean {
         val metadata = message.metadata ?: return false
         return metadata.optString(UIKitConstants.JSONKeys.AUDIO_TYPE, null) ==
             UIKitConstants.JSONKeys.AUDIO_TYPE_VOICE_NOTE ||
@@ -121,7 +121,7 @@ object MultiAttachmentUtils {
      * e.g. "6 Images" / "6 Videos" / "2 Audio" / "3 Files". Used by summarized previews
      * (reply preview) when the message carries more than one attachment.
      */
-    fun countLabel(context: Context, messageType: String?, count: Int): String =
+    public fun countLabel(context: Context, messageType: String?, count: Int): String =
         when (messageType?.lowercase()) {
             UIKitConstants.MessageType.IMAGE -> context.getString(R.string.cometchat_n_images, count)
             UIKitConstants.MessageType.VIDEO -> context.getString(R.string.cometchat_n_videos, count)
@@ -144,7 +144,7 @@ object MultiAttachmentUtils {
      * renders markdown, just no mentions.
      */
     @JvmOverloads
-    fun renderCaption(
+    public fun renderCaption(
         context: Context,
         caption: String,
         message: BaseMessage? = null,
@@ -170,7 +170,7 @@ object MultiAttachmentUtils {
     }
 
     /** Default caption body size, matching the caption TextViews the bubbles used before. */
-    const val CAPTION_TEXT_SIZE_SP = 15f
+    public const val CAPTION_TEXT_SIZE_SP: Float = 15f
 
     /**
      * Renders a caption into a bubble's caption container as block-level views — exactly what the
@@ -192,7 +192,7 @@ object MultiAttachmentUtils {
      * @param textSizeSp Body size applied after the appearance; `0` to leave the appearance's size.
      */
     @JvmOverloads
-    fun renderCaptionInto(
+    public fun renderCaptionInto(
         container: LinearLayout,
         caption: String,
         message: BaseMessage? = null,
@@ -232,7 +232,7 @@ object MultiAttachmentUtils {
      * (quoted/reply preview, composer reply & edit banners): more than one attachment →
      * "N Images · caption" / "N Images"; single attachment → caption if present, else file name.
      */
-    fun mediaPreviewSubtitle(context: Context, message: MediaMessage): CharSequence {
+    public fun mediaPreviewSubtitle(context: Context, message: MediaMessage): CharSequence {
         val attachmentCount = resolveAttachments(message).size
         val caption = message.caption?.takeIf { it.isNotBlank() }
         return when {
@@ -256,7 +256,7 @@ object MultiAttachmentUtils {
      * it only appears when the message was edited AND a caption is displayed (only the caption
      * of a media message is editable, so without one there is nothing the label could refer to).
      */
-    fun createEditedLabel(context: Context): TextView = TextView(context).apply {
+    public fun createEditedLabel(context: Context): TextView = TextView(context).apply {
         visibility = View.GONE
         text = context.getString(R.string.cometchat_edited)
         setTextAppearance(CometChatTheme.getTextAppearanceCaption2Regular(context))
@@ -267,7 +267,7 @@ object MultiAttachmentUtils {
     }
 
     /** Shows the "Edited" label when the edited media message displays a caption. */
-    fun bindEditedLabel(label: TextView, message: MediaMessage, @ColorInt captionColor: Int) {
+    public fun bindEditedLabel(label: TextView, message: MediaMessage, @ColorInt captionColor: Int) {
         val show = message.editedAt > 0 && !message.caption.isNullOrEmpty()
         label.visibility = if (show) View.VISIBLE else View.GONE
         if (show && captionColor != 0) label.setTextColor(captionColor)
@@ -280,7 +280,7 @@ object MultiAttachmentUtils {
      * file (tray tiles and bubbles alike).
      */
     @DrawableRes
-    fun fileIconRes(mimeType: String?, fileUrl: String?): Int {
+    public fun fileIconRes(mimeType: String?, fileUrl: String?): Int {
         val mime = mimeType?.lowercase()
         val url = fileUrl?.lowercase()
         val matchers = UIKitConstants.FileTypeMatchers

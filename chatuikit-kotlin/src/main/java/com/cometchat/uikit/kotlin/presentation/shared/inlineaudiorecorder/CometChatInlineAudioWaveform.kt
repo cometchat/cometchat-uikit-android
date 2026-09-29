@@ -9,6 +9,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
+import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 
 /**
@@ -28,7 +29,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  *
  * **Validates: Requirements 3.1, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 4.4, 5.1, 5.2, 5.3, 5.4, 14.2**
  */
-class CometChatInlineAudioWaveform @JvmOverloads constructor(
+public class CometChatInlineAudioWaveform @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -92,7 +93,7 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
     
     init {
         // Set content description for accessibility
-        contentDescription = "Audio waveform"
+        contentDescription = context.getString(R.string.cometchat_a11y_audio_waveform)
     }
     
     // ==================== Public API ====================
@@ -101,7 +102,7 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Sets the amplitude values for the waveform.
      * @param amplitudes List of amplitude values (0.0 to 1.0)
      */
-    fun setAmplitudes(amplitudes: List<Float>) {
+    public fun setAmplitudes(amplitudes: List<Float>) {
         this.amplitudes = amplitudes
         invalidate()
     }
@@ -110,7 +111,7 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Sets the playback progress.
      * @param progress Progress value (0.0 to 1.0)
      */
-    fun setProgress(progress: Float) {
+    public fun setProgress(progress: Float) {
         this.progress = progress.coerceIn(0f, 1f)
         invalidate()
     }
@@ -119,14 +120,14 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Sets whether the waveform is in recording mode.
      * @param isRecording True if recording, false otherwise
      */
-    fun setRecording(isRecording: Boolean) {
+    public fun setRecording(isRecording: Boolean) {
         this.isRecording = isRecording
         contentDescription = if (isRecording) {
-            "Audio waveform showing recording amplitude"
+            context.getString(R.string.cometchat_a11y_waveform_recording_amplitude)
         } else if (isPlaying) {
-            "Audio waveform showing playback progress"
+            context.getString(R.string.cometchat_a11y_waveform_playback_progress)
         } else {
-            "Audio waveform"
+            context.getString(R.string.cometchat_a11y_audio_waveform)
         }
         invalidate()
     }
@@ -135,14 +136,14 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Sets whether the waveform is in playing mode.
      * @param isPlaying True if playing, false otherwise
      */
-    fun setPlaying(isPlaying: Boolean) {
+    public fun setPlaying(isPlaying: Boolean) {
         this.isPlaying = isPlaying
         contentDescription = if (isRecording) {
-            "Audio waveform showing recording amplitude"
+            context.getString(R.string.cometchat_a11y_waveform_recording_amplitude)
         } else if (isPlaying) {
-            "Audio waveform showing playback progress"
+            context.getString(R.string.cometchat_a11y_waveform_playback_progress)
         } else {
-            "Audio waveform"
+            context.getString(R.string.cometchat_a11y_audio_waveform)
         }
         invalidate()
     }
@@ -151,7 +152,7 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Sets the seek listener for tap/drag seeking.
      * @param listener Callback with progress value (0.0 to 1.0)
      */
-    fun setOnSeekListener(listener: ((Float) -> Unit)?) {
+    public fun setOnSeekListener(listener: ((Float) -> Unit)?) {
         this.onSeekListener = listener
     }
     
@@ -159,7 +160,7 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
      * Applies a style to the waveform.
      * @param style The style to apply
      */
-    fun applyStyle(style: CometChatInlineAudioRecorderStyle) {
+    public fun applyStyle(style: CometChatInlineAudioRecorderStyle) {
         barColor = style.barColor
         recordingBarColor = style.recordingBarColor
         playingBarColor = style.playingBarColor
@@ -174,47 +175,47 @@ class CometChatInlineAudioWaveform @JvmOverloads constructor(
     
     // ==================== Style Setters ====================
     
-    fun setBarColor(@ColorInt color: Int) {
+    public fun setBarColor(@ColorInt color: Int) {
         barColor = color
         invalidate()
     }
     
-    fun setRecordingBarColor(@ColorInt color: Int) {
+    public fun setRecordingBarColor(@ColorInt color: Int) {
         recordingBarColor = color
         invalidate()
     }
     
-    fun setPlayingBarColor(@ColorInt color: Int) {
+    public fun setPlayingBarColor(@ColorInt color: Int) {
         playingBarColor = color
         invalidate()
     }
     
-    fun setBarWidth(width: Float) {
+    public fun setBarWidth(width: Float) {
         barWidth = width
         invalidate()
     }
     
-    fun setBarSpacing(spacing: Float) {
+    public fun setBarSpacing(spacing: Float) {
         barSpacing = spacing
         invalidate()
     }
     
-    fun setBarMinHeight(height: Float) {
+    public fun setBarMinHeight(height: Float) {
         barMinHeight = height
         invalidate()
     }
     
-    fun setBarMaxHeight(height: Float) {
+    public fun setBarMaxHeight(height: Float) {
         barMaxHeight = height
         invalidate()
     }
     
-    fun setBarCornerRadius(radius: Float) {
+    public fun setBarCornerRadius(radius: Float) {
         barCornerRadius = radius
         invalidate()
     }
     
-    fun setBarCount(count: Int) {
+    public fun setBarCount(count: Int) {
         barCount = count
         invalidate()
     }

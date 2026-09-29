@@ -63,13 +63,13 @@ import kotlinx.coroutines.launch
  * messageHeader.setOnBackPress { /* Handle back */ }
  * ```
  */
-class CometChatMessageHeader @JvmOverloads constructor(
+public class CometChatMessageHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageHeaderStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMessageHeader::class.java.simpleName
     }
 
@@ -291,7 +291,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
     /**
      * Sets the user for the message header.
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         isAgentChat = AgentChatDetector.isAgentChat(user)
@@ -318,7 +318,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
     /**
      * Sets the group for the message header.
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         this.user = null
         viewModel?.setGroup(group)
@@ -582,7 +582,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
      * Enables the built-in "Pinned Messages" option in the header ⋮ menu (opens the conversation's
      * pinned-messages list via [setOnPinnedMessagesClickListener]). Enabling it shows the menu icon.
      */
-    fun setShowPinnedMessagesOption(show: Boolean) {
+    public fun setShowPinnedMessagesOption(show: Boolean) {
         showPinnedMessagesOption = show
         if (show) {
             menuIconVisibility = View.VISIBLE
@@ -591,7 +591,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
     }
 
     /** Sets the callback invoked when the built-in "Pinned Messages" header option is tapped. */
-    fun setOnPinnedMessagesClickListener(listener: () -> Unit) {
+    public fun setOnPinnedMessagesClickListener(listener: () -> Unit) {
         onPinnedMessagesClick = listener
     }
 
@@ -604,105 +604,105 @@ class CometChatMessageHeader @JvmOverloads constructor(
 
     // ==================== Public Visibility Setters ====================
 
-    fun setBackButtonVisibility(visibility: Int) {
+    public fun setBackButtonVisibility(visibility: Int) {
         backButtonVisibility = visibility
         binding.ivMessageHeaderBack.visibility = visibility
     }
 
-    fun setUserStatusVisibility(visibility: Int) {
+    public fun setUserStatusVisibility(visibility: Int) {
         if (isAgentChat) return // Agent chat always hides user status
         userStatusVisibility = visibility
     }
 
-    fun setGroupStatusVisibility(visibility: Int) {
+    public fun setGroupStatusVisibility(visibility: Int) {
         groupStatusVisibility = visibility
     }
 
-    fun setMenuIconVisibility(visibility: Int) {
+    public fun setMenuIconVisibility(visibility: Int) {
         menuIconVisibility = visibility
         binding.messageHeaderMenuIcon.visibility = visibility
     }
 
-    fun setVideoCallButtonVisibility(visibility: Int) {
+    public fun setVideoCallButtonVisibility(visibility: Int) {
         if (isAgentChat) return // Agent chat always hides call buttons
         videoCallButtonVisibility = visibility
         updateCallButtonsVisibility()
     }
 
-    fun setVoiceCallButtonVisibility(visibility: Int) {
+    public fun setVoiceCallButtonVisibility(visibility: Int) {
         if (isAgentChat) return // Agent chat always hides call buttons
         voiceCallButtonVisibility = visibility
         updateCallButtonsVisibility()
     }
 
-    fun setNewChatButtonVisibility(visibility: Int) {
+    public fun setNewChatButtonVisibility(visibility: Int) {
         newChatButtonVisibility = visibility
         binding.ivNewChat.visibility = visibility
     }
 
-    fun setChatHistoryButtonVisibility(visibility: Int) {
+    public fun setChatHistoryButtonVisibility(visibility: Int) {
         chatHistoryButtonVisibility = visibility
         binding.ivChatHistory.visibility = visibility
     }
 
     // ==================== Public Callback Setters ====================
 
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
         binding.callButtons.setOnError(callback)
     }
 
-    fun setOnNewChatClick(callback: () -> Unit) {
+    public fun setOnNewChatClick(callback: () -> Unit) {
         onNewChatClick = callback
     }
 
-    fun setOnChatHistoryClick(callback: () -> Unit) {
+    public fun setOnChatHistoryClick(callback: () -> Unit) {
         onChatHistoryClick = callback
     }
 
-    fun setOnVideoCallClick(callback: ((User?, Group?) -> Unit)?) {
+    public fun setOnVideoCallClick(callback: ((User?, Group?) -> Unit)?) {
         onVideoCallClick = callback
         binding.callButtons.setOnVideoCallClick(callback)
     }
 
-    fun setOnVoiceCallClick(callback: ((User?, Group?) -> Unit)?) {
+    public fun setOnVoiceCallClick(callback: ((User?, Group?) -> Unit)?) {
         onVoiceCallClick = callback
         binding.callButtons.setOnVoiceCallClick(callback)
     }
 
     // ==================== Public Custom View Listener Setters ====================
 
-    fun setLeadingViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setLeadingViewListener(listener: MessageHeaderViewHolderListener) {
         leadingViewListener = listener
     }
 
-    fun setTitleViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setTitleViewListener(listener: MessageHeaderViewHolderListener) {
         titleViewListener = listener
     }
 
-    fun setSubtitleViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setSubtitleViewListener(listener: MessageHeaderViewHolderListener) {
         subtitleViewListener = listener
     }
 
-    fun setTrailingViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setTrailingViewListener(listener: MessageHeaderViewHolderListener) {
         trailingViewListener = listener
     }
 
-    fun setAuxiliaryViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setAuxiliaryViewListener(listener: MessageHeaderViewHolderListener) {
         auxiliaryViewListener = listener
     }
 
-    fun setItemViewListener(listener: MessageHeaderViewHolderListener) {
+    public fun setItemViewListener(listener: MessageHeaderViewHolderListener) {
         itemViewListener = listener
     }
 
     // ==================== Public Formatter Setters ====================
 
-    fun setLastSeenTextFormatter(formatter: (Context, User) -> String) {
+    public fun setLastSeenTextFormatter(formatter: (Context, User) -> String) {
         lastSeenTextFormatter = formatter
     }
 
@@ -712,7 +712,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
      *
      * @param formatter The DateTimeFormatterCallback for custom formatting, or null to use default.
      */
-    fun setDateTimeFormatter(formatter: com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback?) {
         dateTimeFormatter = formatter
     }
 
@@ -721,11 +721,11 @@ class CometChatMessageHeader @JvmOverloads constructor(
      *
      * @return The current DateTimeFormatterCallback, or null if using default.
      */
-    fun getDateTimeFormatter(): com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback? = dateTimeFormatter
+    public fun getDateTimeFormatter(): com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback? = dateTimeFormatter
 
     // ==================== Public Menu Options Setter ====================
 
-    fun setMenuOptions(options: List<CometChatPopupMenu.MenuItem>) {
+    public fun setMenuOptions(options: List<CometChatPopupMenu.MenuItem>) {
         menuOptions = options
         binding.messageHeaderMenuIcon.visibility = if (options.isNotEmpty()) View.VISIBLE else View.GONE
     }
@@ -737,7 +737,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
      *
      * @param options A list of CometChatPopupMenu.MenuItem to be displayed in the menu.
      */
-    fun setOptions(options: List<CometChatPopupMenu.MenuItem>) {
+    public fun setOptions(options: List<CometChatPopupMenu.MenuItem>) {
         setMenuOptions(options)
     }
 
@@ -747,7 +747,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
      *
      * @return A list of CometChatPopupMenu.MenuItem representing the options in the menu.
      */
-    fun getOptions(): List<CometChatPopupMenu.MenuItem> {
+    public fun getOptions(): List<CometChatPopupMenu.MenuItem> {
         return menuOptions ?: emptyList()
     }
 
@@ -756,7 +756,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatMessageHeaderStyle) {
+    public fun setStyle(style: CometChatMessageHeaderStyle) {
         this.style = style
         applyStyle()
     }
@@ -764,7 +764,7 @@ class CometChatMessageHeader @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatMessageHeader
@@ -776,144 +776,144 @@ class CometChatMessageHeader @JvmOverloads constructor(
 
     // ==================== Getters (read from style object) ====================
 
-    fun getHeaderBackgroundColor(): Int = style.backgroundColor
-    fun getHeaderStrokeColor(): Int = style.strokeColor
-    fun getHeaderStrokeWidth(): Int = style.strokeWidth
-    fun getHeaderCornerRadius(): Int = style.cornerRadius
-    fun getTitleTextColor(): Int = style.titleTextColor
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
-    fun getSubtitleTextColor(): Int = style.subtitleTextColor
-    fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
-    fun getBackIcon(): Drawable? = style.backIcon
-    fun getBackIconTint(): Int = style.backIconTint
-    fun getMenuIcon(): Drawable? = style.menuIcon
-    fun getMenuIconTint(): Int = style.menuIconTint
-    fun getTypingIndicatorTextColor(): Int = style.typingIndicatorTextColor
-    fun getTypingIndicatorTextAppearance(): Int = style.typingIndicatorTextAppearance
-    fun getNewChatIcon(): Drawable? = style.newChatIcon
-    fun getNewChatIconTint(): Int = style.newChatIconTint
-    fun getChatHistoryIcon(): Drawable? = style.chatHistoryIcon
-    fun getChatHistoryIconTint(): Int = style.chatHistoryIconTint
-    fun getVideoCallIcon(): Drawable? = style.videoCallIcon
-    fun getVideoCallIconTint(): Int = style.videoCallIconTint
-    fun getVoiceCallIcon(): Drawable? = style.voiceCallIcon
-    fun getVoiceCallIconTint(): Int = style.voiceCallIconTint
+    public fun getHeaderBackgroundColor(): Int = style.backgroundColor
+    public fun getHeaderStrokeColor(): Int = style.strokeColor
+    public fun getHeaderStrokeWidth(): Int = style.strokeWidth
+    public fun getHeaderCornerRadius(): Int = style.cornerRadius
+    public fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getSubtitleTextColor(): Int = style.subtitleTextColor
+    public fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
+    public fun getBackIcon(): Drawable? = style.backIcon
+    public fun getBackIconTint(): Int = style.backIconTint
+    public fun getMenuIcon(): Drawable? = style.menuIcon
+    public fun getMenuIconTint(): Int = style.menuIconTint
+    public fun getTypingIndicatorTextColor(): Int = style.typingIndicatorTextColor
+    public fun getTypingIndicatorTextAppearance(): Int = style.typingIndicatorTextAppearance
+    public fun getNewChatIcon(): Drawable? = style.newChatIcon
+    public fun getNewChatIconTint(): Int = style.newChatIconTint
+    public fun getChatHistoryIcon(): Drawable? = style.chatHistoryIcon
+    public fun getChatHistoryIconTint(): Int = style.chatHistoryIconTint
+    public fun getVideoCallIcon(): Drawable? = style.videoCallIcon
+    public fun getVideoCallIconTint(): Int = style.videoCallIconTint
+    public fun getVoiceCallIcon(): Drawable? = style.voiceCallIcon
+    public fun getVoiceCallIconTint(): Int = style.voiceCallIconTint
 
     // ==================== Setters (update style object + apply) ====================
 
-    fun setHeaderBackgroundColor(@ColorInt color: Int) {
+    public fun setHeaderBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         if (color != 0) setCardBackgroundColor(color)
     }
 
-    fun setHeaderStrokeColor(@ColorInt color: Int) {
+    public fun setHeaderStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         if (color != 0) setStrokeColor(color)
     }
 
-    fun setHeaderStrokeWidth(@Dimension width: Int) {
+    public fun setHeaderStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width)
         if (width != 0) strokeWidth = width
     }
 
-    fun setHeaderCornerRadius(@Dimension radius: Int) {
+    public fun setHeaderCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         if (radius != 0) this.radius = radius.toFloat()
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         if (color != 0) binding.tvMessageHeaderName.setTextColor(color)
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) binding.tvMessageHeaderName.setTextAppearance(appearance)
     }
 
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(subtitleTextColor = color)
         if (color != 0) binding.tvMessageHeaderSubtitle.setTextColor(color)
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(subtitleTextAppearance = appearance)
         if (appearance != 0) binding.tvMessageHeaderSubtitle.setTextAppearance(appearance)
     }
 
-    fun setBackIcon(icon: Drawable?) {
+    public fun setBackIcon(icon: Drawable?) {
         style = style.copy(backIcon = icon)
         icon?.let { binding.ivMessageHeaderBack.setImageDrawable(it) }
     }
 
-    fun setBackIconTint(@ColorInt color: Int) {
+    public fun setBackIconTint(@ColorInt color: Int) {
         style = style.copy(backIconTint = color)
         if (color != 0) binding.ivMessageHeaderBack.setColorFilter(color)
     }
 
-    fun setMenuIcon(icon: Drawable?) {
+    public fun setMenuIcon(icon: Drawable?) {
         style = style.copy(menuIcon = icon)
         icon?.let { binding.messageHeaderMenuIcon.setImageDrawable(it) }
     }
 
-    fun setMenuIconTint(@ColorInt color: Int) {
+    public fun setMenuIconTint(@ColorInt color: Int) {
         style = style.copy(menuIconTint = color)
         if (color != 0) binding.messageHeaderMenuIcon.setColorFilter(color)
     }
 
-    fun setTypingIndicatorTextColor(@ColorInt color: Int) {
+    public fun setTypingIndicatorTextColor(@ColorInt color: Int) {
         style = style.copy(typingIndicatorTextColor = color)
         if (color != 0) binding.tvMessageHeaderTypingIndicator.setTextColor(color)
     }
 
-    fun setTypingIndicatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setTypingIndicatorTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(typingIndicatorTextAppearance = appearance)
         if (appearance != 0) binding.tvMessageHeaderTypingIndicator.setTextAppearance(appearance)
     }
 
-    fun setNewChatIcon(icon: Drawable?) {
+    public fun setNewChatIcon(icon: Drawable?) {
         style = style.copy(newChatIcon = icon)
         icon?.let { binding.ivNewChat.setImageDrawable(it) }
     }
 
-    fun setNewChatIconTint(@ColorInt color: Int) {
+    public fun setNewChatIconTint(@ColorInt color: Int) {
         style = style.copy(newChatIconTint = color)
         if (color != 0) binding.ivNewChat.setColorFilter(color)
     }
 
-    fun setChatHistoryIcon(icon: Drawable?) {
+    public fun setChatHistoryIcon(icon: Drawable?) {
         style = style.copy(chatHistoryIcon = icon)
         icon?.let { binding.ivChatHistory.setImageDrawable(it) }
     }
 
-    fun setChatHistoryIconTint(@ColorInt color: Int) {
+    public fun setChatHistoryIconTint(@ColorInt color: Int) {
         style = style.copy(chatHistoryIconTint = color)
         if (color != 0) binding.ivChatHistory.setColorFilter(color)
     }
 
-    fun setVideoCallIcon(icon: Drawable?) {
+    public fun setVideoCallIcon(icon: Drawable?) {
         style = style.copy(videoCallIcon = icon)
         icon?.let { binding.callButtons.setVideoCallIcon(it) }
     }
 
-    fun setVideoCallIconTint(@ColorInt color: Int) {
+    public fun setVideoCallIconTint(@ColorInt color: Int) {
         style = style.copy(videoCallIconTint = color)
         if (color != 0) binding.callButtons.setVideoCallIconTint(color)
     }
 
-    fun setVoiceCallIcon(icon: Drawable?) {
+    public fun setVoiceCallIcon(icon: Drawable?) {
         style = style.copy(voiceCallIcon = icon)
         icon?.let { binding.callButtons.setVoiceCallIcon(it) }
     }
 
-    fun setVoiceCallIconTint(@ColorInt color: Int) {
+    public fun setVoiceCallIconTint(@ColorInt color: Int) {
         style = style.copy(voiceCallIconTint = color)
         if (color != 0) binding.callButtons.setVoiceCallIconTint(color)
     }
 
     // ==================== Public ViewModel Setter ====================
 
-    fun setViewModel(viewModel: CometChatMessageHeaderViewModel) {
+    public fun setViewModel(viewModel: CometChatMessageHeaderViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         startCollectingFlows()

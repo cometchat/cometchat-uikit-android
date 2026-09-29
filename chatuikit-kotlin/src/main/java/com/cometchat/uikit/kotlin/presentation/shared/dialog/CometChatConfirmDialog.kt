@@ -24,12 +24,12 @@ import com.google.android.material.card.MaterialCardView
  * CometChatConfirmDialog is a customizable confirmation dialog used for
  * actions like delete confirmation, logout confirmation, etc.
  */
-class CometChatConfirmDialog(
+public class CometChatConfirmDialog(
     context: Context,
     @StyleRes private val themeResId: Int = 0
 ) : Dialog(context, themeResId) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatConfirmDialog::class.java.simpleName
     }
 
@@ -169,7 +169,7 @@ class CometChatConfirmDialog(
     }
 
 
-    fun setStyle(@StyleRes styleResId: Int) {
+    public fun setStyle(@StyleRes styleResId: Int) {
         val typedArray = context.obtainStyledAttributes(styleResId, R.styleable.CometChatConfirmDialog)
         applyCustomAttributes(typedArray)
     }
@@ -179,7 +179,7 @@ class CometChatConfirmDialog(
      *
      * @param style The CometChatConfirmDialogStyle to apply
      */
-    fun setStyle(style: CometChatConfirmDialogStyle) {
+    public fun setStyle(style: CometChatConfirmDialogStyle) {
         // Container styling
         confirmDialogStrokeColor = style.strokeColor
         confirmDialogStrokeWidth = style.strokeWidth
@@ -402,78 +402,78 @@ class CometChatConfirmDialog(
     }
 
     // Public setters
-    fun setTitleText(text: String) {
+    public fun setTitleText(text: String) {
         this.titleText = text
         if (::tvDialogTitle.isInitialized) {
             tvDialogTitle.text = text
         }
     }
 
-    fun setSubtitleText(text: String) {
+    public fun setSubtitleText(text: String) {
         this.subtitleText = text
         if (::tvDialogSubtitle.isInitialized) {
             tvDialogSubtitle.text = text
         }
     }
 
-    fun setPositiveButtonText(text: String) {
+    public fun setPositiveButtonText(text: String) {
         this.positiveButtonText = text
         if (::tvPositiveButton.isInitialized) {
             tvPositiveButton.text = text
         }
     }
 
-    fun setNegativeButtonText(text: String) {
+    public fun setNegativeButtonText(text: String) {
         this.negativeButtonText = text
         if (::tvNegativeButton.isInitialized) {
             tvNegativeButton.text = text
         }
     }
 
-    fun setOnPositiveButtonClick(listener: View.OnClickListener?) {
+    public fun setOnPositiveButtonClick(listener: View.OnClickListener?) {
         this.onPositiveButtonClick = listener
     }
 
-    fun setOnNegativeButtonClick(listener: View.OnClickListener?) {
+    public fun setOnNegativeButtonClick(listener: View.OnClickListener?) {
         this.onNegativeButtonClick = listener
     }
 
-    fun hideTitle(hide: Boolean) {
+    public fun hideTitle(hide: Boolean) {
         this.hideTitle = hide
         if (::tvDialogTitle.isInitialized) {
             tvDialogTitle.visibility = if (hide) View.GONE else View.VISIBLE
         }
     }
 
-    fun hideSubtitle(hide: Boolean) {
+    public fun hideSubtitle(hide: Boolean) {
         this.hideSubtitle = hide
         if (::tvDialogSubtitle.isInitialized) {
             tvDialogSubtitle.visibility = if (hide) View.GONE else View.VISIBLE
         }
     }
 
-    fun hideDialogIcon(hide: Boolean) {
+    public fun hideDialogIcon(hide: Boolean) {
         this.hideDialogIcon = hide
         if (::cardDialogIcon.isInitialized) {
             cardDialogIcon.visibility = if (hide) View.GONE else View.VISIBLE
         }
     }
 
-    fun hidePositiveButton(hide: Boolean) {
+    public fun hidePositiveButton(hide: Boolean) {
         this.hidePositiveButton = hide
         if (::btnPositive.isInitialized) {
             btnPositive.visibility = if (hide) View.GONE else View.VISIBLE
         }
     }
 
-    fun hideNegativeButton(hide: Boolean) {
+    public fun hideNegativeButton(hide: Boolean) {
         this.hideNegativeButton = hide
         if (::btnNegative.isInitialized) {
             btnNegative.visibility = if (hide) View.GONE else View.VISIBLE
         }
     }
 
-    fun showPositiveButtonProgress(show: Boolean) {
+    public fun showPositiveButtonProgress(show: Boolean) {
         this.hidePositiveButtonProgressBar = !show
         if (::progressPositive.isInitialized) {
             progressPositive.visibility = if (show) View.VISIBLE else View.GONE
@@ -481,7 +481,7 @@ class CometChatConfirmDialog(
         }
     }
 
-    fun showNegativeButtonProgress(show: Boolean) {
+    public fun showNegativeButtonProgress(show: Boolean) {
         this.hideNegativeButtonProgressBar = !show
         if (::progressNegative.isInitialized) {
             progressNegative.visibility = if (show) View.VISIBLE else View.GONE
@@ -489,133 +489,133 @@ class CometChatConfirmDialog(
         }
     }
 
-    fun setConfirmDialogIcon(icon: Drawable?) {
+    public fun setConfirmDialogIcon(icon: Drawable?) {
         this.confirmDialogIcon = icon
         if (::ivDialogIcon.isInitialized) {
             icon?.let { ivDialogIcon.setImageDrawable(it) }
         }
     }
 
-    fun setConfirmDialogIconTint(@ColorInt color: Int) {
+    public fun setConfirmDialogIconTint(@ColorInt color: Int) {
         this.confirmDialogIconTint = color
         if (::ivDialogIcon.isInitialized) {
             ivDialogIcon.setColorFilter(color)
         }
     }
 
-    fun setConfirmDialogIconBackgroundColor(@ColorInt color: Int) {
+    public fun setConfirmDialogIconBackgroundColor(@ColorInt color: Int) {
         this.confirmDialogIconBackgroundColor = color
         if (::cardDialogIcon.isInitialized) {
             cardDialogIcon.setCardBackgroundColor(color)
         }
     }
 
-    fun setConfirmDialogElevation(@Dimension elevation: Int) {
+    public fun setConfirmDialogElevation(@Dimension elevation: Int) {
         this.confirmDialogElevation = elevation
         if (::parentCard.isInitialized) {
             parentCard.cardElevation = elevation.toFloat()
         }
     }
     
-    fun setConfirmDialogBackgroundColor(@ColorInt color: Int) {
+    public fun setConfirmDialogBackgroundColor(@ColorInt color: Int) {
         this.confirmDialogBackgroundColor = color
         if (::parentCard.isInitialized) {
             parentCard.setCardBackgroundColor(color)
         }
     }
     
-    fun setConfirmDialogCornerRadius(@Dimension radius: Int) {
+    public fun setConfirmDialogCornerRadius(@Dimension radius: Int) {
         this.confirmDialogCornerRadius = radius
         if (::parentCard.isInitialized) {
             parentCard.radius = radius.toFloat()
         }
     }
     
-    fun setConfirmDialogStrokeColor(@ColorInt color: Int) {
+    public fun setConfirmDialogStrokeColor(@ColorInt color: Int) {
         this.confirmDialogStrokeColor = color
         if (::parentCard.isInitialized) {
             parentCard.strokeColor = color
         }
     }
     
-    fun setConfirmDialogStrokeWidth(@Dimension width: Int) {
+    public fun setConfirmDialogStrokeWidth(@Dimension width: Int) {
         this.confirmDialogStrokeWidth = width
         if (::parentCard.isInitialized) {
             parentCard.strokeWidth = width
         }
     }
     
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         this.confirmDialogTitleTextColor = color
         if (::tvDialogTitle.isInitialized) {
             tvDialogTitle.setTextColor(color)
         }
     }
     
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         this.confirmDialogSubtitleTextColor = color
         if (::tvDialogSubtitle.isInitialized) {
             tvDialogSubtitle.setTextColor(color)
         }
     }
     
-    fun setPositiveButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setPositiveButtonBackgroundColor(@ColorInt color: Int) {
         this.confirmDialogPositiveButtonBackgroundColor = color
         if (::btnPositive.isInitialized) {
             btnPositive.setCardBackgroundColor(color)
         }
     }
     
-    fun setPositiveButtonStrokeColor(@ColorInt color: Int) {
+    public fun setPositiveButtonStrokeColor(@ColorInt color: Int) {
         this.confirmDialogPositiveButtonStrokeColor = color
         if (::btnPositive.isInitialized) {
             btnPositive.strokeColor = color
         }
     }
     
-    fun setPositiveButtonStrokeWidth(@Dimension width: Int) {
+    public fun setPositiveButtonStrokeWidth(@Dimension width: Int) {
         this.confirmDialogPositiveButtonStrokeWidth = width
         if (::btnPositive.isInitialized) {
             btnPositive.strokeWidth = width
         }
     }
     
-    fun setPositiveButtonCornerRadius(@Dimension radius: Int) {
+    public fun setPositiveButtonCornerRadius(@Dimension radius: Int) {
         this.confirmDialogPositiveButtonRadius = radius
         if (::btnPositive.isInitialized) {
             btnPositive.radius = radius.toFloat()
         }
     }
     
-    fun setNegativeButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setNegativeButtonBackgroundColor(@ColorInt color: Int) {
         this.confirmDialogNegativeButtonBackgroundColor = color
         if (::btnNegative.isInitialized) {
             btnNegative.setCardBackgroundColor(color)
         }
     }
     
-    fun setNegativeButtonStrokeColor(@ColorInt color: Int) {
+    public fun setNegativeButtonStrokeColor(@ColorInt color: Int) {
         this.confirmDialogNegativeButtonStrokeColor = color
         if (::btnNegative.isInitialized) {
             btnNegative.strokeColor = color
         }
     }
     
-    fun setNegativeButtonStrokeWidth(@Dimension width: Int) {
+    public fun setNegativeButtonStrokeWidth(@Dimension width: Int) {
         this.confirmDialogNegativeButtonStrokeWidth = width
         if (::btnNegative.isInitialized) {
             btnNegative.strokeWidth = width
         }
     }
     
-    fun setNegativeButtonCornerRadius(@Dimension radius: Int) {
+    public fun setNegativeButtonCornerRadius(@Dimension radius: Int) {
         this.confirmDialogNegativeButtonRadius = radius
         if (::btnNegative.isInitialized) {
             btnNegative.radius = radius.toFloat()
         }
     }
 
-    fun hideIconBackground(hide: Boolean) {
+    public fun hideIconBackground(hide: Boolean) {
         this.hideIconBackground = hide
         if (::cardDialogIcon.isInitialized) {
             cardDialogIcon.setCardBackgroundColor(
@@ -624,42 +624,42 @@ class CometChatConfirmDialog(
         }
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         this.confirmDialogTitleTextAppearance = appearance
         if (::tvDialogTitle.isInitialized && appearance != 0) {
             tvDialogTitle.setTextAppearance(appearance)
         }
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         this.confirmDialogSubtitleTextAppearance = appearance
         if (::tvDialogSubtitle.isInitialized && appearance != 0) {
             tvDialogSubtitle.setTextAppearance(appearance)
         }
     }
 
-    fun setPositiveButtonTextColor(@ColorInt color: Int) {
+    public fun setPositiveButtonTextColor(@ColorInt color: Int) {
         this.confirmDialogPositiveButtonTextColor = color
         if (::tvPositiveButton.isInitialized) {
             tvPositiveButton.setTextColor(color)
         }
     }
 
-    fun setNegativeButtonTextColor(@ColorInt color: Int) {
+    public fun setNegativeButtonTextColor(@ColorInt color: Int) {
         this.confirmDialogNegativeButtonTextColor = color
         if (::tvNegativeButton.isInitialized) {
             tvNegativeButton.setTextColor(color)
         }
     }
 
-    fun setPositiveButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setPositiveButtonTextAppearance(@StyleRes appearance: Int) {
         this.confirmDialogPositiveButtonTextAppearance = appearance
         if (::tvPositiveButton.isInitialized && appearance != 0) {
             tvPositiveButton.setTextAppearance(appearance)
         }
     }
 
-    fun setNegativeButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setNegativeButtonTextAppearance(@StyleRes appearance: Int) {
         this.confirmDialogNegativeButtonTextAppearance = appearance
         if (::tvNegativeButton.isInitialized && appearance != 0) {
             tvNegativeButton.setTextAppearance(appearance)

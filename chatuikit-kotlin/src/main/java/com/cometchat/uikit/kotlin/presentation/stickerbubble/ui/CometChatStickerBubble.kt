@@ -33,7 +33,7 @@ import com.google.android.material.card.MaterialCardView
  * stickerBubble.setMessage(customMessage)
  * ```
  */
-class CometChatStickerBubble @JvmOverloads constructor(
+public class CometChatStickerBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatStickerBubbleStyle
@@ -108,7 +108,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param message The CustomMessage containing the sticker data
      */
-    fun setMessage(message: CustomMessage) {
+    public fun setMessage(message: CustomMessage) {
         this.message = message
         try {
             val stickerUrl = message.customData?.getString("sticker_url")
@@ -127,7 +127,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param url The URL of the sticker image
      */
-    fun setImageUrl(url: String?) {
+    public fun setImageUrl(url: String?) {
         if (url == null) return
         this.imageUrl = url
 
@@ -174,7 +174,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param drawable The drawable to display
      */
-    fun setDrawable(drawable: Drawable?) {
+    public fun setDrawable(drawable: Drawable?) {
         ivSticker.setImageDrawable(drawable)
     }
 
@@ -183,7 +183,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param alignment The alignment (LEFT for incoming, RIGHT for outgoing)
      */
-    fun setAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
+    public fun setAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
         // Alignment is typically handled by the parent layout
         // This method is provided for API compatibility
     }
@@ -193,7 +193,7 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @param style The style configuration to apply
      */
-    fun setStyle(style: CometChatStickerBubbleStyle) {
+    public fun setStyle(style: CometChatStickerBubbleStyle) {
         applyStyle(style)
     }
 
@@ -202,22 +202,22 @@ class CometChatStickerBubble @JvmOverloads constructor(
      *
      * @return The current style
      */
-    fun getStyle(): CometChatStickerBubbleStyle = style
+    public fun getStyle(): CometChatStickerBubbleStyle = style
 
     // ==================== Getters ====================
 
     /**
      * Gets the current message.
      */
-    fun getMessage(): CustomMessage? = message
+    public fun getMessage(): CustomMessage? = message
 
     /**
      * Gets the current image URL.
      */
-    fun getImageUrl(): String? = imageUrl
+    public fun getImageUrl(): String? = imageUrl
 
     /**
      * Gets the sticker ImageView.
      */
-    fun getStickerImageView(): ImageView = ivSticker
+    public fun getStickerImageView(): ImageView = ivSticker
 }

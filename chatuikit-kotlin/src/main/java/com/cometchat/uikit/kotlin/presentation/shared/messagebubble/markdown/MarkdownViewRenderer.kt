@@ -47,7 +47,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * formatters produced are re-overlaid per segment, remapped through a position map because
  * stripping the markdown markers shifts every offset left.
  */
-object MarkdownViewRenderer {
+public object MarkdownViewRenderer {
 
     /**
      * Visual configuration for a render pass.
@@ -60,7 +60,7 @@ object MarkdownViewRenderer {
      * @param isOutgoing True for a bubble aligned RIGHT (sent by the logged-in user) — code blocks,
      *   blockquotes and inline code use the sender color set instead of the receiver one.
      */
-    data class Style(
+    public data class Style(
         @ColorInt val textColor: Int = 0,
         @ColorInt val linkColor: Int = 0,
         @StyleRes val textAppearance: Int = 0,
@@ -79,7 +79,7 @@ object MarkdownViewRenderer {
      */
     @JvmStatic
     @JvmOverloads
-    fun render(
+    public fun render(
         container: LinearLayout,
         markdown: String,
         formatterSpans: Spanned? = null,
@@ -98,7 +98,7 @@ object MarkdownViewRenderer {
      */
     @JvmStatic
     @JvmOverloads
-    fun buildViews(
+    public fun buildViews(
         context: Context,
         markdown: String,
         formatterSpans: Spanned? = null,

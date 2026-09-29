@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Common bubble properties use sentinel values and can be resolved against
  * a [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatMeetCallBubbleStyle(
+public data class CometChatMeetCallBubbleStyle(
     // Content-specific properties - Call icons
     val incomingVoiceCallIcon: Drawable? = null,
     val incomingVideoCallIcon: Drawable? = null,
@@ -59,10 +59,10 @@ data class CometChatMeetCallBubbleStyle(
      * Resolves this style against a [CometChatMessageBubbleStyle], using the bubble style's
      * values as fallbacks for any properties set to sentinel values.
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatMeetCallBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatMeetCallBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to outgoing).
          *
@@ -73,7 +73,7 @@ data class CometChatMeetCallBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatMeetCallBubbleStyle with default values
          */
-        fun default(context: Context): CometChatMeetCallBubbleStyle {
+        public fun default(context: Context): CometChatMeetCallBubbleStyle {
             return outgoing(context)
         }
 
@@ -88,7 +88,7 @@ data class CometChatMeetCallBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatMeetCallBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatMeetCallBubbleStyle {
+        public fun outgoing(context: Context): CometChatMeetCallBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatOutgoingMessageBubbleStyle
@@ -106,7 +106,7 @@ data class CometChatMeetCallBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatMeetCallBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatMeetCallBubbleStyle {
+        public fun incoming(context: Context): CometChatMeetCallBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatIncomingMessageBubbleStyle
@@ -163,7 +163,7 @@ data class CometChatMeetCallBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatMeetCallBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMeetCallBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMeetCallBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

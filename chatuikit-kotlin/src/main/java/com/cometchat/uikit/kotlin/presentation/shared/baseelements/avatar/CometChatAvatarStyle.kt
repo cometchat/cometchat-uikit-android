@@ -14,7 +14,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the avatar view,
  * including background color, stroke properties, and text appearance.
  */
-data class CometChatAvatarStyle(
+public data class CometChatAvatarStyle(
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
     @Dimension val strokeWidth: Float = 0f,
@@ -22,14 +22,14 @@ data class CometChatAvatarStyle(
     @StyleRes val placeHolderTextAppearance: Int = 0,
     @ColorInt val placeHolderTextColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatAvatarStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatAvatarStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatAvatarStyle {
+        public fun default(context: Context): CometChatAvatarStyle {
             return extractFromThemeStyle(context, R.attr.cometchatAvatarStyle)
         }
 
@@ -77,7 +77,7 @@ data class CometChatAvatarStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatAvatarStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAvatarStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAvatarStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

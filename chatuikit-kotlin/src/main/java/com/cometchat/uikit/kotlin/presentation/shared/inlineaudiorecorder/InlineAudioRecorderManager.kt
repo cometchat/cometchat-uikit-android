@@ -9,7 +9,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.InlineAudioRecorderStatus
 import java.io.File
 import kotlin.math.sqrt
@@ -17,23 +17,23 @@ import kotlin.math.sqrt
 /**
  * Callback interface for inline audio recorder events.
  */
-interface InlineAudioRecorderCallback {
-    fun onDurationUpdate(durationMs: Long)
-    fun onAmplitudeUpdate(amplitude: Float)
-    fun onStatusChange(status: InlineAudioRecorderStatus)
-    fun onRecordingComplete(file: File, durationMs: Long, amplitudes: List<Float>)
-    fun onPlaybackPositionUpdate(positionMs: Long)
-    fun onPlaybackComplete()
-    fun onError(message: String)
+public interface InlineAudioRecorderCallback {
+    public fun onDurationUpdate(durationMs: Long)
+    public fun onAmplitudeUpdate(amplitude: Float)
+    public fun onStatusChange(status: InlineAudioRecorderStatus)
+    public fun onRecordingComplete(file: File, durationMs: Long, amplitudes: List<Float>)
+    public fun onPlaybackPositionUpdate(positionMs: Long)
+    public fun onPlaybackComplete()
+    public fun onError(message: String)
 }
 
 /**
  * InlineAudioRecorderManager handles audio recording and playback for chatuikit-kotlin.
  * Supports pause/resume recording (API 24+ for true pause).
  */
-class InlineAudioRecorderManager(private val context: Context) {
+public class InlineAudioRecorderManager(private val context: Context) {
     
-    companion object {
+    public companion object {
         private const val TAG = "InlineAudioRecorderMgr"
         private const val AMPLITUDE_UPDATE_INTERVAL = 100L
         private const val TIMER_UPDATE_INTERVAL = 100L
@@ -83,7 +83,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                     amplitudeHistory.add(processedAmplitude)
                     callback?.onAmplitudeUpdate(processedAmplitude)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error getting amplitude: ${e.message}")
+                    CometChatLogger.e(TAG, "Error getting amplitude: ${e.message}")
                 }
                 amplitudeHandler.postDelayed(this, AMPLITUDE_UPDATE_INTERVAL)
             }
@@ -101,7 +101,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                         playbackHandler.postDelayed(this, PLAYBACK_POSITION_INTERVAL)
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating playback position: ${e.message}")
+                    CometChatLogger.e(TAG, "Error updating playback position: ${e.message}")
                 }
             }
         }
@@ -209,41 +209,41 @@ class InlineAudioRecorderManager(private val context: Context) {
     
     // Public API
     
-    fun setCallback(callback: InlineAudioRecorderCallback) {
+    public fun setCallback(callback: InlineAudioRecorderCallback) {
         this.callback = callback
     }
     
-    fun getCurrentStatus(): InlineAudioRecorderStatus = currentStatus
+    public fun getCurrentStatus(): InlineAudioRecorderStatus = currentStatus
     
-    fun getRecordedFilePath(): String? = recordedFilePath
+    public fun getRecordedFilePath(): String? = recordedFilePath
     
-    fun getRecordedFile(): File? = recordedFilePath?.let { File(it) }
+    public fun getRecordedFile(): File? = recordedFilePath?.let { File(it) }
     
-    fun getRecordingDurationMs(): Long = recordingDurationMs
+    public fun getRecordingDurationMs(): Long = recordingDurationMs
     
-    fun getAmplitudeHistory(): List<Float> = amplitudeHistory.toList()
+    public fun getAmplitudeHistory(): List<Float> = amplitudeHistory.toList()
     
-    fun isPlaying(): Boolean = isPlaybackActive && (mediaPlayer?.isPlaying == true)
+    public fun isPlaying(): Boolean = isPlaybackActive && (mediaPlayer?.isPlaying == true)
     
-    fun isPauseResumeSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+    public fun isPauseResumeSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
     
-    fun startRecording(): Boolean {
-        Log.d(TAG, "startRecording: called, currentStatus = $currentStatus")
+    public fun startRecording(): Boolean {
+        CometChatLogger.d(TAG, "startRecording: called, currentStatus = $currentStatus")
         
         if (currentStatus != InlineAudioRecorderStatus.IDLE) {
-            Log.w(TAG, "startRecording: invalid status, returning false")
+            CometChatLogger.w(TAG, "startRecording: invalid status, returning false")
             return false
         }
         
         if (!requestRecordingAudioFocus()) {
-            Log.e(TAG, "startRecording: failed to acquire audio focus")
+            CometChatLogger.e(TAG, "startRecording: failed to acquire audio focus")
             callback?.onError("Failed to acquire audio focus")
             return false
         }
         
         try {
             recordedFilePath = "${context.externalCacheDir?.absolutePath}/inline_audio_${System.currentTimeMillis()}.m4a"
-            Log.d(TAG, "startRecording: file path = $recordedFilePath")
+            CometChatLogger.d(TAG, "startRecording: file path = $recordedFilePath")
             
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(context)
@@ -273,10 +273,10 @@ class InlineAudioRecorderManager(private val context: Context) {
             amplitudeHandler.postDelayed(amplitudeRunnable, AMPLITUDE_UPDATE_INTERVAL)
             
             callback?.onStatusChange(InlineAudioRecorderStatus.RECORDING)
-            Log.d(TAG, "startRecording: SUCCESS - recording started")
+            CometChatLogger.d(TAG, "startRecording: SUCCESS - recording started")
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to start recording: ${e.message}")
             callback?.onError("Failed to start recording: ${e.message}")
             currentStatus = InlineAudioRecorderStatus.ERROR
             callback?.onStatusChange(InlineAudioRecorderStatus.ERROR)
@@ -285,7 +285,7 @@ class InlineAudioRecorderManager(private val context: Context) {
         }
     }
     
-    fun pauseRecording(): Boolean {
+    public fun pauseRecording(): Boolean {
         if (currentStatus != InlineAudioRecorderStatus.RECORDING || !isRecording || isPaused) {
             return false
         }
@@ -308,13 +308,13 @@ class InlineAudioRecorderManager(private val context: Context) {
             callback?.onDurationUpdate(recordingDurationMs)
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to pause recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to pause recording: ${e.message}")
             callback?.onError("Failed to pause recording: ${e.message}")
             return false
         }
     }
     
-    fun resumeRecording(): Boolean {
+    public fun resumeRecording(): Boolean {
         if (currentStatus != InlineAudioRecorderStatus.PAUSED || !isRecording || !isPaused) {
             return false
         }
@@ -334,7 +334,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                     mediaRecorder?.stop()
                     mediaRecorder?.release()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error stopping old recorder: ${e.message}")
+                    CometChatLogger.e(TAG, "Error stopping old recorder: ${e.message}")
                 }
                 
                 recordedFilePath = "${context.externalCacheDir?.absolutePath}/inline_audio_${System.currentTimeMillis()}.m4a"
@@ -365,7 +365,7 @@ class InlineAudioRecorderManager(private val context: Context) {
             callback?.onStatusChange(InlineAudioRecorderStatus.RECORDING)
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to resume recording: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to resume recording: ${e.message}")
             callback?.onError("Failed to resume recording: ${e.message}")
             currentStatus = InlineAudioRecorderStatus.ERROR
             callback?.onStatusChange(InlineAudioRecorderStatus.ERROR)
@@ -373,12 +373,12 @@ class InlineAudioRecorderManager(private val context: Context) {
         }
     }
     
-    fun stopRecording(): File? {
-        Log.d(TAG, "stopRecording: called, currentStatus = $currentStatus")
+    public fun stopRecording(): File? {
+        CometChatLogger.d(TAG, "stopRecording: called, currentStatus = $currentStatus")
         
         if (currentStatus != InlineAudioRecorderStatus.RECORDING && 
             currentStatus != InlineAudioRecorderStatus.PAUSED) {
-            Log.w(TAG, "stopRecording: invalid status, returning null")
+            CometChatLogger.w(TAG, "stopRecording: invalid status, returning null")
             return null
         }
         
@@ -386,10 +386,10 @@ class InlineAudioRecorderManager(private val context: Context) {
             if (!isPaused) {
                 recordingDurationMs = pausedDuration + (System.currentTimeMillis() - startTime)
             }
-            Log.d(TAG, "stopRecording: recordingDurationMs = $recordingDurationMs")
+            CometChatLogger.d(TAG, "stopRecording: recordingDurationMs = $recordingDurationMs")
             
             // Stop and release MediaRecorder - this finalizes the file
-            Log.d(TAG, "stopRecording: stopping MediaRecorder...")
+            CometChatLogger.d(TAG, "stopRecording: stopping MediaRecorder...")
             mediaRecorder?.apply {
                 stop()
                 release()
@@ -397,7 +397,7 @@ class InlineAudioRecorderManager(private val context: Context) {
             mediaRecorder = null
             isRecording = false
             isPaused = false
-            Log.d(TAG, "stopRecording: MediaRecorder stopped and released")
+            CometChatLogger.d(TAG, "stopRecording: MediaRecorder stopped and released")
             
             timerHandler.removeCallbacks(timerRunnable)
             amplitudeHandler.removeCallbacks(amplitudeRunnable)
@@ -406,38 +406,38 @@ class InlineAudioRecorderManager(private val context: Context) {
             callback?.onStatusChange(InlineAudioRecorderStatus.COMPLETED)
             
             recordedFilePath?.let { path ->
-                Log.d(TAG, "stopRecording: checking file at path = $path")
+                CometChatLogger.d(TAG, "stopRecording: checking file at path = $path")
                 val file = File(path)
                 
                 // Check file immediately
-                Log.d(TAG, "stopRecording: immediate check - exists = ${file.exists()}, size = ${file.length()}")
+                CometChatLogger.d(TAG, "stopRecording: immediate check - exists = ${file.exists()}, size = ${file.length()}")
                 
                 // Wait for file to be fully written to disk (up to 500ms)
                 var attempts = 0
                 while (attempts < 10 && (!file.exists() || file.length() == 0L)) {
-                    Log.d(TAG, "stopRecording: waiting for file, attempt ${attempts + 1}")
+                    CometChatLogger.d(TAG, "stopRecording: waiting for file, attempt ${attempts + 1}")
                     try {
                         Thread.sleep(50)
                     } catch (e: InterruptedException) {
-                        Log.w(TAG, "stopRecording: sleep interrupted")
+                        CometChatLogger.w(TAG, "stopRecording: sleep interrupted")
                         break
                     }
                     attempts++
-                    Log.d(TAG, "stopRecording: after wait - exists = ${file.exists()}, size = ${file.length()}")
+                    CometChatLogger.d(TAG, "stopRecording: after wait - exists = ${file.exists()}, size = ${file.length()}")
                 }
                 
                 if (file.exists() && file.length() > 0) {
-                    Log.d(TAG, "stopRecording: SUCCESS - file ready, size = ${file.length()} bytes, duration = ${recordingDurationMs}ms")
+                    CometChatLogger.d(TAG, "stopRecording: SUCCESS - file ready, size = ${file.length()} bytes, duration = ${recordingDurationMs}ms")
                     callback?.onRecordingComplete(file, recordingDurationMs, amplitudeHistory.toList())
                     return file
                 } else {
-                    Log.e(TAG, "stopRecording: FAILED - file is empty or doesn't exist after ${attempts} attempts. exists = ${file.exists()}, size = ${file.length()}")
+                    CometChatLogger.e(TAG, "stopRecording: FAILED - file is empty or doesn't exist after ${attempts} attempts. exists = ${file.exists()}, size = ${file.length()}")
                 }
-            } ?: Log.e(TAG, "stopRecording: recordedFilePath is null")
+            } ?: CometChatLogger.e(TAG, "stopRecording: recordedFilePath is null")
             
             return null
         } catch (e: Exception) {
-            Log.e(TAG, "stopRecording: exception - ${e.message}", e)
+            CometChatLogger.e(TAG, "stopRecording: exception - ${e.message}", e)
             callback?.onError("Failed to stop recording: ${e.message}")
             currentStatus = InlineAudioRecorderStatus.ERROR
             callback?.onStatusChange(InlineAudioRecorderStatus.ERROR)
@@ -446,7 +446,7 @@ class InlineAudioRecorderManager(private val context: Context) {
         }
     }
     
-    fun deleteRecording() {
+    public fun deleteRecording() {
         if (isRecording) {
             try {
                 if (!isPaused) {
@@ -454,7 +454,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                 }
                 mediaRecorder?.release()
             } catch (e: Exception) {
-                Log.e(TAG, "Error stopping recorder: ${e.message}")
+                CometChatLogger.e(TAG, "Error stopping recorder: ${e.message}")
             }
             mediaRecorder = null
             isRecording = false
@@ -474,7 +474,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                     file.delete()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error deleting file: ${e.message}")
+                CometChatLogger.e(TAG, "Error deleting file: ${e.message}")
             }
         }
         recordedFilePath = null
@@ -491,7 +491,7 @@ class InlineAudioRecorderManager(private val context: Context) {
         abandonAudioFocus()
     }
     
-    fun startPlayback() {
+    public fun startPlayback() {
         if (currentStatus != InlineAudioRecorderStatus.COMPLETED) {
             return
         }
@@ -525,7 +525,7 @@ class InlineAudioRecorderManager(private val context: Context) {
                     handlePlaybackCompletion()
                 }
                 setOnErrorListener { _, what, extra ->
-                    Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
+                    CometChatLogger.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
                     callback?.onError("Playback error: $what")
                     releaseMediaPlayer()
                     currentStatus = InlineAudioRecorderStatus.COMPLETED
@@ -541,13 +541,13 @@ class InlineAudioRecorderManager(private val context: Context) {
             callback?.onStatusChange(InlineAudioRecorderStatus.PLAYING)
             playbackHandler.postDelayed(playbackRunnable, PLAYBACK_POSITION_INTERVAL)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start playback: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to start playback: ${e.message}")
             callback?.onError("Failed to start playback: ${e.message}")
             releaseMediaPlayer()
         }
     }
     
-    fun pausePlayback() {
+    public fun pausePlayback() {
         if (!isPlaybackActive || currentStatus != InlineAudioRecorderStatus.PLAYING) {
             return
         }
@@ -560,12 +560,12 @@ class InlineAudioRecorderManager(private val context: Context) {
             currentStatus = InlineAudioRecorderStatus.COMPLETED
             callback?.onStatusChange(InlineAudioRecorderStatus.COMPLETED)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to pause playback: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to pause playback: ${e.message}")
             callback?.onError("Failed to pause playback: ${e.message}")
         }
     }
     
-    fun seekTo(positionMs: Long) {
+    public fun seekTo(positionMs: Long) {
         if (currentStatus != InlineAudioRecorderStatus.COMPLETED && 
             currentStatus != InlineAudioRecorderStatus.PLAYING) {
             return
@@ -582,7 +582,7 @@ class InlineAudioRecorderManager(private val context: Context) {
             player.seekTo(clampedPosition.toInt())
             callback?.onPlaybackPositionUpdate(clampedPosition)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to seek: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to seek: ${e.message}")
         }
     }
     
@@ -600,14 +600,14 @@ class InlineAudioRecorderManager(private val context: Context) {
             mediaPlayer?.stop()
             mediaPlayer?.release()
         } catch (e: Exception) {
-            Log.e(TAG, "Error releasing MediaPlayer: ${e.message}")
+            CometChatLogger.e(TAG, "Error releasing MediaPlayer: ${e.message}")
         }
         mediaPlayer = null
         isPlaybackActive = false
         playbackHandler.removeCallbacks(playbackRunnable)
     }
     
-    fun release() {
+    public fun release() {
         deleteRecording()
     }
     
@@ -615,8 +615,8 @@ class InlineAudioRecorderManager(private val context: Context) {
      * Marks the recording as submitted (prevents deletion on release).
      * Call this before release() if the recording was successfully submitted.
      */
-    fun markAsSubmitted() {
-        Log.d(TAG, "markAsSubmitted: clearing file path to prevent deletion")
+    public fun markAsSubmitted() {
+        CometChatLogger.d(TAG, "markAsSubmitted: clearing file path to prevent deletion")
         recordedFilePath = null
     }
 }

@@ -47,13 +47,13 @@ import com.google.android.material.card.MaterialCardView
  * ```
  */
 @Suppress("unused")
-class CometChatAvatar @JvmOverloads constructor(
+public class CometChatAvatar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAvatarStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatAvatar::class.java.simpleName
     }
 
@@ -147,14 +147,14 @@ class CometChatAvatar @JvmOverloads constructor(
     /**
      * Gets the name currently set in the avatar.
      */
-    fun getName(): String = text
+    public fun getName(): String = text
 
     /**
      * Sets the name to be displayed as initials in the avatar.
      * 
      * @param name The name to generate initials from
      */
-    fun setName(name: String?) {
+    public fun setName(name: String?) {
         // Clear any pending Glide request to prevent callbacks from affecting this view
         if (isValidContextForGlide(context)) {
             Glide.with(context).clear(binding.ivAvatar)
@@ -189,7 +189,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * @param name The name to display as initials
      * @param avatarUrl The URL of the avatar image (optional)
      */
-    fun setAvatar(name: String, avatarUrl: String?) {
+    public fun setAvatar(name: String, avatarUrl: String?) {
         setName(name)
         if (!avatarUrl.isNullOrEmpty()) {
             setAvatar(avatarUrl)
@@ -201,7 +201,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param user The User object containing name and avatar URL
      */
-    fun setAvatar(user: User) {
+    public fun setAvatar(user: User) {
         setAvatar(user.name ?: "", user.avatar)
     }
 
@@ -210,7 +210,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param group The Group object containing name and icon URL
      */
-    fun setAvatar(group: Group) {
+    public fun setAvatar(group: Group) {
         setAvatar(group.name ?: "", group.icon)
     }
 
@@ -219,7 +219,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param avatarUrl The URL of the avatar image
      */
-    fun setAvatar(avatarUrl: String) {
+    public fun setAvatar(avatarUrl: String) {
         this.avatarUrl = avatarUrl
         if (isValidContextForGlide(context)) {
             setValues()
@@ -232,7 +232,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * @param avatarUrl The URL of the avatar image
      * @param placeHolderDrawable The placeholder drawable to show while loading
      */
-    fun setAvatar(avatarUrl: String, placeHolderDrawable: Drawable?) {
+    public fun setAvatar(avatarUrl: String, placeHolderDrawable: Drawable?) {
         this.placeHolderDrawable = placeHolderDrawable
         this.avatarUrl = avatarUrl
         if (isValidContextForGlide(context)) {
@@ -245,7 +245,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param drawable The drawable to display
      */
-    fun setAvatar(drawable: Drawable) {
+    public fun setAvatar(drawable: Drawable) {
         binding.ivAvatar.setImageDrawable(drawable)
         binding.ivAvatar.visibility = View.VISIBLE
         binding.tvAvatar.visibility = View.GONE
@@ -254,14 +254,14 @@ class CometChatAvatar @JvmOverloads constructor(
     /**
      * Gets the current avatar URL.
      */
-    fun getAvatar(): String? = avatarUrl
+    public fun getAvatar(): String? = avatarUrl
 
     /**
      * Sets a placeholder drawable.
      * 
      * @param placeholderDrawable The drawable to use as placeholder
      */
-    fun setPlaceholder(placeholderDrawable: Drawable?) {
+    public fun setPlaceholder(placeholderDrawable: Drawable?) {
         this.placeHolderDrawable = placeholderDrawable
     }
 
@@ -269,48 +269,48 @@ class CometChatAvatar @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getAvatarBackgroundColor(): Int = style.backgroundColor
+    public fun getAvatarBackgroundColor(): Int = style.backgroundColor
 
-    fun getAvatarStrokeColor(): Int = style.strokeColor
+    public fun getAvatarStrokeColor(): Int = style.strokeColor
 
-    fun getAvatarStrokeWidth(): Float = style.strokeWidth
+    public fun getAvatarStrokeWidth(): Float = style.strokeWidth
 
-    fun getAvatarStrokeRadius(): Float = style.cornerRadius
+    public fun getAvatarStrokeRadius(): Float = style.cornerRadius
 
-    fun getAvatarPlaceHolderTextAppearance(): Int = style.placeHolderTextAppearance
+    public fun getAvatarPlaceHolderTextAppearance(): Int = style.placeHolderTextAppearance
 
-    fun getAvatarPlaceHolderTextColor(): Int = style.placeHolderTextColor
+    public fun getAvatarPlaceHolderTextColor(): Int = style.placeHolderTextColor
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setAvatarBackgroundColor(@ColorInt color: Int) {
+    public fun setAvatarBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         applyBackgroundColor(color)
     }
 
-    fun setAvatarStrokeColor(@ColorInt color: Int) {
+    public fun setAvatarStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setAvatarStrokeWidth(@Dimension width: Float) {
+    public fun setAvatarStrokeWidth(@Dimension width: Float) {
         style = style.copy(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setAvatarStrokeRadius(@Dimension radius: Float) {
+    public fun setAvatarStrokeRadius(@Dimension radius: Float) {
         style = style.copy(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setAvatarPlaceHolderTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setAvatarPlaceHolderTextAppearance(@StyleRes textAppearance: Int) {
         style = style.copy(placeHolderTextAppearance = textAppearance)
         applyPlaceHolderTextAppearance(textAppearance)
     }
 
-    fun setAvatarPlaceHolderTextColor(@ColorInt color: Int) {
+    public fun setAvatarPlaceHolderTextColor(@ColorInt color: Int) {
         style = style.copy(placeHolderTextColor = color)
         applyPlaceHolderTextColor(color)
     }
@@ -324,7 +324,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param styleRes The style resource ID
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatAvatar)
             // fromTypedArray handles recycling internally
@@ -337,7 +337,7 @@ class CometChatAvatar @JvmOverloads constructor(
      * 
      * @param style The style object containing all styling properties
      */
-    fun setStyle(style: CometChatAvatarStyle) {
+    public fun setStyle(style: CometChatAvatarStyle) {
         this.style = style
         applyStyle()
     }

@@ -17,7 +17,7 @@ import com.google.android.material.card.MaterialCardView
  *
  * Shows up to 3 voter avatars overlapping and a count of total votes.
  */
-class ImageAndCountView @JvmOverloads constructor(
+public class ImageAndCountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -43,7 +43,7 @@ class ImageAndCountView @JvmOverloads constructor(
      * @param list List of voter information (up to 3 shown)
      * @param count Total vote count for this option
      */
-    fun setData(list: List<ImageTextPoJo>, count: Int) {
+    public fun setData(list: List<ImageTextPoJo>, count: Int) {
         adapter.setList(list)
         countView.text = count.toString()
     }
@@ -51,14 +51,14 @@ class ImageAndCountView @JvmOverloads constructor(
     /**
      * Sets the style for voter avatars.
      */
-    fun setAvatarStyle(@StyleRes style: Int) {
+    public fun setAvatarStyle(@StyleRes style: Int) {
         adapter.setAvatarStyle(style)
     }
 
     /**
      * Sets the text appearance for the count display.
      */
-    fun setCountTextAppearance(@StyleRes style: Int) {
+    public fun setCountTextAppearance(@StyleRes style: Int) {
         if (style != 0) {
             countView.setTextAppearance(style)
         }
@@ -67,7 +67,7 @@ class ImageAndCountView @JvmOverloads constructor(
     /**
      * Sets the text color for the count display.
      */
-    fun setCountTextColor(@ColorInt color: Int) {
+    public fun setCountTextColor(@ColorInt color: Int) {
         countView.setTextColor(color)
     }
 }

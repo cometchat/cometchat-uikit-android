@@ -23,7 +23,7 @@ import java.util.Locale
  *
  * Per design doc: Receipt List Item Layout section.
  */
-class MessageInformationAdapter(
+internal class MessageInformationAdapter(
     private val context: Context
 ) : ListAdapter<MessageReceipt, MessageInformationAdapter.ReceiptViewHolder>(ReceiptDiffCallback()) {
 

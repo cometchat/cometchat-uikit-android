@@ -23,7 +23,7 @@ import com.cometchat.chat.models.User
  * })
  * ```
  */
-interface MessageComposerViewHolderListener {
+public interface MessageComposerViewHolderListener {
     /**
      * Creates a custom view to be displayed in the message composer.
      * 
@@ -36,5 +36,5 @@ interface MessageComposerViewHolderListener {
      * @param group The current group being messaged, or null if messaging a user
      * @return A View to be displayed in the message composer
      */
-    fun createView(context: Context, user: User?, group: Group?): View
+    public fun createView(context: Context, user: User?, group: Group?): View
 }

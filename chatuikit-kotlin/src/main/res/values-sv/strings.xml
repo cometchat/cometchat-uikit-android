@@ -255,6 +255,168 @@ Vänligen försök igen.</string>
     <string name="cometchat_notify_everyone_in_this_group">Meddela alla i denna grupp</string>
     <string name="cometchat_notify_all" translatable="true">alla</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_audio_waveform" translatable="true">Ljudvågform</string>
+    <string name="cometchat_a11y_back" translatable="true">Tillbaka</string>
+    <string name="cometchat_accept_call_button" translatable="true">Acceptera samtal</string>
+    <string name="cometchat_add_link" translatable="true">Lägg till länk</string>
+    <string name="cometchat_ai" translatable="true">AI</string>
+    <string name="cometchat_ai_agent_message" translatable="true">Meddelande från AI-agent</string>
+    <string name="cometchat_ai_assistant" translatable="true">AI-assistent</string>
+    <string name="cometchat_and" translatable="true">och</string>
+    <string name="cometchat_answer_n" translatable="true">Svar %1$d</string>
+    <string name="cometchat_apply" translatable="true">Tillämpa</string>
+    <string name="cometchat_are_typing" translatable="true">skriver…</string>
+    <string name="cometchat_attachment" translatable="true">Bilaga</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">Du kan bifoga upp till %1$d filer</string>
+    <string name="cometchat_attachment_option" translatable="true">Bilagealternativ</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">Du kan välja %1$d filer till</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">Tryck för att försöka igen</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">Uppladdningen misslyckades</string>
+    <string name="cometchat_audio_recording" translatable="true">Ljudinspelning</string>
+    <string name="cometchat_audio_visualizer_description" translatable="true">Ljudvisualisering som visar inspelningens amplitud</string>
+    <string name="cometchat_back" translatable="true">Gå tillbaka</string>
+    <string name="cometchat_ban_member" translatable="true">Blockera medlem</string>
+    <string name="cometchat_be_first_to_send_message" translatable="true">Bli först med att skicka ett meddelande</string>
+    <string name="cometchat_bold" translatable="true">Fet</string>
+    <string name="cometchat_call_type" translatable="true">Samtalstyp</string>
+    <string name="cometchat_caller_avatar" translatable="true">Uppringarens avatar</string>
+    <string name="cometchat_caller_name" translatable="true">Uppringarens namn</string>
+    <string name="cometchat_change_scope" translatable="true">Ändra roll</string>
+    <string name="cometchat_clear" translatable="true">Rensa</string>
+    <string name="cometchat_close" translatable="true">Stäng</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">Vill du verkligen blockera %1$s?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">Vill du verkligen ta bort %1$s?</string>
+    <string name="cometchat_conversation_with" translatable="true">Konversation med %s</string>
+    <string name="cometchat_conversation_with_status" translatable="true">Konversation med %1$s, %2$s</string>
+    <string name="cometchat_create_poll" translatable="true">Skapa omröstning</string>
+    <string name="cometchat_decline_call_button" translatable="true">Avvisa samtal</string>
+    <string name="cometchat_delete_recording" translatable="true">Radera inspelning</string>
+    <string name="cometchat_discard_selection" translatable="true">Avbryt urval</string>
+    <string name="cometchat_download" translatable="true">Ladda ner</string>
+    <string name="cometchat_edit_link" translatable="true">Redigera länk</string>
+    <string name="cometchat_edit_message" translatable="true">Redigera meddelande</string>
+    <string name="cometchat_empty_groups_subtitle" translatable="true">Skapa eller gå med i grupper för att se dem här och börja samarbeta.</string>
+    <string name="cometchat_empty_groups_title" translatable="true">Inga grupper hittades</string>
+    <string name="cometchat_end_call" translatable="true">Avsluta samtal</string>
+    <string name="cometchat_end_call_button" translatable="true">Avsluta samtal</string>
+    <string name="cometchat_error_groups_subtitle" translatable="true">Något gick fel. Försök igen.</string>
+    <string name="cometchat_error_groups_title" translatable="true">Hoppsan!</string>
+    <string name="cometchat_error_loading_call_logs" translatable="true">Fel vid inläsning av samtalslogg</string>
+    <string name="cometchat_error_loading_conversations" translatable="true">Fel vid inläsning av konversationer</string>
+    <string name="cometchat_error_loading_groups" translatable="true">Fel vid inläsning av grupper</string>
+    <string name="cometchat_error_loading_members" translatable="true">Kunde inte läsa in medlemmar. Försök igen.</string>
+    <string name="cometchat_file" translatable="true">Fil</string>
+    <string name="cometchat_format_blockquote" translatable="true">Citat</string>
+    <string name="cometchat_format_bold" translatable="true">Fet</string>
+    <string name="cometchat_format_bullet_list" translatable="true">Punktlista</string>
+    <string name="cometchat_format_code" translatable="true">Kod</string>
+    <string name="cometchat_format_code_block" translatable="true">Kodblock</string>
+    <string name="cometchat_format_italic" translatable="true">Kursiv</string>
+    <string name="cometchat_format_link" translatable="true">Länk</string>
+    <string name="cometchat_format_ordered_list" translatable="true">Numrerad lista</string>
+    <string name="cometchat_format_strikethrough" translatable="true">Genomstruken</string>
+    <string name="cometchat_format_text" translatable="true">Formatera text</string>
+    <string name="cometchat_format_underline" translatable="true">Understruken</string>
+    <string name="cometchat_gallery" translatable="true">Galleri</string>
+    <string name="cometchat_group_members" translatable="true">Medlemmar</string>
+    <string name="cometchat_incoming_video_call" translatable="true">Inkommande videosamtal</string>
+    <string name="cometchat_incoming_voice_call" translatable="true">Inkommande röstsamtal</string>
+    <string name="cometchat_inline_code" translatable="true">Inlinekod</string>
+    <string name="cometchat_insert_link" translatable="true">Infoga länk</string>
+    <string name="cometchat_italic" translatable="true">Kursiv</string>
+    <string name="cometchat_kick_member" translatable="true">Ta bort medlem</string>
+    <string name="cometchat_link" translatable="true">Länk</string>
+    <string name="cometchat_link_text" translatable="true">Länktext</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_loading_call_logs" translatable="true">Läser in samtalslogg</string>
+    <string name="cometchat_loading_conversations" translatable="true">Läser in konversationer</string>
+    <string name="cometchat_loading_groups" translatable="true">Läser in grupper</string>
+    <string name="cometchat_mark_unread" translatable="true">Markera som oläst</string>
+    <string name="cometchat_media_recorder_idle" translatable="true">Inspelaren är redo att spela in</string>
+    <string name="cometchat_media_recorder_recorded" translatable="true">Inspelningen är klar, redo att spelas upp eller skickas</string>
+    <string name="cometchat_media_recorder_recording" translatable="true">Inspelning pågår, %s har gått</string>
+    <string name="cometchat_meeting" translatable="true">Möte</string>
+    <string name="cometchat_members_count" translatable="true">%d medlemmar</string>
+    <string name="cometchat_message_generic" translatable="true">Meddelande</string>
+    <string name="cometchat_message_type_icon" translatable="true">Ikon för meddelandetyp</string>
+    <string name="cometchat_missed_video_call" translatable="true">Missat videosamtal</string>
+    <string name="cometchat_missed_voice_call" translatable="true">Missat röstsamtal</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d ljud</string>
+    <string name="cometchat_n_files" translatable="true">%1$d filer</string>
+    <string name="cometchat_n_images" translatable="true">%1$d bilder</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d till</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d videor</string>
+    <string name="cometchat_navigate_back" translatable="true">Navigera tillbaka</string>
+    <string name="cometchat_new" translatable="true">Ny</string>
+    <string name="cometchat_no_call_logs" translatable="true">Ingen samtalslogg</string>
+    <string name="cometchat_no_conversations" translatable="true">Inga konversationer</string>
+    <string name="cometchat_no_groups" translatable="true">Inga grupper</string>
+    <string name="cometchat_no_members_found" translatable="true">Inga medlemmar hittades</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">Lägg till medlemmar i gruppen för att se dem här.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">Inga meddelanden än</string>
+    <string name="cometchat_no_preview_available" translatable="true">Ingen förhandsvisning tillgänglig</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">Den här filtypen stöder inte förhandsvisning.</string>
+    <string name="cometchat_no_users_found" translatable="true">Inga användare hittades</string>
+    <string name="cometchat_others" translatable="true">andra</string>
+    <string name="cometchat_outgoing_call_calling" translatable="true">Ringer…</string>
+    <string name="cometchat_outgoing_video_call" translatable="true">Utgående videosamtal</string>
+    <string name="cometchat_outgoing_voice_call" translatable="true">Utgående röstsamtal</string>
+    <string name="cometchat_pause" translatable="true">Pausa</string>
+    <string name="cometchat_pause_playback" translatable="true">Pausa uppspelning</string>
+    <string name="cometchat_pause_recording" translatable="true">Pausa inspelning</string>
+    <string name="cometchat_play" translatable="true">Spela upp</string>
+    <string name="cometchat_play_recording" translatable="true">Spela upp inspelning</string>
+    <string name="cometchat_playback_progress" translatable="true">Uppspelningsförlopp: %d%%</string>
+    <string name="cometchat_recipient_avatar" translatable="true">Mottagarens avatar</string>
+    <string name="cometchat_recipient_name" translatable="true">Mottagarens namn</string>
+    <string name="cometchat_recording_duration" translatable="true">Inspelningslängd: %s</string>
+    <string name="cometchat_recording_time" translatable="true">Inspelningstid: %s</string>
+    <string name="cometchat_reply_to_message" translatable="true">Svara</string>
+    <string name="cometchat_replying_to" translatable="true">Svarar %s</string>
+    <string name="cometchat_restart" translatable="true">Börja om</string>
+    <string name="cometchat_restart_recording" translatable="true">Börja om inspelningen</string>
+    <string name="cometchat_resume" translatable="true">Återuppta</string>
+    <string name="cometchat_resume_recording" translatable="true">Återuppta inspelningen</string>
+    <string name="cometchat_say_hello" translatable="true">Säg hej till %s 👋</string>
+    <string name="cometchat_search_in" translatable="true">Sök i</string>
+    <string name="cometchat_select_conversation" translatable="true">Välj konversation</string>
+    <string name="cometchat_select_group" translatable="true">Välj grupp</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">Välj en ny roll för %1$s</string>
+    <string name="cometchat_select_user" translatable="true">Välj användare</string>
+    <string name="cometchat_selection_count" translatable="true">%d valda</string>
+    <string name="cometchat_send_recording" translatable="true">Skicka inspelning</string>
+    <string name="cometchat_set_the_answers" translatable="true">Ange svaren</string>
+    <string name="cometchat_show_less" translatable="true">Visa mindre</string>
+    <string name="cometchat_show_n_more" translatable="true">Visa +%1$d till</string>
+    <string name="cometchat_start" translatable="true">Starta</string>
+    <string name="cometchat_start_conversation" translatable="true">Starta en konversation</string>
+    <string name="cometchat_start_recording" translatable="true">Starta inspelning</string>
+    <string name="cometchat_sticker" translatable="true">Dekal</string>
+    <string name="cometchat_sticker_set" translatable="true">Dekalpaket</string>
+    <string name="cometchat_stop" translatable="true">Stoppa</string>
+    <string name="cometchat_stop_recording" translatable="true">Stoppa inspelning</string>
+    <string name="cometchat_strikethrough" translatable="true">Genomstruken</string>
+    <string name="cometchat_submit_recording" translatable="true">Skicka inspelning</string>
+    <string name="cometchat_submit_selection" translatable="true">Bekräfta urval</string>
+    <string name="cometchat_text" translatable="true">Text</string>
+    <string name="cometchat_type_a_message" translatable="true">Skriv ditt meddelande…</string>
+    <string name="cometchat_unread_messages_count" translatable="true">%d olästa meddelanden</string>
+    <string name="cometchat_users_are_typing" translatable="true">personer skriver…</string>
+    <string name="cometchat_video" translatable="true">Video</string>
+    <string name="cometchat_voice_call" translatable="true">Röstsamtal</string>
+    <string name="cometchat_voice_recording" translatable="true">Röstinspelning</string>
+    <string name="cometchat_whiteboard" translatable="true">Whiteboard</string>
+    <!-- ENG-38656 (X3): audio a11y supplement -->
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">Inspelning pågår, %1$s har gått</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">Inspelning pausad vid %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">Inspelning klar, längd %1$s</string>
+    <string name="cometchat_a11y_playing_recording" translatable="true">Spelar upp inspelning, %1$s</string>
+    <string name="cometchat_a11y_recording_error" translatable="true">Inspelningsfel</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">Ljudinspelare</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">Ljudvågform som visar inspelningens amplitud</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">Ljudvågform som visar uppspelningsförlopp</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">Prenumerera på tråden</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Avsluta prenumeration på tråden</string>
@@ -278,13 +440,16 @@ Vänligen försök igen.</string>
     <string name="cometchat_save_message_confirm_body">Vill du spara det här meddelandet?</string>
     <string name="cometchat_unsave_message_confirm_title">Ta bort meddelande från sparade</string>
     <string name="cometchat_unsave_message_confirm_body">Vill du ta bort det här meddelandet från sparade?</string>
+    <string name="cometchat_dont_ask_again" translatable="true">Fråga inte igen</string>
     <string name="cometchat_pin_conversation">Fäst konversation</string>
     <string name="cometchat_unpin_conversation">Lossa konversation</string>
     <string name="cometchat_unpin_conversation_confirm_title">Lossa konversation</string>
     <string name="cometchat_unpin_conversation_confirm_body">Vill du lossa den här konversationen?</string>
     <string name="cometchat_pin_conversation_limit_reached">Du kan bara fästa %1$d chattar. Lossa en för att fästa en annan.</string>
     <string name="cometchat_pin_limit_reached">Du kan bara fästa %1$d meddelanden. Lossa ett för att fästa ett annat.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">Gränsen för fästa meddelanden har nåtts. Lossa ett för att fästa ett annat.</string>
     <string name="cometchat_save_limit_reached">Du kan spara upp till %1$d meddelanden.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">Gränsen för sparade meddelanden har nåtts. Ta bort ett från sparade för att spara ett annat.</string>
     <string name="cometchat_pin_save_generic_error">Något gick fel. Försök igen.</string>
     <string name="cometchat_message_pinned">Meddelande fäst</string>
     <string name="cometchat_message_unpinned">Meddelande lossat</string>
@@ -299,7 +464,6 @@ Vänligen försök igen.</string>
     <string name="cometchat_unpin_message">Lossa meddelande</string>
     <string name="cometchat_message_option_more">Mer</string>
     <string name="cometchat_message_option_back">Tillbaka</string>
-    <string name="cometchat_message_type_icon">Ikon för meddelandetyp</string>
     <string name="cometchat_pinned_messages_header">Fästa meddelanden</string>
     <string name="cometchat_saved_messages_header">Sparade meddelanden</string>
     <string name="cometchat_conversation_pinned">Konversation fäst</string>

@@ -25,7 +25,7 @@ import java.net.URL
  *
  * @param binding The ViewBinding for the link message item layout
  */
-class SearchLinkMessageViewHolder(
+internal class SearchLinkMessageViewHolder(
     val binding: CometchatSearchMessageItemLinkBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

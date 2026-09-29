@@ -43,7 +43,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param voiceCallIcon Drawable for the voice call button
  * @param voiceCallIconTint Tint color for the voice call icon
  */
-data class CometChatMessageHeaderStyle(
+public data class CometChatMessageHeaderStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -86,7 +86,7 @@ data class CometChatMessageHeaderStyle(
     val voiceCallIcon: Drawable? = null,
     @ColorInt val voiceCallIconTint: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatMessageHeaderStyle.
          *
@@ -96,7 +96,7 @@ data class CometChatMessageHeaderStyle(
          * @param context The context to access theme resources
          * @return A CometChatMessageHeaderStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatMessageHeaderStyle {
+        public fun default(context: Context): CometChatMessageHeaderStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -144,7 +144,7 @@ data class CometChatMessageHeaderStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatMessageHeaderStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageHeaderStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageHeaderStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

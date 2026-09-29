@@ -27,7 +27,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.messagepreview.CometChatMe
  * container. Per-bubble-type styles can have their sentinel CommonProperties resolved
  * against this base via [mergeWithBase].
  */
-data class BubbleStyles(
+public data class BubbleStyles(
     val messageBubbleStyle: CometChatMessageBubbleStyle? = null,
     val textBubbleStyle: CometChatTextBubbleStyle? = null,
     val imageBubbleStyle: CometChatImageBubbleStyle? = null,

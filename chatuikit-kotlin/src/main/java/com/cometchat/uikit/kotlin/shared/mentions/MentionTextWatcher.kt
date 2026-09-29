@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import com.cometchat.uikit.core.mentions.MentionDetectionState
 import com.cometchat.uikit.core.mentions.MentionDetector
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
 
@@ -18,28 +19,28 @@ import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
  * @param textFormatters List of text formatters to check for tracking characters
  * @param onMentionDetected Callback when a mention is detected or cleared
  */
-class MentionTextWatcher(
+public class MentionTextWatcher(
     private val editText: EditText,
     private val textFormatters: List<CometChatTextFormatter>,
     private val onMentionDetected: (MentionDetectionResult) -> Unit
 ) : TextWatcher {
 
-    companion object {
+    public companion object {
         private const val TAG = "MentionTextWatcher"
     }
 
     /**
      * Result of mention detection with formatter information.
      */
-    data class MentionDetectionResult(
+    public data class MentionDetectionResult(
         val isActive: Boolean,
         val query: String,
         val triggerIndex: Int,
         val cursorPosition: Int,
         val formatter: CometChatTextFormatter?
     ) {
-        companion object {
-            val INACTIVE = MentionDetectionResult(
+        public companion object {
+            public val INACTIVE: MentionDetectionResult = MentionDetectionResult(
                 isActive = false,
                 query = "",
                 triggerIndex = -1,
@@ -60,16 +61,16 @@ class MentionTextWatcher(
     private var detectionEnabled = true
 
     init {
-        android.util.Log.d(TAG, "init: creating detectors for ${textFormatters.size} formatters")
+        CometChatLogger.d(TAG, "init: creating detectors for ${textFormatters.size} formatters")
         // Create detectors for each formatter's tracking character
         textFormatters.forEach { formatter ->
             val trackingChar = formatter.getTrackingCharacter()
-            android.util.Log.d(TAG, "init: formatter=${formatter.javaClass.simpleName}, trackingChar='$trackingChar'")
+            CometChatLogger.d(TAG, "init: formatter=${formatter.javaClass.simpleName}, trackingChar='$trackingChar'")
             if (!detectorMap.containsKey(trackingChar)) {
                 detectorMap[trackingChar] = MentionDetector(trackingChar)
             }
         }
-        android.util.Log.d(TAG, "init: created ${detectorMap.size} detectors")
+        CometChatLogger.d(TAG, "init: created ${detectorMap.size} detectors")
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -88,14 +89,13 @@ class MentionTextWatcher(
             val text = s?.toString() ?: ""
             val cursorPosition = editText.selectionStart
             
-            android.util.Log.d(TAG, "afterTextChanged: text='$text', cursorPosition=$cursorPosition")
 
             // Check if cursor is inside a NonEditableSpan - if so, don't detect mentions
             val editable = editText.text
             if (editable != null && cursorPosition >= 0) {
                 val spansAtCursor = editable.getSpans(cursorPosition, cursorPosition, NonEditableSpan::class.java)
                 if (spansAtCursor.isNotEmpty()) {
-                    android.util.Log.d(TAG, "afterTextChanged: cursor is inside a span, skipping detection")
+                    CometChatLogger.d(TAG, "afterTextChanged: cursor is inside a span, skipping detection")
                     onMentionDetected(MentionDetectionResult.INACTIVE)
                     return
                 }
@@ -106,26 +106,26 @@ class MentionTextWatcher(
 
             for (formatter in textFormatters) {
                 if (formatter.getDisableSuggestions()) {
-                    android.util.Log.d(TAG, "afterTextChanged: formatter ${formatter.javaClass.simpleName} has suggestions disabled, skipping")
+                    CometChatLogger.d(TAG, "afterTextChanged: formatter ${formatter.javaClass.simpleName} has suggestions disabled, skipping")
                     continue
                 }
 
                 val trackingChar = formatter.getTrackingCharacter()
                 val detector = detectorMap[trackingChar]
                 if (detector == null) {
-                    android.util.Log.d(TAG, "afterTextChanged: no detector for trackingChar='$trackingChar'")
+                    CometChatLogger.d(TAG, "afterTextChanged: no detector for trackingChar='$trackingChar'")
                     continue
                 }
 
                 // Check if the detected trigger index is inside a span
                 val result = detector.detectMention(text, cursorPosition)
-                android.util.Log.d(TAG, "afterTextChanged: detector result isActive=${result.isActive}, query='${result.query}', triggerIndex=${result.triggerIndex}")
+                CometChatLogger.d(TAG, "afterTextChanged: detector result isActive=${result.isActive}, query='${result.query}', triggerIndex=${result.triggerIndex}")
                 
                 if (result.isActive && editable != null) {
                     // Verify the trigger character is not inside a span
                     val spansAtTrigger = editable.getSpans(result.triggerIndex, result.triggerIndex + 1, NonEditableSpan::class.java)
                     if (spansAtTrigger.isNotEmpty()) {
-                        android.util.Log.d(TAG, "afterTextChanged: trigger is inside a span, skipping")
+                        CometChatLogger.d(TAG, "afterTextChanged: trigger is inside a span, skipping")
                         continue
                     }
                 }
@@ -139,14 +139,13 @@ class MentionTextWatcher(
                         cursorPosition = result.cursorPosition,
                         formatter = formatter
                     )
-                    android.util.Log.d(TAG, "afterTextChanged: mention detected! query='${result.query}', formatter=${formatter.javaClass.simpleName}")
                     break
                 }
             }
 
             if (!detectionResult.isActive) {
                 currentFormatter = null
-                android.util.Log.d(TAG, "afterTextChanged: no mention detected")
+                CometChatLogger.d(TAG, "afterTextChanged: no mention detected")
             }
 
             onMentionDetected(detectionResult)
@@ -158,7 +157,7 @@ class MentionTextWatcher(
     /**
      * Gets the currently active formatter.
      */
-    fun getCurrentFormatter(): CometChatTextFormatter? = currentFormatter
+    public fun getCurrentFormatter(): CometChatTextFormatter? = currentFormatter
 
     /**
      * Enables or disables mention detection.
@@ -169,16 +168,16 @@ class MentionTextWatcher(
      * 
      * @param enabled true to enable detection, false to disable
      */
-    fun setDetectionEnabled(enabled: Boolean) {
+    public fun setDetectionEnabled(enabled: Boolean) {
         detectionEnabled = enabled
-        android.util.Log.d(TAG, "setDetectionEnabled: $enabled")
+        CometChatLogger.d(TAG, "setDetectionEnabled: $enabled")
     }
 
     /**
      * Manually triggers mention detection.
      * Useful when cursor position changes without text change.
      */
-    fun checkMention() {
+    public fun checkMention() {
         if (!detectionEnabled) return
         
         val text = editText.text?.toString() ?: ""
@@ -234,7 +233,7 @@ class MentionTextWatcher(
 /**
  * Extension function to add mention detection to an EditText.
  */
-fun EditText.addMentionDetection(
+public fun EditText.addMentionDetection(
     textFormatters: List<CometChatTextFormatter>,
     onMentionDetected: (MentionTextWatcher.MentionDetectionResult) -> Unit
 ): MentionTextWatcher {

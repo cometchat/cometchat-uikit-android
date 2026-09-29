@@ -257,6 +257,168 @@ Kérjük, próbálja újra.</string>
     <string name="cometchat_notify_everyone_in_this_group">Mindenkit értesíteni ebben a csoportban</string>
     <string name="cometchat_notify_all" translatable="true">mindenkit</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_audio_waveform" translatable="true">Hanghullámforma</string>
+    <string name="cometchat_a11y_back" translatable="true">Vissza</string>
+    <string name="cometchat_accept_call_button" translatable="true">Hívás fogadása</string>
+    <string name="cometchat_add_link" translatable="true">Link hozzáadása</string>
+    <string name="cometchat_ai" translatable="true">MI</string>
+    <string name="cometchat_ai_agent_message" translatable="true">MI-ügynök üzenete</string>
+    <string name="cometchat_ai_assistant" translatable="true">MI-asszisztens</string>
+    <string name="cometchat_and" translatable="true">és</string>
+    <string name="cometchat_answer_n" translatable="true">%1$d. válasz</string>
+    <string name="cometchat_apply" translatable="true">Alkalmaz</string>
+    <string name="cometchat_are_typing" translatable="true">éppen írnak…</string>
+    <string name="cometchat_attachment" translatable="true">Melléklet</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">Legfeljebb %1$d fájlt csatolhat</string>
+    <string name="cometchat_attachment_option" translatable="true">Mellékletbeállítás</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">Még legfeljebb %1$d fájlt választhat</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">Koppintson az újrapróbálkozáshoz</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">A feltöltés sikertelen</string>
+    <string name="cometchat_audio_recording" translatable="true">Hangfelvétel</string>
+    <string name="cometchat_audio_visualizer_description" translatable="true">A felvétel hangerejét mutató hangvizualizáló</string>
+    <string name="cometchat_back" translatable="true">Vissza</string>
+    <string name="cometchat_ban_member" translatable="true">Tag kitiltása</string>
+    <string name="cometchat_be_first_to_send_message" translatable="true">Küldje el az első üzenetet</string>
+    <string name="cometchat_bold" translatable="true">Félkövér</string>
+    <string name="cometchat_call_type" translatable="true">Hívás típusa</string>
+    <string name="cometchat_caller_avatar" translatable="true">Hívó avatárja</string>
+    <string name="cometchat_caller_name" translatable="true">Hívó neve</string>
+    <string name="cometchat_change_scope" translatable="true">Szerepkör módosítása</string>
+    <string name="cometchat_clear" translatable="true">Törlés</string>
+    <string name="cometchat_close" translatable="true">Bezárás</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">Biztosan kitiltja %1$s tagot?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">Biztosan eltávolítja %1$s tagot?</string>
+    <string name="cometchat_conversation_with" translatable="true">Beszélgetés vele: %s</string>
+    <string name="cometchat_conversation_with_status" translatable="true">Beszélgetés vele: %1$s, %2$s</string>
+    <string name="cometchat_create_poll" translatable="true">Szavazás létrehozása</string>
+    <string name="cometchat_decline_call_button" translatable="true">Hívás elutasítása</string>
+    <string name="cometchat_delete_recording" translatable="true">Felvétel törlése</string>
+    <string name="cometchat_discard_selection" translatable="true">Kijelölés elvetése</string>
+    <string name="cometchat_download" translatable="true">Letöltés</string>
+    <string name="cometchat_edit_link" translatable="true">Link szerkesztése</string>
+    <string name="cometchat_edit_message" translatable="true">Üzenet szerkesztése</string>
+    <string name="cometchat_empty_groups_subtitle" translatable="true">Hozzon létre csoportokat vagy csatlakozzon hozzájuk, hogy itt lássa őket és elkezdhesse az együttműködést.</string>
+    <string name="cometchat_empty_groups_title" translatable="true">Nem található csoport</string>
+    <string name="cometchat_end_call" translatable="true">Hívás befejezése</string>
+    <string name="cometchat_end_call_button" translatable="true">Hívás befejezése</string>
+    <string name="cometchat_error_groups_subtitle" translatable="true">Úgy tűnik, hiba történt. Próbálja újra.</string>
+    <string name="cometchat_error_groups_title" translatable="true">Hoppá!</string>
+    <string name="cometchat_error_loading_call_logs" translatable="true">Hiba a hívásnapló betöltésekor</string>
+    <string name="cometchat_error_loading_conversations" translatable="true">Hiba a beszélgetések betöltésekor</string>
+    <string name="cometchat_error_loading_groups" translatable="true">Hiba a csoportok betöltésekor</string>
+    <string name="cometchat_error_loading_members" translatable="true">A tagok betöltése nem sikerült. Próbálja újra.</string>
+    <string name="cometchat_file" translatable="true">Fájl</string>
+    <string name="cometchat_format_blockquote" translatable="true">Idézet</string>
+    <string name="cometchat_format_bold" translatable="true">Félkövér</string>
+    <string name="cometchat_format_bullet_list" translatable="true">Felsorolás</string>
+    <string name="cometchat_format_code" translatable="true">Kód</string>
+    <string name="cometchat_format_code_block" translatable="true">Kódblokk</string>
+    <string name="cometchat_format_italic" translatable="true">Dőlt</string>
+    <string name="cometchat_format_link" translatable="true">Link</string>
+    <string name="cometchat_format_ordered_list" translatable="true">Számozott lista</string>
+    <string name="cometchat_format_strikethrough" translatable="true">Áthúzott</string>
+    <string name="cometchat_format_text" translatable="true">Szöveg formázása</string>
+    <string name="cometchat_format_underline" translatable="true">Aláhúzott</string>
+    <string name="cometchat_gallery" translatable="true">Galéria</string>
+    <string name="cometchat_group_members" translatable="true">Tagok</string>
+    <string name="cometchat_incoming_video_call" translatable="true">Bejövő videohívás</string>
+    <string name="cometchat_incoming_voice_call" translatable="true">Bejövő hanghívás</string>
+    <string name="cometchat_inline_code" translatable="true">Beágyazott kód</string>
+    <string name="cometchat_insert_link" translatable="true">Link beszúrása</string>
+    <string name="cometchat_italic" translatable="true">Dőlt</string>
+    <string name="cometchat_kick_member" translatable="true">Tag eltávolítása</string>
+    <string name="cometchat_link" translatable="true">Link</string>
+    <string name="cometchat_link_text" translatable="true">Link szövege</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_loading_call_logs" translatable="true">Hívásnapló betöltése</string>
+    <string name="cometchat_loading_conversations" translatable="true">Beszélgetések betöltése</string>
+    <string name="cometchat_loading_groups" translatable="true">Csoportok betöltése</string>
+    <string name="cometchat_mark_unread" translatable="true">Megjelölés olvasatlanként</string>
+    <string name="cometchat_media_recorder_idle" translatable="true">A felvevő készen áll a rögzítésre</string>
+    <string name="cometchat_media_recorder_recorded" translatable="true">A felvétel elkészült, lejátszható vagy elküldhető</string>
+    <string name="cometchat_media_recorder_recording" translatable="true">Felvétel folyamatban, eltelt idő: %s</string>
+    <string name="cometchat_meeting" translatable="true">Megbeszélés</string>
+    <string name="cometchat_members_count" translatable="true">%d tag</string>
+    <string name="cometchat_message_generic" translatable="true">Üzenet</string>
+    <string name="cometchat_message_type_icon" translatable="true">Üzenettípus ikonja</string>
+    <string name="cometchat_missed_video_call" translatable="true">Nem fogadott videohívás</string>
+    <string name="cometchat_missed_voice_call" translatable="true">Nem fogadott hanghívás</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d hang</string>
+    <string name="cometchat_n_files" translatable="true">%1$d fájl</string>
+    <string name="cometchat_n_images" translatable="true">%1$d kép</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d további</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d videó</string>
+    <string name="cometchat_navigate_back" translatable="true">Vissza</string>
+    <string name="cometchat_new" translatable="true">Új</string>
+    <string name="cometchat_no_call_logs" translatable="true">Nincs hívásnapló</string>
+    <string name="cometchat_no_conversations" translatable="true">Nincsenek beszélgetések</string>
+    <string name="cometchat_no_groups" translatable="true">Nincsenek csoportok</string>
+    <string name="cometchat_no_members_found" translatable="true">Nem található tag</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">Adjon tagokat a csoporthoz, hogy itt lássa őket.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">Még nincsenek üzenetek</string>
+    <string name="cometchat_no_preview_available" translatable="true">Nincs elérhető előnézet</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">Ez a fájltípus nem támogatja az előnézetet.</string>
+    <string name="cometchat_no_users_found" translatable="true">Nem található felhasználó</string>
+    <string name="cometchat_others" translatable="true">továbbiak</string>
+    <string name="cometchat_outgoing_call_calling" translatable="true">Hívás…</string>
+    <string name="cometchat_outgoing_video_call" translatable="true">Kimenő videohívás</string>
+    <string name="cometchat_outgoing_voice_call" translatable="true">Kimenő hanghívás</string>
+    <string name="cometchat_pause" translatable="true">Szünet</string>
+    <string name="cometchat_pause_playback" translatable="true">Lejátszás szüneteltetése</string>
+    <string name="cometchat_pause_recording" translatable="true">Felvétel szüneteltetése</string>
+    <string name="cometchat_play" translatable="true">Lejátszás</string>
+    <string name="cometchat_play_recording" translatable="true">Felvétel lejátszása</string>
+    <string name="cometchat_playback_progress" translatable="true">Lejátszás állapota: %d%%</string>
+    <string name="cometchat_recipient_avatar" translatable="true">Címzett avatárja</string>
+    <string name="cometchat_recipient_name" translatable="true">Címzett neve</string>
+    <string name="cometchat_recording_duration" translatable="true">Felvétel hossza: %s</string>
+    <string name="cometchat_recording_time" translatable="true">Felvételi idő: %s</string>
+    <string name="cometchat_reply_to_message" translatable="true">Válasz</string>
+    <string name="cometchat_replying_to" translatable="true">Válasz neki: %s</string>
+    <string name="cometchat_restart" translatable="true">Újrakezdés</string>
+    <string name="cometchat_restart_recording" translatable="true">Felvétel újrakezdése</string>
+    <string name="cometchat_resume" translatable="true">Folytatás</string>
+    <string name="cometchat_resume_recording" translatable="true">Felvétel folytatása</string>
+    <string name="cometchat_say_hello" translatable="true">Köszönjön neki: %s 👋</string>
+    <string name="cometchat_search_in" translatable="true">Keresés itt:</string>
+    <string name="cometchat_select_conversation" translatable="true">Beszélgetés kiválasztása</string>
+    <string name="cometchat_select_group" translatable="true">Csoport kiválasztása</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">Új szerepkör kiválasztása neki: %1$s</string>
+    <string name="cometchat_select_user" translatable="true">Felhasználó kiválasztása</string>
+    <string name="cometchat_selection_count" translatable="true">%d kiválasztva</string>
+    <string name="cometchat_send_recording" translatable="true">Felvétel elküldése</string>
+    <string name="cometchat_set_the_answers" translatable="true">Válaszok megadása</string>
+    <string name="cometchat_show_less" translatable="true">Kevesebb megjelenítése</string>
+    <string name="cometchat_show_n_more" translatable="true">+%1$d további megjelenítése</string>
+    <string name="cometchat_start" translatable="true">Indítás</string>
+    <string name="cometchat_start_conversation" translatable="true">Beszélgetés indítása</string>
+    <string name="cometchat_start_recording" translatable="true">Felvétel indítása</string>
+    <string name="cometchat_sticker" translatable="true">Matrica</string>
+    <string name="cometchat_sticker_set" translatable="true">Matricakészlet</string>
+    <string name="cometchat_stop" translatable="true">Leállítás</string>
+    <string name="cometchat_stop_recording" translatable="true">Felvétel leállítása</string>
+    <string name="cometchat_strikethrough" translatable="true">Áthúzott</string>
+    <string name="cometchat_submit_recording" translatable="true">Felvétel elküldése</string>
+    <string name="cometchat_submit_selection" translatable="true">Kijelölés megerősítése</string>
+    <string name="cometchat_text" translatable="true">Szöveg</string>
+    <string name="cometchat_type_a_message" translatable="true">Írja be az üzenetét…</string>
+    <string name="cometchat_unread_messages_count" translatable="true">%d olvasatlan üzenet</string>
+    <string name="cometchat_users_are_typing" translatable="true">személy éppen ír…</string>
+    <string name="cometchat_video" translatable="true">Videó</string>
+    <string name="cometchat_voice_call" translatable="true">Hanghívás</string>
+    <string name="cometchat_voice_recording" translatable="true">Hangfelvétel</string>
+    <string name="cometchat_whiteboard" translatable="true">Rajztábla</string>
+    <!-- ENG-38656 (X3): audio a11y supplement -->
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">Felvétel folyamatban, eltelt %1$s</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">Felvétel szüneteltetve ennél: %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">Felvétel kész, hossz: %1$s</string>
+    <string name="cometchat_a11y_playing_recording" translatable="true">Felvétel lejátszása, %1$s</string>
+    <string name="cometchat_a11y_recording_error" translatable="true">Felvételi hiba</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">Hangrögzítő</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">A felvétel hangerejét mutató hanghullámforma</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">A lejátszás állapotát mutató hanghullámforma</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">Feliratkozás a szálra</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Leiratkozás a szálról</string>
@@ -280,13 +442,16 @@ Kérjük, próbálja újra.</string>
     <string name="cometchat_save_message_confirm_body">Menti ezt az üzenetet?</string>
     <string name="cometchat_unsave_message_confirm_title">Üzenet mentésének visszavonása</string>
     <string name="cometchat_unsave_message_confirm_body">Visszavonja az üzenet mentését?</string>
+    <string name="cometchat_dont_ask_again" translatable="true">Ne kérdezze újra</string>
     <string name="cometchat_pin_conversation">Beszélgetés kitűzése</string>
     <string name="cometchat_unpin_conversation">Beszélgetés kitűzésének megszüntetése</string>
     <string name="cometchat_unpin_conversation_confirm_title">Beszélgetés kitűzésének megszüntetése</string>
     <string name="cometchat_unpin_conversation_confirm_body">Megszünteti a beszélgetés kitűzését?</string>
     <string name="cometchat_pin_conversation_limit_reached">Legfeljebb %1$d csevegést tűzhet ki. Szüntesse meg az egyik kitűzését, hogy másikat tűzhessen ki.</string>
     <string name="cometchat_pin_limit_reached">Legfeljebb %1$d üzenetet tűzhet ki. Szüntesse meg az egyik kitűzését, hogy másikat tűzhessen ki.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">Elérte a kitűzött üzenetek korlátját. Szüntesse meg az egyik kitűzését, hogy másikat tűzhessen ki.</string>
     <string name="cometchat_save_limit_reached">Legfeljebb %1$d üzenetet menthet.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">Elérte a mentett üzenetek korlátját. Vonja vissza az egyik mentését, hogy másikat menthessen.</string>
     <string name="cometchat_pin_save_generic_error">Hiba történt. Kérjük, próbálja újra.</string>
     <string name="cometchat_message_pinned">Üzenet kitűzve</string>
     <string name="cometchat_message_unpinned">Üzenet kitűzése megszüntetve</string>
@@ -301,7 +466,6 @@ Kérjük, próbálja újra.</string>
     <string name="cometchat_unpin_message">Üzenet kitűzésének megszüntetése</string>
     <string name="cometchat_message_option_more">Több</string>
     <string name="cometchat_message_option_back">Vissza</string>
-    <string name="cometchat_message_type_icon">Üzenettípus ikonja</string>
     <string name="cometchat_pinned_messages_header">Kitűzött üzenetek</string>
     <string name="cometchat_saved_messages_header">Mentett üzenetek</string>
     <string name="cometchat_conversation_pinned">Beszélgetés kitűzve</string>

@@ -62,7 +62,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param sendIcon Drawable for the send icon
  * @param micIcon Drawable for the mic icon
  */
-data class CometChatInlineAudioRecorderStyle(
+public data class CometChatInlineAudioRecorderStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @Dimension val cornerRadius: Int = 0,
@@ -121,7 +121,7 @@ data class CometChatInlineAudioRecorderStyle(
      * Provides a fluent API for setting style properties.
      * Container styling matches MessageComposer compose box for visual consistency.
      */
-    class Builder(private val context: Context) {
+    public class Builder(private val context: Context) {
         // Container styling - matches MessageComposer compose box
         @ColorInt private var backgroundColor: Int = CometChatTheme.getBackgroundColor1(context)
         @Dimension private var cornerRadius: Int = context.resources.getDimensionPixelSize(
@@ -190,62 +190,62 @@ data class CometChatInlineAudioRecorderStyle(
         private var micIcon: Drawable? = null
 
         // Container setters
-        fun backgroundColor(@ColorInt color: Int) = apply { backgroundColor = color }
-        fun cornerRadius(@Dimension radius: Int) = apply { cornerRadius = radius }
-        fun strokeColor(@ColorInt color: Int) = apply { strokeColor = color }
-        fun strokeWidth(@Dimension width: Int) = apply { strokeWidth = width }
+        public fun backgroundColor(@ColorInt color: Int): Builder = apply { backgroundColor = color }
+        public fun cornerRadius(@Dimension radius: Int): Builder = apply { cornerRadius = radius }
+        public fun strokeColor(@ColorInt color: Int): Builder = apply { strokeColor = color }
+        public fun strokeWidth(@Dimension width: Int): Builder = apply { strokeWidth = width }
         
         // Waveform setters
-        fun barColor(@ColorInt color: Int) = apply { barColor = color }
-        fun recordingBarColor(@ColorInt color: Int) = apply { recordingBarColor = color }
-        fun playingBarColor(@ColorInt color: Int) = apply { playingBarColor = color }
-        fun barWidth(@Dimension width: Int) = apply { barWidth = width }
-        fun barSpacing(@Dimension spacing: Int) = apply { barSpacing = spacing }
-        fun barMinHeight(@Dimension height: Int) = apply { barMinHeight = height }
-        fun barMaxHeight(@Dimension height: Int) = apply { barMaxHeight = height }
-        fun barCornerRadius(@Dimension radius: Int) = apply { barCornerRadius = radius }
-        fun barCount(count: Int) = apply { barCount = count }
+        public fun barColor(@ColorInt color: Int): Builder = apply { barColor = color }
+        public fun recordingBarColor(@ColorInt color: Int): Builder = apply { recordingBarColor = color }
+        public fun playingBarColor(@ColorInt color: Int): Builder = apply { playingBarColor = color }
+        public fun barWidth(@Dimension width: Int): Builder = apply { barWidth = width }
+        public fun barSpacing(@Dimension spacing: Int): Builder = apply { barSpacing = spacing }
+        public fun barMinHeight(@Dimension height: Int): Builder = apply { barMinHeight = height }
+        public fun barMaxHeight(@Dimension height: Int): Builder = apply { barMaxHeight = height }
+        public fun barCornerRadius(@Dimension radius: Int): Builder = apply { barCornerRadius = radius }
+        public fun barCount(count: Int): Builder = apply { barCount = count }
         
         // Duration text setters
-        fun durationTextColor(@ColorInt color: Int) = apply { durationTextColor = color }
-        fun durationTextAppearance(@StyleRes appearance: Int) = apply { durationTextAppearance = appearance }
+        public fun durationTextColor(@ColorInt color: Int): Builder = apply { durationTextColor = color }
+        public fun durationTextAppearance(@StyleRes appearance: Int): Builder = apply { durationTextAppearance = appearance }
         
         // Record button setters
-        fun recordButtonIconColor(@ColorInt color: Int) = apply { recordButtonIconColor = color }
-        fun recordButtonBackgroundColor(@ColorInt color: Int) = apply { recordButtonBackgroundColor = color }
-        fun recordingIndicatorColor(@ColorInt color: Int) = apply { recordingIndicatorColor = color }
+        public fun recordButtonIconColor(@ColorInt color: Int): Builder = apply { recordButtonIconColor = color }
+        public fun recordButtonBackgroundColor(@ColorInt color: Int): Builder = apply { recordButtonBackgroundColor = color }
+        public fun recordingIndicatorColor(@ColorInt color: Int): Builder = apply { recordingIndicatorColor = color }
         
         // Play button setters
-        fun playButtonIconColor(@ColorInt color: Int) = apply { playButtonIconColor = color }
-        fun playButtonBackgroundColor(@ColorInt color: Int) = apply { playButtonBackgroundColor = color }
+        public fun playButtonIconColor(@ColorInt color: Int): Builder = apply { playButtonIconColor = color }
+        public fun playButtonBackgroundColor(@ColorInt color: Int): Builder = apply { playButtonBackgroundColor = color }
         
         // Pause button setters
-        fun pauseButtonIconColor(@ColorInt color: Int) = apply { pauseButtonIconColor = color }
-        fun pauseButtonBackgroundColor(@ColorInt color: Int) = apply { pauseButtonBackgroundColor = color }
+        public fun pauseButtonIconColor(@ColorInt color: Int): Builder = apply { pauseButtonIconColor = color }
+        public fun pauseButtonBackgroundColor(@ColorInt color: Int): Builder = apply { pauseButtonBackgroundColor = color }
         
         // Delete button setters
-        fun deleteButtonIconColor(@ColorInt color: Int) = apply { deleteButtonIconColor = color }
-        fun deleteButtonBackgroundColor(@ColorInt color: Int) = apply { deleteButtonBackgroundColor = color }
+        public fun deleteButtonIconColor(@ColorInt color: Int): Builder = apply { deleteButtonIconColor = color }
+        public fun deleteButtonBackgroundColor(@ColorInt color: Int): Builder = apply { deleteButtonBackgroundColor = color }
         
         // Send button setters
-        fun sendButtonIconColor(@ColorInt color: Int) = apply { sendButtonIconColor = color }
-        fun sendButtonBackgroundColor(@ColorInt color: Int) = apply { sendButtonBackgroundColor = color }
+        public fun sendButtonIconColor(@ColorInt color: Int): Builder = apply { sendButtonIconColor = color }
+        public fun sendButtonBackgroundColor(@ColorInt color: Int): Builder = apply { sendButtonBackgroundColor = color }
         
         // Mic button setters
-        fun micButtonIconColor(@ColorInt color: Int) = apply { micButtonIconColor = color }
-        fun micButtonBackgroundColor(@ColorInt color: Int) = apply { micButtonBackgroundColor = color }
+        public fun micButtonIconColor(@ColorInt color: Int): Builder = apply { micButtonIconColor = color }
+        public fun micButtonBackgroundColor(@ColorInt color: Int): Builder = apply { micButtonBackgroundColor = color }
         
         // Icon drawable setters
-        fun playIcon(icon: Drawable?) = apply { playIcon = icon }
-        fun pauseIcon(icon: Drawable?) = apply { pauseIcon = icon }
-        fun deleteIcon(icon: Drawable?) = apply { deleteIcon = icon }
-        fun sendIcon(icon: Drawable?) = apply { sendIcon = icon }
-        fun micIcon(icon: Drawable?) = apply { micIcon = icon }
+        public fun playIcon(icon: Drawable?): Builder = apply { playIcon = icon }
+        public fun pauseIcon(icon: Drawable?): Builder = apply { pauseIcon = icon }
+        public fun deleteIcon(icon: Drawable?): Builder = apply { deleteIcon = icon }
+        public fun sendIcon(icon: Drawable?): Builder = apply { sendIcon = icon }
+        public fun micIcon(icon: Drawable?): Builder = apply { micIcon = icon }
 
         /**
          * Builds the CometChatInlineAudioRecorderStyle instance.
          */
-        fun build() = CometChatInlineAudioRecorderStyle(
+        public fun build(): CometChatInlineAudioRecorderStyle = CometChatInlineAudioRecorderStyle(
             backgroundColor = backgroundColor,
             cornerRadius = cornerRadius,
             strokeColor = strokeColor,
@@ -282,7 +282,7 @@ data class CometChatInlineAudioRecorderStyle(
         )
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors and typography are derived from the current theme.
@@ -292,7 +292,7 @@ data class CometChatInlineAudioRecorderStyle(
          * @param context The Android context for accessing theme attributes
          * @return A fully configured CometChatInlineAudioRecorderStyle with theme defaults
          */
-        fun default(context: Context): CometChatInlineAudioRecorderStyle {
+        public fun default(context: Context): CometChatInlineAudioRecorderStyle {
             return Builder(context).build()
         }
 
@@ -302,6 +302,6 @@ data class CometChatInlineAudioRecorderStyle(
          * @param context The Android context for accessing theme attributes
          * @return A new Builder instance with theme defaults
          */
-        fun builder(context: Context) = Builder(context)
+        public fun builder(context: Context): Builder = Builder(context)
     }
 }

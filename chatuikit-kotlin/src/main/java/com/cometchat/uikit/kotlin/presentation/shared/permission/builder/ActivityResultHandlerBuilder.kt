@@ -22,25 +22,25 @@ import com.cometchat.uikit.kotlin.presentation.shared.permission.listener.Activi
  *     .launch()
  * ```
  */
-interface ActivityResultHandlerBuilder {
+public interface ActivityResultHandlerBuilder {
     
     /**
      * Sets the intent to launch.
      * @param intent The intent to launch for result
      * @return This builder for chaining
      */
-    fun withIntent(intent: Intent): ActivityResultHandlerBuilder
+    public fun withIntent(intent: Intent): ActivityResultHandlerBuilder
     
     /**
      * Registers a listener for activity results.
      * @param listener The listener to receive activity results
      * @return This builder for chaining
      */
-    fun registerListener(listener: ActivityResultListener): ActivityResultHandlerBuilder
+    public fun registerListener(listener: ActivityResultListener): ActivityResultHandlerBuilder
     
     /**
      * Launches the intent and waits for result.
      * The result will be delivered to the registered listener.
      */
-    fun launch()
+    public fun launch()
 }

@@ -42,7 +42,7 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
  *
  * @param binding The ViewBinding for the conversation item layout
  */
-class SearchConversationViewHolder(
+internal class SearchConversationViewHolder(
     val binding: CometchatSearchConversationItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 

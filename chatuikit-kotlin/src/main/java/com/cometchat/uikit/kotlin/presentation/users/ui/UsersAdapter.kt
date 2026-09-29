@@ -29,9 +29,9 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.sticky_header.StickyHea
  * Supports custom item views and section views (leading, title, subtitle, trailing).
  * Implements StickyHeaderAdapter for sticky alphabetical headers.
  */
-class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapter<StickyViewHolder> {
+public class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapter<StickyViewHolder> {
 
-    companion object {
+    public companion object {
         private val TAG = UsersAdapter::class.java.simpleName
     }
 
@@ -68,7 +68,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Updates the user list using DiffUtil for efficient updates.
      */
-    fun setList(newList: List<User>) {
+    public fun setList(newList: List<User>) {
         val diffCallback = UsersDiffCallback(users, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         users = newList
@@ -78,7 +78,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Gets the current list of users.
      */
-    fun getList(): List<User> = users
+    public fun getList(): List<User> = users
 
     /**
      * Updates selection state for users.
@@ -86,7 +86,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
      * is controlled separately by setSelectionEnabled() to ensure checkbox visibility
      * is not affected by the selection state.
      */
-    fun selectUsers(selected: Set<User>) {
+    public fun selectUsers(selected: Set<User>) {
         selectedUsers = selected
         // selectionEnabled is NOT modified here - it's controlled by setSelectionEnabled()
         notifyDataSetChanged()
@@ -95,21 +95,21 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets the item click listener.
      */
-    fun setOnItemClick(listener: (android.view.View, Int, User) -> Unit) {
+    public fun setOnItemClick(listener: (android.view.View, Int, User) -> Unit) {
         onItemClick = listener
     }
 
     /**
      * Sets the item long click listener.
      */
-    fun setOnLongClick(listener: (android.view.View, Int, User) -> Unit) {
+    public fun setOnLongClick(listener: (android.view.View, Int, User) -> Unit) {
         onItemLongClick = listener
     }
 
     /**
      * Sets custom item view listener for replacing entire item.
      */
-    fun setItemView(listener: UsersViewHolderListener?) {
+    public fun setItemView(listener: UsersViewHolderListener?) {
         itemViewListener = listener
         notifyDataSetChanged()
     }
@@ -117,7 +117,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets custom leading view listener.
      */
-    fun setLeadingView(listener: UsersViewHolderListener?) {
+    public fun setLeadingView(listener: UsersViewHolderListener?) {
         leadingViewListener = listener
         notifyDataSetChanged()
     }
@@ -125,7 +125,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets custom title view listener.
      */
-    fun setTitleView(listener: UsersViewHolderListener?) {
+    public fun setTitleView(listener: UsersViewHolderListener?) {
         titleViewListener = listener
         notifyDataSetChanged()
     }
@@ -133,7 +133,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets custom subtitle view listener.
      */
-    fun setSubtitleView(listener: UsersViewHolderListener?) {
+    public fun setSubtitleView(listener: UsersViewHolderListener?) {
         subtitleViewListener = listener
         notifyDataSetChanged()
     }
@@ -141,7 +141,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets custom trailing view listener.
      */
-    fun setTrailingView(listener: UsersViewHolderListener?) {
+    public fun setTrailingView(listener: UsersViewHolderListener?) {
         trailingViewListener = listener
         notifyDataSetChanged()
     }
@@ -149,7 +149,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets the item style.
      */
-    fun setItemStyle(style: CometChatUsersListItemStyle) {
+    public fun setItemStyle(style: CometChatUsersListItemStyle) {
         itemStyle = style
         notifyDataSetChanged()
     }
@@ -157,7 +157,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets whether to hide user status indicator.
      */
-    fun setHideUserStatus(hide: Boolean) {
+    public fun setHideUserStatus(hide: Boolean) {
         hideUserStatus = hide
         notifyDataSetChanged()
     }
@@ -165,7 +165,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets whether to hide item separator.
      */
-    fun setHideSeparator(hide: Boolean) {
+    public fun setHideSeparator(hide: Boolean) {
         hideSeparator = hide
         notifyDataSetChanged()
     }
@@ -173,7 +173,7 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Enables or disables selection mode UI (checkboxes) on all items.
      */
-    fun setSelectionEnabled(enabled: Boolean) {
+    public fun setSelectionEnabled(enabled: Boolean) {
         selectionEnabled = enabled
         notifyDataSetChanged()
     }
@@ -302,26 +302,26 @@ class UsersAdapter : RecyclerView.Adapter<UsersViewHolder>(), StickyHeaderAdapte
     /**
      * Sets the sticky header title text color.
      */
-    fun setStickyTitleColor(@ColorInt color: Int) {
+    public fun setStickyTitleColor(@ColorInt color: Int) {
         stickyTitleColor = color
     }
 
     /**
      * Sets the sticky header title text appearance.
      */
-    fun setStickyTitleAppearance(@StyleRes appearance: Int) {
+    public fun setStickyTitleAppearance(@StyleRes appearance: Int) {
         stickyTitleAppearance = appearance
     }
 
     /**
      * Sets the sticky header background color.
      */
-    fun setStickyTitleBackgroundColor(@ColorInt color: Int) {
+    public fun setStickyTitleBackgroundColor(@ColorInt color: Int) {
         stickyTitleBackgroundColor = color
     }
 
     /**
      * Gets the current selection enabled state.
      */
-    fun isSelectionEnabled(): Boolean = selectionEnabled
+    public fun isSelectionEnabled(): Boolean = selectionEnabled
 }

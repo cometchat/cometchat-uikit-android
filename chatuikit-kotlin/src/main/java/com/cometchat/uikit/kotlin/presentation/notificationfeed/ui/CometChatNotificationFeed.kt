@@ -19,6 +19,7 @@ import com.cometchat.chat.models.NotificationFeedItem
 import com.cometchat.uikit.core.factory.CometChatNotificationFeedViewModelFactory
 import com.cometchat.uikit.core.state.NotificationFeedUIState
 import com.cometchat.uikit.core.viewmodel.CometChatNotificationFeedViewModel
+import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.notificationfeed.style.CometChatNotificationFeedStyle
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
  *     android:layout_height="match_parent" />
  * ```
  */
-class CometChatNotificationFeed @JvmOverloads constructor(
+public class CometChatNotificationFeed @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -76,10 +77,10 @@ class CometChatNotificationFeed @JvmOverloads constructor(
     private var style: CometChatNotificationFeedStyle = CometChatNotificationFeedStyle.default()
 
     // Callbacks
-    var onItemClick: ((NotificationFeedItem) -> Unit)? = null
-    var onActionClick: ((NotificationFeedItem, Map<String, Any>) -> Unit)? = null
-    var onError: ((CometChatException) -> Unit)? = null
-    var onBackPress: (() -> Unit)? = null
+    public var onItemClick: ((NotificationFeedItem) -> Unit)? = null
+    public var onActionClick: ((NotificationFeedItem, Map<String, Any>) -> Unit)? = null
+    public var onError: ((CometChatException) -> Unit)? = null
+    public var onBackPress: (() -> Unit)? = null
 
     // Request builders
     private var feedRequestBuilder: NotificationFeedRequest.NotificationFeedRequestBuilder? = null
@@ -115,7 +116,7 @@ class CometChatNotificationFeed @JvmOverloads constructor(
             setBackgroundResource(android.R.color.transparent)
             visibility = if (showBackButton) View.VISIBLE else View.GONE
             setOnClickListener { onBackPress?.invoke() }
-            contentDescription = "Back"
+            contentDescription = context.getString(R.string.cometchat_a11y_back)
         }
         headerLayout.addView(backButton, android.widget.LinearLayout.LayoutParams(
             LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
@@ -379,7 +380,7 @@ class CometChatNotificationFeed @JvmOverloads constructor(
      * Initialize the component with a ViewModel.
      * Must be called from an Activity or Fragment that implements LifecycleOwner and ViewModelStoreOwner.
      */
-    fun init(owner: ViewModelStoreOwner) {
+    public fun init(owner: ViewModelStoreOwner) {
         val factory = CometChatNotificationFeedViewModelFactory(
             feedRequestBuilder = feedRequestBuilder,
             categoriesRequestBuilder = categoriesRequestBuilder
@@ -479,35 +480,35 @@ class CometChatNotificationFeed @JvmOverloads constructor(
 
     // region Public Configuration Methods
 
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         this.title = title
         toolbarTitle.text = title
     }
 
-    fun setShowHeader(show: Boolean) {
+    public fun setShowHeader(show: Boolean) {
         this.showHeader = show
     }
 
-    fun setShowBackButton(show: Boolean) {
+    public fun setShowBackButton(show: Boolean) {
         this.showBackButton = show
         backButton.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    fun setShowFilterChips(show: Boolean) {
+    public fun setShowFilterChips(show: Boolean) {
         this.showFilterChips = show
         filterChipsRecyclerView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    fun setStyle(style: CometChatNotificationFeedStyle) {
+    public fun setStyle(style: CometChatNotificationFeedStyle) {
         this.style = style
         applyStyle()
     }
 
-    fun setFeedRequestBuilder(builder: NotificationFeedRequest.NotificationFeedRequestBuilder) {
+    public fun setFeedRequestBuilder(builder: NotificationFeedRequest.NotificationFeedRequestBuilder) {
         this.feedRequestBuilder = builder
     }
 
-    fun setCategoriesRequestBuilder(builder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder) {
+    public fun setCategoriesRequestBuilder(builder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder) {
         this.categoriesRequestBuilder = builder
     }
 

@@ -6,7 +6,7 @@ import com.cometchat.chat.models.User
 /**
  * DiffUtil callback for efficient RecyclerView updates when the users list changes.
  */
-class UsersDiffCallback(
+public class UsersDiffCallback(
     private val oldList: List<User>,
     private val newList: List<User>
 ) : DiffUtil.Callback() {

@@ -29,7 +29,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  *
  * @param binding The ViewBinding for the text message item layout
  */
-class SearchTextMessageViewHolder(
+internal class SearchTextMessageViewHolder(
     val binding: CometchatSearchMessageItemTextBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

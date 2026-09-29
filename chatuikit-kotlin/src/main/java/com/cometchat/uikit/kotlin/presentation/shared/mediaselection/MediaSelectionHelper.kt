@@ -11,18 +11,20 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.cometchat.uikit.core.utils.CometChatLogger
+import com.cometchat.uikit.kotlin.shared.resources.utils.cometchatFileProviderAuthority
 import java.io.File
 import java.io.FileOutputStream
 
 /**
  * Media content types supported by the media selection utilities.
  */
-object MediaContentType {
-    const val IMAGE = "image"
-    const val VIDEO = "video"
-    const val AUDIO = "audio"
-    const val FILE = "file"
-    const val UNKNOWN = "unknown"
+public object MediaContentType {
+    public const val IMAGE: String = "image"
+    public const val VIDEO: String = "video"
+    public const val AUDIO: String = "audio"
+    public const val FILE: String = "file"
+    public const val UNKNOWN: String = "unknown"
 }
 
 /**
@@ -35,7 +37,7 @@ object MediaContentType {
  * @property mimeType The MIME type of the media
  * @property fileSize The size of the file in bytes
  */
-data class MediaSelectionResult(
+public data class MediaSelectionResult(
     val uri: Uri,
     val file: File?,
     val contentType: String,
@@ -47,25 +49,25 @@ data class MediaSelectionResult(
 /**
  * Callback interface for media selection results.
  */
-interface MediaSelectionCallback {
+public interface MediaSelectionCallback {
     /**
      * Called when media is successfully selected.
      *
      * @param result The media selection result
      */
-    fun onMediaSelected(result: MediaSelectionResult)
+    public fun onMediaSelected(result: MediaSelectionResult)
     
     /**
      * Called when media selection is cancelled.
      */
-    fun onSelectionCancelled() {}
+    public fun onSelectionCancelled() {}
     
     /**
      * Called when an error occurs during media selection.
      *
      * @param exception The exception that occurred
      */
-    fun onError(exception: Exception) {}
+    public fun onError(exception: Exception) {}
 }
 
 /**
@@ -113,7 +115,7 @@ interface MediaSelectionCallback {
  * }
  * ```
  */
-class MediaSelectionHelper {
+public class MediaSelectionHelper {
     
     private val context: Context
     private var currentCallback: MediaSelectionCallback? = null
@@ -134,7 +136,7 @@ class MediaSelectionHelper {
      *
      * @param activity The ComponentActivity to use for launching pickers
      */
-    constructor(activity: ComponentActivity) {
+    public constructor(activity: ComponentActivity) {
         this.context = activity
         
         imagePickerLauncher = activity.registerForActivityResult(
@@ -171,7 +173,7 @@ class MediaSelectionHelper {
      *
      * @param fragment The Fragment to use for launching pickers
      */
-    constructor(fragment: Fragment) {
+    public constructor(fragment: Fragment) {
         this.context = fragment.requireContext()
         
         imagePickerLauncher = fragment.registerForActivityResult(
@@ -208,7 +210,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the selection result
      */
-    fun launchImagePicker(callback: MediaSelectionCallback) {
+    public fun launchImagePicker(callback: MediaSelectionCallback) {
         currentCallback = callback
         imagePickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -220,7 +222,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the selection result
      */
-    fun launchVideoPicker(callback: MediaSelectionCallback) {
+    public fun launchVideoPicker(callback: MediaSelectionCallback) {
         currentCallback = callback
         videoPickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
@@ -232,7 +234,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the selection result
      */
-    fun launchImageAndVideoPicker(callback: MediaSelectionCallback) {
+    public fun launchImageAndVideoPicker(callback: MediaSelectionCallback) {
         currentCallback = callback
         imageAndVideoPickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
@@ -244,7 +246,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the selection result
      */
-    fun launchAudioPicker(callback: MediaSelectionCallback) {
+    public fun launchAudioPicker(callback: MediaSelectionCallback) {
         currentCallback = callback
         audioPickerLauncher.launch("audio/*")
     }
@@ -255,7 +257,7 @@ class MediaSelectionHelper {
      * @param callback Callback for the selection result
      * @param mimeType The MIME type filter (default: all files)
      */
-    fun launchFilePicker(callback: MediaSelectionCallback, mimeType: String = "*/*") {
+    public fun launchFilePicker(callback: MediaSelectionCallback, mimeType: String = "*/*") {
         currentCallback = callback
         filePickerLauncher.launch(mimeType)
     }
@@ -265,7 +267,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the capture result
      */
-    fun launchCamera(callback: MediaSelectionCallback) {
+    public fun launchCamera(callback: MediaSelectionCallback) {
         currentCallback = callback
         createTempFileForCapture("photo", ".jpg")?.let { (file, uri) ->
             cameraFile = file
@@ -281,7 +283,7 @@ class MediaSelectionHelper {
      *
      * @param callback Callback for the capture result
      */
-    fun launchVideoCapture(callback: MediaSelectionCallback) {
+    public fun launchVideoCapture(callback: MediaSelectionCallback) {
         currentCallback = callback
         createTempFileForCapture("video", ".mp4")?.let { (file, uri) ->
             cameraFile = file
@@ -475,7 +477,7 @@ class MediaSelectionHelper {
             
             destinationFile
         } catch (e: Exception) {
-            e.printStackTrace()
+            CometChatLogger.e("MediaSelectionHelper", "media file operation failed", e)
             null
         }
     }
@@ -493,25 +495,25 @@ class MediaSelectionHelper {
             val file = File.createTempFile(prefix, extension, cacheDir)
             val uri = FileProvider.getUriForFile(
                 context,
-                "${context.packageName}.fileprovider",
+                context.cometchatFileProviderAuthority,
                 file
             )
             
             Pair(file, uri)
         } catch (e: Exception) {
-            e.printStackTrace()
+            CometChatLogger.e("MediaSelectionHelper", "media file operation failed", e)
             null
         }
     }
     
-    companion object {
+    public companion object {
         /**
          * Detects the content type from a MIME type string.
          *
          * @param mimeType The MIME type to analyze
          * @return The detected content type
          */
-        fun detectContentType(mimeType: String?): String {
+        public fun detectContentType(mimeType: String?): String {
             return when {
                 mimeType == null -> MediaContentType.UNKNOWN
                 mimeType.startsWith("image/") -> MediaContentType.IMAGE
@@ -528,7 +530,7 @@ class MediaSelectionHelper {
          * @param uri The URI to analyze
          * @return The MIME type or null
          */
-        fun getMimeType(context: Context, uri: Uri): String? {
+        public fun getMimeType(context: Context, uri: Uri): String? {
             return if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
                 context.contentResolver.getType(uri)
             } else {

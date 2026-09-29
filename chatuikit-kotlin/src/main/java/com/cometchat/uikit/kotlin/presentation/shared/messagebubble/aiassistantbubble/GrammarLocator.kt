@@ -10,7 +10,7 @@ import io.noties.prism4j.Prism4j
  * is available. This avoids bundling custom language definitions while
  * still supporting the SyntaxHighlightPlugin pipeline.
  */
-class GrammarLocator : io.noties.prism4j.GrammarLocator {
+public class GrammarLocator : io.noties.prism4j.GrammarLocator {
 
     override fun grammar(prism4j: Prism4j, language: String): Prism4j.Grammar? = null
 

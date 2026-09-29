@@ -19,7 +19,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param strokeWidth Width of the container border
  * @param strokeColor Color of the container border
  */
-data class CometChatOngoingCallStyle private constructor(
+public data class CometChatOngoingCallStyle private constructor(
     @ColorInt val backgroundColor: Int,
     @ColorInt val progressIndicatorColor: Int,
     @Dimension val cornerRadius: Float,
@@ -30,7 +30,7 @@ data class CometChatOngoingCallStyle private constructor(
      * Builder class for creating CometChatOngoingCallStyle instances.
      * Provides a fluent API for setting style properties.
      */
-    class Builder(private val context: Context) {
+    public class Builder(private val context: Context) {
         @ColorInt private var backgroundColor: Int = context.resources.getColor(R.color.cometchat_calling_background, context.theme)
         @ColorInt private var progressIndicatorColor: Int = CometChatTheme.getColorWhite(context)
         @Dimension private var cornerRadius: Float = 0f
@@ -40,32 +40,32 @@ data class CometChatOngoingCallStyle private constructor(
         /**
          * Sets the background color for the ongoing call container.
          */
-        fun setBackgroundColor(@ColorInt color: Int) = apply { backgroundColor = color }
+        public fun setBackgroundColor(@ColorInt color: Int): Builder = apply { backgroundColor = color }
 
         /**
          * Sets the progress indicator color.
          */
-        fun setProgressIndicatorColor(@ColorInt color: Int) = apply { progressIndicatorColor = color }
+        public fun setProgressIndicatorColor(@ColorInt color: Int): Builder = apply { progressIndicatorColor = color }
 
         /**
          * Sets the corner radius of the ongoing call container.
          */
-        fun setCornerRadius(@Dimension radius: Float) = apply { cornerRadius = radius }
+        public fun setCornerRadius(@Dimension radius: Float): Builder = apply { cornerRadius = radius }
 
         /**
          * Sets the stroke width of the container border.
          */
-        fun setStrokeWidth(@Dimension width: Int) = apply { strokeWidth = width }
+        public fun setStrokeWidth(@Dimension width: Int): Builder = apply { strokeWidth = width }
 
         /**
          * Sets the stroke color of the container border.
          */
-        fun setStrokeColor(@ColorInt color: Int) = apply { strokeColor = color }
+        public fun setStrokeColor(@ColorInt color: Int): Builder = apply { strokeColor = color }
 
         /**
          * Builds the CometChatOngoingCallStyle instance.
          */
-        fun build() = CometChatOngoingCallStyle(
+        public fun build(): CometChatOngoingCallStyle = CometChatOngoingCallStyle(
             backgroundColor = backgroundColor,
             progressIndicatorColor = progressIndicatorColor,
             cornerRadius = cornerRadius,
@@ -74,14 +74,14 @@ data class CometChatOngoingCallStyle private constructor(
         )
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          *
          * @param context The Android context for accessing theme attributes
          * @return A fully configured CometChatOngoingCallStyle with theme defaults
          */
-        fun default(context: Context): CometChatOngoingCallStyle {
+        public fun default(context: Context): CometChatOngoingCallStyle {
             return Builder(context).build()
         }
 
@@ -91,6 +91,6 @@ data class CometChatOngoingCallStyle private constructor(
          * @param context The Android context for accessing theme attributes
          * @return A new Builder instance with theme defaults
          */
-        fun builder(context: Context) = Builder(context)
+        public fun builder(context: Context): Builder = Builder(context)
     }
 }

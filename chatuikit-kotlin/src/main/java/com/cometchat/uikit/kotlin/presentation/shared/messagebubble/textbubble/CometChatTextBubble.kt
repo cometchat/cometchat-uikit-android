@@ -44,7 +44,7 @@ import com.google.android.material.card.MaterialCardView
  * - Edited message indicator
  * - Customizable styling via XML attributes or programmatically
  */
-class CometChatTextBubble @JvmOverloads constructor(
+public class CometChatTextBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -183,7 +183,7 @@ class CometChatTextBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatTextBubbleStyle) {
+    public fun setStyle(style: CometChatTextBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -191,7 +191,7 @@ class CometChatTextBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatTextBubble
@@ -215,7 +215,7 @@ class CometChatTextBubble @JvmOverloads constructor(
      * - Ordered lists
      * - Blockquotes
      */
-    fun setMessage(
+    public fun setMessage(
         message: TextMessage?,
         textFormatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -358,7 +358,7 @@ class CometChatTextBubble @JvmOverloads constructor(
         }
     }
 
-    fun setText(text: SpannableString) {
+    public fun setText(text: SpannableString) {
         // For direct SpannableString, use the fallback TextView
         markdownContentContainer.visibility = View.GONE
         messageTextView.visibility = View.VISIBLE
@@ -367,12 +367,12 @@ class CometChatTextBubble @JvmOverloads constructor(
         messageTextView.movementMethod = MentionMovementMethod.getInstance()
     }
 
-    fun setText(text: String) {
+    public fun setText(text: String) {
         // Plain string input carries no formatter spans — markdown only.
         renderMarkdown(text)
     }
 
-    fun setLinkPreview(
+    public fun setLinkPreview(
         title: String,
         description: String,
         url: String,
@@ -399,7 +399,7 @@ class CometChatTextBubble @JvmOverloads constructor(
         adjustWidthForLinkPreview()
     }
 
-    fun setTranslatedText(text: String) {
+    public fun setTranslatedText(text: String) {
         textTranslatedTextView.text = text
     }
 
@@ -416,9 +416,9 @@ class CometChatTextBubble @JvmOverloads constructor(
         parentViewLayout.layoutParams = layoutParams
     }
 
-    fun getTextView(): TextView = messageTextView
+    public fun getTextView(): TextView = messageTextView
 
-    fun setCompoundDrawable(
+    public fun setCompoundDrawable(
         @DrawableRes start: Int,
         @DrawableRes top: Int,
         @DrawableRes end: Int,
@@ -429,11 +429,11 @@ class CometChatTextBubble @JvmOverloads constructor(
         )
     }
 
-    fun setCompoundDrawableIconTint(@ColorInt color: Int) {
+    public fun setCompoundDrawableIconTint(@ColorInt color: Int) {
         TextViewCompat.setCompoundDrawableTintList(messageTextView, ColorStateList.valueOf(color))
     }
 
-    fun setTextViewMargin(leftMargin: Int, topMargin: Int, rightMargin: Int, bottomMargin: Int) {
+    public fun setTextViewMargin(leftMargin: Int, topMargin: Int, rightMargin: Int, bottomMargin: Int) {
         val layoutParams = messageTextView.layoutParams
         if (layoutParams is ViewGroup.MarginLayoutParams) {
             layoutParams.setMargins(
@@ -450,44 +450,44 @@ class CometChatTextBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getTextColor(): Int = style?.textColor ?: 0
-    fun getTextAppearance(): Int = style?.textAppearance ?: 0
-    fun getTextLinkColor(): Int = style?.textLinkColor ?: 0
-    fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
-    fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
-    fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
-    fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
-    fun getBubbleBackgroundDrawable(): Drawable? = style?.backgroundDrawable
-    fun getTranslatedTextColor(): Int = style?.translatedTextColor ?: 0
-    fun getTranslatedTextAppearance(): Int = style?.translatedTextAppearance ?: 0
-    fun getSeparatorColor(): Int = style?.separatorColor ?: 0
-    fun getLinkPreviewTitleColor(): Int = style?.linkPreviewTitleColor ?: 0
-    fun getLinkPreviewTitleAppearance(): Int = style?.linkPreviewTitleAppearance ?: 0
-    fun getLinkPreviewDescriptionColor(): Int = style?.linkPreviewDescriptionColor ?: 0
-    fun getLinkPreviewDescriptionAppearance(): Int = style?.linkPreviewDescriptionAppearance ?: 0
-    fun getLinkPreviewLinkColor(): Int = style?.linkPreviewLinkColor ?: 0
-    fun getLinkPreviewLinkAppearance(): Int = style?.linkPreviewLinkAppearance ?: 0
-    fun getLinkPreviewBackgroundColor(): Int = style?.linkPreviewBackgroundColor ?: 0
-    fun getLinkPreviewBackgroundDrawable(): Drawable? = style?.linkPreviewBackgroundDrawable
-    fun getLinkPreviewStrokeColor(): Int = style?.linkPreviewStrokeColor ?: 0
-    fun getLinkPreviewStrokeWidth(): Float = style?.linkPreviewStrokeWidth ?: 0f
-    fun getLinkPreviewCornerRadius(): Float = style?.linkPreviewCornerRadius ?: 0f
+    public fun getTextColor(): Int = style?.textColor ?: 0
+    public fun getTextAppearance(): Int = style?.textAppearance ?: 0
+    public fun getTextLinkColor(): Int = style?.textLinkColor ?: 0
+    public fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
+    public fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
+    public fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
+    public fun getBubbleBackgroundDrawable(): Drawable? = style?.backgroundDrawable
+    public fun getTranslatedTextColor(): Int = style?.translatedTextColor ?: 0
+    public fun getTranslatedTextAppearance(): Int = style?.translatedTextAppearance ?: 0
+    public fun getSeparatorColor(): Int = style?.separatorColor ?: 0
+    public fun getLinkPreviewTitleColor(): Int = style?.linkPreviewTitleColor ?: 0
+    public fun getLinkPreviewTitleAppearance(): Int = style?.linkPreviewTitleAppearance ?: 0
+    public fun getLinkPreviewDescriptionColor(): Int = style?.linkPreviewDescriptionColor ?: 0
+    public fun getLinkPreviewDescriptionAppearance(): Int = style?.linkPreviewDescriptionAppearance ?: 0
+    public fun getLinkPreviewLinkColor(): Int = style?.linkPreviewLinkColor ?: 0
+    public fun getLinkPreviewLinkAppearance(): Int = style?.linkPreviewLinkAppearance ?: 0
+    public fun getLinkPreviewBackgroundColor(): Int = style?.linkPreviewBackgroundColor ?: 0
+    public fun getLinkPreviewBackgroundDrawable(): Drawable? = style?.linkPreviewBackgroundDrawable
+    public fun getLinkPreviewStrokeColor(): Int = style?.linkPreviewStrokeColor ?: 0
+    public fun getLinkPreviewStrokeWidth(): Float = style?.linkPreviewStrokeWidth ?: 0f
+    public fun getLinkPreviewCornerRadius(): Float = style?.linkPreviewCornerRadius ?: 0f
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         style = style?.copy(textColor = color) ?: CometChatTextBubbleStyle(textColor = color)
         applyTextColor(color)
     }
 
-    fun setTextAppearance(@StyleRes appearance: Int) {
+    public fun setTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(textAppearance = appearance) ?: CometChatTextBubbleStyle(textAppearance = appearance)
         applyTextAppearance(appearance)
     }
 
-    fun setTextLinkColor(@ColorInt color: Int) {
+    public fun setTextLinkColor(@ColorInt color: Int) {
         style = style?.copy(textLinkColor = color) ?: CometChatTextBubbleStyle(textLinkColor = color)
         applyTextLinkColor(color)
     }
@@ -497,17 +497,17 @@ class CometChatTextBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         style = style?.copy(cornerRadius = radius) ?: CometChatTextBubbleStyle(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Float) {
+    public fun setBubbleStrokeWidth(@Dimension width: Float) {
         style = style?.copy(strokeWidth = width) ?: CometChatTextBubbleStyle(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style?.copy(strokeColor = color) ?: CometChatTextBubbleStyle(strokeColor = color)
         applyStrokeColor(color)
     }
@@ -522,72 +522,72 @@ class CometChatTextBubble @JvmOverloads constructor(
         drawable?.let { applyBackgroundDrawable(it) }
     }
 
-    fun setTranslatedTextColor(@ColorInt color: Int) {
+    public fun setTranslatedTextColor(@ColorInt color: Int) {
         style = style?.copy(translatedTextColor = color) ?: CometChatTextBubbleStyle(translatedTextColor = color)
         applyTranslatedTextColor(color)
     }
 
-    fun setTranslatedTextAppearance(@StyleRes appearance: Int) {
+    public fun setTranslatedTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(translatedTextAppearance = appearance) ?: CometChatTextBubbleStyle(translatedTextAppearance = appearance)
         applyTranslatedTextAppearance(appearance)
     }
 
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style?.copy(separatorColor = color) ?: CometChatTextBubbleStyle(separatorColor = color)
         applySeparatorColor(color)
     }
 
-    fun setLinkPreviewTitleColor(@ColorInt color: Int) {
+    public fun setLinkPreviewTitleColor(@ColorInt color: Int) {
         style = style?.copy(linkPreviewTitleColor = color) ?: CometChatTextBubbleStyle(linkPreviewTitleColor = color)
         applyLinkPreviewTitleColor(color)
     }
 
-    fun setLinkPreviewTitleAppearance(@StyleRes appearance: Int) {
+    public fun setLinkPreviewTitleAppearance(@StyleRes appearance: Int) {
         style = style?.copy(linkPreviewTitleAppearance = appearance) ?: CometChatTextBubbleStyle(linkPreviewTitleAppearance = appearance)
         applyLinkPreviewTitleAppearance(appearance)
     }
 
-    fun setLinkPreviewDescriptionColor(@ColorInt color: Int) {
+    public fun setLinkPreviewDescriptionColor(@ColorInt color: Int) {
         style = style?.copy(linkPreviewDescriptionColor = color) ?: CometChatTextBubbleStyle(linkPreviewDescriptionColor = color)
         applyLinkPreviewDescriptionColor(color)
     }
 
-    fun setLinkPreviewDescriptionAppearance(@StyleRes appearance: Int) {
+    public fun setLinkPreviewDescriptionAppearance(@StyleRes appearance: Int) {
         style = style?.copy(linkPreviewDescriptionAppearance = appearance) ?: CometChatTextBubbleStyle(linkPreviewDescriptionAppearance = appearance)
         applyLinkPreviewDescriptionAppearance(appearance)
     }
 
-    fun setLinkPreviewLinkColor(@ColorInt color: Int) {
+    public fun setLinkPreviewLinkColor(@ColorInt color: Int) {
         style = style?.copy(linkPreviewLinkColor = color) ?: CometChatTextBubbleStyle(linkPreviewLinkColor = color)
         applyLinkPreviewLinkColor(color)
     }
 
-    fun setLinkPreviewLinkAppearance(@StyleRes appearance: Int) {
+    public fun setLinkPreviewLinkAppearance(@StyleRes appearance: Int) {
         style = style?.copy(linkPreviewLinkAppearance = appearance) ?: CometChatTextBubbleStyle(linkPreviewLinkAppearance = appearance)
         applyLinkPreviewLinkAppearance(appearance)
     }
 
-    fun setLinkPreviewBackgroundColor(@ColorInt color: Int) {
+    public fun setLinkPreviewBackgroundColor(@ColorInt color: Int) {
         style = style?.copy(linkPreviewBackgroundColor = color) ?: CometChatTextBubbleStyle(linkPreviewBackgroundColor = color)
         applyLinkPreviewBackgroundColor(color)
     }
 
-    fun setLinkPreviewBackgroundDrawable(drawable: Drawable?) {
+    public fun setLinkPreviewBackgroundDrawable(drawable: Drawable?) {
         style = style?.copy(linkPreviewBackgroundDrawable = drawable) ?: CometChatTextBubbleStyle(linkPreviewBackgroundDrawable = drawable)
         drawable?.let { applyLinkPreviewBackgroundDrawable(it) }
     }
 
-    fun setLinkPreviewStrokeColor(@ColorInt color: Int) {
+    public fun setLinkPreviewStrokeColor(@ColorInt color: Int) {
         style = style?.copy(linkPreviewStrokeColor = color) ?: CometChatTextBubbleStyle(linkPreviewStrokeColor = color)
         applyLinkPreviewStrokeColor(color)
     }
 
-    fun setLinkPreviewStrokeWidth(@Dimension width: Float) {
+    public fun setLinkPreviewStrokeWidth(@Dimension width: Float) {
         style = style?.copy(linkPreviewStrokeWidth = width) ?: CometChatTextBubbleStyle(linkPreviewStrokeWidth = width)
         applyLinkPreviewStrokeWidth(width)
     }
 
-    fun setLinkPreviewCornerRadius(@Dimension radius: Float) {
+    public fun setLinkPreviewCornerRadius(@Dimension radius: Float) {
         style = style?.copy(linkPreviewCornerRadius = radius) ?: CometChatTextBubbleStyle(linkPreviewCornerRadius = radius)
         applyLinkPreviewCornerRadius(radius)
     }
@@ -696,7 +696,7 @@ class CometChatTextBubble @JvmOverloads constructor(
         linkMessageContainerCard.radius = radius
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatTextBubble::class.java.simpleName
     }
 }

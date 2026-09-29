@@ -41,7 +41,7 @@ import com.cometchat.uikit.core.models.AttachmentUploadTile
  * @param onRejected Invoked when a rejected tile is tapped (surface the SDK rejection reason, e.g.
  *   the size-limit message) — rejected tiles are not retryable, so tapping only explains the error.
  */
-class CometChatAttachmentTileAdapter(
+internal class CometChatAttachmentTileAdapter(
     private val onCancel: (AttachmentUploadTile) -> Unit = {},
     private val onRemove: (AttachmentUploadTile) -> Unit = {},
     private val onRetry: (AttachmentUploadTile) -> Unit = {},

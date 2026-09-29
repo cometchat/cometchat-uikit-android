@@ -34,7 +34,7 @@ import com.google.android.material.card.MaterialCardView
  * callActionBubble.setMessage(callMessage)
  * ```
  */
-class CometChatCallActionBubble @JvmOverloads constructor(
+public class CometChatCallActionBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -125,7 +125,7 @@ class CometChatCallActionBubble @JvmOverloads constructor(
      *
      * @param message The Call message
      */
-    fun setMessage(message: Call?) {
+    public fun setMessage(message: Call?) {
         if (message == null) return
 
         val isVideo = message.type == CometChatConstants.CALL_TYPE_VIDEO
@@ -157,7 +157,7 @@ class CometChatCallActionBubble @JvmOverloads constructor(
      * @param isMissed Whether the call was missed
      * @param isInitiator Whether the logged-in user initiated the call
      */
-    fun setCallType(type: String, isMissed: Boolean, isInitiator: Boolean = false) {
+    public fun setCallType(type: String, isMissed: Boolean, isInitiator: Boolean = false) {
         val isVideo = type.equals("video", ignoreCase = true)
         isMissedCall = isMissed
 
@@ -227,7 +227,7 @@ class CometChatCallActionBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatCallActionBubbleStyle) {
+    public fun setStyle(style: CometChatCallActionBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -235,7 +235,7 @@ class CometChatCallActionBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatCallActionBubble
@@ -249,15 +249,15 @@ class CometChatCallActionBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style.backgroundColor
-    fun getBubbleCornerRadius(): Float = style.cornerRadius
-    fun getBubbleStrokeWidth(): Float = style.strokeWidth
-    fun getBubbleStrokeColor(): Int = style.strokeColor
-    fun getTextColor(): Int = style.textColor
-    fun getIconTint(): Int = style.iconTint
-    fun getMissedCallTextColor(): Int = style.missedCallTextColor
-    fun getMissedCallBackgroundColor(): Int = style.missedCallBackgroundColor
-    fun getMissedCallIconTint(): Int = style.missedCallIconTint
+    public fun getBubbleBackgroundColor(): Int = style.backgroundColor
+    public fun getBubbleCornerRadius(): Float = style.cornerRadius
+    public fun getBubbleStrokeWidth(): Float = style.strokeWidth
+    public fun getBubbleStrokeColor(): Int = style.strokeColor
+    public fun getTextColor(): Int = style.textColor
+    public fun getIconTint(): Int = style.iconTint
+    public fun getMissedCallTextColor(): Int = style.missedCallTextColor
+    public fun getMissedCallBackgroundColor(): Int = style.missedCallBackgroundColor
+    public fun getMissedCallIconTint(): Int = style.missedCallIconTint
 
     // ========================================
     // Setters (update style object + apply)
@@ -270,59 +270,59 @@ class CometChatCallActionBubble @JvmOverloads constructor(
         }
     }
 
-    fun setCornerRadius(@Dimension radius: Int) {
+    public fun setCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius.toFloat())
         setRadius(radius.toFloat())
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Int) {
+    public fun setBubbleStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width.toFloat())
         if (!isMissedCall) {
             strokeWidth = width
         }
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         strokeColor = color
     }
 
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         style = style.copy(textColor = color)
         if (!isMissedCall) {
             statusTextView.setTextColor(color)
         }
     }
 
-    fun setIconTint(@ColorInt color: Int) {
+    public fun setIconTint(@ColorInt color: Int) {
         style = style.copy(iconTint = color)
         if (!isMissedCall) {
             callIconImageView.setColorFilter(color)
         }
     }
 
-    fun setMissedCallTextColor(@ColorInt color: Int) {
+    public fun setMissedCallTextColor(@ColorInt color: Int) {
         style = style.copy(missedCallTextColor = color)
         if (isMissedCall) {
             statusTextView.setTextColor(color)
         }
     }
 
-    fun setMissedCallBackgroundColor(@ColorInt color: Int) {
+    public fun setMissedCallBackgroundColor(@ColorInt color: Int) {
         style = style.copy(missedCallBackgroundColor = color)
         if (isMissedCall) {
             setCardBackgroundColor(color)
         }
     }
 
-    fun setMissedCallIconTint(@ColorInt color: Int) {
+    public fun setMissedCallIconTint(@ColorInt color: Int) {
         style = style.copy(missedCallIconTint = color)
         if (isMissedCall) {
             callIconImageView.setColorFilter(color)
         }
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatCallActionBubble::class.java.simpleName
     }
 }

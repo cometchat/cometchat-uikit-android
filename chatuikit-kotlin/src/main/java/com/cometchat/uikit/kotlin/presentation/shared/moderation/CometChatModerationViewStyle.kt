@@ -13,17 +13,17 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the moderation view,
  * matching the XML attributes defined in attr_cometchat_moderation_view.xml.
  */
-data class CometChatModerationViewStyle(
+public data class CometChatModerationViewStyle(
     @ColorInt val backgroundColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
     @ColorInt val textColor: Int = 0,
     @ColorInt val iconTint: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with CometChatTheme defaults.
          */
-        fun default(context: Context): CometChatModerationViewStyle {
+        public fun default(context: Context): CometChatModerationViewStyle {
             return CometChatModerationViewStyle(
                 backgroundColor = CometChatTheme.getBackgroundColor2(context),
                 textAppearance = CometChatTheme.getTextAppearanceCaption1Regular(context),
@@ -35,7 +35,7 @@ data class CometChatModerationViewStyle(
         /**
          * Creates a style by extracting values from XML TypedArray.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatModerationViewStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatModerationViewStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

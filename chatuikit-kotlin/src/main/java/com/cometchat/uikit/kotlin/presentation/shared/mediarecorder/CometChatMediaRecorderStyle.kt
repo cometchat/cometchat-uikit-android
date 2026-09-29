@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatMediaRecorder.
  */
-data class CometChatMediaRecorderStyle(
+public data class CometChatMediaRecorderStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = 0,
     @Dimension val strokeWidth: Int = 0,
@@ -105,8 +105,8 @@ data class CometChatMediaRecorderStyle(
     @ColorInt val submitButtonBackgroundColor: Int = 0,
     @ColorInt val timerTextColor: Int = 0
 ) {
-    companion object {
-        fun default(context: Context): CometChatMediaRecorderStyle {
+    public companion object {
+        public fun default(context: Context): CometChatMediaRecorderStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -133,7 +133,7 @@ data class CometChatMediaRecorderStyle(
                 android.graphics.Color.green(color), android.graphics.Color.blue(color))
         }
 
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMediaRecorderStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMediaRecorderStyle {
             return try { extractFromTypedArray(context, typedArray) } finally { typedArray.recycle() }
         }
 

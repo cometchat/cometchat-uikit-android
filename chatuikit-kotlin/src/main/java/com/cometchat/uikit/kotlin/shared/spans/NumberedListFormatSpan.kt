@@ -20,9 +20,9 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.ORDERED_LIST
  */
-class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
+public class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
 
-    var number: Int
+    public var number: Int
         private set
 
     @ColorInt
@@ -33,7 +33,7 @@ class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new NumberedListFormatSpan with the specified item number.
      */
-    constructor(number: Int) : super(calculateLeadingMargin(number)) {
+    public constructor(number: Int) : super(calculateLeadingMargin(number)) {
         this.number = number
         this.textColor = 0
         this.gapWidth = DEFAULT_GAP_WIDTH
@@ -43,7 +43,7 @@ class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new NumberedListFormatSpan with context for theme colors.
      */
-    constructor(number: Int, context: Context) : super(calculateLeadingMargin(number)) {
+    public constructor(number: Int, context: Context) : super(calculateLeadingMargin(number)) {
         this.number = number
         this.context = context
         this.textColor = CometChatTheme.getTextColorPrimary(context)
@@ -53,7 +53,7 @@ class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new NumberedListFormatSpan with custom styling.
      */
-    constructor(
+    public constructor(
         number: Int,
         @ColorInt textColor: Int,
         gapWidth: Int
@@ -67,7 +67,7 @@ class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new NumberedListFormatSpan with custom leading margin.
      */
-    constructor(number: Int, leadingMargin: Int) : super(leadingMargin) {
+    public constructor(number: Int, leadingMargin: Int) : super(leadingMargin) {
         this.number = number
         this.textColor = 0
         this.gapWidth = DEFAULT_GAP_WIDTH
@@ -119,17 +119,17 @@ class NumberedListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
 
     // region Getters and Setters
 
-    fun setNumber(value: Int) { number = value }
+    public fun setNumber(value: Int) { number = value }
 
-    fun getTextColor(): Int = textColor
-    fun setTextColor(@ColorInt color: Int) { textColor = color }
+    public fun getTextColor(): Int = textColor
+    public fun setTextColor(@ColorInt color: Int) { textColor = color }
 
-    fun getGapWidth(): Int = gapWidth
-    fun setGapWidth(width: Int) { gapWidth = width }
+    public fun getGapWidth(): Int = gapWidth
+    public fun setGapWidth(width: Int) { gapWidth = width }
 
     // endregion
 
-    companion object {
+    public companion object {
         private const val DEFAULT_GAP_WIDTH = 16
         private const val DEFAULT_LEADING_MARGIN = 48
         private const val MARGIN_PER_EXTRA_DIGIT = 16

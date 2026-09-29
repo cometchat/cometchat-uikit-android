@@ -11,7 +11,7 @@ import com.cometchat.chat.models.BaseMessage
  *
  * @param T The type of ViewHolder used for the new message indicator
  */
-interface NewMessageIndicatorDecorationAdapter<T : RecyclerView.ViewHolder> {
+public interface NewMessageIndicatorDecorationAdapter<T : RecyclerView.ViewHolder> {
 
     /**
      * Returns the BaseMessage at the given position for indicator positioning.
@@ -19,7 +19,7 @@ interface NewMessageIndicatorDecorationAdapter<T : RecyclerView.ViewHolder> {
      * @param position The adapter position
      * @return The BaseMessage at the position, or null if not available
      */
-    fun getNewMessageIndicatorId(position: Int): BaseMessage?
+    public fun getNewMessageIndicatorId(position: Int): BaseMessage?
 
     /**
      * Creates a new ViewHolder for the new message indicator view.
@@ -27,7 +27,7 @@ interface NewMessageIndicatorDecorationAdapter<T : RecyclerView.ViewHolder> {
      * @param parent The parent ViewGroup
      * @return A new indicator ViewHolder
      */
-    fun onCreateNewMessageViewHolder(parent: ViewGroup): T
+    public fun onCreateNewMessageViewHolder(parent: ViewGroup): T
 
     /**
      * Binds data to the new message indicator ViewHolder.
@@ -36,5 +36,5 @@ interface NewMessageIndicatorDecorationAdapter<T : RecyclerView.ViewHolder> {
      * @param position The adapter position
      * @param messageId The message ID for the indicator
      */
-    fun onBindNewMessageViewHolder(holder: T, position: Int, messageId: Long)
+    public fun onBindNewMessageViewHolder(holder: T, position: Int, messageId: Long)
 }

@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatSuggestionListItemBinding
 import com.cometchat.uikit.kotlin.shared.formatters.SuggestionItem
@@ -20,7 +21,7 @@ import com.cometchat.uikit.kotlin.shared.formatters.SuggestionItem
  * @param context The context for inflating views
  * @param viewHolderListener Optional listener for custom item views
  */
-class SuggestionListAdapter(
+internal class SuggestionListAdapter(
     private val context: Context,
     private var viewHolderListener: SuggestionListViewHolderListener? = null
 ) : ListAdapter<SuggestionItem, SuggestionListAdapter.SuggestionViewHolder>(SuggestionDiffCallback()) {
@@ -48,7 +49,7 @@ class SuggestionListAdapter(
      * Updates the list with new suggestion items.
      */
     fun updateList(items: List<SuggestionItem>) {
-        android.util.Log.d("MentionDebug", "[SuggestionListAdapter] updateList() - submitting ${items.size} items: ${items.map { it.name }}")
+        CometChatLogger.d("MentionDebug", "[SuggestionListAdapter] updateList() - submitting ${items.size} items: ${items.map { it.name }}")
         submitList(items.toList())
     }
 
@@ -184,7 +185,7 @@ class SuggestionListAdapter(
 /**
  * Interface for custom suggestion list item views.
  */
-interface SuggestionListViewHolderListener {
+public interface SuggestionListViewHolderListener {
     /**
      * Creates a custom view for a suggestion item.
      * 
@@ -192,7 +193,7 @@ interface SuggestionListViewHolderListener {
      * @param item The suggestion item
      * @return A custom view, or null to use the default view
      */
-    fun createView(context: Context, item: SuggestionItem): View?
+    public fun createView(context: Context, item: SuggestionItem): View?
 
     /**
      * Binds data to a custom view.
@@ -202,5 +203,5 @@ interface SuggestionListViewHolderListener {
      * @param item The suggestion item
      * @param position The adapter position
      */
-    fun bindView(context: Context, view: View, item: SuggestionItem, position: Int)
+    public fun bindView(context: Context, view: View, item: SuggestionItem, position: Int)
 }

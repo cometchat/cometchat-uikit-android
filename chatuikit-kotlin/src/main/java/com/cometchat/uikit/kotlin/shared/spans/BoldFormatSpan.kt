@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see RichTextFormat.BOLD
  */
-class BoldFormatSpan : MetricAffectingSpan(), RichTextFormatSpan {
+public class BoldFormatSpan : MetricAffectingSpan(), RichTextFormatSpan {
 
     override fun updateMeasureState(textPaint: TextPaint) {
         applyBold(textPaint)
@@ -42,7 +42,7 @@ class BoldFormatSpan : MetricAffectingSpan(), RichTextFormatSpan {
 
     override fun getFormatType(): RichTextFormat = RichTextFormat.BOLD
 
-    companion object {
+    public companion object {
         private const val BOLD_WEIGHT = 700
     }
 }

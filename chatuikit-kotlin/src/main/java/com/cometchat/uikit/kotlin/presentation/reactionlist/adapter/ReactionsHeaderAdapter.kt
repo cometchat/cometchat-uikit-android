@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.databinding.CometchatReactionHeaderItemBinding
  * The adapter follows the pattern from the Java implementation in
  * chatuikit/src/main/java/com/cometchat/chatuikit/reactionlist/adapter/ReactionsHeaderAdapter.java
  */
-class ReactionsHeaderAdapter : RecyclerView.Adapter<ReactionsHeaderAdapter.ReactionHeaderViewHolder>() {
+internal class ReactionsHeaderAdapter : RecyclerView.Adapter<ReactionsHeaderAdapter.ReactionHeaderViewHolder>() {
 
     /**
      * Callback interface for tab selection events.

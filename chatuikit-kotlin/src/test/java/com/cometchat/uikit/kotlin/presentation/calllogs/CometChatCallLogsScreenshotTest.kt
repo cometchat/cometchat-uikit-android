@@ -277,7 +277,10 @@ class CometChatCallLogsScreenshotTest {
 
     // ==================== Helper: Static Screenshot Capture ====================
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> CometChatCallLogs) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> CometChatCallLogs,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
@@ -294,6 +297,9 @@ class CometChatCallLogsScreenshotTest {
                 ViewGroup.LayoutParams.MATCH_PARENT
             ))
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             // Idle the looper — the internal ViewModel may throw CometChatCalls.init() error
             // on its coroutine, but our external ViewModel (set via setViewModel) will provide data.
@@ -537,5 +543,19 @@ class CometChatCallLogsScreenshotTest {
             createRealCallLog(type = "video", status = "rejected", initiatorName = "Black Widow", initiatorUid = "u4"),
             createRealCallLog(type = "audio", status = "unanswered", initiatorName = "Thor", initiatorUid = "u5")
         )
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    /**
+     * The empty state rather than the content one: every content test in this class is
+     * `@Ignore`d for want of `CometChatCalls.init()`, and the toolbar and search box this
+     * does capture are the direction-dependent chrome anyway.
+     */
+    @Test
+    fun stateEmpty_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            createCallLogsViewWithViewModel(activity, createViewModel(emptyList()))
+        }
     }
 }

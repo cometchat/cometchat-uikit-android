@@ -23,7 +23,7 @@ import com.cometchat.chat.models.User
  * })
  * ```
  */
-interface MessageHeaderViewHolderListener {
+public interface MessageHeaderViewHolderListener {
     /**
      * Creates a custom view to be displayed in the message header.
      * 
@@ -36,5 +36,5 @@ interface MessageHeaderViewHolderListener {
      * @param group The current group being displayed, or null if displaying a user
      * @return A View to be displayed in the message header
      */
-    fun createView(context: Context, user: User?, group: Group?): View
+    public fun createView(context: Context, user: User?, group: Group?): View
 }

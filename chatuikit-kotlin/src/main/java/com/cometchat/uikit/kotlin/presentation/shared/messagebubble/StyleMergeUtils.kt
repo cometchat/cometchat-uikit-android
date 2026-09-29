@@ -67,7 +67,7 @@ private fun computeMerged(
  * Content-specific properties are always preserved from the original style.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> mergeWithBase(
+public fun <T : Any> mergeWithBase(
     bubbleStyle: T,
     base: CometChatMessageBubbleStyle
 ): T {

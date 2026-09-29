@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.text.SpannableString
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +28,7 @@ import com.bumptech.glide.request.target.Target
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
@@ -55,13 +55,13 @@ import java.io.File
  * - 3-4 images: 2x2 grid
  * - 5+ images: 2x2 grid with "+N" overlay on 4th item
  */
-class CometChatImageBubble @JvmOverloads constructor(
+public class CometChatImageBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatImageBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatImageBubble::class.java.simpleName
         private const val MAX_VISIBLE_ITEMS = 4
         private const val GRID_SPACING_DP = 2
@@ -289,7 +289,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      *
      * @param mediaMessage The MediaMessage containing image attachment(s)
      */
-    fun setMessage(mediaMessage: MediaMessage) {
+    public fun setMessage(mediaMessage: MediaMessage) {
         setMessage(mediaMessage, null)
     }
 
@@ -299,7 +299,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      * @param mediaMessage The MediaMessage containing image attachment(s)
      * @param localFile Optional local file for the image
      */
-    fun setMessage(mediaMessage: MediaMessage, localFile: File?) {
+    public fun setMessage(mediaMessage: MediaMessage, localFile: File?) {
         this.mediaMessage = mediaMessage
         
         // Check for multiple attachments in metadata
@@ -323,7 +323,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      *
      * @param attachments List of Attachment objects to display
      */
-    fun setAttachments(attachments: List<Attachment>) {
+    public fun setAttachments(attachments: List<Attachment>) {
         this.attachments = attachments
         
         if (attachments.size == 1) {
@@ -356,7 +356,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 if (result.isNotEmpty()) result else null
             } else null
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting attachments from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting attachments from metadata: ${e.message}")
             null
         }
     }
@@ -378,7 +378,7 @@ class CometChatImageBubble @JvmOverloads constructor(
             val urlMedium = thumbnailGeneration.optString("url_medium", null)
             if (urlMedium.isNullOrEmpty()) null else sanitizeUrl(urlMedium)
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting thumbnail URL from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting thumbnail URL from metadata: ${e.message}")
             null
         }
     }
@@ -415,7 +415,7 @@ class CometChatImageBubble @JvmOverloads constructor(
             val file = File(path)
             if (file.exists()) file else null
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting local file from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting local file from metadata: ${e.message}")
             null
         }
     }
@@ -471,7 +471,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     /**
      * Sets the thumbnail image from a URL.
      */
-    fun setImageThumbnail(url: String) {
+    public fun setImageThumbnail(url: String) {
         if (url.isNotEmpty()) {
             loadBitmapFromUrl(url, singleImageView, singleProgressBar)
         }
@@ -629,7 +629,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     // ========================================
 
     private fun loadBitmapFromUrl(url: String, imageView: ImageView, progressBar: ProgressBar) {
-        Log.d(TAG, "Loading bitmap from URL: $url")
+        CometChatLogger.d(TAG, "Loading bitmap from URL: $url")
         Glide.with(imageView)
             .asBitmap()
             .load(url)
@@ -642,7 +642,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     }
 
     private fun loadBitmapFromFile(file: File, imageView: ImageView, progressBar: ProgressBar) {
-        Log.d(TAG, "Loading bitmap from file: ${file.absolutePath}")
+        CometChatLogger.d(TAG, "Loading bitmap from file: ${file.absolutePath}")
         Glide.with(imageView)
             .asBitmap()
             .load(file)
@@ -686,7 +686,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 target: Target<Bitmap>,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.e(TAG, "Image load failed for URL: $model", e)
+                CometChatLogger.e(TAG, "Image load failed for URL: $model", e)
                 progressBar.visibility = View.GONE
                 return false
             }
@@ -698,7 +698,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 dataSource: DataSource,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.d(TAG, "Image loaded successfully: ${resource.width}x${resource.height} from $model")
+                CometChatLogger.d(TAG, "Image loaded successfully: ${resource.width}x${resource.height} from $model")
                 progressBar.visibility = View.GONE
                 return false
             }
@@ -713,7 +713,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 target: Target<GifDrawable>,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.e(TAG, "GIF load failed for URL: $model", e)
+                CometChatLogger.e(TAG, "GIF load failed for URL: $model", e)
                 progressBar.visibility = View.GONE
                 return false
             }
@@ -725,7 +725,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 dataSource: DataSource,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.d(TAG, "GIF loaded successfully from $model")
+                CometChatLogger.d(TAG, "GIF loaded successfully from $model")
                 progressBar.visibility = View.GONE
                 return false
             }
@@ -742,7 +742,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      * as block-level views (fenced code blocks, blockquotes, lists) into [captionBlockContainer] via
      * [MultiAttachmentUtils.renderCaptionInto] rather than being flattened into one TextView.
      */
-    fun setCaption(caption: String?) {
+    public fun setCaption(caption: String?) {
         if (!caption.isNullOrEmpty()) {
             captionTextView.visibility = View.GONE
             captionBlockContainer.visibility = View.VISIBLE
@@ -770,7 +770,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setCaption].
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -782,7 +782,7 @@ class CometChatImageBubble @JvmOverloads constructor(
      * Sets the caption text using a SpannableString. This legacy path renders into the flat
      * [captionTextView]; the block-caption container is hidden and cleared so the two never overlap.
      */
-    fun setCaption(caption: SpannableString?) {
+    public fun setCaption(caption: SpannableString?) {
         captionBlockContainer.visibility = View.GONE
         captionBlockContainer.removeAllViews()
         if (caption != null) {
@@ -799,7 +799,7 @@ class CometChatImageBubble @JvmOverloads constructor(
 
     private fun openMediaViewActivity() {
         if (mediaMessage == null && attachments.isEmpty()) {
-            Log.e(TAG, "No media to display")
+            CometChatLogger.e(TAG, "No media to display")
             return
         }
 
@@ -817,7 +817,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatImageBubbleStyle) {
+    public fun setStyle(style: CometChatImageBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -825,7 +825,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatImageBubble
@@ -839,48 +839,48 @@ class CometChatImageBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getImageCornerRadius(): Float = style?.imageCornerRadius ?: 0f
-    fun getImageStrokeColor(): Int = style?.imageStrokeColor ?: 0
-    fun getImageStrokeWidth(): Float = style?.imageStrokeWidth ?: 0f
-    fun getCaptionTextColor(): Int = style?.captionTextColor ?: 0
-    fun getCaptionTextAppearance(): Int = style?.captionTextAppearance ?: 0
-    fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
-    fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
-    fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
-    fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
-    fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
-    fun getBackgroundDrawable(): Drawable? = style?.backgroundDrawable
+    public fun getImageCornerRadius(): Float = style?.imageCornerRadius ?: 0f
+    public fun getImageStrokeColor(): Int = style?.imageStrokeColor ?: 0
+    public fun getImageStrokeWidth(): Float = style?.imageStrokeWidth ?: 0f
+    public fun getCaptionTextColor(): Int = style?.captionTextColor ?: 0
+    public fun getCaptionTextAppearance(): Int = style?.captionTextAppearance ?: 0
+    public fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
+    public fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
+    public fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
+    public fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
+    public fun getBackgroundDrawable(): Drawable? = style?.backgroundDrawable
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setImageCornerRadius(@Dimension radius: Float) {
+    public fun setImageCornerRadius(@Dimension radius: Float) {
         style = (style ?: CometChatImageBubbleStyle()).copy(imageCornerRadius = radius)
         applyImageCornerRadius(radius)
     }
 
-    fun setImageStrokeColor(@ColorInt color: Int) {
+    public fun setImageStrokeColor(@ColorInt color: Int) {
         style = (style ?: CometChatImageBubbleStyle()).copy(imageStrokeColor = color)
         applyImageStrokeColor(color)
     }
 
-    fun setImageStrokeWidth(@Dimension width: Float) {
+    public fun setImageStrokeWidth(@Dimension width: Float) {
         style = (style ?: CometChatImageBubbleStyle()).copy(imageStrokeWidth = width)
         applyImageStrokeWidth(width)
     }
 
-    fun setCaptionTextColor(@ColorInt color: Int) {
+    public fun setCaptionTextColor(@ColorInt color: Int) {
         style = (style ?: CometChatImageBubbleStyle()).copy(captionTextColor = color)
         applyCaptionTextColor(color)
     }
 
-    fun setCaptionTextAppearance(@StyleRes appearance: Int) {
+    public fun setCaptionTextAppearance(@StyleRes appearance: Int) {
         style = (style ?: CometChatImageBubbleStyle()).copy(captionTextAppearance = appearance)
         applyCaptionTextAppearance(appearance)
     }
 
-    fun setProgressIndeterminateTint(@ColorInt color: Int) {
+    public fun setProgressIndeterminateTint(@ColorInt color: Int) {
         style = (style ?: CometChatImageBubbleStyle()).copy(progressIndeterminateTint = color)
         applyProgressIndeterminateTint(color)
     }
@@ -900,53 +900,53 @@ class CometChatImageBubble @JvmOverloads constructor(
         drawable?.let { applyBackgroundDrawable(it) }
     }
 
-    fun getBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBackgroundColor(): Int = style?.backgroundColor ?: 0
 
-    fun setMoreOverlayBackgroundColor(@ColorInt color: Int) {
+    public fun setMoreOverlayBackgroundColor(@ColorInt color: Int) {
         this.moreOverlayBackgroundColor = color
     }
 
-    fun getMoreOverlayBackgroundColor(): Int = moreOverlayBackgroundColor
+    public fun getMoreOverlayBackgroundColor(): Int = moreOverlayBackgroundColor
 
-    fun setMoreOverlayTextColor(@ColorInt color: Int) {
+    public fun setMoreOverlayTextColor(@ColorInt color: Int) {
         this.moreOverlayTextColor = color
     }
 
-    fun getMoreOverlayTextColor(): Int = moreOverlayTextColor
+    public fun getMoreOverlayTextColor(): Int = moreOverlayTextColor
 
-    fun setMoreOverlayTextAppearance(@StyleRes appearance: Int) {
+    public fun setMoreOverlayTextAppearance(@StyleRes appearance: Int) {
         this.moreOverlayTextAppearance = appearance
     }
 
-    fun getMoreOverlayTextAppearance(): Int = moreOverlayTextAppearance
+    public fun getMoreOverlayTextAppearance(): Int = moreOverlayTextAppearance
 
-    fun setGridSpacing(@Dimension spacing: Int) {
+    public fun setGridSpacing(@Dimension spacing: Int) {
         this.gridSpacing = spacing
     }
 
-    fun getGridSpacing(): Int = gridSpacing
+    public fun getGridSpacing(): Int = gridSpacing
 
-    fun setMaxGridWidth(@Dimension width: Int) {
+    public fun setMaxGridWidth(@Dimension width: Int) {
         this.maxGridWidth = width
     }
 
-    fun getMaxGridWidth(): Int = maxGridWidth
+    public fun getMaxGridWidth(): Int = maxGridWidth
 
     // ========================================
     // Click Listeners
     // ========================================
 
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         this.onClick = onClick
     }
 
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
-    fun setOnImageClickListener(listener: ((Int, Attachment) -> Unit)?) {
+    public fun setOnImageClickListener(listener: ((Int, Attachment) -> Unit)?) {
         this.onImageClick = listener
     }
 
-    fun setOnMoreClickListener(listener: ((List<Attachment>) -> Unit)?) {
+    public fun setOnMoreClickListener(listener: ((List<Attachment>) -> Unit)?) {
         this.onMoreClick = listener
     }
 
@@ -954,19 +954,19 @@ class CometChatImageBubble @JvmOverloads constructor(
     // View Accessors
     // ========================================
 
-    fun getSingleImageView(): ImageView = singleImageView
+    public fun getSingleImageView(): ImageView = singleImageView
 
-    fun getSingleImageContainer(): MaterialCardView = singleImageContainer
+    public fun getSingleImageContainer(): MaterialCardView = singleImageContainer
 
-    fun getProgressBar(): ProgressBar = singleProgressBar
+    public fun getProgressBar(): ProgressBar = singleProgressBar
 
-    fun getCaptionTextView(): TextView = captionTextView
+    public fun getCaptionTextView(): TextView = captionTextView
 
-    fun getGridLayout(): GridLayout = gridLayout
+    public fun getGridLayout(): GridLayout = gridLayout
 
-    fun getAttachments(): List<Attachment> = attachments
+    public fun getAttachments(): List<Attachment> = attachments
 
-    fun getMediaMessage(): MediaMessage? = mediaMessage
+    public fun getMediaMessage(): MediaMessage? = mediaMessage
 
     // ========================================
     // Lifecycle
@@ -975,7 +975,7 @@ class CometChatImageBubble @JvmOverloads constructor(
     /**
      * Cancels any ongoing image loads. Call this when the view is recycled.
      */
-    fun cancelImageLoads() {
+    public fun cancelImageLoads() {
         try {
             Glide.with(context).clear(singleImageView)
             // Clear grid images
@@ -986,7 +986,7 @@ class CometChatImageBubble @JvmOverloads constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error canceling image loads: ${e.message}")
+            CometChatLogger.e(TAG, "Error canceling image loads: ${e.message}")
         }
     }
 

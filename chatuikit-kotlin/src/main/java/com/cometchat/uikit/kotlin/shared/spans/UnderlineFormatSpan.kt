@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see RichTextFormat.UNDERLINE
  */
-class UnderlineFormatSpan : UnderlineSpan(), RichTextFormatSpan {
+public class UnderlineFormatSpan : UnderlineSpan(), RichTextFormatSpan {
 
     override fun getFormatType(): RichTextFormat = RichTextFormat.UNDERLINE
 }

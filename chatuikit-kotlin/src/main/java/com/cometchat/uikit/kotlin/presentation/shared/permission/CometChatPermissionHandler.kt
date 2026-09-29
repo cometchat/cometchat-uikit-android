@@ -18,7 +18,7 @@ import java.lang.ref.WeakReference
 /**
  * Permission types supported by the CometChat permission handler.
  */
-enum class PermissionType {
+public enum class PermissionType {
     CAMERA,
     MICROPHONE,
     STORAGE,
@@ -64,7 +64,7 @@ enum class PermissionType {
  *     .launch()
  * ```
  */
-class CometChatPermissionHandler private constructor(context: Context) : PermissionHandlerBuilder, ActivityResultHandlerBuilder {
+public class CometChatPermissionHandler private constructor(context: Context) : PermissionHandlerBuilder, ActivityResultHandlerBuilder {
 
     private var permissions: Array<String>? = null
     private var permissionResultListener: PermissionResultListener = BasePermissionResultListener()
@@ -108,7 +108,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
         instance?.launchIntent(listener, intent)
     }
 
-    companion object {
+    public companion object {
         private var instance: PermissionHandlerInstance? = null
 
         /**
@@ -117,7 +117,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
          * @return A new CometChatPermissionHandler instance
          */
         @JvmStatic
-        fun withContext(context: Context): CometChatPermissionHandler {
+        public fun withContext(context: Context): CometChatPermissionHandler {
             return CometChatPermissionHandler(context)
         }
 
@@ -165,7 +165,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
          * @return Array of Android permission strings
          */
         @JvmStatic
-        fun getPermissionsForType(type: PermissionType): Array<String> {
+        public fun getPermissionsForType(type: PermissionType): Array<String> {
             return when (type) {
                 PermissionType.CAMERA -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -191,11 +191,10 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
                 }
                 PermissionType.STORAGE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        arrayOf(
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VIDEO,
-                            Manifest.permission.READ_MEDIA_AUDIO
-                        )
+                        // ENG-38657 (T6): the system Photo Picker needs no runtime
+                        // permission, and READ_MEDIA_* is undeclared in the library
+                        // manifests (requesting it is silently auto-denied).
+                        emptyArray()
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     } else {
@@ -207,11 +206,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
                 }
                 PermissionType.CAMERA_AND_STORAGE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VIDEO
-                        )
+                        arrayOf(Manifest.permission.CAMERA) // T6: media side needs no permission on 33+
                     } else {
                         arrayOf(
                             Manifest.permission.CAMERA,
@@ -222,10 +217,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
                 }
                 PermissionType.MICROPHONE_AND_STORAGE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        arrayOf(
-                            Manifest.permission.RECORD_AUDIO,
-                            Manifest.permission.READ_MEDIA_AUDIO
-                        )
+                        arrayOf(Manifest.permission.RECORD_AUDIO) // T6: media side needs no permission on 33+
                     } else {
                         arrayOf(
                             Manifest.permission.RECORD_AUDIO,
@@ -245,7 +237,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
          * @return true if permission is granted
          */
         @JvmStatic
-        fun isPermissionGranted(context: Context, permission: String): Boolean {
+        public fun isPermissionGranted(context: Context, permission: String): Boolean {
             return ContextCompat.checkSelfPermission(
                 context,
                 permission
@@ -260,7 +252,7 @@ class CometChatPermissionHandler private constructor(context: Context) : Permiss
          * @return true if all permissions are granted
          */
         @JvmStatic
-        fun arePermissionsGranted(context: Context, type: PermissionType): Boolean {
+        public fun arePermissionsGranted(context: Context, type: PermissionType): Boolean {
             return getPermissionsForType(type).all { isPermissionGranted(context, it) }
         }
     }

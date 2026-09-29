@@ -17,7 +17,7 @@ import com.cometchat.chat.models.Conversation
  * - Implement createView() to create your custom view once during ViewHolder creation
  * - Implement bindView() to bind data to your custom view during bind operations
  */
-interface SearchConversationsViewHolderListener {
+public interface SearchConversationsViewHolderListener {
 
     /**
      * Creates a custom view for the conversation item or section.
@@ -29,7 +29,7 @@ interface SearchConversationsViewHolderListener {
      * @param binding The ViewBinding for the conversation item layout
      * @return The custom view to display
      */
-    fun createView(context: Context, binding: ViewBinding): View
+    public fun createView(context: Context, binding: ViewBinding): View
 
     /**
      * Binds conversation data to the custom view.
@@ -44,7 +44,7 @@ interface SearchConversationsViewHolderListener {
      * @param conversationList The full list of conversations
      * @param position The position in the list
      */
-    fun bindView(
+    public fun bindView(
         context: Context,
         view: View,
         conversation: Conversation,
@@ -66,7 +66,7 @@ interface SearchConversationsViewHolderListener {
  *
  * @param T The message type (e.g., TextMessage, MediaMessage)
  */
-interface SearchMessagesViewHolderListener<T : BaseMessage> {
+public interface SearchMessagesViewHolderListener<T : BaseMessage> {
 
     /**
      * Creates a custom view for the message item.
@@ -78,7 +78,7 @@ interface SearchMessagesViewHolderListener<T : BaseMessage> {
      * @param binding The ViewBinding for the message item layout
      * @return The custom view to display
      */
-    fun createView(context: Context, binding: ViewBinding): View
+    public fun createView(context: Context, binding: ViewBinding): View
 
     /**
      * Binds message data to the custom view.
@@ -93,7 +93,7 @@ interface SearchMessagesViewHolderListener<T : BaseMessage> {
      * @param messageList The full list of messages
      * @param position The position in the list
      */
-    fun bindView(
+    public fun bindView(
         context: Context,
         view: View,
         message: T,

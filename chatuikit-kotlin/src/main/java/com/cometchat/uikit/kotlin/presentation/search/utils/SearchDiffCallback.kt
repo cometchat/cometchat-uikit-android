@@ -10,7 +10,7 @@ import com.cometchat.chat.models.Conversation
  * This callback is used to efficiently update the conversation RecyclerView
  * by calculating the minimal set of changes needed.
  */
-class ConversationDiffCallback(
+public class ConversationDiffCallback(
     private val oldList: List<Conversation>,
     private val newList: List<Conversation>
 ) : DiffUtil.Callback() {
@@ -59,7 +59,7 @@ class ConversationDiffCallback(
  * This callback is used to efficiently update the message RecyclerView
  * by calculating the minimal set of changes needed.
  */
-class MessageDiffCallback(
+public class MessageDiffCallback(
     private val oldList: List<BaseMessage>,
     private val newList: List<BaseMessage>
 ) : DiffUtil.Callback() {
@@ -102,7 +102,7 @@ class MessageDiffCallback(
 /**
  * DiffUtil.ItemCallback for conversation list in ListAdapter.
  */
-class ConversationItemCallback : DiffUtil.ItemCallback<Conversation>() {
+public class ConversationItemCallback : DiffUtil.ItemCallback<Conversation>() {
     override fun areItemsTheSame(oldItem: Conversation, newItem: Conversation): Boolean {
         return oldItem.conversationId == newItem.conversationId
     }
@@ -118,7 +118,7 @@ class ConversationItemCallback : DiffUtil.ItemCallback<Conversation>() {
 /**
  * DiffUtil.ItemCallback for message list in ListAdapter.
  */
-class MessageItemCallback : DiffUtil.ItemCallback<BaseMessage>() {
+public class MessageItemCallback : DiffUtil.ItemCallback<BaseMessage>() {
     override fun areItemsTheSame(oldItem: BaseMessage, newItem: BaseMessage): Boolean {
         return oldItem.id == newItem.id
     }

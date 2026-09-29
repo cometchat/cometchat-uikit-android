@@ -26,7 +26,7 @@ import com.google.android.material.card.MaterialCardView
  * - Distinct visual style to differentiate from regular messages
  * - Customizable styling via XML attributes or programmatically
  */
-class CometChatActionBubble @JvmOverloads constructor(
+public class CometChatActionBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -133,7 +133,7 @@ class CometChatActionBubble @JvmOverloads constructor(
      *
      * @param message The action message
      */
-    fun setMessage(message: Action?) {
+    public fun setMessage(message: Action?) {
         if (message == null) {
             setText("")
             return
@@ -146,7 +146,7 @@ class CometChatActionBubble @JvmOverloads constructor(
      *
      * @param text The text to display
      */
-    fun setText(text: String) {
+    public fun setText(text: String) {
         messageTextView.text = text
     }
 
@@ -156,19 +156,19 @@ class CometChatActionBubble @JvmOverloads constructor(
      *
      * @param text The spannable text to display
      */
-    fun setText(text: SpannableString) {
+    public fun setText(text: SpannableString) {
         messageTextView.setText(text, TextView.BufferType.SPANNABLE)
     }
 
     /**
      * Gets the current text displayed in the action bubble.
      */
-    fun getText(): CharSequence = messageTextView.text
+    public fun getText(): CharSequence = messageTextView.text
 
     /**
      * Gets the TextView for direct manipulation.
      */
-    fun getTextView(): TextView = messageTextView
+    public fun getTextView(): TextView = messageTextView
 
     // ========================================
     // Public Style Methods
@@ -177,7 +177,7 @@ class CometChatActionBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatActionBubbleStyle) {
+    public fun setStyle(style: CometChatActionBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -185,7 +185,7 @@ class CometChatActionBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatActionBubble
@@ -199,12 +199,12 @@ class CometChatActionBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style.backgroundColor
-    fun getBubbleCornerRadius(): Float = style.cornerRadius
-    fun getBubbleStrokeWidth(): Float = style.strokeWidth
-    fun getBubbleStrokeColor(): Int = style.strokeColor
-    fun getTextColor(): Int = style.textColor
-    fun getTextAppearance(): Int = style.textAppearance
+    public fun getBubbleBackgroundColor(): Int = style.backgroundColor
+    public fun getBubbleCornerRadius(): Float = style.cornerRadius
+    public fun getBubbleStrokeWidth(): Float = style.strokeWidth
+    public fun getBubbleStrokeColor(): Int = style.strokeColor
+    public fun getTextColor(): Int = style.textColor
+    public fun getTextAppearance(): Int = style.textAppearance
 
     // ========================================
     // Setters (update style object + apply)
@@ -215,32 +215,32 @@ class CometChatActionBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Int) {
+    public fun setCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius.toFloat())
         applyCornerRadius(radius.toFloat())
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Int) {
+    public fun setBubbleStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width.toFloat())
         applyStrokeWidth(width.toFloat())
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         style = style.copy(textColor = color)
         applyTextColor(color)
     }
 
-    fun setTextAppearance(@StyleRes appearance: Int) {
+    public fun setTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(textAppearance = appearance)
         applyTextAppearance(appearance)
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatActionBubble::class.java.simpleName
     }
 }

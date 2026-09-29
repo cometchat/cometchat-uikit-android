@@ -476,7 +476,10 @@ class CometChatCallButtonsScreenshotTest {
 
     // ==================== Helper: Screenshot Capture ====================
 
-    private fun launchAndCapture(configure: (ComponentActivity) -> CometChatCallButtons) {
+    private fun launchAndCapture(
+        rtl: Boolean = false,
+        configure: (ComponentActivity) -> CometChatCallButtons,
+    ) {
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         scenario.onActivity { activity ->
             activity.setTheme(R.style.CometChatTheme_DayNight)
@@ -493,6 +496,9 @@ class CometChatCallButtonsScreenshotTest {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ))
             activity.setContentView(container)
+            // The root has to be attached before the direction is set; the ldrtl
+            // qualifier does nothing here. See RtlLayoutDirectionHarnessTest.
+            if (rtl) container.layoutDirection = View.LAYOUT_DIRECTION_RTL
 
             try {
                 ShadowLooper.idleMainLooper()
@@ -534,5 +540,14 @@ class CometChatCallButtonsScreenshotTest {
         whenever(group.guid).thenReturn(guid)
         whenever(group.name).thenReturn(name)
         return group
+    }
+
+    // ── right-to-left ───────────────────────────────────────────────────────
+
+    @Test
+    fun stateIdleDefault_rtl() {
+        launchAndCapture(rtl = true) { activity ->
+            createCallButtonsView(activity)
+        }
     }
 }

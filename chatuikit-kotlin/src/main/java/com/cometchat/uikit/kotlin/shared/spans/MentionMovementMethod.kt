@@ -9,7 +9,7 @@ import android.widget.TextView
  * A custom movement method for handling mention tag clicks.
  * Ensures that clicks are only registered when the touch is within the span's bounds.
  */
-class MentionMovementMethod private constructor() : LinkMovementMethod() {
+public class MentionMovementMethod private constructor() : LinkMovementMethod() {
 
     private var touchedSpan: Any? = null
 
@@ -64,11 +64,11 @@ class MentionMovementMethod private constructor() : LinkMovementMethod() {
         return super.onTouchEvent(widget, buffer, event)
     }
 
-    companion object {
+    public companion object {
         @Volatile
         private var instance: MentionMovementMethod? = null
 
-        fun getInstance(): MentionMovementMethod {
+        public fun getInstance(): MentionMovementMethod {
             return instance ?: synchronized(this) {
                 instance ?: MentionMovementMethod().also { instance = it }
             }

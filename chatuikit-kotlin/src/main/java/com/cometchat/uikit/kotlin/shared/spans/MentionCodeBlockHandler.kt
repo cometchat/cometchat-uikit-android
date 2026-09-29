@@ -17,7 +17,7 @@ import org.json.JSONObject
  * @see ConsumedMentionSpan
  * @see NonEditableSpan
  */
-object MentionCodeBlockHandler {
+public object MentionCodeBlockHandler {
 
     /**
      * Finds all [NonEditableSpan] instances in the given range and replaces
@@ -29,7 +29,7 @@ object MentionCodeBlockHandler {
      * @param start    The start index (inclusive) of the range.
      * @param end      The end index (exclusive) of the range.
      */
-    fun consumeMentionsInRange(editable: Editable, start: Int, end: Int) {
+    public fun consumeMentionsInRange(editable: Editable, start: Int, end: Int) {
         if (start < 0 || end < 0 || start >= end || start > editable.length || end > editable.length) return
 
         val mentionSpans = editable.getSpans(start, end, NonEditableSpan::class.java)
@@ -60,7 +60,7 @@ object MentionCodeBlockHandler {
      * @param start    The start index (inclusive) of the range.
      * @param end      The end index (exclusive) of the range.
      */
-    fun restoreMentionsInRange(editable: Editable, start: Int, end: Int) {
+    public fun restoreMentionsInRange(editable: Editable, start: Int, end: Int) {
         if (start < 0 || end < 0 || start >= end || start > editable.length || end > editable.length) return
 
         val consumedSpans = editable.getSpans(start, end, ConsumedMentionSpan::class.java)
@@ -85,7 +85,7 @@ object MentionCodeBlockHandler {
     /**
      * Metadata key used to store consumed mention data in message metadata.
      */
-    const val CONSUMED_MENTIONS_KEY = "consumed_mentions"
+    public const val CONSUMED_MENTIONS_KEY: String = "consumed_mentions"
 
     /**
      * Extracts all [ConsumedMentionSpan] instances from the Editable and returns
@@ -97,7 +97,7 @@ object MentionCodeBlockHandler {
      * @param editable The Editable to scan for consumed mention spans.
      * @return A JSONArray of consumed mention data, or null if none found.
      */
-    fun extractConsumedMentionMetadata(editable: Editable): JSONArray? {
+    public fun extractConsumedMentionMetadata(editable: Editable): JSONArray? {
         val spans = editable.getSpans(0, editable.length, ConsumedMentionSpan::class.java)
         if (spans.isEmpty()) return null
 
@@ -124,7 +124,7 @@ object MentionCodeBlockHandler {
      * @param editable The Editable to apply consumed mention spans to.
      * @param metadata The message metadata JSONObject (may be null).
      */
-    fun restoreConsumedMentionsFromMetadata(editable: Editable, metadata: JSONObject?) {
+    public fun restoreConsumedMentionsFromMetadata(editable: Editable, metadata: JSONObject?) {
         if (metadata == null || !metadata.has(CONSUMED_MENTIONS_KEY)) return
 
         val array = metadata.optJSONArray(CONSUMED_MENTIONS_KEY) ?: return

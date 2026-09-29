@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.R
  *
  * @param onTabClick Callback invoked when a tab is clicked, provides the index
  */
-class StickerTabAdapter(
+internal class StickerTabAdapter(
     private val onTabClick: ((Int) -> Unit)? = null
 ) : ListAdapter<StickerSet, StickerTabAdapter.TabViewHolder>(StickerSetDiffCallback()) {
 

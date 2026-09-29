@@ -10,7 +10,7 @@ import java.util.Locale
  *
  * It allows setting the locale and retrieving the locale country code.
  */
-object CometChatLocalize {
+public object CometChatLocalize {
     private var locale: Locale? = null
 
     /**
@@ -19,7 +19,7 @@ object CometChatLocalize {
      * @param context The context to set the locale
      * @param language The language code representing the desired locale (e.g., "en" for English, "fr" for French)
      */
-    fun setLocale(context: Context, language: String) {
+    public fun setLocale(context: Context, language: String) {
         locale = Locale(language)
         Locale.setDefault(locale!!)
         val resources = context.resources
@@ -36,7 +36,7 @@ object CometChatLocalize {
      *
      * @return The current default locale
      */
-    fun getDefault(): Locale {
+    public fun getDefault(): Locale {
         if (locale == null) {
             locale = Locale.getDefault()
         }
@@ -50,7 +50,7 @@ object CometChatLocalize {
      * @param context The context to retrieve the locale country code
      * @return The country code of the current locale
      */
-    fun getLocale(context: Context): String {
+    public fun getLocale(context: Context): String {
         val config: Configuration = context.resources.configuration
         @Suppress("DEPRECATION")
         return config.locale.country

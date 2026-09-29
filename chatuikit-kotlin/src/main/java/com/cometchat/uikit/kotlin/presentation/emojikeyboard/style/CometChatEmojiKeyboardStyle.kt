@@ -25,7 +25,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param selectedCategoryIconTint Tint color for the selected category tab icon
  * @param selectedCategoryBackgroundColor Background color for the selected category tab
  */
-data class CometChatEmojiKeyboardStyle(
+public data class CometChatEmojiKeyboardStyle(
     @ColorInt val backgroundColor: Int = 0,
     @Dimension val cornerRadius: Int = 0,
     @Dimension val strokeWidth: Int = 0,
@@ -37,14 +37,14 @@ data class CometChatEmojiKeyboardStyle(
     @ColorInt val selectedCategoryIconTint: Int = 0,
     @ColorInt val selectedCategoryBackgroundColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatEmojiKeyboardStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatEmojiKeyboardStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatEmojiKeyboardStyle {
+        public fun default(context: Context): CometChatEmojiKeyboardStyle {
             return extractFromThemeStyle(context, R.attr.cometchatEmojiKeyboardStyle)
         }
 
@@ -76,7 +76,7 @@ data class CometChatEmojiKeyboardStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatEmojiKeyboardStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatEmojiKeyboardStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatEmojiKeyboardStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

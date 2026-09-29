@@ -28,7 +28,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.BLOCKQUOTE
  */
-class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
+public class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
     LineBackgroundSpan {
 
     @ColorInt
@@ -46,7 +46,7 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
     private val radii = FloatArray(8)
 
     /** Fallback constructor with no theme awareness. */
-    constructor() : super(DEFAULT_LEADING_MARGIN) {
+    public constructor() : super(DEFAULT_LEADING_MARGIN) {
         this.context = null
         this.stripeColor = DEFAULT_STRIPE_COLOR
         this.backgroundColor = 0
@@ -55,7 +55,7 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
     }
 
     /** Composer constructor — uses stroke dark for the stripe, no background. */
-    constructor(context: Context) : super(DEFAULT_LEADING_MARGIN) {
+    public constructor(context: Context) : super(DEFAULT_LEADING_MARGIN) {
         this.context = context
         this.stripeColor = CometChatTheme.getStrokeColorDark(context)
         this.backgroundColor = 0
@@ -66,7 +66,7 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
     /**
      * Message-bubble constructor — colors differ for sender vs receiver.
      */
-    constructor(context: Context, isSenderBubble: Boolean) : super(DEFAULT_LEADING_MARGIN) {
+    public constructor(context: Context, isSenderBubble: Boolean) : super(DEFAULT_LEADING_MARGIN) {
         this.context = context
         this.stripeWidth = DEFAULT_STRIPE_WIDTH
         this.gapWidth = DEFAULT_GAP_WIDTH
@@ -79,7 +79,7 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
         }
     }
 
-    constructor(
+    public constructor(
         @ColorInt stripeColor: Int,
         stripeWidth: Int,
         gapWidth: Int
@@ -91,7 +91,7 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
         this.gapWidth = gapWidth
     }
 
-    constructor(leadingMargin: Int) : super(leadingMargin) {
+    public constructor(leadingMargin: Int) : super(leadingMargin) {
         this.context = null
         this.stripeColor = DEFAULT_STRIPE_COLOR
         this.backgroundColor = 0
@@ -210,21 +210,21 @@ class BlockquoteFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan,
 
     // region Getters and Setters
 
-    fun getStripeColor(): Int = stripeColor
-    fun setStripeColor(@ColorInt color: Int) { stripeColor = color }
+    public fun getStripeColor(): Int = stripeColor
+    public fun setStripeColor(@ColorInt color: Int) { stripeColor = color }
 
-    fun getBackgroundColor(): Int = backgroundColor
-    fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
+    public fun getBackgroundColor(): Int = backgroundColor
+    public fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
 
-    fun getStripeWidth(): Int = stripeWidth
-    fun setStripeWidth(width: Int) { stripeWidth = width }
+    public fun getStripeWidth(): Int = stripeWidth
+    public fun setStripeWidth(width: Int) { stripeWidth = width }
 
-    fun getGapWidth(): Int = gapWidth
-    fun setGapWidth(width: Int) { gapWidth = width }
+    public fun getGapWidth(): Int = gapWidth
+    public fun setGapWidth(width: Int) { gapWidth = width }
 
     // endregion
 
-    companion object {
+    public companion object {
         private const val DEFAULT_STRIPE_WIDTH = 7
         private const val DEFAULT_GAP_WIDTH = 16
         private const val DEFAULT_LEADING_MARGIN = 32

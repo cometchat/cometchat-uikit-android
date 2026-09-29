@@ -20,7 +20,7 @@ import kotlin.math.abs
  * 
  * Based on the design document specifications for mention handling in the message composer.
  */
-class CometChatEditText @JvmOverloads constructor(
+public class CometChatEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.editTextStyle
@@ -34,7 +34,7 @@ class CometChatEditText @JvmOverloads constructor(
     /**
      * Listener for media content (images, etc.) pasted into the EditText.
      */
-    var onEditTextMediaListener: OnEditTextMediaListener? = null
+    public var onEditTextMediaListener: OnEditTextMediaListener? = null
 
     /**
      * Callback invoked when the cursor selection changes.
@@ -194,7 +194,7 @@ class CometChatEditText @JvmOverloads constructor(
      * 
      * @param watcher The CometChatTextWatcher to set, or null to remove
      */
-    fun setTextWatcher(watcher: CometChatTextWatcher?) {
+    public fun setTextWatcher(watcher: CometChatTextWatcher?) {
         this._textWatcher = watcher
     }
 
@@ -203,31 +203,31 @@ class CometChatEditText @JvmOverloads constructor(
      * 
      * @return The current CometChatTextWatcher, or null if not set
      */
-    fun getTextWatcher(): CometChatTextWatcher? = _textWatcher
+    public fun getTextWatcher(): CometChatTextWatcher? = _textWatcher
 
     /**
      * Sets a listener to be notified when the cursor selection changes.
      *
      * @param listener Callback receiving (selStart, selEnd), or null to remove
      */
-    fun setOnSelectionChangedListener(listener: ((Int, Int) -> Unit)?) {
+    public fun setOnSelectionChangedListener(listener: ((Int, Int) -> Unit)?) {
         onSelectionChangedListener = listener
     }
 
     /**
      * Interface for receiving media content pasted into the EditText.
      */
-    interface OnEditTextMediaListener {
+    public interface OnEditTextMediaListener {
         /**
          * Called when media content is pasted.
          * 
          * @param uri The URI of the media content
          * @param mimeType The MIME type of the content
          */
-        fun onMediaSelected(uri: android.net.Uri, mimeType: String)
+        public fun onMediaSelected(uri: android.net.Uri, mimeType: String)
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatEditText"
     }
 }

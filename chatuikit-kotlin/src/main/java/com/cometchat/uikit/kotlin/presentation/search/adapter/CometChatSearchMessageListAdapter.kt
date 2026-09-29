@@ -29,7 +29,7 @@ import java.util.Calendar
  * This adapter supports multiple message types (text, image, video, audio, document, link)
  * with different ViewHolder types. It also implements StickyHeaderAdapter for date separators.
  */
-class CometChatSearchMessageListAdapter : ListAdapter<BaseMessage, RecyclerView.ViewHolder>(
+internal class CometChatSearchMessageListAdapter : ListAdapter<BaseMessage, RecyclerView.ViewHolder>(
     MessageDiffCallback()
 ), StickyHeaderAdapter<DateItemHolder> {
 

@@ -20,6 +20,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.presentation.ongoingcall.style.CometChatOngoingCallStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,9 +50,9 @@ import kotlinx.coroutines.launch
  * )
  * ```
  */
-class CometChatOngoingCallActivity : AppCompatActivity() {
+public class CometChatOngoingCallActivity : AppCompatActivity() {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatOngoingCallActivity"
         
         // Intent extras
@@ -81,7 +82,7 @@ class CometChatOngoingCallActivity : AppCompatActivity() {
          * @param style Optional style configuration for the ongoing call screen
          */
         @JvmStatic
-        fun launchOngoingCallActivity(
+        public fun launchOngoingCallActivity(
             context: Context,
             sessionId: String,
             callType: String,
@@ -148,12 +149,25 @@ class CometChatOngoingCallActivity : AppCompatActivity() {
         // Setup ongoing call view
         setupOngoingCall()
         
-        // Handle back press to enter PIP mode (Requirement 9.1)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                enterPipMode()
-            }
-        })
+        // ENG-38657 (T5): on API 31+ the system auto-enters PiP on the back
+        // gesture (setAutoEnterEnabled), so predictive back keeps working; the
+        // manual interceptor below - which disables predictive back - is only
+        // registered where auto-enter is unavailable.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val pipMetrics = resources.displayMetrics
+            setPictureInPictureParams(
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(pipMetrics.widthPixels, pipMetrics.heightPixels))
+                    .setAutoEnterEnabled(true)
+                    .build()
+            )
+        } else {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    enterPipMode()
+                }
+            })
+        }
     }
 
     /**
@@ -220,7 +234,7 @@ class CometChatOngoingCallActivity : AppCompatActivity() {
             
             // Set error callback
             setOnError { exception ->
-                android.util.Log.e(TAG, "Ongoing call error: ${exception.message}")
+                CometChatLogger.e(TAG, "Ongoing call error: ${exception.message}")
             }
         }
 

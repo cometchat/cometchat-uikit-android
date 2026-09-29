@@ -11,7 +11,7 @@ import androidx.annotation.Dimension
  * Custom inline code span that renders inline `code` with a rounded
  * background rectangle, matching the Java reference implementation.
  */
-class CustomInlineCodeSpan(
+public class CustomInlineCodeSpan(
     @Dimension private val textSize: Int,
     @ColorInt private val bgColor: Int,
     @ColorInt private val textColor: Int,

@@ -22,7 +22,7 @@ import com.google.android.material.card.MaterialCardView
  *
  * Direct 1:1 port of `CometChatReaction.java` from the Java chatuikit module.
  */
-class CometChatReaction @JvmOverloads constructor(
+public class CometChatReaction @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -171,7 +171,7 @@ class CometChatReaction @JvmOverloads constructor(
     /**
      * Builds the reaction view with the specified emoji, count, and reaction status.
      */
-    fun buildReactionView(
+    public fun buildReactionView(
         emoji: String,
         count: Int,
         isReactedByMe: Boolean,
@@ -195,76 +195,76 @@ class CometChatReaction @JvmOverloads constructor(
         return this
     }
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val typedArray = context.theme.obtainStyledAttributes(style, R.styleable.CometChatReaction)
             extractAttributesAndApplyDefaults(typedArray)
         }
     }
 
-    fun setReactionEmojiTextColor(@ColorInt color: Int) {
+    public fun setReactionEmojiTextColor(@ColorInt color: Int) {
         reactionEmojiTextColor = color
         tvReactionEmoji.setTextColor(color)
     }
 
-    fun setReactionCountTextColor(@ColorInt color: Int) {
+    public fun setReactionCountTextColor(@ColorInt color: Int) {
         reactionCountTextColor = color
         tvReactionCount.setTextColor(color)
     }
 
-    fun setReactionEmojiTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setReactionEmojiTextAppearance(@StyleRes textAppearance: Int) {
         reactionEmojiTextAppearance = textAppearance
         if (textAppearance != 0) tvReactionEmoji.setTextAppearance(textAppearance)
     }
 
-    fun setReactionCountTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setReactionCountTextAppearance(@StyleRes textAppearance: Int) {
         reactionCountTextAppearance = textAppearance
         if (textAppearance != 0) tvReactionCount.setTextAppearance(textAppearance)
     }
 
-    fun setReactionStrokeColor(@ColorInt color: Int) {
+    public fun setReactionStrokeColor(@ColorInt color: Int) {
         reactionStrokeColor = color
         if (!isReactedByMe) strokeColor = color
     }
 
-    fun setReactionBackgroundColor(@ColorInt color: Int) {
+    public fun setReactionBackgroundColor(@ColorInt color: Int) {
         reactionBackgroundColor = color
         if (!isReactedByMe) setCardBackgroundColor(color)
     }
 
-    fun setActiveReactionStrokeColor(@ColorInt color: Int) {
+    public fun setActiveReactionStrokeColor(@ColorInt color: Int) {
         activeReactionStrokeColor = color
         if (isReactedByMe) strokeColor = color
     }
 
-    fun setActiveReactionBackgroundColor(@ColorInt color: Int) {
+    public fun setActiveReactionBackgroundColor(@ColorInt color: Int) {
         activeReactionBackgroundColor = color
         if (isReactedByMe) setCardBackgroundColor(color)
     }
 
-    fun setReactionStrokeWidth(@Dimension width: Int) {
+    public fun setReactionStrokeWidth(@Dimension width: Int) {
         reactionStrokeWidth = width
         if (!isReactedByMe) strokeWidth = width
     }
 
-    fun setReactionCornerRadius(@Dimension radius: Int) {
+    public fun setReactionCornerRadius(@Dimension radius: Int) {
         reactionCornerRadius = radius
         this.radius = radius.toFloat()
     }
 
-    fun setReactionElevation(@Dimension elevation: Int) {
+    public fun setReactionElevation(@Dimension elevation: Int) {
         reactionElevation = elevation
         cardElevation = elevation.toFloat()
     }
 
-    fun setActiveReactionStrokeWidth(@Dimension width: Int) {
+    public fun setActiveReactionStrokeWidth(@Dimension width: Int) {
         activeReactionStrokeWidth = width
         if (isReactedByMe) strokeWidth = width
     }
 
-    fun getEmoji(): String? = emoji
-    fun getCount(): Int = count
-    fun isReactedByMe(): Boolean = isReactedByMe
-    fun getOnClickListener(): OnClickListener? = clickListener
-    fun getOnLongClickListener(): OnLongClickListener? = longClickListener
+    public fun getEmoji(): String? = emoji
+    public fun getCount(): Int = count
+    public fun isReactedByMe(): Boolean = isReactedByMe
+    public fun getOnClickListener(): OnClickListener? = clickListener
+    public fun getOnLongClickListener(): OnLongClickListener? = longClickListener
 }

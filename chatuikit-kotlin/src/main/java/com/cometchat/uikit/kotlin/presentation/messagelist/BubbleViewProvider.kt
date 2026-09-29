@@ -43,7 +43,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * })
  * ```
  */
-interface BubbleViewProvider {
+public interface BubbleViewProvider {
 
     /**
      * Creates a view for the slot. Called once when ViewHolder is created.
@@ -54,7 +54,7 @@ interface BubbleViewProvider {
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      * @return The view to display, or null to use default/hide the slot
      */
-    fun createView(
+    public fun createView(
         context: Context,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -68,7 +68,7 @@ interface BubbleViewProvider {
      * @param message The message to display
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      */
-    fun bindView(
+    public fun bindView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment

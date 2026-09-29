@@ -17,119 +17,119 @@ import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatS
  * including container, search bar, filter chips, section headers, date separators,
  * conversation items, message items, and state views.
  */
-class CometChatSearchStyle private constructor(
+public class CometChatSearchStyle private constructor(
     // Container styling
-    @ColorInt val backgroundColor: Int?,
+    @ColorInt public val backgroundColor: Int?,
 
     // Search bar styling
-    @ColorInt val searchBarBackgroundColor: Int?,
-    @ColorInt val searchBarStrokeColor: Int?,
-    val searchBarStrokeWidth: Float?,
-    val searchBarCornerRadius: Float?,
-    @ColorInt val searchBarTextColor: Int?,
-    @StyleRes val searchBarTextAppearance: Int?,
-    @ColorInt val searchBarHintTextColor: Int?,
-    @StyleRes val searchBarHintTextAppearance: Int?,
+    @ColorInt public val searchBarBackgroundColor: Int?,
+    @ColorInt public val searchBarStrokeColor: Int?,
+    public val searchBarStrokeWidth: Float?,
+    public val searchBarCornerRadius: Float?,
+    @ColorInt public val searchBarTextColor: Int?,
+    @StyleRes public val searchBarTextAppearance: Int?,
+    @ColorInt public val searchBarHintTextColor: Int?,
+    @StyleRes public val searchBarHintTextAppearance: Int?,
 
     // Search bar icons
-    val backIcon: Drawable?,
-    @ColorInt val backIconTint: Int?,
-    val clearIcon: Drawable?,
-    @ColorInt val clearIconTint: Int?,
-    val searchIcon: Drawable?,
-    @ColorInt val searchIconTint: Int?,
+    public val backIcon: Drawable?,
+    @ColorInt public val backIconTint: Int?,
+    public val clearIcon: Drawable?,
+    @ColorInt public val clearIconTint: Int?,
+    public val searchIcon: Drawable?,
+    @ColorInt public val searchIconTint: Int?,
 
     // Filter chip styling
-    @ColorInt val filterChipBackgroundColor: Int?,
-    @ColorInt val filterChipSelectedBackgroundColor: Int?,
-    @ColorInt val filterChipTextColor: Int?,
-    @ColorInt val filterChipSelectedTextColor: Int?,
-    @StyleRes val filterChipTextAppearance: Int?,
-    @ColorInt val filterChipStrokeColor: Int?,
-    @ColorInt val filterChipSelectedStrokeColor: Int?,
-    val filterChipStrokeWidth: Float?,
-    val filterChipCornerRadius: Float?,
+    @ColorInt public val filterChipBackgroundColor: Int?,
+    @ColorInt public val filterChipSelectedBackgroundColor: Int?,
+    @ColorInt public val filterChipTextColor: Int?,
+    @ColorInt public val filterChipSelectedTextColor: Int?,
+    @StyleRes public val filterChipTextAppearance: Int?,
+    @ColorInt public val filterChipStrokeColor: Int?,
+    @ColorInt public val filterChipSelectedStrokeColor: Int?,
+    public val filterChipStrokeWidth: Float?,
+    public val filterChipCornerRadius: Float?,
 
     // Section header styling
-    @ColorInt val sectionHeaderTextColor: Int?,
-    @StyleRes val sectionHeaderTextAppearance: Int?,
-    @ColorInt val sectionHeaderBackgroundColor: Int?,
+    @ColorInt public val sectionHeaderTextColor: Int?,
+    @StyleRes public val sectionHeaderTextAppearance: Int?,
+    @ColorInt public val sectionHeaderBackgroundColor: Int?,
 
     // Conversation item styling
-    @ColorInt val conversationItemBackgroundColor: Int?,
-    @ColorInt val conversationTitleTextColor: Int?,
-    @StyleRes val conversationTitleTextAppearance: Int?,
-    @ColorInt val conversationSubtitleTextColor: Int?,
-    @StyleRes val conversationSubtitleTextAppearance: Int?,
-    @ColorInt val conversationTimestampTextColor: Int?,
-    @StyleRes val conversationTimestampTextAppearance: Int?,
-    @ColorInt val conversationSeparatorColor: Int?,
+    @ColorInt public val conversationItemBackgroundColor: Int?,
+    @ColorInt public val conversationTitleTextColor: Int?,
+    @StyleRes public val conversationTitleTextAppearance: Int?,
+    @ColorInt public val conversationSubtitleTextColor: Int?,
+    @StyleRes public val conversationSubtitleTextAppearance: Int?,
+    @ColorInt public val conversationTimestampTextColor: Int?,
+    @StyleRes public val conversationTimestampTextAppearance: Int?,
+    @ColorInt public val conversationSeparatorColor: Int?,
 
     // Message item styling
-    @ColorInt val messageItemBackgroundColor: Int?,
-    @ColorInt val messageTitleTextColor: Int?,
-    @StyleRes val messageTitleTextAppearance: Int?,
-    @ColorInt val messageSubtitleTextColor: Int?,
-    @StyleRes val messageSubtitleTextAppearance: Int?,
-    @ColorInt val messageTimestampTextColor: Int?,
-    @StyleRes val messageTimestampTextAppearance: Int?,
-    @ColorInt val messageSeparatorColor: Int?,
-    @ColorInt val messageLinkTextColor: Int?,
-    @StyleRes val messageLinkTextAppearance: Int?,
-    val messageThreadIcon: Drawable?,
-    @ColorInt val messageThreadIconTint: Int?,
+    @ColorInt public val messageItemBackgroundColor: Int?,
+    @ColorInt public val messageTitleTextColor: Int?,
+    @StyleRes public val messageTitleTextAppearance: Int?,
+    @ColorInt public val messageSubtitleTextColor: Int?,
+    @StyleRes public val messageSubtitleTextAppearance: Int?,
+    @ColorInt public val messageTimestampTextColor: Int?,
+    @StyleRes public val messageTimestampTextAppearance: Int?,
+    @ColorInt public val messageSeparatorColor: Int?,
+    @ColorInt public val messageLinkTextColor: Int?,
+    @StyleRes public val messageLinkTextAppearance: Int?,
+    public val messageThreadIcon: Drawable?,
+    @ColorInt public val messageThreadIconTint: Int?,
 
     // Date separator styling
-    @ColorInt val dateSeparatorBackgroundColor: Int?,
-    @ColorInt val dateSeparatorTextColor: Int?,
-    @StyleRes val dateSeparatorTextAppearance: Int?,
-    val dateSeparatorStyle: CometChatDateStyle?,
+    @ColorInt public val dateSeparatorBackgroundColor: Int?,
+    @ColorInt public val dateSeparatorTextColor: Int?,
+    @StyleRes public val dateSeparatorTextAppearance: Int?,
+    public val dateSeparatorStyle: CometChatDateStyle?,
 
     // Avatar styling
-    val avatarStyle: CometChatAvatarStyle?,
+    public val avatarStyle: CometChatAvatarStyle?,
 
     // Badge styling
-    val badgeStyle: CometChatBadgeCountStyle?,
+    public val badgeStyle: CometChatBadgeCountStyle?,
 
     // Status indicator styling
-    val statusIndicatorStyle: CometChatStatusIndicatorStyle?,
+    public val statusIndicatorStyle: CometChatStatusIndicatorStyle?,
 
     // Loading state styling
-    @ColorInt val loadingStateBackgroundColor: Int?,
+    @ColorInt public val loadingStateBackgroundColor: Int?,
 
     // Empty state styling
-    @ColorInt val emptyStateTextColor: Int?,
-    @StyleRes val emptyStateTextAppearance: Int?,
-    @ColorInt val emptyStateSubtitleTextColor: Int?,
-    @StyleRes val emptyStateSubtitleTextAppearance: Int?,
-    val emptyStateIcon: Drawable?,
-    @ColorInt val emptyStateIconTint: Int?,
+    @ColorInt public val emptyStateTextColor: Int?,
+    @StyleRes public val emptyStateTextAppearance: Int?,
+    @ColorInt public val emptyStateSubtitleTextColor: Int?,
+    @StyleRes public val emptyStateSubtitleTextAppearance: Int?,
+    public val emptyStateIcon: Drawable?,
+    @ColorInt public val emptyStateIconTint: Int?,
 
     // Initial state styling
-    @ColorInt val initialStateTextColor: Int?,
-    @StyleRes val initialStateTextAppearance: Int?,
-    @ColorInt val initialStateSubtitleTextColor: Int?,
-    @StyleRes val initialStateSubtitleTextAppearance: Int?,
-    val initialStateIcon: Drawable?,
-    @ColorInt val initialStateIconTint: Int?,
+    @ColorInt public val initialStateTextColor: Int?,
+    @StyleRes public val initialStateTextAppearance: Int?,
+    @ColorInt public val initialStateSubtitleTextColor: Int?,
+    @StyleRes public val initialStateSubtitleTextAppearance: Int?,
+    public val initialStateIcon: Drawable?,
+    @ColorInt public val initialStateIconTint: Int?,
 
     // Error state styling
-    @ColorInt val errorStateTextColor: Int?,
-    @StyleRes val errorStateTextAppearance: Int?,
-    @ColorInt val errorStateSubtitleTextColor: Int?,
-    @StyleRes val errorStateSubtitleTextAppearance: Int?,
-    val errorStateIcon: Drawable?,
-    @ColorInt val errorStateIconTint: Int?,
+    @ColorInt public val errorStateTextColor: Int?,
+    @StyleRes public val errorStateTextAppearance: Int?,
+    @ColorInt public val errorStateSubtitleTextColor: Int?,
+    @StyleRes public val errorStateSubtitleTextAppearance: Int?,
+    public val errorStateIcon: Drawable?,
+    @ColorInt public val errorStateIconTint: Int?,
 
     // See more button styling
-    @ColorInt val seeMoreTextColor: Int?,
-    @StyleRes val seeMoreTextAppearance: Int?
+    @ColorInt public val seeMoreTextColor: Int?,
+    @StyleRes public val seeMoreTextAppearance: Int?
 ) {
 
     /**
      * Builder for creating CometChatSearchStyle instances.
      */
-    class Builder(private val context: Context) {
+    public class Builder(private val context: Context) {
         // Container styling
         @ColorInt private var backgroundColor: Int? = null
 
@@ -238,88 +238,88 @@ class CometChatSearchStyle private constructor(
         @StyleRes private var seeMoreTextAppearance: Int? = null
 
         // Builder methods
-        fun setBackgroundColor(@ColorInt color: Int) = apply { backgroundColor = color }
-        fun setSearchBarBackgroundColor(@ColorInt color: Int) = apply { searchBarBackgroundColor = color }
-        fun setSearchBarStrokeColor(@ColorInt color: Int) = apply { searchBarStrokeColor = color }
-        fun setSearchBarStrokeWidth(width: Float) = apply { searchBarStrokeWidth = width }
-        fun setSearchBarCornerRadius(radius: Float) = apply { searchBarCornerRadius = radius }
-        fun setSearchBarTextColor(@ColorInt color: Int) = apply { searchBarTextColor = color }
-        fun setSearchBarTextAppearance(@StyleRes appearance: Int) = apply { searchBarTextAppearance = appearance }
-        fun setSearchBarHintTextColor(@ColorInt color: Int) = apply { searchBarHintTextColor = color }
-        fun setSearchBarHintTextAppearance(@StyleRes appearance: Int) = apply { searchBarHintTextAppearance = appearance }
-        fun setBackIcon(icon: Drawable?) = apply { backIcon = icon }
-        fun setBackIconTint(@ColorInt color: Int) = apply { backIconTint = color }
-        fun setClearIcon(icon: Drawable?) = apply { clearIcon = icon }
-        fun setClearIconTint(@ColorInt color: Int) = apply { clearIconTint = color }
-        fun setSearchIcon(icon: Drawable?) = apply { searchIcon = icon }
-        fun setSearchIconTint(@ColorInt color: Int) = apply { searchIconTint = color }
-        fun setFilterChipBackgroundColor(@ColorInt color: Int) = apply { filterChipBackgroundColor = color }
-        fun setFilterChipSelectedBackgroundColor(@ColorInt color: Int) = apply { filterChipSelectedBackgroundColor = color }
-        fun setFilterChipTextColor(@ColorInt color: Int) = apply { filterChipTextColor = color }
-        fun setFilterChipSelectedTextColor(@ColorInt color: Int) = apply { filterChipSelectedTextColor = color }
-        fun setFilterChipTextAppearance(@StyleRes appearance: Int) = apply { filterChipTextAppearance = appearance }
-        fun setFilterChipStrokeColor(@ColorInt color: Int) = apply { filterChipStrokeColor = color }
-        fun setFilterChipSelectedStrokeColor(@ColorInt color: Int) = apply { filterChipSelectedStrokeColor = color }
-        fun setFilterChipStrokeWidth(width: Float) = apply { filterChipStrokeWidth = width }
-        fun setFilterChipCornerRadius(radius: Float) = apply { filterChipCornerRadius = radius }
-        fun setSectionHeaderTextColor(@ColorInt color: Int) = apply { sectionHeaderTextColor = color }
-        fun setSectionHeaderTextAppearance(@StyleRes appearance: Int) = apply { sectionHeaderTextAppearance = appearance }
-        fun setSectionHeaderBackgroundColor(@ColorInt color: Int) = apply { sectionHeaderBackgroundColor = color }
-        fun setConversationItemBackgroundColor(@ColorInt color: Int) = apply { conversationItemBackgroundColor = color }
-        fun setConversationTitleTextColor(@ColorInt color: Int) = apply { conversationTitleTextColor = color }
-        fun setConversationTitleTextAppearance(@StyleRes appearance: Int) = apply { conversationTitleTextAppearance = appearance }
-        fun setConversationSubtitleTextColor(@ColorInt color: Int) = apply { conversationSubtitleTextColor = color }
-        fun setConversationSubtitleTextAppearance(@StyleRes appearance: Int) = apply { conversationSubtitleTextAppearance = appearance }
-        fun setConversationTimestampTextColor(@ColorInt color: Int) = apply { conversationTimestampTextColor = color }
-        fun setConversationTimestampTextAppearance(@StyleRes appearance: Int) = apply { conversationTimestampTextAppearance = appearance }
-        fun setConversationSeparatorColor(@ColorInt color: Int) = apply { conversationSeparatorColor = color }
-        fun setMessageItemBackgroundColor(@ColorInt color: Int) = apply { messageItemBackgroundColor = color }
-        fun setMessageTitleTextColor(@ColorInt color: Int) = apply { messageTitleTextColor = color }
-        fun setMessageTitleTextAppearance(@StyleRes appearance: Int) = apply { messageTitleTextAppearance = appearance }
-        fun setMessageSubtitleTextColor(@ColorInt color: Int) = apply { messageSubtitleTextColor = color }
-        fun setMessageSubtitleTextAppearance(@StyleRes appearance: Int) = apply { messageSubtitleTextAppearance = appearance }
-        fun setMessageTimestampTextColor(@ColorInt color: Int) = apply { messageTimestampTextColor = color }
-        fun setMessageTimestampTextAppearance(@StyleRes appearance: Int) = apply { messageTimestampTextAppearance = appearance }
-        fun setMessageSeparatorColor(@ColorInt color: Int) = apply { messageSeparatorColor = color }
-        fun setMessageLinkTextColor(@ColorInt color: Int) = apply { messageLinkTextColor = color }
-        fun setMessageLinkTextAppearance(@StyleRes appearance: Int) = apply { messageLinkTextAppearance = appearance }
-        fun setMessageThreadIcon(icon: Drawable?) = apply { messageThreadIcon = icon }
-        fun setMessageThreadIconTint(@ColorInt color: Int) = apply { messageThreadIconTint = color }
-        fun setDateSeparatorBackgroundColor(@ColorInt color: Int) = apply { dateSeparatorBackgroundColor = color }
-        fun setDateSeparatorTextColor(@ColorInt color: Int) = apply { dateSeparatorTextColor = color }
-        fun setDateSeparatorTextAppearance(@StyleRes appearance: Int) = apply { dateSeparatorTextAppearance = appearance }
-        fun setDateSeparatorStyle(style: CometChatDateStyle?) = apply { dateSeparatorStyle = style }
-        fun setAvatarStyle(style: CometChatAvatarStyle?) = apply { avatarStyle = style }
-        fun setBadgeStyle(style: CometChatBadgeCountStyle?) = apply { badgeStyle = style }
-        fun setStatusIndicatorStyle(style: CometChatStatusIndicatorStyle?) = apply { statusIndicatorStyle = style }
-        fun setLoadingStateBackgroundColor(@ColorInt color: Int) = apply { loadingStateBackgroundColor = color }
-        fun setEmptyStateTextColor(@ColorInt color: Int) = apply { emptyStateTextColor = color }
-        fun setEmptyStateTextAppearance(@StyleRes appearance: Int) = apply { emptyStateTextAppearance = appearance }
-        fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) = apply { emptyStateSubtitleTextColor = color }
-        fun setEmptyStateSubtitleTextAppearance(@StyleRes appearance: Int) = apply { emptyStateSubtitleTextAppearance = appearance }
-        fun setEmptyStateIcon(icon: Drawable?) = apply { emptyStateIcon = icon }
-        fun setEmptyStateIconTint(@ColorInt color: Int) = apply { emptyStateIconTint = color }
-        fun setInitialStateTextColor(@ColorInt color: Int) = apply { initialStateTextColor = color }
-        fun setInitialStateTextAppearance(@StyleRes appearance: Int) = apply { initialStateTextAppearance = appearance }
-        fun setInitialStateSubtitleTextColor(@ColorInt color: Int) = apply { initialStateSubtitleTextColor = color }
-        fun setInitialStateSubtitleTextAppearance(@StyleRes appearance: Int) = apply { initialStateSubtitleTextAppearance = appearance }
-        fun setInitialStateIcon(icon: Drawable?) = apply { initialStateIcon = icon }
-        fun setInitialStateIconTint(@ColorInt color: Int) = apply { initialStateIconTint = color }
-        fun setErrorStateTextColor(@ColorInt color: Int) = apply { errorStateTextColor = color }
-        fun setErrorStateTextAppearance(@StyleRes appearance: Int) = apply { errorStateTextAppearance = appearance }
-        fun setErrorStateSubtitleTextColor(@ColorInt color: Int) = apply { errorStateSubtitleTextColor = color }
-        fun setErrorStateSubtitleTextAppearance(@StyleRes appearance: Int) = apply { errorStateSubtitleTextAppearance = appearance }
-        fun setErrorStateIcon(icon: Drawable?) = apply { errorStateIcon = icon }
-        fun setErrorStateIconTint(@ColorInt color: Int) = apply { errorStateIconTint = color }
-        fun setSeeMoreTextColor(@ColorInt color: Int) = apply { seeMoreTextColor = color }
-        fun setSeeMoreTextAppearance(@StyleRes appearance: Int) = apply { seeMoreTextAppearance = appearance }
+        public fun setBackgroundColor(@ColorInt color: Int): Builder = apply { backgroundColor = color }
+        public fun setSearchBarBackgroundColor(@ColorInt color: Int): Builder = apply { searchBarBackgroundColor = color }
+        public fun setSearchBarStrokeColor(@ColorInt color: Int): Builder = apply { searchBarStrokeColor = color }
+        public fun setSearchBarStrokeWidth(width: Float): Builder = apply { searchBarStrokeWidth = width }
+        public fun setSearchBarCornerRadius(radius: Float): Builder = apply { searchBarCornerRadius = radius }
+        public fun setSearchBarTextColor(@ColorInt color: Int): Builder = apply { searchBarTextColor = color }
+        public fun setSearchBarTextAppearance(@StyleRes appearance: Int): Builder = apply { searchBarTextAppearance = appearance }
+        public fun setSearchBarHintTextColor(@ColorInt color: Int): Builder = apply { searchBarHintTextColor = color }
+        public fun setSearchBarHintTextAppearance(@StyleRes appearance: Int): Builder = apply { searchBarHintTextAppearance = appearance }
+        public fun setBackIcon(icon: Drawable?): Builder = apply { backIcon = icon }
+        public fun setBackIconTint(@ColorInt color: Int): Builder = apply { backIconTint = color }
+        public fun setClearIcon(icon: Drawable?): Builder = apply { clearIcon = icon }
+        public fun setClearIconTint(@ColorInt color: Int): Builder = apply { clearIconTint = color }
+        public fun setSearchIcon(icon: Drawable?): Builder = apply { searchIcon = icon }
+        public fun setSearchIconTint(@ColorInt color: Int): Builder = apply { searchIconTint = color }
+        public fun setFilterChipBackgroundColor(@ColorInt color: Int): Builder = apply { filterChipBackgroundColor = color }
+        public fun setFilterChipSelectedBackgroundColor(@ColorInt color: Int): Builder = apply { filterChipSelectedBackgroundColor = color }
+        public fun setFilterChipTextColor(@ColorInt color: Int): Builder = apply { filterChipTextColor = color }
+        public fun setFilterChipSelectedTextColor(@ColorInt color: Int): Builder = apply { filterChipSelectedTextColor = color }
+        public fun setFilterChipTextAppearance(@StyleRes appearance: Int): Builder = apply { filterChipTextAppearance = appearance }
+        public fun setFilterChipStrokeColor(@ColorInt color: Int): Builder = apply { filterChipStrokeColor = color }
+        public fun setFilterChipSelectedStrokeColor(@ColorInt color: Int): Builder = apply { filterChipSelectedStrokeColor = color }
+        public fun setFilterChipStrokeWidth(width: Float): Builder = apply { filterChipStrokeWidth = width }
+        public fun setFilterChipCornerRadius(radius: Float): Builder = apply { filterChipCornerRadius = radius }
+        public fun setSectionHeaderTextColor(@ColorInt color: Int): Builder = apply { sectionHeaderTextColor = color }
+        public fun setSectionHeaderTextAppearance(@StyleRes appearance: Int): Builder = apply { sectionHeaderTextAppearance = appearance }
+        public fun setSectionHeaderBackgroundColor(@ColorInt color: Int): Builder = apply { sectionHeaderBackgroundColor = color }
+        public fun setConversationItemBackgroundColor(@ColorInt color: Int): Builder = apply { conversationItemBackgroundColor = color }
+        public fun setConversationTitleTextColor(@ColorInt color: Int): Builder = apply { conversationTitleTextColor = color }
+        public fun setConversationTitleTextAppearance(@StyleRes appearance: Int): Builder = apply { conversationTitleTextAppearance = appearance }
+        public fun setConversationSubtitleTextColor(@ColorInt color: Int): Builder = apply { conversationSubtitleTextColor = color }
+        public fun setConversationSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { conversationSubtitleTextAppearance = appearance }
+        public fun setConversationTimestampTextColor(@ColorInt color: Int): Builder = apply { conversationTimestampTextColor = color }
+        public fun setConversationTimestampTextAppearance(@StyleRes appearance: Int): Builder = apply { conversationTimestampTextAppearance = appearance }
+        public fun setConversationSeparatorColor(@ColorInt color: Int): Builder = apply { conversationSeparatorColor = color }
+        public fun setMessageItemBackgroundColor(@ColorInt color: Int): Builder = apply { messageItemBackgroundColor = color }
+        public fun setMessageTitleTextColor(@ColorInt color: Int): Builder = apply { messageTitleTextColor = color }
+        public fun setMessageTitleTextAppearance(@StyleRes appearance: Int): Builder = apply { messageTitleTextAppearance = appearance }
+        public fun setMessageSubtitleTextColor(@ColorInt color: Int): Builder = apply { messageSubtitleTextColor = color }
+        public fun setMessageSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { messageSubtitleTextAppearance = appearance }
+        public fun setMessageTimestampTextColor(@ColorInt color: Int): Builder = apply { messageTimestampTextColor = color }
+        public fun setMessageTimestampTextAppearance(@StyleRes appearance: Int): Builder = apply { messageTimestampTextAppearance = appearance }
+        public fun setMessageSeparatorColor(@ColorInt color: Int): Builder = apply { messageSeparatorColor = color }
+        public fun setMessageLinkTextColor(@ColorInt color: Int): Builder = apply { messageLinkTextColor = color }
+        public fun setMessageLinkTextAppearance(@StyleRes appearance: Int): Builder = apply { messageLinkTextAppearance = appearance }
+        public fun setMessageThreadIcon(icon: Drawable?): Builder = apply { messageThreadIcon = icon }
+        public fun setMessageThreadIconTint(@ColorInt color: Int): Builder = apply { messageThreadIconTint = color }
+        public fun setDateSeparatorBackgroundColor(@ColorInt color: Int): Builder = apply { dateSeparatorBackgroundColor = color }
+        public fun setDateSeparatorTextColor(@ColorInt color: Int): Builder = apply { dateSeparatorTextColor = color }
+        public fun setDateSeparatorTextAppearance(@StyleRes appearance: Int): Builder = apply { dateSeparatorTextAppearance = appearance }
+        public fun setDateSeparatorStyle(style: CometChatDateStyle?): Builder = apply { dateSeparatorStyle = style }
+        public fun setAvatarStyle(style: CometChatAvatarStyle?): Builder = apply { avatarStyle = style }
+        public fun setBadgeStyle(style: CometChatBadgeCountStyle?): Builder = apply { badgeStyle = style }
+        public fun setStatusIndicatorStyle(style: CometChatStatusIndicatorStyle?): Builder = apply { statusIndicatorStyle = style }
+        public fun setLoadingStateBackgroundColor(@ColorInt color: Int): Builder = apply { loadingStateBackgroundColor = color }
+        public fun setEmptyStateTextColor(@ColorInt color: Int): Builder = apply { emptyStateTextColor = color }
+        public fun setEmptyStateTextAppearance(@StyleRes appearance: Int): Builder = apply { emptyStateTextAppearance = appearance }
+        public fun setEmptyStateSubtitleTextColor(@ColorInt color: Int): Builder = apply { emptyStateSubtitleTextColor = color }
+        public fun setEmptyStateSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { emptyStateSubtitleTextAppearance = appearance }
+        public fun setEmptyStateIcon(icon: Drawable?): Builder = apply { emptyStateIcon = icon }
+        public fun setEmptyStateIconTint(@ColorInt color: Int): Builder = apply { emptyStateIconTint = color }
+        public fun setInitialStateTextColor(@ColorInt color: Int): Builder = apply { initialStateTextColor = color }
+        public fun setInitialStateTextAppearance(@StyleRes appearance: Int): Builder = apply { initialStateTextAppearance = appearance }
+        public fun setInitialStateSubtitleTextColor(@ColorInt color: Int): Builder = apply { initialStateSubtitleTextColor = color }
+        public fun setInitialStateSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { initialStateSubtitleTextAppearance = appearance }
+        public fun setInitialStateIcon(icon: Drawable?): Builder = apply { initialStateIcon = icon }
+        public fun setInitialStateIconTint(@ColorInt color: Int): Builder = apply { initialStateIconTint = color }
+        public fun setErrorStateTextColor(@ColorInt color: Int): Builder = apply { errorStateTextColor = color }
+        public fun setErrorStateTextAppearance(@StyleRes appearance: Int): Builder = apply { errorStateTextAppearance = appearance }
+        public fun setErrorStateSubtitleTextColor(@ColorInt color: Int): Builder = apply { errorStateSubtitleTextColor = color }
+        public fun setErrorStateSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { errorStateSubtitleTextAppearance = appearance }
+        public fun setErrorStateIcon(icon: Drawable?): Builder = apply { errorStateIcon = icon }
+        public fun setErrorStateIconTint(@ColorInt color: Int): Builder = apply { errorStateIconTint = color }
+        public fun setSeeMoreTextColor(@ColorInt color: Int): Builder = apply { seeMoreTextColor = color }
+        public fun setSeeMoreTextAppearance(@StyleRes appearance: Int): Builder = apply { seeMoreTextAppearance = appearance }
 
         /**
          * Builds the CometChatSearchStyle instance.
          * Sets default text colors from CometChatTheme when not explicitly provided,
          * matching the Java reference implementation behavior.
          */
-        fun build(): CometChatSearchStyle {
+        public fun build(): CometChatSearchStyle {
             // Set default text colors from CometChatTheme if not explicitly set
             // This matches the Java reference implementation behavior
             val defaultConversationTitleTextColor = conversationTitleTextColor 
@@ -419,14 +419,14 @@ class CometChatSearchStyle private constructor(
         }
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default CometChatSearchStyle with theme-based values.
          *
          * @param context The Android context
          * @return A new CometChatSearchStyle instance with default values
          */
-        fun default(context: Context): CometChatSearchStyle {
+        public fun default(context: Context): CometChatSearchStyle {
             return Builder(context).build()
         }
     }

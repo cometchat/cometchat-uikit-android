@@ -21,7 +21,7 @@ import com.cometchat.uikit.kotlin.databinding.CometchatAiConversationSummaryRowB
  * The adapter supports customization of item appearance including background color,
  * corner radius, stroke, and text styling.
  */
-class AIConversationSummaryAdapter : RecyclerView.Adapter<AIConversationSummaryAdapter.ViewHolder>() {
+internal class AIConversationSummaryAdapter : RecyclerView.Adapter<AIConversationSummaryAdapter.ViewHolder>() {
 
     companion object {
         private val TAG = AIConversationSummaryAdapter::class.java.simpleName

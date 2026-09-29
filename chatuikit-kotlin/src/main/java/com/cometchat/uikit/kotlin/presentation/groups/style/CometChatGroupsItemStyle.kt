@@ -16,7 +16,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatS
  * Style configuration for CometChatGroupsItem component.
  * Mirrors the XML attributes from attr_cometchat_groups.xml
  */
-data class CometChatGroupsItemStyle(
+public data class CometChatGroupsItemStyle(
     // Background
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val selectedBackgroundColor: Int = 0,
@@ -46,11 +46,11 @@ data class CometChatGroupsItemStyle(
     val checkBoxSelectIcon: Drawable? = null,
     @ColorInt val checkBoxSelectIconTint: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatGroupsStyle.
          */
-        fun default(context: Context): CometChatGroupsItemStyle {
+        public fun default(context: Context): CometChatGroupsItemStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -73,7 +73,7 @@ data class CometChatGroupsItemStyle(
             }
         }
 
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatGroupsItemStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatGroupsItemStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

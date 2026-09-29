@@ -29,7 +29,7 @@ import com.google.android.material.card.MaterialCardView
  * bubble, subtle dark on incoming). Replaces the single CometChatFileBubble when
  * `enableMultipleAttachments` is on.
  */
-class CometChatFilesBubble @JvmOverloads constructor(
+public class CometChatFilesBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -68,7 +68,7 @@ class CometChatFilesBubble @JvmOverloads constructor(
      * compensate with bottom padding when the row is hidden (non-last message of a batch). Called
      * by [CometChatMessageBubble][com.cometchat.uikit.kotlin.presentation.shared.messagebubble.CometChatMessageBubble].
      */
-    fun setStatusInfoVisible(visible: Boolean) {
+    public fun setStatusInfoVisible(visible: Boolean) {
         if (statusInfoVisible == visible) return
         statusInfoVisible = visible
         applyRootPadding()
@@ -80,11 +80,11 @@ class CometChatFilesBubble @JvmOverloads constructor(
         setPadding(dp(5), dp(5), dp(5), if (statusInfoVisible) 0 else dp(5))
     }
 
-    fun setStyle(style: CometChatFileBubbleStyle) {
+    public fun setStyle(style: CometChatFileBubbleStyle) {
         this.style = style
     }
 
-    fun setOutgoing(outgoing: Boolean) {
+    public fun setOutgoing(outgoing: Boolean) {
         isOutgoing = outgoing
     }
 
@@ -93,7 +93,7 @@ class CometChatFilesBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setMessage] — the caption is rendered there.
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -101,7 +101,7 @@ class CometChatFilesBubble @JvmOverloads constructor(
         messageAlignment = alignment
     }
 
-    fun setMessage(message: MediaMessage) {
+    public fun setMessage(message: MediaMessage) {
         // A recycled bubble may have been padded for a hidden timestamp row — restore the default;
         // the adapter re-hides after bind.
         setStatusInfoVisible(true)
@@ -313,7 +313,7 @@ class CometChatFilesBubble @JvmOverloads constructor(
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
-    companion object {
+    public companion object {
         private const val COLLAPSED_COUNT = 3
     }
 }

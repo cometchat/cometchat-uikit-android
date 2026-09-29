@@ -26,7 +26,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param errorStateTextColor Text color for error state message
  * @param errorStateTextAppearance Text appearance resource for error state message
  */
-data class CometChatStickerKeyboardStyle(
+public data class CometChatStickerKeyboardStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val separatorColor: Int = 0,
@@ -48,14 +48,14 @@ data class CometChatStickerKeyboardStyle(
     @ColorInt val errorStateTextColor: Int = 0,
     @StyleRes val errorStateTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatStickerKeyboardStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatStickerKeyboardStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatStickerKeyboardStyle {
+        public fun default(context: Context): CometChatStickerKeyboardStyle {
             return extractFromThemeStyle(context, R.attr.cometchatStickerKeyboardStyle)
         }
 
@@ -87,7 +87,7 @@ data class CometChatStickerKeyboardStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatStickerKeyboardStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStickerKeyboardStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStickerKeyboardStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

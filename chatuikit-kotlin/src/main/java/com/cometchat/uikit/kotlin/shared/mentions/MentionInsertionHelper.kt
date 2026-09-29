@@ -2,10 +2,10 @@ package com.cometchat.uikit.kotlin.shared.mentions
 
 import android.text.Editable
 import android.text.Spanned
-import android.util.Log
 import android.widget.EditText
 import com.cometchat.uikit.core.mentions.SelectedMention
 import com.cometchat.uikit.core.mentions.SelectedMentionsManager
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.formatters.SuggestionItem
 import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
@@ -18,13 +18,13 @@ import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
  * - Tracking selected mentions for message processing
  * - Processing text before sending to replace spans with underlying text
  */
-class MentionInsertionHelper(
+public class MentionInsertionHelper(
     private val editText: EditText
 ) {
     private val mentionsManager = SelectedMentionsManager()
     private val selectedSuggestionItems = mutableMapOf<String, SuggestionItem>()
 
-    companion object {
+    public companion object {
         private const val TAG = "MentionInsertionHelper"
     }
 
@@ -39,7 +39,7 @@ class MentionInsertionHelper(
      * @param triggerIndex The index of the tracking character
      * @param cursorPosition The current cursor position
      */
-    fun insertMention(
+    public fun insertMention(
         suggestionItem: SuggestionItem,
         formatter: CometChatTextFormatter,
         triggerIndex: Int,
@@ -47,8 +47,6 @@ class MentionInsertionHelper(
     ) {
         val editable = editText.text ?: return
         
-        Log.d(TAG, "insertMention: currentText='${editable}', triggerIndex=$triggerIndex, cursorPos=$cursorPosition")
-        Log.d(TAG, "insertMention: suggestionItem id=${suggestionItem.id}, name=${suggestionItem.name}, promptText='${suggestionItem.promptText}', underlyingText='${suggestionItem.underlyingText}'")
         
         val promptText = suggestionItem.promptText
         
@@ -66,7 +64,7 @@ class MentionInsertionHelper(
         // Add space after mention if not already present
         val mentionWithSpace = if (promptText.endsWith(" ")) promptText else "$promptText "
         
-        Log.d(TAG, "insertMention: replacing [$replaceStart, $replaceEnd) with '$mentionWithSpace'")
+        CometChatLogger.d(TAG, "insertMention: replacing [$replaceStart, $replaceEnd) with '$mentionWithSpace'")
         
         // Replace text in-place (preserves existing spans)
         editable.replace(replaceStart, replaceEnd, mentionWithSpace)
@@ -75,7 +73,7 @@ class MentionInsertionHelper(
         val spanStart = replaceStart
         val spanEnd = replaceStart + promptText.length
         
-        Log.d(TAG, "insertMention: applying span at [$spanStart, $spanEnd)")
+        CometChatLogger.d(TAG, "insertMention: applying span at [$spanStart, $spanEnd)")
         
         // Apply the span
         editable.setSpan(
@@ -122,7 +120,7 @@ class MentionInsertionHelper(
         mentionsManager.addMention(selectedMention)
         selectedSuggestionItems[suggestionItem.id] = suggestionItem
         
-        Log.d(TAG, "insertMention: tracked mention, total=${mentionsManager.getMentions().size}")
+        CometChatLogger.d(TAG, "insertMention: tracked mention, total=${mentionsManager.getMentions().size}")
         
         // Notify formatter of selection
         formatter.setSelectedList(editText.context, selectedSuggestionItems.values.toList())
@@ -133,19 +131,18 @@ class MentionInsertionHelper(
      * 
      * @return The text with mentions replaced by their underlying format
      */
-    fun getProcessedText(): String {
+    public fun getProcessedText(): String {
         val editable = editText.text ?: return ""
         val text = editable.toString()
         
-        Log.d(TAG, "getProcessedText: text='$text', length=${text.length}")
         
         // Get all NonEditableSpans and replace their text with underlying text
         val spans = editable.getSpans(0, editable.length, NonEditableSpan::class.java)
         
-        Log.d(TAG, "getProcessedText: found ${spans.size} NonEditableSpans")
+        CometChatLogger.d(TAG, "getProcessedText: found ${spans.size} NonEditableSpans")
         
         if (spans.isEmpty()) {
-            Log.d(TAG, "getProcessedText: no spans found, returning original text")
+            CometChatLogger.d(TAG, "getProcessedText: no spans found, returning original text")
             return text
         }
         
@@ -158,38 +155,37 @@ class MentionInsertionHelper(
             val end = editable.getSpanEnd(span)
             val suggestionItem = span.getSuggestionItem()
             
-            Log.d(TAG, "getProcessedText: span at [$start, $end), suggestionItem=${suggestionItem?.id}")
+            CometChatLogger.d(TAG, "getProcessedText: span at [$start, $end), suggestionItem=${suggestionItem?.id}")
             
             if (suggestionItem != null && start >= 0 && end <= result.length) {
                 val textAtPosition = result.substring(start, end)
-                Log.d(TAG, "getProcessedText: replacing '$textAtPosition' with '${suggestionItem.underlyingText}'")
                 result.replace(start, end, suggestionItem.underlyingText)
             } else {
-                Log.w(TAG, "getProcessedText: invalid span - suggestionItem=${suggestionItem != null}, start=$start, end=$end, resultLength=${result.length}")
+                CometChatLogger.w(TAG, "getProcessedText: invalid span - suggestionItem=${suggestionItem != null}, start=$start, end=$end, resultLength=${result.length}")
             }
         }
         
-        Log.d(TAG, "getProcessedText: final result='$result'")
+        CometChatLogger.d(TAG, "getProcessedText: final result='$result'")
         return result.toString()
     }
 
     /**
      * Gets all selected suggestion items.
      */
-    fun getSelectedSuggestionItems(): List<SuggestionItem> {
+    public fun getSelectedSuggestionItems(): List<SuggestionItem> {
         return selectedSuggestionItems.values.toList()
     }
 
     /**
      * Gets the selected mentions manager.
      */
-    fun getMentionsManager(): SelectedMentionsManager = mentionsManager
+    public fun getMentionsManager(): SelectedMentionsManager = mentionsManager
 
     /**
      * Clears all tracked mentions.
      */
-    fun clear() {
-        Log.d(TAG, "clear: clearing all mentions (was ${mentionsManager.getMentions().size})")
+    public fun clear() {
+        CometChatLogger.d(TAG, "clear: clearing all mentions (was ${mentionsManager.getMentions().size})")
         mentionsManager.clear()
         selectedSuggestionItems.clear()
     }
@@ -198,11 +194,11 @@ class MentionInsertionHelper(
      * Updates the tracked mentions based on current EditText content.
      * Call this after text changes to sync the tracked mentions.
      */
-    fun syncWithEditText() {
+    public fun syncWithEditText() {
         val editable = editText.text ?: return
         val spans = editable.getSpans(0, editable.length, NonEditableSpan::class.java)
         
-        Log.d(TAG, "syncWithEditText: found ${spans.size} spans in EditText")
+        CometChatLogger.d(TAG, "syncWithEditText: found ${spans.size} spans in EditText")
         
         // Clear and rebuild from current spans
         mentionsManager.clear()
@@ -213,7 +209,7 @@ class MentionInsertionHelper(
             val end = editable.getSpanEnd(span)
             val suggestionItem = span.getSuggestionItem()
             
-            Log.d(TAG, "syncWithEditText: span at [$start, $end), suggestionItem=${suggestionItem?.id}")
+            CometChatLogger.d(TAG, "syncWithEditText: span at [$start, $end), suggestionItem=${suggestionItem?.id}")
             
             if (suggestionItem != null) {
                 val selectedMention = SelectedMention(
@@ -229,13 +225,13 @@ class MentionInsertionHelper(
             }
         }
         
-        Log.d(TAG, "syncWithEditText: after sync, ${mentionsManager.getMentions().size} mentions tracked")
+        CometChatLogger.d(TAG, "syncWithEditText: after sync, ${mentionsManager.getMentions().size} mentions tracked")
     }
 
     /**
      * Checks if the cursor is within a mention span.
      */
-    fun isCursorInMention(): Boolean {
+    public fun isCursorInMention(): Boolean {
         val editable = editText.text ?: return false
         val cursorPosition = editText.selectionStart
         val spans = editable.getSpans(cursorPosition, cursorPosition, NonEditableSpan::class.java)
@@ -245,7 +241,7 @@ class MentionInsertionHelper(
     /**
      * Gets the mention at the current cursor position.
      */
-    fun getMentionAtCursor(): SuggestionItem? {
+    public fun getMentionAtCursor(): SuggestionItem? {
         val editable = editText.text ?: return null
         val cursorPosition = editText.selectionStart
         val spans = editable.getSpans(cursorPosition, cursorPosition, NonEditableSpan::class.java)
@@ -256,6 +252,6 @@ class MentionInsertionHelper(
 /**
  * Extension function to create a MentionInsertionHelper for an EditText.
  */
-fun EditText.createMentionInsertionHelper(): MentionInsertionHelper {
+public fun EditText.createMentionInsertionHelper(): MentionInsertionHelper {
     return MentionInsertionHelper(this)
 }

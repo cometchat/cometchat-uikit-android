@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
  *
  * @param T The type of ViewHolder used for headers
  */
-interface StickyHeaderAdapter<T : RecyclerView.ViewHolder> {
+public interface StickyHeaderAdapter<T : RecyclerView.ViewHolder> {
 
-    companion object {
-        const val NO_HEADER_ID = -1L
+    public companion object {
+        public const val NO_HEADER_ID: Long = -1L
     }
 
     /**
@@ -23,7 +23,7 @@ interface StickyHeaderAdapter<T : RecyclerView.ViewHolder> {
      * @param position The adapter position
      * @return The header ID, or NO_HEADER_ID if no header should be shown
      */
-    fun getHeaderId(position: Int): Long
+    public fun getHeaderId(position: Int): Long
 
     /**
      * Creates a new ViewHolder for the header view.
@@ -31,7 +31,7 @@ interface StickyHeaderAdapter<T : RecyclerView.ViewHolder> {
      * @param parent The parent ViewGroup
      * @return A new header ViewHolder
      */
-    fun onCreateHeaderViewHolder(parent: ViewGroup): T
+    public fun onCreateHeaderViewHolder(parent: ViewGroup): T
 
     /**
      * Binds data to the header ViewHolder.
@@ -40,5 +40,5 @@ interface StickyHeaderAdapter<T : RecyclerView.ViewHolder> {
      * @param position The adapter position of the first item in this header group
      * @param headerId The header ID
      */
-    fun onBindHeaderViewHolder(holder: T, position: Int, headerId: Long)
+    public fun onBindHeaderViewHolder(holder: T, position: Int, headerId: Long)
 }

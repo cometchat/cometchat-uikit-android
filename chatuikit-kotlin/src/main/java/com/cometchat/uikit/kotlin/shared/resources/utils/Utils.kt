@@ -7,7 +7,6 @@ import android.content.ContextWrapper
 import android.graphics.Color
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.resources.localise.CometChatLocalize
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Utility class providing common helper methods for CometChat UIKit components.
  */
-object Utils {
+public object Utils {
     
     private const val TAG = "Utils"
     
@@ -43,7 +43,7 @@ object Utils {
      * @param context The context
      * @param view The view to get the window token from
      */
-    fun hideKeyBoard(context: Context, view: View) {
+    public fun hideKeyBoard(context: Context, view: View) {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         imm?.hideSoftInputFromWindow(view.windowToken, 0)
     }
@@ -54,7 +54,7 @@ object Utils {
      * @param user The user to check
      * @return true if the user is blocked, false otherwise
      */
-    fun isBlocked(user: User): Boolean {
+    public fun isBlocked(user: User): Boolean {
         return user.isBlockedByMe || user.isHasBlockedMe
     }
 
@@ -64,7 +64,7 @@ object Utils {
      *
      * @param view The MaterialCardView to initialize
      */
-    fun initMaterialCard(view: MaterialCardView) {
+    public fun initMaterialCard(view: MaterialCardView) {
         view.setCardBackgroundColor(Color.TRANSPARENT)
         view.cardElevation = 0f
         view.radius = 0f
@@ -78,7 +78,7 @@ object Utils {
      * @param dp The value in dp to convert
      * @return The value in pixels
      */
-    fun convertDpToPx(context: Context, dp: Int): Int {
+    public fun convertDpToPx(context: Context, dp: Int): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp.toFloat(),
@@ -93,7 +93,7 @@ object Utils {
      * @param dp The value in dp to convert (as float)
      * @return The value in pixels
      */
-    fun convertDpToPx(context: Context, dp: Float): Int {
+    public fun convertDpToPx(context: Context, dp: Float): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
@@ -108,7 +108,7 @@ object Utils {
      * @param context The context to get the LifecycleOwner from
      * @return The LifecycleOwner if found, null otherwise
      */
-    fun getLifecycleOwner(context: Context): LifecycleOwner? {
+    public fun getLifecycleOwner(context: Context): LifecycleOwner? {
         var ctx = context
         while (ctx is ContextWrapper) {
             if (ctx is LifecycleOwner) {
@@ -126,7 +126,7 @@ object Utils {
      * @param context The context to get the Activity from
      * @return The Activity if found, null otherwise
      */
-    fun getActivity(context: Context): Activity? {
+    public fun getActivity(context: Context): Activity? {
         var ctx = context
         while (ctx is ContextWrapper) {
             if (ctx is Activity) {
@@ -144,7 +144,7 @@ object Utils {
      * @param activity The Activity to check
      * @return true if the Activity is usable, false otherwise
      */
-    fun isActivityUsable(activity: Activity?): Boolean {
+    public fun isActivityUsable(activity: Activity?): Boolean {
         return activity != null && !activity.isFinishing && !activity.isDestroyed
     }
     
@@ -158,7 +158,7 @@ object Utils {
      * @param view The view to add (can be null)
      * @param hideIfNull If true, hides the layout when view is null
      */
-    fun handleView(layout: ViewGroup, view: View?, hideIfNull: Boolean) {
+    public fun handleView(layout: ViewGroup, view: View?, hideIfNull: Boolean) {
         if (view != null) {
             layout.removeAllViews()
             removeParentFromView(view)
@@ -194,7 +194,7 @@ object Utils {
      * @param dateFormat Optional custom date format. If null, default format is applied.
      * @return A formatted date string
      */
-    fun callLogsTimeStamp(timestamp: Long, dateFormat: SimpleDateFormat? = null): String {
+    public fun callLogsTimeStamp(timestamp: Long, dateFormat: SimpleDateFormat? = null): String {
         var timestampMs = timestamp
 
         // Convert seconds to milliseconds if needed
@@ -226,7 +226,7 @@ object Utils {
      * @param timestamp The timestamp in milliseconds (or seconds, will be auto-detected)
      * @return A string describing when the user was last seen (e.g., "Last seen 5 mins ago")
      */
-    fun getLastSeenTime(context: Context, timestamp: Long): String {
+    public fun getLastSeenTime(context: Context, timestamp: Long): String {
         var timestampMs = timestamp
         
         // Convert seconds to milliseconds if needed
@@ -286,7 +286,7 @@ object Utils {
      *
      * @param view The view that was clicked
      */
-    fun performAdapterClick(view: View) {
+    public fun performAdapterClick(view: View) {
         // Find the parent that is a direct child of RecyclerView
         var parent = view.parent
         while (parent != null && parent !is androidx.recyclerview.widget.RecyclerView) {
@@ -317,7 +317,7 @@ object Utils {
      * @param file The file to check
      * @return true if the file is a GIF, false otherwise
      */
-    fun isGifFile(file: File?): Boolean {
+    public fun isGifFile(file: File?): Boolean {
         if (file == null) return false
         val name = file.name.lowercase(Locale.getDefault())
         return name.endsWith(".gif")
@@ -333,7 +333,7 @@ object Utils {
      * @param openHalfScreen Whether to open at half screen height
      * @param view The content view to display in the bottom sheet
      */
-    fun showBottomSheet(
+    public fun showBottomSheet(
         context: Context,
         bottomSheetDialog: BottomSheetDialog,
         isCancelable: Boolean,
@@ -364,7 +364,7 @@ object Utils {
             bottomSheetDialog.setCancelable(isCancelable)
             bottomSheetDialog.show()
         } catch (e: Exception) {
-            Log.e(TAG, "Error showing bottom sheet", e)
+            CometChatLogger.e(TAG, "Error showing bottom sheet", e)
         }
     }
 
@@ -376,7 +376,7 @@ object Utils {
      * @param mimeTypes List of MIME types for each image
      * @param fileNames List of file names for each image
      */
-    fun openImageViewer(
+    public fun openImageViewer(
         imageView: View,
         urls: List<String>,
         mimeTypes: List<String>,
@@ -397,7 +397,7 @@ object Utils {
      * @param timestampMillis The timestamp in milliseconds
      * @return A Long representing the date in YYYYMMDD format
      */
-    fun getDateId(timestampMillis: Long): Long {
+    public fun getDateId(timestampMillis: Long): Long {
         val calendar = Calendar.getInstance(Locale.ENGLISH).apply {
             timeInMillis = timestampMillis
         }
@@ -415,7 +415,7 @@ object Utils {
      * @param url The URL of the file to download
      * @param fileName The name to save the file as
      */
-    fun downloadFile(context: Context, url: String, fileName: String) {
+    public fun downloadFile(context: Context, url: String, fileName: String) {
         try {
             val request = DownloadManager.Request(Uri.parse(url))
             request.setTitle(fileName)
@@ -426,7 +426,7 @@ object Utils {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             downloadManager.enqueue(request)
         } catch (e: Exception) {
-            Log.e(TAG, "Error downloading file: ${e.message}")
+            CometChatLogger.e(TAG, "Error downloading file: ${e.message}")
         }
     }
 
@@ -436,7 +436,7 @@ object Utils {
      * @param size The file size in bytes
      * @return A formatted string (e.g., "1.5 MB", "256 KB")
      */
-    fun getFileSize(size: Int): String {
+    public fun getFileSize(size: Int): String {
         return getFileSize(size.toLong())
     }
 
@@ -446,7 +446,7 @@ object Utils {
      * @param size The file size in bytes
      * @return A formatted string (e.g., "1.5 MB", "256 KB")
      */
-    fun getFileSize(size: Long): String {
+    public fun getFileSize(size: Long): String {
         if (size <= 0) return "0 B"
 
         val units = arrayOf("B", "KB", "MB", "GB", "TB")
@@ -467,7 +467,7 @@ object Utils {
      * @param message The media message
      * @return The File if it exists, null otherwise
      */
-    fun getFileFromLocalPath(message: MediaMessage): File? {
+    public fun getFileFromLocalPath(message: MediaMessage): File? {
         return try {
             val metadata = message.metadata ?: return null
             if (metadata.has(UIKitConstants.IntentStrings.PATH)) {
@@ -478,7 +478,7 @@ object Utils {
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting file from local path: ${e.message}")
+            CometChatLogger.e(TAG, "Error getting file from local path: ${e.message}")
             null
         }
     }
@@ -490,7 +490,7 @@ object Utils {
      * @param file The file to check
      * @return The MIME type string
      */
-    fun getMimeTypeFromFile(context: Context, file: File): String {
+    public fun getMimeTypeFromFile(context: Context, file: File): String {
         val extension = file.extension.lowercase(Locale.getDefault())
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
         return mimeType ?: "application/octet-stream"

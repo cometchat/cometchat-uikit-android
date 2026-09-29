@@ -3,7 +3,7 @@ package com.cometchat.uikit.kotlin.presentation.shared.statusindicator
 /**
  * Enum representing various status indicators for users and groups.
  */
-enum class StatusIndicator {
+public enum class StatusIndicator {
     /**
      * Represents the online status of a user.
      */

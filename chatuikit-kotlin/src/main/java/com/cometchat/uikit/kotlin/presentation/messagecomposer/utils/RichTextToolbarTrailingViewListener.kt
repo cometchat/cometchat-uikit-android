@@ -27,7 +27,7 @@ import com.cometchat.uikit.core.formatter.ComposerInputController
  * )
  * ```
  */
-interface RichTextToolbarTrailingViewListener {
+public interface RichTextToolbarTrailingViewListener {
     /**
      * Creates the custom view appended to the trailing end of the rich-text toolbar.
      *
@@ -37,5 +37,5 @@ interface RichTextToolbarTrailingViewListener {
      * @param input Live handle to read and mutate the composer input while the composer is mounted.
      * @return A View appended after the built-in formatting buttons and a UIKit-owned separator.
      */
-    fun createView(context: Context, user: User?, group: Group?, input: ComposerInputController): View
+    public fun createView(context: Context, user: User?, group: Group?, input: ComposerInputController): View
 }

@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometC
 /**
  * RecyclerView adapter for displaying voter avatars in poll options.
  */
-class ImageAndCountAdapter(
+internal class ImageAndCountAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<ImageAndCountAdapter.ViewHolder>() {
 

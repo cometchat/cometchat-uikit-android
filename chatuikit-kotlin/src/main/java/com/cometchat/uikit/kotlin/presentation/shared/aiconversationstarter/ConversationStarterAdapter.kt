@@ -19,7 +19,7 @@ import com.cometchat.uikit.kotlin.databinding.CometchatAiConversationStarterRowB
  * The adapter supports customization of item appearance including background color,
  * corner radius, stroke, and text styling.
  */
-class ConversationStarterAdapter : RecyclerView.Adapter<ConversationStarterAdapter.ViewHolder>() {
+internal class ConversationStarterAdapter : RecyclerView.Adapter<ConversationStarterAdapter.ViewHolder>() {
 
     companion object {
         private val TAG = ConversationStarterAdapter::class.java.simpleName

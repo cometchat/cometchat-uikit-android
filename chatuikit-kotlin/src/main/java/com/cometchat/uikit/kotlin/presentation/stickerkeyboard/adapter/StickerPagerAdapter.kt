@@ -21,7 +21,7 @@ import com.cometchat.uikit.kotlin.R
  *
  * @param onStickerClick Callback invoked when a sticker is clicked
  */
-class StickerPagerAdapter(
+internal class StickerPagerAdapter(
     private val onStickerClick: ((Sticker) -> Unit)? = null
 ) : RecyclerView.Adapter<StickerPagerAdapter.PageViewHolder>() {
 

@@ -75,13 +75,13 @@ import java.util.Locale
  * messageInfo.setMessage(message)
  * ```
  */
-class CometChatMessageInformation @JvmOverloads constructor(
+public class CometChatMessageInformation @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageInformationStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMessageInformation::class.java.simpleName
     }
 
@@ -452,7 +452,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @param message The message to display information for
      */
-    fun setMessage(message: BaseMessage) {
+    public fun setMessage(message: BaseMessage) {
         this.message = message
 
         // Determine conversation type
@@ -519,7 +519,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
     /**
      * Gets the current message.
      */
-    fun getMessage(): BaseMessage? = message
+    public fun getMessage(): BaseMessage? = message
 
     /**
      * Sets the bubble factories for rendering the message bubble internally.
@@ -532,7 +532,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @param factories Map of factory key to BubbleFactory
      */
-    fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
+    public fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
         bubbleFactories = factories
         // Factory will be applied when renderMessageBubble is called with a message
     }
@@ -540,7 +540,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
     /**
      * Gets the current bubble factories.
      */
-    fun getBubbleFactories(): Map<String, BubbleFactory> = bubbleFactories
+    public fun getBubbleFactories(): Map<String, BubbleFactory> = bubbleFactories
 
     /**
      * Sets the text formatters for rendering mentions and markdown in the message bubble.
@@ -550,7 +550,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @param formatters The list of text formatters to use for text rendering
      */
-    fun setTextFormatters(formatters: List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter>) {
         textFormatters = formatters
         // Update the message bubble if already created
         messageBubble?.setTextFormatters(formatters)
@@ -561,14 +561,14 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @return The list of text formatters, or an empty list if none are set
      */
-    fun getTextFormatters(): List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter> = textFormatters
+    public fun getTextFormatters(): List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter> = textFormatters
 
     /**
      * Sets the toolbar title text.
      *
      * @param title The title text to display
      */
-    fun setToolBarTitleText(title: String) {
+    public fun setToolBarTitleText(title: String) {
         binding.tvToolBarTitle.text = title
     }
 
@@ -577,7 +577,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @param hide True to hide the toolbar, false to show it
      */
-    fun hideToolBar(hide: Boolean) {
+    public fun hideToolBar(hide: Boolean) {
         toolBarVisibility = if (hide) View.GONE else View.VISIBLE
         binding.toolBarView.visibility = toolBarVisibility
     }
@@ -587,7 +587,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      *
      * @param callback Function to call when an error occurs
      */
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
@@ -595,7 +595,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      * Adds the real-time event listener.
      * Call this when the component becomes visible.
      */
-    fun addListener() {
+    public fun addListener() {
         viewModel?.addListener()
     }
 
@@ -603,7 +603,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      * Removes the real-time event listener.
      * Call this when the component is dismissed.
      */
-    fun removeListener() {
+    public fun removeListener() {
         viewModel?.removeListener()
     }
 
@@ -612,7 +612,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatMessageInformationStyle) {
+    public fun setStyle(style: CometChatMessageInformationStyle) {
         this.style = style
         applyStyle()
     }
@@ -620,7 +620,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatMessageInformation
@@ -631,39 +631,39 @@ class CometChatMessageInformation @JvmOverloads constructor(
 
     // ==================== Individual Style Getters ====================
 
-    fun getInfoBackgroundColor(): Int = style.backgroundColor
-    fun getBackgroundHighlightColor(): Int = style.backgroundHighlightColor
-    fun getInfoCornerRadius(): Int = style.cornerRadius
-    fun getInfoStrokeWidth(): Int = style.strokeWidth
-    fun getInfoStrokeColor(): Int = style.strokeColor
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
-    fun getTitleTextColor(): Int = style.titleTextColor
-    fun getItemNameTextAppearance(): Int = style.itemNameTextAppearance
-    fun getItemNameTextColor(): Int = style.itemNameTextColor
-    fun getItemReadTextAppearance(): Int = style.itemReadTextAppearance
-    fun getItemReadTextColor(): Int = style.itemReadTextColor
-    fun getItemReadDateTextAppearance(): Int = style.itemReadDateTextAppearance
-    fun getItemReadDateTextColor(): Int = style.itemReadDateTextColor
-    fun getItemDeliveredTextAppearance(): Int = style.itemDeliveredTextAppearance
-    fun getItemDeliveredTextColor(): Int = style.itemDeliveredTextColor
-    fun getItemDeliveredDateTextAppearance(): Int = style.itemDeliveredDateTextAppearance
-    fun getItemDeliveredDateTextColor(): Int = style.itemDeliveredDateTextColor
-    fun getItemAvatarStyle(): CometChatAvatarStyle? = style.itemAvatarStyle
-    fun getMessageReceiptStyle(): CometChatReceiptStyle? = style.messageReceiptStyle
+    public fun getInfoBackgroundColor(): Int = style.backgroundColor
+    public fun getBackgroundHighlightColor(): Int = style.backgroundHighlightColor
+    public fun getInfoCornerRadius(): Int = style.cornerRadius
+    public fun getInfoStrokeWidth(): Int = style.strokeWidth
+    public fun getInfoStrokeColor(): Int = style.strokeColor
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getTitleTextColor(): Int = style.titleTextColor
+    public fun getItemNameTextAppearance(): Int = style.itemNameTextAppearance
+    public fun getItemNameTextColor(): Int = style.itemNameTextColor
+    public fun getItemReadTextAppearance(): Int = style.itemReadTextAppearance
+    public fun getItemReadTextColor(): Int = style.itemReadTextColor
+    public fun getItemReadDateTextAppearance(): Int = style.itemReadDateTextAppearance
+    public fun getItemReadDateTextColor(): Int = style.itemReadDateTextColor
+    public fun getItemDeliveredTextAppearance(): Int = style.itemDeliveredTextAppearance
+    public fun getItemDeliveredTextColor(): Int = style.itemDeliveredTextColor
+    public fun getItemDeliveredDateTextAppearance(): Int = style.itemDeliveredDateTextAppearance
+    public fun getItemDeliveredDateTextColor(): Int = style.itemDeliveredDateTextColor
+    public fun getItemAvatarStyle(): CometChatAvatarStyle? = style.itemAvatarStyle
+    public fun getMessageReceiptStyle(): CometChatReceiptStyle? = style.messageReceiptStyle
 
     // ==================== Individual Style Setters ====================
 
-    fun setInfoBackgroundColor(@ColorInt color: Int) {
+    public fun setInfoBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         if (color != 0) setCardBackgroundColor(color)
     }
 
-    fun setBackgroundHighlightColor(@ColorInt color: Int) {
+    public fun setBackgroundHighlightColor(@ColorInt color: Int) {
         style = style.copy(backgroundHighlightColor = color)
         if (color != 0) binding.messageBubbleParentLayout.setBackgroundColor(color)
     }
 
-    fun setInfoCornerRadius(@Dimension radius: Int) {
+    public fun setInfoCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         if (radius != 0) {
             shapeAppearanceModel = ShapeAppearanceModel.builder()
@@ -675,90 +675,90 @@ class CometChatMessageInformation @JvmOverloads constructor(
         }
     }
 
-    fun setInfoStrokeWidth(@Dimension width: Int) {
+    public fun setInfoStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width)
         if (width != 0) strokeWidth = width
     }
 
-    fun setInfoStrokeColor(@ColorInt color: Int) {
+    public fun setInfoStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         if (color != 0) setStrokeColor(color)
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         if (appearance != 0) binding.tvToolBarTitle.setTextAppearance(appearance)
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleTextColor = color)
         if (color != 0) binding.tvToolBarTitle.setTextColor(color)
     }
 
-    fun setItemNameTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemNameTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemNameTextAppearance = appearance)
         adapter.setItemNameTextAppearance(appearance)
     }
 
-    fun setItemNameTextColor(@ColorInt color: Int) {
+    public fun setItemNameTextColor(@ColorInt color: Int) {
         style = style.copy(itemNameTextColor = color)
         adapter.setItemNameTextColor(color)
     }
 
-    fun setItemReadTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemReadTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemReadTextAppearance = appearance)
         if (appearance != 0) binding.tvReadReceiptUser.setTextAppearance(appearance)
         adapter.setItemReadTextAppearance(appearance)
     }
 
-    fun setItemReadTextColor(@ColorInt color: Int) {
+    public fun setItemReadTextColor(@ColorInt color: Int) {
         style = style.copy(itemReadTextColor = color)
         if (color != 0) binding.tvReadReceiptUser.setTextColor(color)
         adapter.setItemReadTextColor(color)
     }
 
-    fun setItemReadDateTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemReadDateTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemReadDateTextAppearance = appearance)
         if (appearance != 0) binding.tvReadTimestampUser.setTextAppearance(appearance)
         adapter.setItemReadDateTextAppearance(appearance)
     }
 
-    fun setItemReadDateTextColor(@ColorInt color: Int) {
+    public fun setItemReadDateTextColor(@ColorInt color: Int) {
         style = style.copy(itemReadDateTextColor = color)
         if (color != 0) binding.tvReadTimestampUser.setTextColor(color)
         adapter.setItemReadDateTextColor(color)
     }
 
-    fun setItemDeliveredTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemDeliveredTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemDeliveredTextAppearance = appearance)
         if (appearance != 0) binding.tvDeliveredReceiptUser.setTextAppearance(appearance)
         adapter.setItemDeliveredTextAppearance(appearance)
     }
 
-    fun setItemDeliveredTextColor(@ColorInt color: Int) {
+    public fun setItemDeliveredTextColor(@ColorInt color: Int) {
         style = style.copy(itemDeliveredTextColor = color)
         if (color != 0) binding.tvDeliveredReceiptUser.setTextColor(color)
         adapter.setItemDeliveredTextColor(color)
     }
 
-    fun setItemDeliveredDateTextAppearance(@StyleRes appearance: Int) {
+    public fun setItemDeliveredDateTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(itemDeliveredDateTextAppearance = appearance)
         if (appearance != 0) binding.tvDeliveredTimestampUser.setTextAppearance(appearance)
         adapter.setItemDeliveredDateTextAppearance(appearance)
     }
 
-    fun setItemDeliveredDateTextColor(@ColorInt color: Int) {
+    public fun setItemDeliveredDateTextColor(@ColorInt color: Int) {
         style = style.copy(itemDeliveredDateTextColor = color)
         if (color != 0) binding.tvDeliveredTimestampUser.setTextColor(color)
         adapter.setItemDeliveredDateTextColor(color)
     }
 
-    fun setItemAvatarStyle(avatarStyle: CometChatAvatarStyle?) {
+    public fun setItemAvatarStyle(avatarStyle: CometChatAvatarStyle?) {
         style = style.copy(itemAvatarStyle = avatarStyle)
         adapter.setAvatarStyle(avatarStyle)
     }
 
-    fun setMessageReceiptStyle(receiptStyle: CometChatReceiptStyle?) {
+    public fun setMessageReceiptStyle(receiptStyle: CometChatReceiptStyle?) {
         style = style.copy(messageReceiptStyle = receiptStyle)
         receiptStyle?.let {
             binding.messageReceiptRead.setStyle(it)
@@ -772,7 +772,7 @@ class CometChatMessageInformation @JvmOverloads constructor(
      * Sets an external ViewModel.
      * Use this for testing or when sharing ViewModel between components.
      */
-    fun setViewModel(viewModel: CometChatMessageInformationViewModel) {
+    public fun setViewModel(viewModel: CometChatMessageInformationViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         startCollectingFlows()

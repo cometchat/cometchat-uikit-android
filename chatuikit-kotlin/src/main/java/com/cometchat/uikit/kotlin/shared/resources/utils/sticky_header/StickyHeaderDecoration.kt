@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @param adapter The adapter implementing StickyHeaderAdapter
  * @param renderInline If true, headers don't take up space (drawn over items)
  */
-class StickyHeaderDecoration(
+internal class StickyHeaderDecoration(
     private val adapter: StickyHeaderAdapter<RecyclerView.ViewHolder>,
     private val renderInline: Boolean = false
 ) : RecyclerView.ItemDecoration() {

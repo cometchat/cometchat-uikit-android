@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat
  * - File type detection based on MIME type and extension
  * - Customizable styling via XML attributes or programmatically
  */
-class CometChatFileBubble @JvmOverloads constructor(
+public class CometChatFileBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -236,7 +236,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      * @param mediaMessage The [MediaMessage] to be set.
      */
     @SuppressLint("SimpleDateFormat")
-    fun setMessage(mediaMessage: MediaMessage?) {
+    public fun setMessage(mediaMessage: MediaMessage?) {
         if (mediaMessage == null) return
         this.message = mediaMessage
 
@@ -340,7 +340,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      * @param titleText The title text.
      * @param subtitleText The subtitle text.
      */
-    fun setFileUrl(fileUrl: String, titleText: String, subtitleText: String) {
+    public fun setFileUrl(fileUrl: String, titleText: String, subtitleText: String) {
         setFileUrlInternal(fileUrl, titleText, subtitleText)
         if (fileUrl.isNotEmpty()) {
             downloadIconImageView.visibility = View.VISIBLE
@@ -368,7 +368,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param text The subtitle text to display.
      */
-    fun setSubtitleText(text: String) {
+    public fun setSubtitleText(text: String) {
         if (text.isNotEmpty()) {
             subTitleText = text
             subtitleTextView.visibility = View.VISIBLE
@@ -381,7 +381,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param text The title text to display.
      */
-    fun setTitleText(text: String) {
+    public fun setTitleText(text: String) {
         if (text.isNotEmpty()) {
             titleTextView.visibility = View.VISIBLE
             titleText = text
@@ -394,7 +394,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param image The resource ID of the image to set.
      */
-    fun setFileIcon(@DrawableRes image: Int) {
+    public fun setFileIcon(@DrawableRes image: Int) {
         if (image != 0) {
             fileIconImageView.setImageResource(image)
         }
@@ -405,7 +405,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param image The resource ID of the download icon image.
      */
-    fun setDownloadIcon(@DrawableRes image: Int) {
+    public fun setDownloadIcon(@DrawableRes image: Int) {
         if (image != 0) {
             downloadIconImageView.setImageResource(image)
         }
@@ -415,30 +415,30 @@ class CometChatFileBubble @JvmOverloads constructor(
     // Getters for views
     // ========================================
 
-    fun getView(): LinearLayout = parentLayout
+    public fun getView(): LinearLayout = parentLayout
 
-    fun getTitle(): TextView = titleTextView
+    public fun getTitle(): TextView = titleTextView
 
-    fun getSubtitle(): TextView = subtitleTextView
+    public fun getSubtitle(): TextView = subtitleTextView
 
-    fun getDownloadImageView(): ImageView = downloadIconImageView
+    public fun getDownloadImageView(): ImageView = downloadIconImageView
 
-    fun getFileIcon(): ImageView = fileIconImageView
+    public fun getFileIcon(): ImageView = fileIconImageView
 
-    fun getTitleText(): String = titleText
+    public fun getTitleText(): String = titleText
 
-    fun getSubTitleText(): String = subTitleText
+    public fun getSubTitleText(): String = subTitleText
 
-    fun getFileUrl(): String = fileUrl
+    public fun getFileUrl(): String = fileUrl
 
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
     /**
      * Set a custom click listener for the file bubble.
      *
      * @param onClick The custom OnClick listener.
      */
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         this.onClick = onClick
     }
 
@@ -449,7 +449,7 @@ class CometChatFileBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatFileBubbleStyle) {
+    public fun setStyle(style: CometChatFileBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -457,7 +457,7 @@ class CometChatFileBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatFileBubble
@@ -471,15 +471,15 @@ class CometChatFileBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style.backgroundColor
-    fun getTitleTextColor(): Int = style.titleColor
-    fun getTitleTextAppearance(): Int = style.titleTextAppearance
-    fun getSubtitleTextColor(): Int = style.subtitleColor
-    fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
-    fun getDownloadIconTint(): Int = style.fileDownloadIconTint
-    fun getBubbleStrokeWidth(): Float = style.strokeWidth
-    fun getBubbleStrokeColor(): Int = style.strokeColor
-    fun getBubbleCornerRadius(): Float = style.cornerRadius
+    public fun getBubbleBackgroundColor(): Int = style.backgroundColor
+    public fun getTitleTextColor(): Int = style.titleColor
+    public fun getTitleTextAppearance(): Int = style.titleTextAppearance
+    public fun getSubtitleTextColor(): Int = style.subtitleColor
+    public fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
+    public fun getDownloadIconTint(): Int = style.fileDownloadIconTint
+    public fun getBubbleStrokeWidth(): Float = style.strokeWidth
+    public fun getBubbleStrokeColor(): Int = style.strokeColor
+    public fun getBubbleCornerRadius(): Float = style.cornerRadius
 
     // ========================================
     // Setters (update style object + apply)
@@ -490,42 +490,42 @@ class CometChatFileBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Int) {
+    public fun setCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius.toFloat())
         applyCornerRadius(radius.toFloat())
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Int) {
+    public fun setBubbleStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width.toFloat())
         applyStrokeWidth(width.toFloat())
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style.copy(titleColor = color)
         applyTitleTextColor(color)
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(titleTextAppearance = appearance)
         applyTitleTextAppearance(appearance)
     }
 
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(subtitleColor = color)
         applySubtitleTextColor(color)
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(subtitleTextAppearance = appearance)
         applySubtitleTextAppearance(appearance)
     }
 
-    fun setDownloadIconTint(@ColorInt color: Int) {
+    public fun setDownloadIconTint(@ColorInt color: Int) {
         style = style.copy(fileDownloadIconTint = color)
         applyDownloadIconTint(color)
     }
@@ -536,7 +536,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param color The background color to set.
      */
-    fun setFileIconBackgroundColor(@ColorInt color: Int) {
+    public fun setFileIconBackgroundColor(@ColorInt color: Int) {
         // No dedicated file icon container in current layout
     }
 
@@ -545,7 +545,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param attachments The list of attachments to display.
      */
-    fun setFiles(attachments: List<Attachment>) {
+    public fun setFiles(attachments: List<Attachment>) {
         if (attachments.isEmpty()) return
         val attachment = attachments.first()
         setFileIconFromMimeType(attachment.fileMimeType, attachment.fileUrl)
@@ -558,7 +558,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param show Whether to show the download all button.
      */
-    fun setShowDownloadAllButton(show: Boolean) {
+    public fun setShowDownloadAllButton(show: Boolean) {
         // Download All button not implemented in current layout
     }
 
@@ -568,7 +568,7 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param color The background color to set.
      */
-    fun setDownloadAllButtonBackgroundColor(@ColorInt color: Int) {
+    public fun setDownloadAllButtonBackgroundColor(@ColorInt color: Int) {
         // Download All button not implemented in current layout
     }
 
@@ -578,11 +578,11 @@ class CometChatFileBubble @JvmOverloads constructor(
      *
      * @param color The text color to set.
      */
-    fun setDownloadAllButtonTextColor(@ColorInt color: Int) {
+    public fun setDownloadAllButtonTextColor(@ColorInt color: Int) {
         // Download All button not implemented in current layout
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatFileBubble::class.java.simpleName
     }
 }

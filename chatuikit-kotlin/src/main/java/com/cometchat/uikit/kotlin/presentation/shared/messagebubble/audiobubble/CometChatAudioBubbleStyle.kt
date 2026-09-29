@@ -24,7 +24,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * [DIMENSION_NOT_SET]) to indicate "not set". When not set, they fall back to
  * values from [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatAudioBubbleStyle(
+public data class CometChatAudioBubbleStyle(
     // Content-specific properties
     @ColorInt val playIconTint: Int = 0,
     @ColorInt val pauseIconTint: Int = 0,
@@ -60,10 +60,10 @@ data class CometChatAudioBubbleStyle(
      * @param messageBubbleStyle The message bubble style to use as fallback
      * @return A new [CometChatAudioBubbleStyle] with all sentinel values resolved
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatAudioBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatAudioBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to outgoing).
          *
@@ -74,7 +74,7 @@ data class CometChatAudioBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatAudioBubbleStyle with default values
          */
-        fun default(context: Context): CometChatAudioBubbleStyle {
+        public fun default(context: Context): CometChatAudioBubbleStyle {
             return outgoing(context)
         }
 
@@ -89,7 +89,7 @@ data class CometChatAudioBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatAudioBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatAudioBubbleStyle {
+        public fun outgoing(context: Context): CometChatAudioBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatOutgoingMessageBubbleStyle
@@ -107,7 +107,7 @@ data class CometChatAudioBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatAudioBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatAudioBubbleStyle {
+        public fun incoming(context: Context): CometChatAudioBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatIncomingMessageBubbleStyle
@@ -164,7 +164,7 @@ data class CometChatAudioBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatAudioBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAudioBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAudioBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

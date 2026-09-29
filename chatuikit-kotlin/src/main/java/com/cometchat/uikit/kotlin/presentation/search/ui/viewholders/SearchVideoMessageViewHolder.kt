@@ -28,7 +28,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param binding The ViewBinding for the video message item layout
  */
-class SearchVideoMessageViewHolder(
+internal class SearchVideoMessageViewHolder(
     val binding: CometchatSearchMessageItemVideoBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

@@ -26,7 +26,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param separatorColor Color for the item separator line
  * @param separatorHeight Height of the item separator line in pixels
  */
-data class CometChatReactionListItemStyle(
+public data class CometChatReactionListItemStyle(
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val titleTextColor: Int = 0,
     @StyleRes val titleTextAppearance: Int = 0,
@@ -38,14 +38,14 @@ data class CometChatReactionListItemStyle(
     @ColorInt val separatorColor: Int = 0,
     @Dimension val separatorHeight: Int = 1
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatReactionListStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatReactionListItemStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatReactionListItemStyle {
+        public fun default(context: Context): CometChatReactionListItemStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -77,7 +77,7 @@ data class CometChatReactionListItemStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatReactionListItemStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReactionListItemStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReactionListItemStyle {
             return try {
                 extractFromTypedArrayInternal(context, typedArray)
             } finally {

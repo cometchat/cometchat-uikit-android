@@ -24,16 +24,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  *
  * Direct 1:1 port of `CometChatEmojiKeyboard.java` from the Java chatuikit module.
  */
-class CometChatEmojiKeyboard : BottomSheetDialogFragment() {
+public class CometChatEmojiKeyboard : BottomSheetDialogFragment() {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatEmojiKeyboard::class.java.simpleName
     }
 
     private var fm: FragmentManager? = null
     private var emojiKeyBoardView: EmojiKeyBoardView? = null
 
-    fun setStyle(@StyleRes emojiKeyboardStyle: Int) {
+    public fun setStyle(@StyleRes emojiKeyboardStyle: Int) {
         emojiKeyBoardView?.setStyle(emojiKeyboardStyle)
     }
 
@@ -81,7 +81,7 @@ class CometChatEmojiKeyboard : BottomSheetDialogFragment() {
     /**
      * Shows the emoji keyboard dialog using the stored FragmentManager.
      */
-    fun show() {
+    public fun show() {
         fm?.let { fragmentManager ->
             if (!isAdded && !fragmentManager.isDestroyed) {
                 show(fragmentManager, TAG)
@@ -94,7 +94,7 @@ class CometChatEmojiKeyboard : BottomSheetDialogFragment() {
      *
      * @param context The context used to create the view and obtain the FragmentManager
      */
-    fun show(context: Context) {
+    public fun show(context: Context) {
         EmojiRepository.loadAndSaveEmojis(context)
         emojiKeyBoardView = EmojiKeyBoardView(context)
         val activity: Activity? = Utils.getActivity(context)
@@ -121,7 +121,7 @@ class CometChatEmojiKeyboard : BottomSheetDialogFragment() {
     /**
      * Sets the emoji click callback, forwarding to the hosted [EmojiKeyBoardView].
      */
-    fun setOnClick(onClick: EmojiKeyBoardView.OnClick?) {
+    public fun setOnClick(onClick: EmojiKeyBoardView.OnClick?) {
         if (onClick != null) {
             emojiKeyBoardView?.setOnClick(onClick)
         }

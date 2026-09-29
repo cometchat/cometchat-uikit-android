@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the AI conversation summary view,
  * matching the XML attributes defined in attr_cometchat_ai_conversation_summary.xml.
  */
-data class CometChatAIConversationSummaryStyle(
+public data class CometChatAIConversationSummaryStyle(
     // Title styling
     @ColorInt val titleTextColor: Int = 0,
     @StyleRes val titleTextAppearance: Int = 0,
@@ -44,14 +44,14 @@ data class CometChatAIConversationSummaryStyle(
     @ColorInt val errorStateTextColor: Int = 0,
     @StyleRes val errorStateTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatAIConversationSummaryStyle with default values
          */
-        fun default(context: Context): CometChatAIConversationSummaryStyle {
+        public fun default(context: Context): CometChatAIConversationSummaryStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -65,7 +65,7 @@ data class CometChatAIConversationSummaryStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatAIConversationSummaryStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIConversationSummaryStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIConversationSummaryStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -80,7 +80,7 @@ data class CometChatAIConversationSummaryStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatAIConversationSummaryStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatAIConversationSummaryStyle {

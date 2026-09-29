@@ -25,13 +25,13 @@ import com.cometchat.uikit.kotlin.R
  * ```
  */
 @Suppress("unused")
-class CometChatTypingIndicator @JvmOverloads constructor(
+public class CometChatTypingIndicator @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatTypingIndicatorStyle
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatTypingIndicator::class.java.simpleName
     }
 
@@ -96,7 +96,7 @@ class CometChatTypingIndicator @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatTypingIndicator
@@ -109,7 +109,7 @@ class CometChatTypingIndicator @JvmOverloads constructor(
     /**
      * Sets the style from a CometChatTypingIndicatorStyle object.
      */
-    fun setStyle(style: CometChatTypingIndicatorStyle) {
+    public fun setStyle(style: CometChatTypingIndicatorStyle) {
         this.style = style
         applyStyle()
     }
@@ -117,7 +117,7 @@ class CometChatTypingIndicator @JvmOverloads constructor(
     /**
      * Sets the typing indicator from a TypingIndicator object.
      */
-    fun setTypingIndicator(indicator: TypingIndicator?) {
+    public fun setTypingIndicator(indicator: TypingIndicator?) {
         typingIndicator = indicator
         if (indicator == null) {
             visibility = View.GONE
@@ -132,7 +132,7 @@ class CometChatTypingIndicator @JvmOverloads constructor(
      * Sets whether this is a group conversation.
      * In group conversations, the user's name is shown.
      */
-    fun setIsGroupConversation(isGroup: Boolean) {
+    public fun setIsGroupConversation(isGroup: Boolean) {
         isGroupConversation = isGroup
         updateTypingText()
     }
@@ -153,7 +153,7 @@ class CometChatTypingIndicator @JvmOverloads constructor(
     /**
      * Clears the typing indicator.
      */
-    fun clearTypingIndicator() {
+    public fun clearTypingIndicator() {
         typingIndicator = null
         visibility = View.GONE
     }
@@ -162,35 +162,35 @@ class CometChatTypingIndicator @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getTypingIndicator(): TypingIndicator? = typingIndicator
+    public fun getTypingIndicator(): TypingIndicator? = typingIndicator
 
-    fun getIndicatorTextColor(): Int = style.textColor
+    public fun getIndicatorTextColor(): Int = style.textColor
 
-    fun getIndicatorTextAppearance(): Int = style.textAppearance
+    public fun getIndicatorTextAppearance(): Int = style.textAppearance
 
-    fun getDotColor(): Int = style.dotColor
+    public fun getDotColor(): Int = style.dotColor
 
-    fun getAnimationDuration(): Long = style.animationDuration
+    public fun getAnimationDuration(): Long = style.animationDuration
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setIndicatorTextColor(@ColorInt color: Int) {
+    public fun setIndicatorTextColor(@ColorInt color: Int) {
         style = style.copy(textColor = color)
         applyTextColor(color)
     }
 
-    fun setIndicatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setIndicatorTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(textAppearance = appearance)
         applyTextAppearance(appearance)
     }
 
-    fun setDotColor(@ColorInt color: Int) {
+    public fun setDotColor(@ColorInt color: Int) {
         style = style.copy(dotColor = color)
     }
 
-    fun setAnimationDuration(duration: Long) {
+    public fun setAnimationDuration(duration: Long) {
         style = style.copy(animationDuration = duration)
     }
 }

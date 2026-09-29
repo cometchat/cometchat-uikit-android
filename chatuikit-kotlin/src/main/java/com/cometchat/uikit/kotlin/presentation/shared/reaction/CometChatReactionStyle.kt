@@ -14,7 +14,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the reaction view,
  * matching the XML attributes defined in attr_cometchat_reaction.xml.
  */
-data class CometChatReactionStyle(
+public data class CometChatReactionStyle(
     @StyleRes val emojiTextAppearance: Int = 0,
     @ColorInt val emojiTextColor: Int = 0,
     @StyleRes val countTextAppearance: Int = 0,
@@ -28,11 +28,11 @@ data class CometChatReactionStyle(
     @Dimension val activeStrokeWidth: Float = 0f,
     @ColorInt val activeStrokeColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with CometChatTheme defaults.
          */
-        fun default(context: Context): CometChatReactionStyle {
+        public fun default(context: Context): CometChatReactionStyle {
             return CometChatReactionStyle(
                 emojiTextAppearance = CometChatTheme.getTextAppearanceBodyRegular(context),
                 emojiTextColor = CometChatTheme.getTextColorPrimary(context),
@@ -52,7 +52,7 @@ data class CometChatReactionStyle(
         /**
          * Creates a style by extracting values from XML TypedArray.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReactionStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatReactionStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

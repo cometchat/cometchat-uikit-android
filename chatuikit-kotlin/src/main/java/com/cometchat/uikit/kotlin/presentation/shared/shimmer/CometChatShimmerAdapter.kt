@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  * CometChatShimmerAdapter is a simple RecyclerView adapter that displays
  * shimmer placeholder items for loading states.
  */
-class CometChatShimmerAdapter(
+internal class CometChatShimmerAdapter(
     private val itemCount: Int,
     @LayoutRes private val layoutRes: Int
 ) : RecyclerView.Adapter<CometChatShimmerAdapter.ViewHolder>() {

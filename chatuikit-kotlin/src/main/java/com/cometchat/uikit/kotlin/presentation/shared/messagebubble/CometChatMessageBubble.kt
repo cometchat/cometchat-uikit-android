@@ -63,13 +63,13 @@ import com.google.android.material.card.MaterialCardView
  * @see BubbleFactory
  * @see InternalContentRenderer
  */
-class CometChatMessageBubble @JvmOverloads constructor(
+public class CometChatMessageBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMessageBubble::class.java.simpleName
     }
 
@@ -163,7 +163,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     private var enableMultipleAttachments: Boolean = false
 
     /** Sets whether the new multi-attachment content bubbles are used. Set before the content view is created. */
-    fun setEnableMultipleAttachments(enabled: Boolean) {
+    public fun setEnableMultipleAttachments(enabled: Boolean) {
         if (enableMultipleAttachments == enabled) return
         enableMultipleAttachments = enabled
         // The flag decides which content view class createViews builds. If content already exists
@@ -234,7 +234,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param factory The [BubbleFactory] to use for this bubble, or null to use default rendering
      */
-    fun setBubbleFactory(factory: BubbleFactory?) {
+    public fun setBubbleFactory(factory: BubbleFactory?) {
         this.bubbleFactory = factory
     }
 
@@ -243,7 +243,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current [BubbleFactory], or null if using default rendering
      */
-    fun getBubbleFactory(): BubbleFactory? = bubbleFactory
+    public fun getBubbleFactory(): BubbleFactory? = bubbleFactory
 
     // ========================================
     // BubbleStyles
@@ -257,14 +257,14 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param styles The [BubbleStyles] containing optional per-bubble-type overrides
      */
-    fun setBubbleStyles(styles: BubbleStyles) {
+    public fun setBubbleStyles(styles: BubbleStyles) {
         this.bubbleStyles = styles
     }
 
     /**
      * Gets the current per-bubble-type style overrides.
      */
-    fun getBubbleStyles(): BubbleStyles = bubbleStyles
+    public fun getBubbleStyles(): BubbleStyles = bubbleStyles
 
     // ========================================
     // Text Formatters
@@ -279,7 +279,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param formatters The list of [CometChatTextFormatter] instances to use for text rendering.
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         this.textFormatters = formatters
     }
 
@@ -288,7 +288,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The list of text formatters, or an empty list if none are set.
      */
-    fun getTextFormatters(): List<CometChatTextFormatter> = textFormatters
+    public fun getTextFormatters(): List<CometChatTextFormatter> = textFormatters
 
     // ========================================
     // Date/Time Formatting
@@ -303,7 +303,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param format The [SimpleDateFormat] to use for message timestamps,
      *               or `null` to use the default format.
      */
-    fun setTimeFormat(format: SimpleDateFormat?) {
+    public fun setTimeFormat(format: SimpleDateFormat?) {
         this.timeFormat = format
     }
 
@@ -312,7 +312,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current [SimpleDateFormat] for timestamps, or `null` if using default.
      */
-    fun getTimeFormat(): SimpleDateFormat? = timeFormat
+    public fun getTimeFormat(): SimpleDateFormat? = timeFormat
 
     /**
      * Sets a custom date/time formatter callback for advanced date/time formatting.
@@ -324,7 +324,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param formatter The [DateTimeFormatterCallback] for custom formatting,
      *                  or `null` to use the default formatting logic.
      */
-    fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(formatter: DateTimeFormatterCallback?) {
         this.dateTimeFormatter = formatter
     }
 
@@ -333,7 +333,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current [DateTimeFormatterCallback], or `null` if using default.
      */
-    fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
+    public fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
 
     /**
      * Sets the timestamp alignment for message bubbles.
@@ -344,7 +344,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param alignment The [UIKitConstants.TimeStampAlignment] to use for timestamp positioning.
      */
-    fun setTimeStampAlignment(alignment: UIKitConstants.TimeStampAlignment) {
+    public fun setTimeStampAlignment(alignment: UIKitConstants.TimeStampAlignment) {
         this.timeStampAlignment = alignment
     }
 
@@ -353,7 +353,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current [UIKitConstants.TimeStampAlignment].
      */
-    fun getTimeStampAlignment(): UIKitConstants.TimeStampAlignment = timeStampAlignment
+    public fun getTimeStampAlignment(): UIKitConstants.TimeStampAlignment = timeStampAlignment
 
     // ========================================
     // Message Setting (Smart Content Creation)
@@ -374,7 +374,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param factoryKey The factory key (e.g., "message_text", "custom_extension_poll")
      * @return The created content view, or a fallback view if no factory is found
      */
-    fun createViews(factoryKey: String): View {
+    public fun createViews(factoryKey: String): View {
         val factory = bubbleFactory  // Use single factory property
         
         if (factory != null) {
@@ -518,7 +518,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param factoryKey The factory key (e.g., "message_text", "custom_extension_poll")
      * @return The created content view, or a fallback view if no factory is found
      */
-    fun createContentView(factoryKey: String): View {
+    public fun createContentView(factoryKey: String): View {
         // If user set a custom content view, return that
         if (customContentView != null) {
             return customContentView!!
@@ -554,7 +554,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param holder The ViewHolder (for additional context, may be null)
      * @param position Position in the list (-1 if not applicable)
      */
-    fun bindViews(
+    public fun bindViews(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         holder: RecyclerView.ViewHolder? = null,
@@ -876,7 +876,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param style The style to apply to the outer bubble container
      */
-    fun applyStyle(style: CometChatMessageBubbleStyle) {
+    public fun applyStyle(style: CometChatMessageBubbleStyle) {
         applyBubbleStyle(style)
     }
 
@@ -895,7 +895,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param styleResId The style resource ID (e.g., R.style.MyIncomingBubbleStyle), or 0 to use default
      */
-    fun setIncomingMessageBubbleStyle(@StyleRes styleResId: Int) {
+    public fun setIncomingMessageBubbleStyle(@StyleRes styleResId: Int) {
         if (incomingMessageBubbleStyleResId != styleResId) {
             incomingMessageBubbleStyleResId = styleResId
             loadedIncomingStyle = null // Clear cache to reload on next use
@@ -907,7 +907,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The style resource ID, or 0 if using default
      */
-    fun getIncomingMessageBubbleStyleResId(): Int = incomingMessageBubbleStyleResId
+    public fun getIncomingMessageBubbleStyleResId(): Int = incomingMessageBubbleStyleResId
 
     /**
      * Sets the style resource ID for outgoing (RIGHT-aligned) message bubbles.
@@ -920,7 +920,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param styleResId The style resource ID (e.g., R.style.MyOutgoingBubbleStyle), or 0 to use default
      */
-    fun setOutgoingMessageBubbleStyle(@StyleRes styleResId: Int) {
+    public fun setOutgoingMessageBubbleStyle(@StyleRes styleResId: Int) {
         if (outgoingMessageBubbleStyleResId != styleResId) {
             outgoingMessageBubbleStyleResId = styleResId
             loadedOutgoingStyle = null // Clear cache to reload on next use
@@ -932,7 +932,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The style resource ID, or 0 if using default
      */
-    fun getOutgoingMessageBubbleStyleResId(): Int = outgoingMessageBubbleStyleResId
+    public fun getOutgoingMessageBubbleStyleResId(): Int = outgoingMessageBubbleStyleResId
 
     /**
      * Sets the style object for incoming (LEFT-aligned) message bubbles.
@@ -943,7 +943,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param style The style object to use, or null to clear and use resource ID or default
      */
-    fun setIncomingMessageBubbleStyleObject(style: CometChatMessageBubbleStyle?) {
+    public fun setIncomingMessageBubbleStyleObject(style: CometChatMessageBubbleStyle?) {
         loadedIncomingStyle = style
         // Clear resource ID if style object is set to avoid confusion
         if (style != null) {
@@ -960,7 +960,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param style The style object to use, or null to clear and use resource ID or default
      */
-    fun setOutgoingMessageBubbleStyleObject(style: CometChatMessageBubbleStyle?) {
+    public fun setOutgoingMessageBubbleStyleObject(style: CometChatMessageBubbleStyle?) {
         loadedOutgoingStyle = style
         // Clear resource ID if style object is set to avoid confusion
         if (style != null) {
@@ -981,7 +981,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param holder The ViewHolder (for additional context, may be null)
      * @param position Position in the list (-1 if not applicable)
      */
-    fun bindContentView(
+    public fun bindContentView(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         holder: RecyclerView.ViewHolder? = null,
@@ -1032,7 +1032,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param message The message to display
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      */
-    fun setMessage(message: BaseMessage, alignment: UIKitConstants.MessageBubbleAlignment) {
+    public fun setMessage(message: BaseMessage, alignment: UIKitConstants.MessageBubbleAlignment) {
         currentMessage = message
         
         // Set alignment (inflates layout if changed)
@@ -1060,7 +1060,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param holder The ViewHolder (for additional context)
      * @param position Position in the list
      */
-    fun rebindMessage(
+    public fun rebindMessage(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
         holder: RecyclerView.ViewHolder?,
@@ -1072,7 +1072,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Called when the view is recycled. Notifies the factory to release resources.
      */
-    fun onRecycled() {
+    public fun onRecycled() {
         if (factoryContentView != null) {
             bubbleFactory?.onViewRecycled(factoryContentView!!)
         }
@@ -1104,7 +1104,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param alignment The alignment (LEFT, RIGHT, CENTER)
      */
-    fun setMessageAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
+    public fun setMessageAlignment(alignment: UIKitConstants.MessageBubbleAlignment) {
         currentAlignment = alignment
         
         val layoutRes = when (alignment) {
@@ -1190,7 +1190,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the leading view (typically avatar).
      */
-    fun setLeadingView(view: View?) {
+    public fun setLeadingView(view: View?) {
         customLeadingView = view
         handleView(leadingViewContainer, view)
     }
@@ -1198,7 +1198,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the header view (typically sender name).
      */
-    fun setHeaderView(view: View?) {
+    public fun setHeaderView(view: View?) {
         customHeaderView = view
         handleView(headerViewContainer, view)
     }
@@ -1206,7 +1206,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the reply view (for reply-to-message).
      */
-    fun setReplyView(view: View?) {
+    public fun setReplyView(view: View?) {
         customReplyView = view
         handleView(replyViewContainer, view)
     }
@@ -1217,7 +1217,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * Note: Setting this overrides factory-based content rendering.
      * The factory will not be used when a custom content view is set.
      */
-    fun setContentView(view: View?) {
+    public fun setContentView(view: View?) {
         customContentView = view
         if (view != null) {
             factoryContentView = null
@@ -1229,7 +1229,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the bottom view (typically reactions).
      */
-    fun setBottomView(view: View?) {
+    public fun setBottomView(view: View?) {
         customBottomView = view
         handleView(bottomViewContainer, view)
     }
@@ -1237,7 +1237,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the status info view (typically timestamp/receipt).
      */
-    fun setStatusInfoView(view: View?) {
+    public fun setStatusInfoView(view: View?) {
         customStatusInfoView = view
         handleView(statusInfoViewContainer, view)
     }
@@ -1245,7 +1245,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the thread view (for threaded replies).
      */
-    fun setThreadView(view: View?) {
+    public fun setThreadView(view: View?) {
         customThreadView = view
         handleView(threadViewContainer, view)
     }
@@ -1253,7 +1253,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
     /**
      * Sets a custom view as the footer view.
      */
-    fun setFooterView(view: View?) {
+    public fun setFooterView(view: View?) {
         customFooterView = view
         handleView(footerViewContainer, view)
     }
@@ -1262,27 +1262,27 @@ class CometChatMessageBubble @JvmOverloads constructor(
     // Visibility Setters
     // ========================================
 
-    fun setLeadingViewVisibility(visibility: Int) {
+    public fun setLeadingViewVisibility(visibility: Int) {
         leadingViewContainer?.visibility = visibility
     }
 
-    fun setHeaderViewVisibility(visibility: Int) {
+    public fun setHeaderViewVisibility(visibility: Int) {
         headerViewContainer?.visibility = visibility
     }
 
-    fun setReplyViewVisibility(visibility: Int) {
+    public fun setReplyViewVisibility(visibility: Int) {
         replyViewContainer?.visibility = visibility
     }
 
-    fun setContentViewVisibility(visibility: Int) {
+    public fun setContentViewVisibility(visibility: Int) {
         contentViewContainer?.visibility = visibility
     }
 
-    fun setBottomViewVisibility(visibility: Int) {
+    public fun setBottomViewVisibility(visibility: Int) {
         bottomViewContainer?.visibility = visibility
     }
 
-    fun setStatusInfoViewVisibility(visibility: Int) {
+    public fun setStatusInfoViewVisibility(visibility: Int) {
         statusInfoViewContainer?.visibility = visibility
         // The per-type content views keep 0 bottom padding because the timestamp row below provides
         // the visual gap — when that row is hidden (e.g. non-last message of a batch), the content
@@ -1301,7 +1301,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
         }
     }
 
-    fun setThreadViewVisibility(visibility: Int) {
+    public fun setThreadViewVisibility(visibility: Int) {
         threadViewContainer?.visibility = visibility
     }
 
@@ -1311,7 +1311,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param listener The click listener to set, or null to remove
      */
-    fun setOnThreadViewClickListener(listener: OnClickListener?) {
+    public fun setOnThreadViewClickListener(listener: OnClickListener?) {
         threadViewContainer?.setOnClickListener(listener)
     }
 
@@ -1322,7 +1322,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      * @param listener The click listener to set, or null to remove.
      *                 The listener receives the message that contains the quoted message.
      */
-    fun setOnMessagePreviewClickListener(listener: ((BaseMessage) -> Unit)?) {
+    public fun setOnMessagePreviewClickListener(listener: ((BaseMessage) -> Unit)?) {
         this.onMessagePreviewClick = listener
     }
 
@@ -1331,9 +1331,9 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current click listener, or null if not set
      */
-    fun getOnMessagePreviewClickListener(): ((BaseMessage) -> Unit)? = onMessagePreviewClick
+    public fun getOnMessagePreviewClickListener(): ((BaseMessage) -> Unit)? = onMessagePreviewClick
 
-    fun setFooterViewVisibility(visibility: Int) {
+    public fun setFooterViewVisibility(visibility: Int) {
         footerViewContainer?.visibility = visibility
     }
 
@@ -1350,7 +1350,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param alignment The [UIKitConstants.MessageListAlignment] to use
      */
-    fun setAlignment(alignment: UIKitConstants.MessageListAlignment) {
+    public fun setAlignment(alignment: UIKitConstants.MessageListAlignment) {
         this.messageListAlignment = alignment
     }
 
@@ -1359,7 +1359,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The current [UIKitConstants.MessageListAlignment]
      */
-    fun getAlignment(): UIKitConstants.MessageListAlignment = messageListAlignment
+    public fun getAlignment(): UIKitConstants.MessageListAlignment = messageListAlignment
 
     // ========================================
     // Sub-Component Visibility Configuration
@@ -1373,7 +1373,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param visibility View visibility constant (View.VISIBLE, View.GONE, or View.INVISIBLE)
      */
-    fun setReactionVisibility(visibility: Int) {
+    public fun setReactionVisibility(visibility: Int) {
         this.reactionVisibility = visibility
     }
 
@@ -1382,7 +1382,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The visibility constant for reactions
      */
-    fun getReactionVisibility(): Int = reactionVisibility
+    public fun getReactionVisibility(): Int = reactionVisibility
 
     /**
      * Sets the visibility of the avatar in the message bubble.
@@ -1392,7 +1392,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param visibility View visibility constant (View.VISIBLE, View.GONE, or View.INVISIBLE)
      */
-    fun setAvatarVisibility(visibility: Int) {
+    public fun setAvatarVisibility(visibility: Int) {
         this.avatarVisibility = visibility
         // Also apply immediately to the leading view container
         leadingViewContainer?.visibility = visibility
@@ -1403,7 +1403,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The visibility constant for avatar
      */
-    fun getAvatarVisibility(): Int = avatarVisibility
+    public fun getAvatarVisibility(): Int = avatarVisibility
 
     /**
      * Sets the visibility of read receipts in the message bubble.
@@ -1413,7 +1413,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @param visibility View visibility constant (View.VISIBLE, View.GONE, or View.INVISIBLE)
      */
-    fun setReceiptsVisibility(visibility: Int) {
+    public fun setReceiptsVisibility(visibility: Int) {
         this.receiptsVisibility = visibility
     }
 
@@ -1422,7 +1422,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
      *
      * @return The visibility constant for receipts
      */
-    fun getReceiptsVisibility(): Int = receiptsVisibility
+    public fun getReceiptsVisibility(): Int = receiptsVisibility
 
     // ========================================
     // Style Setters
@@ -1433,7 +1433,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
         messageBubble?.setCardBackgroundColor(color)
     }
 
-    fun getBackgroundColor(): Int = bubbleBackgroundColor
+    public fun getBackgroundColor(): Int = bubbleBackgroundColor
 
     override fun setBackgroundDrawable(drawable: Drawable?) {
         if (drawable != null) {
@@ -1442,7 +1442,7 @@ class CometChatMessageBubble @JvmOverloads constructor(
         }
     }
 
-    fun getBackgroundDrawable(): Drawable? = backgroundDrawable
+    public fun getBackgroundDrawable(): Drawable? = backgroundDrawable
 
     override fun setStrokeWidth(@Dimension strokeWidth: Int) {
         if (strokeWidth >= 0) {
@@ -1460,16 +1460,16 @@ class CometChatMessageBubble @JvmOverloads constructor(
 
     override fun getStrokeColor(): Int = bubbleStrokeColor
 
-    fun setCornerRadius(@Dimension cornerRadius: Int) {
+    public fun setCornerRadius(@Dimension cornerRadius: Int) {
         if (cornerRadius >= 0) {
             bubbleCornerRadius = cornerRadius
             messageBubble?.radius = cornerRadius.toFloat()
         }
     }
 
-    fun getCornerRadius(): Int = bubbleCornerRadius
+    public fun getCornerRadius(): Int = bubbleCornerRadius
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             styleResId = style
             val typedArray = context.theme.obtainStyledAttributes(
@@ -1480,12 +1480,12 @@ class CometChatMessageBubble @JvmOverloads constructor(
         }
     }
 
-    fun getStyle(): Int = styleResId
+    public fun getStyle(): Int = styleResId
 
     /**
      * Sets the padding of the message container.
      */
-    fun setMessagePadding(left: Int, top: Int, right: Int, bottom: Int) {
+    public fun setMessagePadding(left: Int, top: Int, right: Int, bottom: Int) {
         val layoutParams = messageContainer?.layoutParams
         if (layoutParams is MarginLayoutParams) {
             layoutParams.setMargins(
@@ -1502,16 +1502,16 @@ class CometChatMessageBubble @JvmOverloads constructor(
     // Getters
     // ========================================
 
-    fun getView(): LinearLayout? = parent
-    fun getLeadingView(): LinearLayout? = leadingViewContainer
-    fun getHeaderView(): LinearLayout? = headerViewContainer
-    fun getReplyView(): LinearLayout? = replyViewContainer
-    fun getContentView(): LinearLayout? = contentViewContainer
-    fun getBottomView(): LinearLayout? = bottomViewContainer
-    fun getStatusInfoView(): LinearLayout? = statusInfoViewContainer
-    fun getThreadView(): LinearLayout? = threadViewContainer
-    fun getFooterView(): LinearLayout? = footerViewContainer
-    fun getCurrentMessage(): BaseMessage? = currentMessage
-    fun getCurrentAlignment(): UIKitConstants.MessageBubbleAlignment = currentAlignment
-    fun getCurrentContentView(): View? = factoryContentView
+    public fun getView(): LinearLayout? = parent
+    public fun getLeadingView(): LinearLayout? = leadingViewContainer
+    public fun getHeaderView(): LinearLayout? = headerViewContainer
+    public fun getReplyView(): LinearLayout? = replyViewContainer
+    public fun getContentView(): LinearLayout? = contentViewContainer
+    public fun getBottomView(): LinearLayout? = bottomViewContainer
+    public fun getStatusInfoView(): LinearLayout? = statusInfoViewContainer
+    public fun getThreadView(): LinearLayout? = threadViewContainer
+    public fun getFooterView(): LinearLayout? = footerViewContainer
+    public fun getCurrentMessage(): BaseMessage? = currentMessage
+    public fun getCurrentAlignment(): UIKitConstants.MessageBubbleAlignment = currentAlignment
+    public fun getCurrentContentView(): View? = factoryContentView
 }

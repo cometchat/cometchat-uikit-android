@@ -12,7 +12,7 @@ import android.view.ViewGroup
  * 
  * Reference: chatuikit/src/main/java/com/cometchat/chatuikit/shared/resources/utils/AnimationUtils.java
  */
-object AnimationUtils {
+public object AnimationUtils {
 
     private const val DEFAULT_DURATION = 300L
 
@@ -25,7 +25,7 @@ object AnimationUtils {
      * @param view The view to animate to visible state
      * @param duration Animation duration in milliseconds (default: 300ms)
      */
-    fun animateVisibilityVisible(view: View, duration: Long = DEFAULT_DURATION) {
+    public fun animateVisibilityVisible(view: View, duration: Long = DEFAULT_DURATION) {
         val params = view.layoutParams
         
         // Store original height to restore after animation
@@ -81,7 +81,7 @@ object AnimationUtils {
      * @param view The view to animate to gone state
      * @param duration Animation duration in milliseconds (default: 300ms)
      */
-    fun animateVisibilityGone(view: View, duration: Long = DEFAULT_DURATION) {
+    public fun animateVisibilityGone(view: View, duration: Long = DEFAULT_DURATION) {
         val params = view.layoutParams
         
         // Store original height to restore after animation

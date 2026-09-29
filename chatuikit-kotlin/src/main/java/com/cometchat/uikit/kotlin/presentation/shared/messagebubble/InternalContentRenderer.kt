@@ -2,7 +2,6 @@ package com.cometchat.uikit.kotlin.presentation.shared.messagebubble
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +23,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.CometChatDate
@@ -158,7 +158,7 @@ internal object InternalContentRenderer {
                 com.cometchat.uikit.kotlin.presentation.shared.messagebubble.cardbubble.CometChatCardBubble(context)
             // Unknown
             else -> {
-                android.util.Log.w("AgentChatDebug", "InternalContentRenderer: unsupported factoryKey='$factoryKey'")
+                CometChatLogger.w("AgentChatDebug", "InternalContentRenderer: unsupported factoryKey='$factoryKey'")
                 null
             }
         }
@@ -252,7 +252,7 @@ internal object InternalContentRenderer {
         if (message.deletedAt > 0) {
             val deleteBubble = view as? CometChatDeleteBubble
                 ?: run {
-                    Log.w(TAG, "bindContentView: expected CometChatDeleteBubble but got ${view.javaClass.simpleName}")
+                    CometChatLogger.w(TAG, "bindContentView: expected CometChatDeleteBubble but got ${view.javaClass.simpleName}")
                     return false
                 }
             val deleteStyle = bubbleStyles.deleteBubbleStyle
@@ -266,7 +266,7 @@ internal object InternalContentRenderer {
             return true
         }
 
-        Log.d(TAG, "bindContentView: category='${message.category}' type='${message.type}'")
+        CometChatLogger.d(TAG, "bindContentView: category='${message.category}' type='${message.type}'")
         return when (message.category) {
             CometChatConstants.CATEGORY_MESSAGE -> bindStandardMessage(view, message, alignment, style, bubbleStyles, textFormatters)
             CometChatConstants.CATEGORY_ACTION -> bindActionMessage(view, message, bubbleStyles)
@@ -283,7 +283,7 @@ internal object InternalContentRenderer {
             UIKitConstants.MessageCategory.STREAM -> bindAIAssistantMessage(view, message, bubbleStyles)
             UIKitConstants.MessageCategory.CARD -> bindCardMessage(view, message, alignment)
             else -> {
-                Log.w(TAG, "bindContentView: unrecognized category '${message.category}' type='${message.type}'")
+                CometChatLogger.w(TAG, "bindContentView: unrecognized category '${message.category}' type='${message.type}'")
                 false
             }
         }
@@ -304,7 +304,7 @@ internal object InternalContentRenderer {
             CometChatConstants.MESSAGE_TYPE_TEXT -> {
                 val textBubble = view as? CometChatTextBubble
                     ?: run {
-                        Log.w(TAG, "bindStandardMessage: expected CometChatTextBubble but got ${view.javaClass.simpleName}")
+                        CometChatLogger.w(TAG, "bindStandardMessage: expected CometChatTextBubble but got ${view.javaClass.simpleName}")
                         return false
                     }
                 val textStyle = bubbleStyles.textBubbleStyle
@@ -416,7 +416,7 @@ internal object InternalContentRenderer {
                         view.setMessage(mediaMessage)
                     }
                     else -> {
-                        Log.w(TAG, "bindStandardMessage: expected an audio bubble but got ${view.javaClass.simpleName}")
+                        CometChatLogger.w(TAG, "bindStandardMessage: expected an audio bubble but got ${view.javaClass.simpleName}")
                         return false
                     }
                 }
@@ -443,7 +443,7 @@ internal object InternalContentRenderer {
                 }
             }
             else -> {
-                Log.w(TAG, "bindStandardMessage: unrecognized type '${message.type}'")
+                CometChatLogger.w(TAG, "bindStandardMessage: unrecognized type '${message.type}'")
                 return false
             }
         }
@@ -511,7 +511,7 @@ internal object InternalContentRenderer {
     ): Boolean {
         val actionBubble = view as? CometChatActionBubble
             ?: run {
-                Log.w(TAG, "bindActionMessage: expected CometChatActionBubble but got ${view.javaClass.simpleName}")
+                CometChatLogger.w(TAG, "bindActionMessage: expected CometChatActionBubble but got ${view.javaClass.simpleName}")
                 return false
             }
         val actionStyle = bubbleStyles.actionBubbleStyle
@@ -532,7 +532,7 @@ internal object InternalContentRenderer {
     ): Boolean {
         val callBubble = view as? CometChatCallActionBubble
             ?: run {
-                Log.w(TAG, "bindCallMessage: expected CometChatCallActionBubble but got ${view.javaClass.simpleName}")
+                CometChatLogger.w(TAG, "bindCallMessage: expected CometChatCallActionBubble but got ${view.javaClass.simpleName}")
                 return false
             }
         val callStyle = bubbleStyles.callActionBubbleStyle
@@ -556,7 +556,7 @@ internal object InternalContentRenderer {
             EXTENSION_POLLS -> {
                 val pollBubble = view as? CometChatPollBubble
                     ?: run {
-                        Log.w(TAG, "bindCustomMessage: expected CometChatPollBubble but got ${view.javaClass.simpleName}")
+                        CometChatLogger.w(TAG, "bindCustomMessage: expected CometChatPollBubble but got ${view.javaClass.simpleName}")
                         return false
                     }
                 val pollStyle = bubbleStyles.pollBubbleStyle
@@ -582,7 +582,7 @@ internal object InternalContentRenderer {
             EXTENSION_DOCUMENT, EXTENSION_WHITEBOARD -> {
                 val collaborativeBubble = view as? CometChatCollaborativeBubble
                     ?: run {
-                        Log.w(TAG, "bindCustomMessage: expected CometChatCollaborativeBubble but got ${view.javaClass.simpleName}")
+                        CometChatLogger.w(TAG, "bindCustomMessage: expected CometChatCollaborativeBubble but got ${view.javaClass.simpleName}")
                         return false
                     }
                 val collaborativeStyle = bubbleStyles.collaborativeBubbleStyle
@@ -595,7 +595,7 @@ internal object InternalContentRenderer {
                 collaborativeBubble.setMessage(message as? CustomMessage ?: return false)
             }
             else -> {
-                Log.w(TAG, "bindCustomMessage: unrecognized custom type '${message.type}'")
+                CometChatLogger.w(TAG, "bindCustomMessage: unrecognized custom type '${message.type}'")
                 return false
             }
         }
@@ -614,7 +614,7 @@ internal object InternalContentRenderer {
     ): Boolean {
         val meetBubble = view as? CometChatMeetCallBubble
             ?: run {
-                Log.w(TAG, "bindMeetingMessage: expected CometChatMeetCallBubble but got ${view.javaClass.simpleName}")
+                CometChatLogger.w(TAG, "bindMeetingMessage: expected CometChatMeetCallBubble but got ${view.javaClass.simpleName}")
                 return false
             }
         val meetStyle = (bubbleStyles.meetCallBubbleStyle

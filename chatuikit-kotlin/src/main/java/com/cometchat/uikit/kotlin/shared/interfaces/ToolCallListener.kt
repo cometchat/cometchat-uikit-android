@@ -29,12 +29,12 @@ package com.cometchat.uikit.kotlin.shared.interfaces
  *
  * @see com.cometchat.uikit.kotlin.presentation.messagelist.ui.CometChatMessageList.setAiAssistantTools
  */
-fun interface ToolCallListener {
+public fun interface ToolCallListener {
     /**
      * Called when the AI assistant invokes this tool.
      *
      * @param args The arguments passed by the AI assistant, typically as a JSON string
      *             containing the parameters for the tool call.
      */
-    fun call(args: String)
+    public fun call(args: String)
 }

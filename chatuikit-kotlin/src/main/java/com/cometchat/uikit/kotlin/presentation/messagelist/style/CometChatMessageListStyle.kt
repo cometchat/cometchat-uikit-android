@@ -106,7 +106,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see CometChatMessageList
  * @see CometChatTheme
  */
-data class CometChatMessageListStyle(
+public data class CometChatMessageListStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -150,7 +150,7 @@ data class CometChatMessageListStyle(
     val aiConversationStarterStyle: CometChatAIConversationStarterStyle? = null,
     val aiConversationSummaryStyle: CometChatAIConversationSummaryStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatMessageListStyle.
          *
@@ -161,7 +161,7 @@ data class CometChatMessageListStyle(
          * @param context The Android context to access theme resources.
          * @return A [CometChatMessageListStyle] with values from theme or fallback defaults.
          */
-        fun default(context: Context): CometChatMessageListStyle {
+        public fun default(context: Context): CometChatMessageListStyle {
             return extractFromThemeStyle(context, R.attr.cometchatMessageListStyle)
         }
 
@@ -213,7 +213,7 @@ data class CometChatMessageListStyle(
          * @param typedArray The [TypedArray] containing XML attribute values (will be recycled).
          * @return A [CometChatMessageListStyle] with values from XML or theme defaults.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageListStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageListStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the message preview view,
  * matching the XML attributes defined in attr_cometchat_message_preview.xml.
  */
-data class CometChatMessagePreviewStyle(
+public data class CometChatMessagePreviewStyle(
     @ColorInt val backgroundColor: Int = 0,
     @Dimension val strokeWidth: Float = 0f,
     @Dimension val cornerRadius: Float = 0f,
@@ -30,11 +30,11 @@ data class CometChatMessagePreviewStyle(
     @ColorInt val closeIconTint: Int = 0,
     @ColorInt val messageIconTint: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with CometChatTheme defaults.
          */
-        fun default(context: Context): CometChatMessagePreviewStyle {
+        public fun default(context: Context): CometChatMessagePreviewStyle {
             return CometChatMessagePreviewStyle(
                 backgroundColor = CometChatTheme.getBackgroundColor2(context),
                 strokeWidth = 0f,
@@ -57,7 +57,7 @@ data class CometChatMessagePreviewStyle(
          * Uses a darker neutral background (NeutralColor400) to differentiate from
          * the incoming message bubble background (NeutralColor300).
          */
-        fun incoming(context: Context): CometChatMessagePreviewStyle {
+        public fun incoming(context: Context): CometChatMessagePreviewStyle {
             return CometChatMessagePreviewStyle(
                 backgroundColor = CometChatTheme.getNeutralColor400(context),
                 strokeWidth = 0f,
@@ -79,7 +79,7 @@ data class CometChatMessagePreviewStyle(
          * Creates a style for outgoing (right-aligned) message previews.
          * Uses primary color tones suitable for outgoing messages.
          */
-        fun outgoing(context: Context): CometChatMessagePreviewStyle {
+        public fun outgoing(context: Context): CometChatMessagePreviewStyle {
             return CometChatMessagePreviewStyle(
                 backgroundColor = CometChatTheme.getExtendedPrimaryColor800(context),
                 strokeWidth = 0f,
@@ -100,7 +100,7 @@ data class CometChatMessagePreviewStyle(
         /**
          * Creates a style by extracting values from XML TypedArray.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessagePreviewStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessagePreviewStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

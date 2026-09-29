@@ -20,7 +20,7 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.sticky_header.StickyHea
  *
  * @param adapter The adapter implementing [NewMessageIndicatorDecorationAdapter]
  */
-class NewMessageIndicatorDecoration<T : RecyclerView.ViewHolder>(
+public class NewMessageIndicatorDecoration<T : RecyclerView.ViewHolder>(
     private val adapter: NewMessageIndicatorDecorationAdapter<T>
 ) : RecyclerView.ItemDecoration() {
 
@@ -34,7 +34,7 @@ class NewMessageIndicatorDecoration<T : RecyclerView.ViewHolder>(
      *
      * @param messageId The ID of the first unread message, or -1 to hide the indicator
      */
-    fun setUnreadMessageId(messageId: Long) {
+    public fun setUnreadMessageId(messageId: Long) {
         this.unreadMessageId = messageId
         headerCache.clear()
         stickyHeaderCache.clear()
@@ -43,7 +43,7 @@ class NewMessageIndicatorDecoration<T : RecyclerView.ViewHolder>(
     /**
      * Gets the current unread message ID.
      */
-    fun getUnreadMessageId(): Long = unreadMessageId
+    public fun getUnreadMessageId(): Long = unreadMessageId
 
     override fun getItemOffsets(
         outRect: Rect,

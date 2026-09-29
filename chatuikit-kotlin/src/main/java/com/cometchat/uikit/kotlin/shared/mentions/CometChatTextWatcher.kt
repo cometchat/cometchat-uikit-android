@@ -10,7 +10,7 @@ import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
  * 
  * Implementations should override the methods they need to handle.
  */
-abstract class CometChatTextWatcher {
+abstract public class CometChatTextWatcher {
 
     /**
      * Called when the text is about to change.
@@ -20,7 +20,7 @@ abstract class CometChatTextWatcher {
      * @param count The number of characters being replaced
      * @param after The number of characters that will replace the old text
      */
-    open fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    open public fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         // Default empty implementation
     }
 
@@ -32,7 +32,7 @@ abstract class CometChatTextWatcher {
      * @param before The number of characters that were replaced
      * @param count The number of new characters
      */
-    open fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    open public fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         // Default empty implementation
     }
 
@@ -41,7 +41,7 @@ abstract class CometChatTextWatcher {
      * 
      * @param s The editable text after all changes
      */
-    open fun afterTextChanged(s: android.text.Editable?) {
+    open public fun afterTextChanged(s: android.text.Editable?) {
         // Default empty implementation
     }
 
@@ -54,11 +54,11 @@ abstract class CometChatTextWatcher {
      * 
      * @param span The NonEditableSpan that was deleted
      */
-    open fun onSpanDeleted(span: NonEditableSpan) {
+    open public fun onSpanDeleted(span: NonEditableSpan) {
         // Default empty implementation
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatTextWatcher"
     }
 }

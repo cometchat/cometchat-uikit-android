@@ -16,22 +16,22 @@ import com.google.android.material.card.MaterialCardView
 /**
  * Callback invoked when a reaction chip is clicked.
  */
-fun interface OnReactionClick {
-    fun onClick(reaction: String, message: BaseMessage)
+public fun interface OnReactionClick {
+    public fun onClick(reaction: String, message: BaseMessage)
 }
 
 /**
  * Callback invoked when a reaction chip is long-pressed.
  */
-fun interface OnReactionLongClick {
-    fun onReactionLongClick(reaction: String, message: BaseMessage)
+public fun interface OnReactionLongClick {
+    public fun onReactionLongClick(reaction: String, message: BaseMessage)
 }
 
 /**
  * Callback invoked when the "view more" / "add more reactions" chip is clicked.
  */
-fun interface OnAddMoreReactionsClick {
-    fun onAddMoreReactionsClick(message: BaseMessage)
+public fun interface OnAddMoreReactionsClick {
+    public fun onAddMoreReactionsClick(message: BaseMessage)
 }
 
 /**
@@ -39,7 +39,7 @@ fun interface OnAddMoreReactionsClick {
  *
  * Direct 1:1 port of `CometChatMessageReaction.java` from the Java chatuikit module.
  */
-class CometChatMessageReaction @JvmOverloads constructor(
+public class CometChatMessageReaction @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -62,7 +62,7 @@ class CometChatMessageReaction @JvmOverloads constructor(
      * @param baseMessage The message containing reactions.
      * @param reactionLimit Maximum number of individual reaction chips to show before collapsing.
      */
-    fun bindReactionsToMessage(baseMessage: BaseMessage, reactionLimit: Int) {
+    public fun bindReactionsToMessage(baseMessage: BaseMessage, reactionLimit: Int) {
         val reactionsList: List<ReactionCount> = baseMessage.reactions ?: emptyList()
         parentView.removeAllViews()
         if (reactionsList.isEmpty()) {
@@ -124,19 +124,19 @@ class CometChatMessageReaction @JvmOverloads constructor(
         onAddMoreReactionsClick?.onAddMoreReactionsClick(baseMessage)
     }
 
-    fun setStyle(@StyleRes reactionStyle: Int) {
+    public fun setStyle(@StyleRes reactionStyle: Int) {
         this.reactionStyle = reactionStyle
     }
 
-    fun setOnReactionClick(onReactionClick: OnReactionClick?) {
+    public fun setOnReactionClick(onReactionClick: OnReactionClick?) {
         this.onReactionClick = onReactionClick
     }
 
-    fun setOnReactionLongClick(onReactionLongClick: OnReactionLongClick?) {
+    public fun setOnReactionLongClick(onReactionLongClick: OnReactionLongClick?) {
         this.onReactionLongClick = onReactionLongClick
     }
 
-    fun setOnAddMoreReactionsClick(onAddMoreReactionsClick: OnAddMoreReactionsClick?) {
+    public fun setOnAddMoreReactionsClick(onAddMoreReactionsClick: OnAddMoreReactionsClick?) {
         this.onAddMoreReactionsClick = onAddMoreReactionsClick
     }
 }

@@ -34,12 +34,12 @@ import com.google.android.material.card.MaterialCardView
  * @param context The context in which the dialog should run
  * @param message The message to be flagged
  */
-class CometChatFlagMessageDialog(
+public class CometChatFlagMessageDialog(
     context: Context,
     private val message: BaseMessage
 ) : Dialog(context) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatFlagMessageDialog::class.java.simpleName
     }
 
@@ -412,7 +412,7 @@ class CometChatFlagMessageDialog(
      * Sets a custom title for the dialog.
      * @param title The custom title text to display
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         customTitle = title
         if (::tvTitle.isInitialized) {
             tvTitle.text = title
@@ -423,7 +423,7 @@ class CometChatFlagMessageDialog(
      * Sets a custom description for the dialog.
      * @param description The custom description text to display
      */
-    fun setDescription(description: String) {
+    public fun setDescription(description: String) {
         customDescription = description
         if (::tvDescription.isInitialized) {
             tvDescription.text = description
@@ -434,7 +434,7 @@ class CometChatFlagMessageDialog(
      * Sets a custom hint for the remark input field.
      * @param hint The custom hint text to display
      */
-    fun setRemarkHint(hint: String) {
+    public fun setRemarkHint(hint: String) {
         customRemarkHint = hint
         if (::etRemark.isInitialized) {
             etRemark.hint = hint
@@ -445,7 +445,7 @@ class CometChatFlagMessageDialog(
      * Sets custom text for the cancel button.
      * @param text The custom cancel button text to display
      */
-    fun setCancelButtonText(text: String) {
+    public fun setCancelButtonText(text: String) {
         customCancelButtonText = text
         if (::tvCancel.isInitialized) {
             tvCancel.text = text
@@ -456,7 +456,7 @@ class CometChatFlagMessageDialog(
      * Sets custom text for the report button.
      * @param text The custom report button text to display
      */
-    fun setReportButtonText(text: String) {
+    public fun setReportButtonText(text: String) {
         customReportButtonText = text
         if (::tvReport.isInitialized) {
             tvReport.text = text
@@ -466,7 +466,7 @@ class CometChatFlagMessageDialog(
     /**
      * Sets the list of flag reasons to display as selectable chips.
      */
-    fun setFlagReasons(flagReasons: List<FlagReason>?) {
+    public fun setFlagReasons(flagReasons: List<FlagReason>?) {
         this.flagReasons = flagReasons ?: emptyList()
         if (::flexboxChips.isInitialized) {
             flexboxChips.removeAllViews()
@@ -483,14 +483,14 @@ class CometChatFlagMessageDialog(
     /**
      * Sets a custom mapping of flag reason IDs to localization string resource IDs.
      */
-    fun setLocalizationIdMap(localizationIdMap: Map<String, Int>?) {
+    public fun setLocalizationIdMap(localizationIdMap: Map<String, Int>?) {
         localizationIdMap?.let { flagReasonMap.putAll(it) }
     }
 
     /**
      * Sets the visibility of the remark input field.
      */
-    fun setFlagRemarkInputFieldVisibility(visibility: Int) {
+    public fun setFlagRemarkInputFieldVisibility(visibility: Int) {
         if (::tvReasonLabel.isInitialized) {
             tvReasonLabel.visibility = visibility
             tvReasonOptional.visibility = visibility
@@ -501,7 +501,95 @@ class CometChatFlagMessageDialog(
     /**
      * Applies a style resource to the dialog.
      */
-    fun setFlagMessageStyle(@StyleRes styleResId: Int) {
+    /**
+     * Applies a [CometChatFlagMessageDialogStyle]. Any property left at `0` keeps the dialog's
+     * current value, matching how [setFlagMessageStyle] treats an attribute the style resource
+     * does not set.
+     *
+     * @param style The style to apply.
+     */
+    public fun setStyle(style: CometChatFlagMessageDialogStyle) {
+        applyStyleObject(style)
+        applyStyles()
+    }
+
+    private fun applyStyleObject(style: CometChatFlagMessageDialogStyle) {
+        if (style.backgroundColor != 0) backgroundColor = style.backgroundColor
+        if (style.borderRadius != 0) borderRadius = style.borderRadius
+        if (style.strokeColor != 0) strokeColor = style.strokeColor
+        if (style.strokeWidth != 0) strokeWidth = style.strokeWidth
+        if (style.titleColor != 0) titleColor = style.titleColor
+        if (style.titleTextAppearance != 0) titleTextAppearance = style.titleTextAppearance
+        if (style.subtitleTextColor != 0) subtitleTextColor = style.subtitleTextColor
+        if (style.subtitleTextAppearance != 0) subtitleTextAppearance = style.subtitleTextAppearance
+        if (style.closeIconColor != 0) closeIconColor = style.closeIconColor
+
+        if (style.chipCornerRadius != 0) chipCornerRadius = style.chipCornerRadius
+        if (style.chipStrokeWidth != 0) chipStrokeWidth = style.chipStrokeWidth
+        if (style.chipTextAppearance != 0) chipTextAppearance = style.chipTextAppearance
+        if (style.chipActiveBackgroundColor != 0) {
+            chipActiveBackgroundColor = style.chipActiveBackgroundColor
+        }
+        if (style.chipInactiveBackgroundColor != 0) {
+            chipInactiveBackgroundColor = style.chipInactiveBackgroundColor
+        }
+        if (style.chipActiveTextColor != 0) chipActiveTextColor = style.chipActiveTextColor
+        if (style.chipInactiveTextColor != 0) chipInactiveTextColor = style.chipInactiveTextColor
+        if (style.chipActiveBorderColor != 0) chipActiveBorderColor = style.chipActiveBorderColor
+        if (style.chipInactiveBorderColor != 0) {
+            chipInactiveBorderColor = style.chipInactiveBorderColor
+        }
+
+        if (style.remarkFieldTitleTextColor != 0) {
+            remarkFieldTitleTextColor = style.remarkFieldTitleTextColor
+        }
+        if (style.remarkFieldTitleTextAppearance != 0) {
+            remarkFieldTitleTextAppearance = style.remarkFieldTitleTextAppearance
+        }
+        if (style.remarkFieldHintTextColor != 0) {
+            remarkFieldHintTextColor = style.remarkFieldHintTextColor
+        }
+        if (style.remarkFieldTextColor != 0) remarkFieldTextColor = style.remarkFieldTextColor
+        if (style.remarkFieldTextAppearance != 0) {
+            remarkFieldTextAppearance = style.remarkFieldTextAppearance
+        }
+        if (style.remarkFieldBackgroundColor != 0) {
+            remarkFieldBackgroundColor = style.remarkFieldBackgroundColor
+        }
+
+        if (style.buttonCornerRadius != 0) buttonCornerRadius = style.buttonCornerRadius
+        if (style.buttonStrokeColor != 0) buttonStrokeColor = style.buttonStrokeColor
+        if (style.buttonStrokeWidth != 0) buttonStrokeWidth = style.buttonStrokeWidth
+        if (style.reportButtonEnabledBackgroundColor != 0) {
+            reportButtonEnabledBackgroundColor = style.reportButtonEnabledBackgroundColor
+        }
+        if (style.reportButtonDisabledBackgroundColor != 0) {
+            reportButtonDisabledBackgroundColor = style.reportButtonDisabledBackgroundColor
+        }
+        if (style.reportButtonEnabledTextColor != 0) {
+            reportButtonEnabledTextColor = style.reportButtonEnabledTextColor
+        }
+        if (style.reportButtonDisabledTextColor != 0) {
+            reportButtonDisabledTextColor = style.reportButtonDisabledTextColor
+        }
+        if (style.cancelButtonEnabledBackgroundColor != 0) {
+            cancelButtonEnabledBackgroundColor = style.cancelButtonEnabledBackgroundColor
+        }
+        if (style.cancelButtonDisabledBackgroundColor != 0) {
+            cancelButtonDisabledBackgroundColor = style.cancelButtonDisabledBackgroundColor
+        }
+        if (style.cancelButtonEnabledTextColor != 0) {
+            cancelButtonEnabledTextColor = style.cancelButtonEnabledTextColor
+        }
+        if (style.cancelButtonDisabledTextColor != 0) {
+            cancelButtonDisabledTextColor = style.cancelButtonDisabledTextColor
+        }
+
+        if (style.errorTextColor != 0) errorTextColor = style.errorTextColor
+        if (style.progressIndicatorColor != 0) progressIndicatorColor = style.progressIndicatorColor
+    }
+
+    public fun setFlagMessageStyle(@StyleRes styleResId: Int) {
         if (styleResId == -1) return
         val typedArray = context.obtainStyledAttributes(styleResId, R.styleable.CometChatFlagMessage)
         try {
@@ -672,7 +760,7 @@ class CometChatFlagMessageDialog(
     /**
      * Shows the error message view.
      */
-    fun onFlagMessageError() {
+    public fun onFlagMessageError() {
         if (::tvErrorMessage.isInitialized) {
             tvErrorMessage.visibility = View.VISIBLE
         }
@@ -681,7 +769,7 @@ class CometChatFlagMessageDialog(
     /**
      * Controls the visibility of the progress bar on the report button.
      */
-    fun hidePositiveButtonProgressBar(hide: Boolean) {
+    public fun hidePositiveButtonProgressBar(hide: Boolean) {
         if (::progressBarPositiveButton.isInitialized && ::tvReport.isInitialized) {
             if (hide) {
                 progressBarPositiveButton.visibility = View.GONE
@@ -696,35 +784,35 @@ class CometChatFlagMessageDialog(
     /**
      * Gets the base message being flagged.
      */
-    fun getMessage(): BaseMessage = message
+    public fun getMessage(): BaseMessage = message
 
     // ==================== LISTENER SETTERS ====================
 
     /**
      * Sets the listener for report button clicks.
      */
-    fun setOnPositiveButtonClickListener(listener: OnReportClickListener?) {
+    public fun setOnPositiveButtonClickListener(listener: OnReportClickListener?) {
         this.onReportClickListener = listener
     }
 
     /**
      * Sets the listener for cancel button clicks.
      */
-    fun setOnCancelButtonClickListener(listener: OnClick?) {
+    public fun setOnCancelButtonClickListener(listener: OnClick?) {
         this.onCancelClickListener = listener
     }
 
     /**
      * Sets the listener for close button clicks.
      */
-    fun setOnCloseButtonClickListener(listener: OnClick?) {
+    public fun setOnCloseButtonClickListener(listener: OnClick?) {
         this.onCloseClickListener = listener
     }
 
     /**
      * Interface for handling report button click events.
      */
-    fun interface OnReportClickListener {
-        fun onReportClick(flagDetail: FlagDetail)
+    public fun interface OnReportClickListener {
+        public fun onReportClick(flagDetail: FlagDetail)
     }
 }

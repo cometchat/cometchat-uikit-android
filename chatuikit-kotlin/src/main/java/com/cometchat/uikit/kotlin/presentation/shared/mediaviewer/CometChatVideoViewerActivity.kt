@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,6 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
 
@@ -29,9 +29,9 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
  * player is constrained within the system bar insets via the layout's `fitsSystemWindows`, and
  * provides download (save to device) and share actions alongside a back arrow.
  */
-class CometChatVideoViewerActivity : AppCompatActivity() {
+public class CometChatVideoViewerActivity : AppCompatActivity() {
 
-    companion object {
+    public companion object {
         private const val ARGS_VIDEO_URLS = "ARGS_VIDEO_URLS"
         private const val ARGS_FILE_NAMES = "ARGS_FILE_NAMES"
         private const val ARGS_MIME_TYPES = "ARGS_MIME_TYPES"
@@ -42,7 +42,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
          * Creates an Intent to launch the in-app video player for a single video.
          */
         @JvmStatic
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             url: String,
             fileName: String,
@@ -61,7 +61,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
          */
         @JvmStatic
         @JvmOverloads
-        fun createIntent(
+        public fun createIntent(
             context: Context,
             urls: List<String>,
             fileNames: List<String>,
@@ -109,7 +109,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
         currentPos = initialPos
 
         if (urls.isEmpty()) {
-            Log.e(TAG, "No video url to display")
+            CometChatLogger.e(TAG, "No video url to display")
             finish()
             return
         }
@@ -147,7 +147,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
         val url = urls.getOrNull(currentPos)
         val name = fileNames.getOrNull(currentPos)
         if (url.isNullOrEmpty() || name.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot download video, url or filename is null")
+            CometChatLogger.e(TAG, "Cannot download video, url or filename is null")
             return
         }
         // Save directly to the device (Downloads); no share sheet. The filename already carries
@@ -160,7 +160,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
         val name = fileNames.getOrNull(currentPos)
         val mime = mimeTypes.getOrNull(currentPos)
         if (url.isNullOrEmpty() || name.isNullOrEmpty() || mime.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot share video, url or filename or mimeType is null")
+            CometChatLogger.e(TAG, "Cannot share video, url or filename or mimeType is null")
             return
         }
         MediaUtils.downloadFileAndShare(context = this, fileUrl = url, fileName = name, mimeType = mime)
@@ -217,7 +217,7 @@ class CometChatVideoViewerActivity : AppCompatActivity() {
             }
             videoView.setOnErrorListener { _, _, _ ->
                 progressBar.visibility = View.GONE
-                Log.e(TAG, "Failed to play video: ${urls[position]}")
+                CometChatLogger.e(TAG, "Failed to play video: ${urls[position]}")
                 false
             }
 

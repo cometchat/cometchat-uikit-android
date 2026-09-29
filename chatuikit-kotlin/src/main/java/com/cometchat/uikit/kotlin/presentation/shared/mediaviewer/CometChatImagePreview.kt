@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
  * Uses [WeakReference] for ImageView and container to prevent memory leaks.
  * Attach to an ImageView and its parent container via [create] factory method.
  */
-class CometChatImagePreview(
+public class CometChatImagePreview(
     imageView: ImageView,
     container: ViewGroup
 ) : View.OnTouchListener, View.OnLayoutChangeListener {
@@ -42,33 +42,33 @@ class CometChatImagePreview(
     /**
      * Listener for view translate events during drag-to-dismiss gestures.
      */
-    interface OnViewTranslateListener {
-        fun onStart(view: ImageView)
-        fun onViewTranslate(view: ImageView, amount: Float)
-        fun onDismiss(view: ImageView)
-        fun onRestore(view: ImageView)
+    public interface OnViewTranslateListener {
+        public fun onStart(view: ImageView)
+        public fun onViewTranslate(view: ImageView, amount: Float)
+        public fun onDismiss(view: ImageView)
+        public fun onRestore(view: ImageView)
     }
 
     /**
      * Listener for scale change events during pinch-to-zoom gestures.
      */
-    interface OnScaleChangedListener {
-        fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float)
+    public interface OnScaleChangedListener {
+        public fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float)
     }
 
-    companion object {
-        const val DEFAULT_MAX_ZOOM = 5.0f
-        const val DEFAULT_ANIM_DURATION = 250L
-        const val DEFAULT_ANIM_DURATION_LONG = 375L
-        const val DEFAULT_VIEW_DRAG_FRICTION = 1f
-        const val DEFAULT_DRAG_DISMISS_DISTANCE_IN_VIEW_HEIGHT_RATIO = 0.5f
-        const val DEFAULT_DRAG_DISMISS_DISTANCE_IN_DP = 96
-        const val MAX_FLING_VELOCITY = 8000f
-        const val MIN_FLING_VELOCITY = 1500f
-        const val DEFAULT_DOUBLE_TAP_ZOOM_SCALE = 0.5f
-        val DEFAULT_INTERPOLATOR = DecelerateInterpolator()
+    public companion object {
+        public const val DEFAULT_MAX_ZOOM: Float = 5.0f
+        public const val DEFAULT_ANIM_DURATION: Long = 250L
+        public const val DEFAULT_ANIM_DURATION_LONG: Long = 375L
+        public const val DEFAULT_VIEW_DRAG_FRICTION: Float = 1f
+        public const val DEFAULT_DRAG_DISMISS_DISTANCE_IN_VIEW_HEIGHT_RATIO: Float = 0.5f
+        public const val DEFAULT_DRAG_DISMISS_DISTANCE_IN_DP: Int = 96
+        public const val MAX_FLING_VELOCITY: Float = 8000f
+        public const val MIN_FLING_VELOCITY: Float = 1500f
+        public const val DEFAULT_DOUBLE_TAP_ZOOM_SCALE: Float = 0.5f
+        public val DEFAULT_INTERPOLATOR: DecelerateInterpolator = DecelerateInterpolator()
 
-        fun create(imageView: ImageView, container: ViewGroup): CometChatImagePreview {
+        public fun create(imageView: ImageView, container: ViewGroup): CometChatImagePreview {
             return CometChatImagePreview(imageView, container)
         }
     }
@@ -253,11 +253,11 @@ class CometChatImagePreview(
         imageView.scaleType = ImageView.ScaleType.MATRIX
     }
 
-    fun setOnScaleChangedListener(listener: OnScaleChangedListener?) {
+    public fun setOnScaleChangedListener(listener: OnScaleChangedListener?) {
         this.onScaleChangedListener = listener
     }
 
-    fun setOnViewTranslateListener(listener: OnViewTranslateListener?) {
+    public fun setOnViewTranslateListener(listener: OnViewTranslateListener?) {
         this.onViewTranslateListener = listener
     }
 
@@ -292,7 +292,7 @@ class CometChatImagePreview(
         imageView.postInvalidate()
     }
 
-    fun setupLayout(left: Int, top: Int, right: Int, bottom: Int) {
+    public fun setupLayout(left: Int, top: Int, right: Int, bottom: Int) {
         val imageView = imageViewRef.get() ?: return
 
         originalViewBounds.set(left, top, right, bottom)
@@ -314,12 +314,12 @@ class CometChatImagePreview(
         imageView.invalidate()
     }
 
-    fun setDragToDismissDistance(heightRatio: Float) {
+    public fun setDragToDismissDistance(heightRatio: Float) {
         val imageView = imageViewRef.get() ?: return
         dragToDismissThreshold = imageView.height * heightRatio
     }
 
-    fun setDragToDismissDistance(distance: Int) {
+    public fun setDragToDismissDistance(distance: Int) {
         val imageView = imageViewRef.get() ?: return
         dragToDismissThreshold = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
@@ -328,7 +328,7 @@ class CometChatImagePreview(
         )
     }
 
-    fun setTransform() {
+    public fun setTransform() {
         val imageView = imageViewRef.get() ?: return
 
         val transform = Matrix()
@@ -340,7 +340,7 @@ class CometChatImagePreview(
         imageView.imageMatrix = transform
     }
 
-    fun calcScaleRange(canvasWidth: Float, canvasHeight: Float, bitmapWidth: Float, bitmapHeight: Float) {
+    public fun calcScaleRange(canvasWidth: Float, canvasHeight: Float, bitmapWidth: Float, bitmapHeight: Float) {
         val canvasRatio = canvasHeight / canvasWidth
         val bitmapRatio = bitmapHeight / bitmapWidth
         minScale = if (canvasRatio > bitmapRatio) canvasWidth / bitmapWidth else canvasHeight / bitmapHeight
@@ -348,7 +348,7 @@ class CometChatImagePreview(
         maxScale = minScale * maxZoom
     }
 
-    fun calcBounds() {
+    public fun calcBounds() {
         val imageView = imageViewRef.get() ?: return
 
         // Calculate canvas bounds
@@ -388,7 +388,7 @@ class CometChatImagePreview(
         }
     }
 
-    fun constrainBitmapBounds(animate: Boolean) {
+    public fun constrainBitmapBounds(animate: Boolean) {
         val imageView = imageViewRef.get() ?: return
 
         if (isBitmapTranslateAnimationRunning || isBitmapScaleAnimationRunning) {
@@ -450,7 +450,7 @@ class CometChatImagePreview(
         }
     }
 
-    fun lerp(amt: Float, start: Float, stop: Float): Float {
+    public fun lerp(amt: Float, start: Float, stop: Float): Float {
         return start + (stop - start) * amt
     }
 
@@ -499,14 +499,14 @@ class CometChatImagePreview(
         return true
     }
 
-    fun dismissOrRestoreIfNeeded() {
+    public fun dismissOrRestoreIfNeeded() {
         if (!isDragging() || isViewTranslateAnimationRunning) {
             return
         }
         dismissOrRestore()
     }
 
-    fun zoomOutToMinimumScale(isOverScaling: Boolean) {
+    public fun zoomOutToMinimumScale(isOverScaling: Boolean) {
         val imageView = imageViewRef.get() ?: return
 
         val startScale = scale
@@ -574,11 +574,11 @@ class CometChatImagePreview(
         }
     }
 
-    fun shouldTriggerDragToDismissAnimation(): Boolean {
+    public fun shouldTriggerDragToDismissAnimation(): Boolean {
         return dragDistance() > dragToDismissThreshold
     }
 
-    fun startDragToDismissAnimation() {
+    public fun startDragToDismissAnimation() {
         val imageView = imageViewRef.get() ?: return
 
         // Calculate translationY based on the difference in Y positions
@@ -623,7 +623,7 @@ class CometChatImagePreview(
     }
 
     // Process the fling to dismiss gesture based on velocityY
-    fun processFlingToDismiss(velocityY: Float) {
+    public fun processFlingToDismiss(velocityY: Float) {
         if (useFlingToDismissGesture && !isViewTranslateAnimationRunning) {
             if (abs(velocityY) < minimumFlingVelocity) {
                 return
@@ -632,7 +632,7 @@ class CometChatImagePreview(
         }
     }
 
-    fun startVerticalTranslateAnimation(velY: Float) {
+    public fun startVerticalTranslateAnimation(velY: Float) {
         val imageView = imageViewRef.get() ?: return
 
         isViewTranslateAnimationRunning = true
@@ -676,7 +676,7 @@ class CometChatImagePreview(
     }
 
     // Calculate the translation amount for dragging
-    fun calcTranslationAmount(): Float {
+    public fun calcTranslationAmount(): Float {
         return constrain(
             0f,
             norm(dragDistance(), 0f, originalViewBounds.height().toFloat()),
@@ -684,7 +684,7 @@ class CometChatImagePreview(
         )
     }
 
-    fun changeBackgroundAlpha(amount: Float) {
+    public fun changeBackgroundAlpha(amount: Float) {
         val container = containerRef.get() ?: return
         if (Utils.isActivityUsable(activity)) {
             if (amount == 0.0f) {
@@ -695,7 +695,7 @@ class CometChatImagePreview(
         }
     }
 
-    fun cleanup() {
+    public fun cleanup() {
         val container = containerRef.get()
         if (container != null) {
             container.setOnTouchListener(null)
@@ -706,26 +706,26 @@ class CometChatImagePreview(
         containerRef.clear()
     }
 
-    fun constrain(min: Float, value: Float, max: Float): Float {
+    public fun constrain(min: Float, value: Float, max: Float): Float {
         return max(min(value, max), min)
     }
 
-    fun norm(value: Float, start: Float, stop: Float): Float {
+    public fun norm(value: Float, start: Float, stop: Float): Float {
         return value / (stop - start)
     }
 
     // Calculate the drag distance
-    fun dragDistance(): Float {
+    public fun dragDistance(): Float {
         return abs(viewOffsetY())
     }
 
     // Method to get the Y offset for the view
-    fun viewOffsetY(): Float {
+    public fun viewOffsetY(): Float {
         val imageView = imageViewRef.get()
         return if (imageView != null) imageView.y else 0f - initialY
     }
 
-    fun restoreViewTransform() {
+    public fun restoreViewTransform() {
         val imageView = imageViewRef.get() ?: return
 
         imageView.animate()
@@ -756,7 +756,7 @@ class CometChatImagePreview(
             })
     }
 
-    fun processFlingBitmap(velocityX: Float, velocityY: Float) {
+    public fun processFlingBitmap(velocityX: Float, velocityY: Float) {
         val imageView = imageViewRef.get() ?: return
 
         var velX = velocityX / scale
@@ -829,7 +829,7 @@ class CometChatImagePreview(
         flingAnimator.start()
     }
 
-    fun processScroll(distanceX: Float, distanceY: Float) {
+    public fun processScroll(distanceX: Float, distanceY: Float) {
         val distX = if (isHorizontalScrollEnabled) -distanceX else 0f
         val distY = if (isVerticalScrollEnabled) -distanceY else 0f
 
@@ -837,11 +837,11 @@ class CometChatImagePreview(
         setTransform()
     }
 
-    fun offsetBitmap(offsetX: Float, offsetY: Float) {
+    public fun offsetBitmap(offsetX: Float, offsetY: Float) {
         bitmapBounds.offset(offsetX, offsetY)
     }
 
-    fun zoomInToTargetScale(e: MotionEvent) {
+    public fun zoomInToTargetScale(e: MotionEvent) {
         val imageView = imageViewRef.get() ?: return
 
         val startScale = scale
@@ -883,7 +883,7 @@ class CometChatImagePreview(
         valueAnimator.start()
     }
 
-    fun zoomToTargetScale(targetScale: Float, focalX: Float, focalY: Float) {
+    public fun zoomToTargetScale(targetScale: Float, focalX: Float, focalY: Float) {
         scale = targetScale
         val lastBounds = RectF(bitmapBounds)
         // scale has changed, recalculate bitmap bounds
@@ -893,7 +893,7 @@ class CometChatImagePreview(
         onScaleChangedListener?.onScaleChange(targetScale, focalX, focalY)
     }
 
-    fun offsetToZoomFocalPoint(focalX: Float, focalY: Float, oldBounds: RectF, newBounds: RectF) {
+    public fun offsetToZoomFocalPoint(focalX: Float, focalY: Float, oldBounds: RectF, newBounds: RectF) {
         val oldX = constrain(viewport.left, focalX, viewport.right)
         val oldY = constrain(viewport.top, focalY, viewport.bottom)
         val newX = map(oldX, oldBounds.left, oldBounds.right, newBounds.left, newBounds.right)
@@ -901,14 +901,14 @@ class CometChatImagePreview(
         offsetBitmap(oldX - newX, oldY - newY)
     }
 
-    fun map(value: Float, srcStart: Float, srcStop: Float, dstStart: Float, dstStop: Float): Float {
+    public fun map(value: Float, srcStart: Float, srcStop: Float, dstStart: Float, dstStop: Float): Float {
         if (srcStop - srcStart == 0f) {
             return 0f
         }
         return ((value - srcStart) * (dstStop - dstStart) / (srcStop - srcStart)) + dstStart
     }
 
-    fun processDrag(distanceY: Float) {
+    public fun processDrag(distanceY: Float) {
         val imageView = imageViewRef.get() ?: return
 
         if (lastDistY.isNaN()) {
@@ -931,11 +931,11 @@ class CometChatImagePreview(
         onViewTranslateListener?.onViewTranslate(imageView, amount)
     }
 
-    fun calcNewScale(newScale: Float): Float {
+    public fun calcNewScale(newScale: Float): Float {
         return min(maxScale, newScale * scale)
     }
 
-    fun dismiss() {
+    public fun dismiss() {
         // Animate down offscreen (the finish listener will call the cleanup method)
         startVerticalTranslateAnimation(MIN_FLING_VELOCITY)
     }

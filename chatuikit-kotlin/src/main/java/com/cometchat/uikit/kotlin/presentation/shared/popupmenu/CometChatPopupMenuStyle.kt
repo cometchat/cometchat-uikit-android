@@ -27,7 +27,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param itemPaddingVertical Vertical padding for each menu item (in pixels)
  * @param minWidth Minimum width for the popup menu (in pixels)
  */
-data class CometChatPopupMenuStyle(
+public data class CometChatPopupMenuStyle(
     @Dimension val elevation: Int = 0,
     @Dimension val cornerRadius: Int = 0,
     @ColorInt val backgroundColor: Int = 0,
@@ -41,14 +41,14 @@ data class CometChatPopupMenuStyle(
     @Dimension val itemPaddingVertical: Int = 0,
     @Dimension val minWidth: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatPopupMenuStyle with default values
          */
-        fun default(context: Context): CometChatPopupMenuStyle {
+        public fun default(context: Context): CometChatPopupMenuStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -62,7 +62,7 @@ data class CometChatPopupMenuStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatPopupMenuStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatPopupMenuStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatPopupMenuStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -77,7 +77,7 @@ data class CometChatPopupMenuStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatPopupMenuStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatPopupMenuStyle {

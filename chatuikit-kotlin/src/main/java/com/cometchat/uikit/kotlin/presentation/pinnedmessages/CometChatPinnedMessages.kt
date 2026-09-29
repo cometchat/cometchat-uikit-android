@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
  * [setUser] or [setGroup]; wire navigation via [setOnMessageClickListener] (jump to the message)
  * and [setOnBackClickListener].
  */
-class CometChatPinnedMessages @JvmOverloads constructor(
+public class CometChatPinnedMessages @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -86,7 +86,7 @@ class CometChatPinnedMessages @JvmOverloads constructor(
     }
 
     /** Configures the panel for a 1-1 conversation. */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         adapter.setConversationContext(user, null)
@@ -94,7 +94,7 @@ class CometChatPinnedMessages @JvmOverloads constructor(
     }
 
     /** Configures the panel for a group conversation. */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.user = null
         this.group = group
         adapter.setConversationContext(null, group)
@@ -102,12 +102,12 @@ class CometChatPinnedMessages @JvmOverloads constructor(
     }
 
     /** Called when a row is tapped — wire this to jump to the message in its conversation. */
-    fun setOnMessageClickListener(listener: (BaseMessage) -> Unit) {
+    public fun setOnMessageClickListener(listener: (BaseMessage) -> Unit) {
         onMessageClickListener = listener
     }
 
     /** Called when the toolbar back icon is tapped. */
-    fun setOnBackClickListener(listener: () -> Unit) {
+    public fun setOnBackClickListener(listener: () -> Unit) {
         onBackClickListener = listener
     }
 
@@ -116,7 +116,7 @@ class CometChatPinnedMessages @JvmOverloads constructor(
      * [com.cometchat.uikit.kotlin.shared.formatters.CometChatMentionsFormatter], matching the
      * message list).
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         adapter.setTextFormatters(formatters)
     }
 

@@ -63,13 +63,13 @@ import kotlinx.coroutines.launch
  * }
  * ```
  */
-class CometChatGroups @JvmOverloads constructor(
+public class CometChatGroups @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatGroupsStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatGroups::class.java.simpleName
         private const val SEARCH_DEBOUNCE_MS = 300L
     }
@@ -573,118 +573,118 @@ class CometChatGroups @JvmOverloads constructor(
 
     // ==================== Public API Methods ====================
 
-    fun setOnItemClick(callback: (Group) -> Unit) {
+    public fun setOnItemClick(callback: (Group) -> Unit) {
         onItemClick = callback
     }
 
-    fun setOnItemLongClick(callback: (Group) -> Unit) {
+    public fun setOnItemLongClick(callback: (Group) -> Unit) {
         onItemLongClick = callback
     }
 
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
-    fun setOnLoad(callback: (List<Group>) -> Unit) {
+    public fun setOnLoad(callback: (List<Group>) -> Unit) {
         onLoad = callback
     }
 
-    fun setOnEmpty(callback: () -> Unit) {
+    public fun setOnEmpty(callback: () -> Unit) {
         onEmpty = callback
     }
 
-    fun setOnBackPress(callback: () -> Unit) {
+    public fun setOnBackPress(callback: () -> Unit) {
         onBackPress = callback
     }
 
-    fun setOnSelection(callback: (List<Group>) -> Unit) {
+    public fun setOnSelection(callback: (List<Group>) -> Unit) {
         onSelection = callback
     }
 
-    fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
+    public fun setSelectionMode(mode: UIKitConstants.SelectionMode) {
         selectionMode = mode
         groupsAdapter.setSelectionMode(mode)
     }
 
-    fun setGroupsRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
+    public fun setGroupsRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
         groupsRequestBuilder = builder
         viewModel?.setGroupsRequestBuilder(builder)
     }
 
-    fun setSearchRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
+    public fun setSearchRequestBuilder(builder: GroupsRequest.GroupsRequestBuilder) {
         searchRequestBuilder = builder
         viewModel?.setSearchRequestBuilder(builder)
     }
 
-    fun setViewModel(vm: CometChatGroupsViewModel) {
+    public fun setViewModel(vm: CometChatGroupsViewModel) {
         viewModel = vm
         isExternalViewModel = true
         observeViewModel()
     }
 
-    fun setStyle(style: CometChatGroupsStyle) {
+    public fun setStyle(style: CometChatGroupsStyle) {
         this.style = style
         applyStyle()
     }
 
-    fun setItemView(listener: GroupsViewHolderListener?) {
+    public fun setItemView(listener: GroupsViewHolderListener?) {
         itemViewListener = listener
         groupsAdapter.setItemView(listener)
     }
 
-    fun setLeadingView(listener: GroupsViewHolderListener?) {
+    public fun setLeadingView(listener: GroupsViewHolderListener?) {
         leadingViewListener = listener
         groupsAdapter.setLeadingView(listener)
     }
 
-    fun setTitleView(listener: GroupsViewHolderListener?) {
+    public fun setTitleView(listener: GroupsViewHolderListener?) {
         titleViewListener = listener
         groupsAdapter.setTitleView(listener)
     }
 
-    fun setSubtitleView(listener: GroupsViewHolderListener?) {
+    public fun setSubtitleView(listener: GroupsViewHolderListener?) {
         subtitleViewListener = listener
         groupsAdapter.setSubtitleView(listener)
     }
 
-    fun setTrailingView(listener: GroupsViewHolderListener?) {
+    public fun setTrailingView(listener: GroupsViewHolderListener?) {
         trailingViewListener = listener
         groupsAdapter.setTrailingView(listener)
     }
 
-    fun setEmptyView(view: View?) {
+    public fun setEmptyView(view: View?) {
         customEmptyView = view
     }
 
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         customErrorView = view
     }
 
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         customLoadingView = view
     }
 
-    fun setOptions(optionsProvider: (Context, Group) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun setOptions(optionsProvider: (Context, Group) -> List<CometChatPopupMenu.MenuItem>) {
         options = optionsProvider
     }
 
-    fun addOptions(optionsProvider: (Context, Group) -> List<CometChatPopupMenu.MenuItem>) {
+    public fun addOptions(optionsProvider: (Context, Group) -> List<CometChatPopupMenu.MenuItem>) {
         addOptions = optionsProvider
     }
 
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.toolbar.setTitle(title)
     }
 
-    fun refreshList() {
+    public fun refreshList() {
         viewModel?.refreshList()
     }
 
-    fun getSelectedGroups(): List<Group> {
+    public fun getSelectedGroups(): List<Group> {
         return viewModel?.getSelectedGroups() ?: emptyList()
     }
 
-    fun clearSelection() {
+    public fun clearSelection() {
         viewModel?.clearSelection()
     }
 
@@ -695,7 +695,7 @@ class CometChatGroups @JvmOverloads constructor(
      * This method re-extracts style attributes from the theme without triggering a full
      * data refresh, preserving scroll position during theme changes.
      */
-    fun refreshStyle() {
+    public fun refreshStyle() {
         // Re-apply style attributes using the stored style resource ID
         val typedArray = if (currentStyleResId != 0) {
             context.theme.obtainStyledAttributes(
@@ -716,7 +716,7 @@ class CometChatGroups @JvmOverloads constructor(
      * 
      * @param styleResId The style resource ID to apply
      */
-    fun setStyleResource(@StyleRes styleResId: Int) {
+    public fun setStyleResource(@StyleRes styleResId: Int) {
         currentStyleResId = styleResId
         refreshStyle()
     }
@@ -727,7 +727,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param view The view to set as overflow menu, or null to remove
      */
-    fun setOverflowMenu(view: View?) {
+    public fun setOverflowMenu(view: View?) {
         this.overflowMenu = view
         binding.toolbar.clearActionViews()
         if (view != null) {
@@ -740,14 +740,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The overflow menu view, or null if not set
      */
-    fun getOverflowMenu(): View? = overflowMenu
+    public fun getOverflowMenu(): View? = overflowMenu
 
     /**
      * Sets the placeholder text for the search input.
      *
      * @param text The placeholder text to display
      */
-    fun setSearchPlaceholderText(text: String) {
+    public fun setSearchPlaceholderText(text: String) {
         this.searchPlaceholderText = text
         binding.searchBox.setSearchPlaceholderText(text)
     }
@@ -757,7 +757,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The search placeholder text, or null if not set
      */
-    fun getSearchPlaceholderText(): String? = searchPlaceholderText
+    public fun getSearchPlaceholderText(): String? = searchPlaceholderText
 
     /**
      * Programmatically sets the search keyword and triggers a search.
@@ -765,7 +765,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param keyword The search keyword, or null/empty to clear search
      */
-    fun setSearchKeyword(keyword: String?) {
+    public fun setSearchKeyword(keyword: String?) {
         binding.searchBox.setSearchInputText(keyword ?: "")
         if (keyword.isNullOrEmpty()) {
             viewModel?.refreshList()
@@ -782,7 +782,7 @@ class CometChatGroups @JvmOverloads constructor(
      * @param group The group to select
      * @param mode The selection mode to use
      */
-    fun selectGroup(group: Group, mode: UIKitConstants.SelectionMode) {
+    public fun selectGroup(group: Group, mode: UIKitConstants.SelectionMode) {
         if (mode == UIKitConstants.SelectionMode.NONE) return
         this.selectionMode = mode
         groupsAdapter.setSelectionMode(mode)
@@ -794,7 +794,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setToolbarVisibility(visibility: Int) {
+    public fun setToolbarVisibility(visibility: Int) {
         toolbarVisibility = visibility
         binding.toolbar.visibility = visibility
     }
@@ -804,14 +804,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The toolbar visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getToolbarVisibility(): Int = toolbarVisibility
+    public fun getToolbarVisibility(): Int = toolbarVisibility
 
     /**
      * Sets the visibility of the search box.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setSearchBoxVisibility(visibility: Int) {
+    public fun setSearchBoxVisibility(visibility: Int) {
         searchBoxVisibility = visibility
         binding.searchBoxLayout.visibility = visibility
     }
@@ -821,14 +821,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The search box visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getSearchBoxVisibility(): Int = searchBoxVisibility
+    public fun getSearchBoxVisibility(): Int = searchBoxVisibility
 
     /**
      * Sets the visibility of the back icon.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconVisibility = visibility
         binding.toolbar.setBackIconVisibility(visibility)
     }
@@ -838,14 +838,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The back icon visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getBackIconVisibility(): Int = backIconVisibility
+    public fun getBackIconVisibility(): Int = backIconVisibility
 
     /**
      * Sets the visibility of the empty state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setEmptyStateVisibility(visibility: Int) {
+    public fun setEmptyStateVisibility(visibility: Int) {
         emptyStateVisibility = visibility
     }
 
@@ -854,14 +854,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The empty state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getEmptyStateVisibility(): Int = emptyStateVisibility
+    public fun getEmptyStateVisibility(): Int = emptyStateVisibility
 
     /**
      * Sets the visibility of the error state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         errorStateVisibility = visibility
     }
 
@@ -870,14 +870,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The error state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Sets the visibility of the loading state.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setLoadingStateVisibility(visibility: Int) {
+    public fun setLoadingStateVisibility(visibility: Int) {
         loadingStateVisibility = visibility
     }
 
@@ -886,7 +886,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The loading state visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getLoadingStateVisibility(): Int = loadingStateVisibility
+    public fun getLoadingStateVisibility(): Int = loadingStateVisibility
 
     /**
      * Hides or shows the loading state.
@@ -894,7 +894,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param hide true to hide the loading state, false to show it
      */
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         loadingStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -904,7 +904,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param hide true to hide the empty state, false to show it
      */
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         emptyStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -914,7 +914,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param hide true to hide the error state, false to show it
      */
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         errorStateVisibility = if (hide) View.GONE else View.VISIBLE
     }
 
@@ -923,7 +923,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setGroupTypeVisibility(visibility: Int) {
+    public fun setGroupTypeVisibility(visibility: Int) {
         groupTypeVisibility = visibility
         groupsAdapter.setHideGroupType(visibility != View.VISIBLE)
     }
@@ -933,14 +933,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The group type visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getGroupTypeVisibility(): Int = groupTypeVisibility
+    public fun getGroupTypeVisibility(): Int = groupTypeVisibility
 
     /**
      * Sets the visibility of the toolbar title.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setTitleVisibility(visibility: Int) {
+    public fun setTitleVisibility(visibility: Int) {
         this.titleVisibility = visibility
         // The toolbar doesn't expose direct title visibility, so we use an empty title when hidden
         // This is a workaround - ideally CometChatToolbar would have setTitleVisibility
@@ -954,14 +954,14 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The title visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getTitleVisibility(): Int = titleVisibility
+    public fun getTitleVisibility(): Int = titleVisibility
 
     /**
      * Sets the visibility of the separator line between list items.
      *
      * @param visibility View.VISIBLE, View.INVISIBLE, or View.GONE
      */
-    fun setSeparatorVisibility(visibility: Int) {
+    public fun setSeparatorVisibility(visibility: Int) {
         separatorVisibility = visibility
         groupsAdapter.setHideSeparator(visibility != View.VISIBLE)
     }
@@ -971,21 +971,21 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The separator visibility (View.VISIBLE, View.INVISIBLE, or View.GONE)
      */
-    fun getSeparatorVisibility(): Int = separatorVisibility
+    public fun getSeparatorVisibility(): Int = separatorVisibility
 
     /**
      * Gets the ViewModel associated with this component.
      *
      * @return The CometChatGroupsViewModel instance, or null if not initialized
      */
-    fun getViewModel(): CometChatGroupsViewModel? = viewModel
+    public fun getViewModel(): CometChatGroupsViewModel? = viewModel
 
     /**
      * Gets the adapter used for the groups list.
      *
      * @return The GroupsAdapter instance
      */
-    fun getAdapter(): GroupsAdapter = groupsAdapter
+    internal fun getAdapter(): GroupsAdapter = groupsAdapter
 
     /**
      * Sets a custom adapter for the groups list.
@@ -993,7 +993,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @param adapter The custom GroupsAdapter to use
      */
-    fun setAdapter(adapter: GroupsAdapter) {
+    internal fun setAdapter(adapter: GroupsAdapter) {
         binding.recyclerviewGroupsList.adapter = adapter
     }
 
@@ -1002,7 +1002,7 @@ class CometChatGroups @JvmOverloads constructor(
      *
      * @return The current SelectionMode
      */
-    fun getSelectionMode(): UIKitConstants.SelectionMode = selectionMode
+    public fun getSelectionMode(): UIKitConstants.SelectionMode = selectionMode
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()

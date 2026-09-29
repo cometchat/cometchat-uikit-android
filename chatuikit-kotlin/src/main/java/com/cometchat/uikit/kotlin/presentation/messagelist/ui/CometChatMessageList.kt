@@ -26,6 +26,7 @@ import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.factory.CometChatMessageListViewModelFactory
 import com.cometchat.uikit.core.state.MessageListUIState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatMessageListViewModel
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.messageinformation.ui.CometChatMessageInformationBottomSheet
@@ -170,7 +171,7 @@ import kotlinx.coroutines.launch
  * @see BubbleViewProvider
  * @see CometChatMessageListStyle
  */
-class CometChatMessageList @JvmOverloads constructor(
+public class CometChatMessageList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageListStyle
@@ -426,8 +427,12 @@ class CometChatMessageList @JvmOverloads constructor(
     private var isScrolling: Boolean = false
     private var hasUserScrolled: Boolean = false
     
-    // Highlight animation - stored as property to prevent garbage collection
-    private var highlightAnimator: android.animation.ValueAnimator? = null
+    // Highlight fade animation. The Handler and the currently-scheduled Runnable are held as
+    // fields so a new highlight can cancel the running fade. Without a handle to the loop,
+    // tapping a reply preview again before the 2s fade finished started a second overlapping
+    // loop, and the two fought over the same row background every 50ms, causing a fast flicker.
+    private val highlightHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var highlightRunnable: Runnable? = null
     private var isPaginatingPrevious: Boolean = false
     private var isPaginatingNext: Boolean = false
 
@@ -1624,7 +1629,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param user The user to display messages for
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         
@@ -1699,7 +1704,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param group The group to display messages for
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         this.user = null
         
@@ -1742,7 +1747,7 @@ class CometChatMessageList @JvmOverloads constructor(
             "message has been set.",
         ReplaceWith("setParentMessage(parentMessage)")
     )
-    fun setParentMessageId(parentMessageId: Long) {
+    public fun setParentMessageId(parentMessageId: Long) {
         this.parentMessageId = parentMessageId
     }
 
@@ -1752,21 +1757,21 @@ class CometChatMessageList @JvmOverloads constructor(
      * Prefer this over [setParentMessageId]: the parent message is the authority for its thread's
      * subscription state, which realtime replies inherit. Re-supply it when the parent updates.
      */
-    fun setParentMessage(parentMessage: BaseMessage?) {
+    public fun setParentMessage(parentMessage: BaseMessage?) {
         this.parentMessage = parentMessage
         if (parentMessage != null) this.parentMessageId = parentMessage.id
         viewModel?.setParentMessage(parentMessage)
     }
 
     /** The thread's root message, when one was supplied via [setParentMessage]. */
-    fun getParentMessage(): BaseMessage? = parentMessage
+    public fun getParentMessage(): BaseMessage? = parentMessage
 
     /**
      * Sets the ViewModel for this message list.
      *
      * @param viewModel The ViewModel to use
      */
-    fun setViewModel(viewModel: CometChatMessageListViewModel) {
+    public fun setViewModel(viewModel: CometChatMessageListViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         viewModel.initSoundManager(context)
@@ -1787,7 +1792,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param style The style to apply
      */
-    fun setStyle(style: CometChatMessageListStyle) {
+    public fun setStyle(style: CometChatMessageListStyle) {
         this.style = style
         applyStyle()
     }
@@ -1797,14 +1802,14 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The current style
      */
-    fun getStyle(): CometChatMessageListStyle = style
+    public fun getStyle(): CometChatMessageListStyle = style
 
     /**
      * Sets the messages request builder for custom message fetching.
      *
      * @param builder The builder to use
      */
-    fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder?) {
+    public fun setMessagesRequestBuilder(builder: MessagesRequest.MessagesRequestBuilder?) {
         this.messagesRequestBuilder = builder
     }
 
@@ -1813,7 +1818,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param types List of message types
      */
-    fun setMessagesTypes(types: List<String>) {
+    public fun setMessagesTypes(types: List<String>) {
         this.messagesTypes = types
     }
 
@@ -1822,7 +1827,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param categories List of message categories
      */
-    fun setMessagesCategories(categories: List<String>) {
+    public fun setMessagesCategories(categories: List<String>) {
         this.messagesCategories = categories
     }
 
@@ -1830,7 +1835,7 @@ class CometChatMessageList @JvmOverloads constructor(
     // Behavior Configuration
     // ========================================
 
-    fun setScrollToBottomOnNewMessage(enabled: Boolean) {
+    public fun setScrollToBottomOnNewMessage(enabled: Boolean) {
         this.scrollToBottomOnNewMessage = enabled
     }
 
@@ -1845,7 +1850,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see isSwipeToReplyEnabled
      */
-    fun setSwipeToReplyEnabled(enabled: Boolean) {
+    public fun setSwipeToReplyEnabled(enabled: Boolean) {
         this.swipeToReplyEnabled = enabled
         if (enabled) {
             initializeItemTouchHelper()
@@ -1861,7 +1866,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setSwipeToReplyEnabled
      */
-    fun isSwipeToReplyEnabled(): Boolean = swipeToReplyEnabled
+    public fun isSwipeToReplyEnabled(): Boolean = swipeToReplyEnabled
 
     /**
      * Initializes the ItemTouchHelper for swipe to reply functionality.
@@ -2012,17 +2017,17 @@ class CometChatMessageList @JvmOverloads constructor(
         itemTouchHelper?.attachToRecyclerView(recyclerViewMessageList)
     }
 
-    fun setDisableSoundForMessages(disabled: Boolean) {
+    public fun setDisableSoundForMessages(disabled: Boolean) {
         this.disableSoundForMessages = disabled
         viewModel?.setDisableSoundForMessages(disabled)
     }
 
-    fun setCustomSoundForMessages(rawRes: Int) {
+    public fun setCustomSoundForMessages(rawRes: Int) {
         this.customSoundForMessages = rawRes
         viewModel?.setCustomSoundForMessages(rawRes)
     }
 
-    fun setAutoFetch(enabled: Boolean) {
+    public fun setAutoFetch(enabled: Boolean) {
         this.autoFetch = enabled
     }
 
@@ -2039,19 +2044,19 @@ class CometChatMessageList @JvmOverloads constructor(
      * messageList.user = user // Set user AFTER enabling this feature
      * ```
      */
-    var isStartFromUnreadMessages: Boolean
+    public var isStartFromUnreadMessages: Boolean
         get() = startFromUnreadMessages
         set(value) {
             startFromUnreadMessages = value
             viewModel?.setStartFromUnreadMessages(value)
         }
 
-    fun setUnreadMessageThreshold(threshold: Int) {
+    public fun setUnreadMessageThreshold(threshold: Int) {
         this.unreadMessageThreshold = threshold
         viewModel?.setUnreadThreshold(threshold)
     }
 
-    fun setDisableReceipt(disabled: Boolean) {
+    public fun setDisableReceipt(disabled: Boolean) {
         this.disableReceipt = disabled
         viewModel?.setDisableReceipt(disabled)
     }
@@ -2065,7 +2070,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param enabled `true` to load the last agent conversation, `false` to always start fresh.
      */
-    fun setLoadLastAgentConversation(enabled: Boolean) {
+    public fun setLoadLastAgentConversation(enabled: Boolean) {
         this.loadLastAgentConversation = enabled
         viewModel?.setLoadLastAgentConversation(enabled)
     }
@@ -2075,7 +2080,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return `true` if loading the last agent conversation is enabled, `false` otherwise.
      */
-    fun isLoadLastAgentConversation(): Boolean = loadLastAgentConversation
+    public fun isLoadLastAgentConversation(): Boolean = loadLastAgentConversation
 
     /**
      * Sets the text formatters for message text rendering.
@@ -2090,7 +2095,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see CometChatTextFormatter
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>?) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>?) {
         val formatterList = formatters ?: emptyList()
         _textFormatters = formatterList
         // Propagate to adapter for message rendering
@@ -2102,7 +2107,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The list of text formatters, or an empty list if none are set.
      */
-    fun getTextFormatters(): List<CometChatTextFormatter> {
+    public fun getTextFormatters(): List<CometChatTextFormatter> {
         return _textFormatters
     }
 
@@ -2133,7 +2138,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The [CometChatMentionsFormatter] instance, or null if not initialized.
      */
-    fun getMentionsFormatter(): CometChatMentionsFormatter? {
+    public fun getMentionsFormatter(): CometChatMentionsFormatter? {
         return cometchatMentionsFormatter
     }
 
@@ -2145,7 +2150,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param disable `true` to disable @all mentions, `false` to enable.
      */
-    fun setDisableMentionAll(disable: Boolean) {
+    public fun setDisableMentionAll(disable: Boolean) {
         cometchatMentionsFormatter?.setDisableMentionAll(disable)
     }
 
@@ -2160,7 +2165,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * If either parameter is null or empty, this method does nothing.
      */
-    fun setMentionAllLabelId(id: String?, mentionAllLabel: String?) {
+    public fun setMentionAllLabelId(id: String?, mentionAllLabel: String?) {
         if (!id.isNullOrEmpty() && !mentionAllLabel.isNullOrEmpty()) {
             cometchatMentionsFormatter?.setMentionAllLabel(id, mentionAllLabel)
             this.mentionAllLabelId = id
@@ -2177,7 +2182,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param enable `true` to enable AI conversation starters, `false` to disable.
      */
-    fun setEnableConversationStarter(enable: Boolean) {
+    public fun setEnableConversationStarter(enable: Boolean) {
         this.enableConversationStarter = enable
         viewModel?.setEnableConversationStarter(enable)
     }
@@ -2187,14 +2192,14 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return `true` if AI conversation starters are enabled, `false` otherwise.
      */
-    fun isEnableConversationStarter(): Boolean = enableConversationStarter
+    public fun isEnableConversationStarter(): Boolean = enableConversationStarter
 
     /**
      * Sets the style for the AI conversation starter view.
      *
      * @param styleResId The style resource ID for the AI conversation starter view.
      */
-    fun setAIConversationStarterStyle(@androidx.annotation.StyleRes styleResId: Int) {
+    public fun setAIConversationStarterStyle(@androidx.annotation.StyleRes styleResId: Int) {
         this.conversationStarterStyle = styleResId
         aiConversationStarterView?.setStyle(styleResId)
     }
@@ -2204,7 +2209,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The style resource ID for the AI conversation starter view.
      */
-    fun getAIConversationStarterStyle(): Int = conversationStarterStyle
+    public fun getAIConversationStarterStyle(): Int = conversationStarterStyle
 
     /**
      * Enables or disables AI conversation summary in the message list.
@@ -2215,7 +2220,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param enable `true` to enable AI conversation summary, `false` to disable.
      */
-    fun setEnableConversationSummary(enable: Boolean) {
+    public fun setEnableConversationSummary(enable: Boolean) {
         this.enableConversationSummary = enable
         viewModel?.setEnableConversationSummary(enable)
     }
@@ -2225,14 +2230,14 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return `true` if AI conversation summary is enabled, `false` otherwise.
      */
-    fun isEnableConversationSummary(): Boolean = enableConversationSummary
+    public fun isEnableConversationSummary(): Boolean = enableConversationSummary
 
     /**
      * Sets the style for the AI conversation summary view.
      *
      * @param styleResId The style resource ID for the AI conversation summary view.
      */
-    fun setAIConversationSummaryStyle(@androidx.annotation.StyleRes styleResId: Int) {
+    public fun setAIConversationSummaryStyle(@androidx.annotation.StyleRes styleResId: Int) {
         this.conversationSummaryStyle = styleResId
         aiConversationSummaryView?.setStyle(styleResId)
     }
@@ -2242,7 +2247,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The style resource ID for the AI conversation summary view.
      */
-    fun getAIConversationSummaryStyle(): Int = conversationSummaryStyle
+    public fun getAIConversationSummaryStyle(): Int = conversationSummaryStyle
 
     /**
      * Enables or disables AI smart replies in the message list.
@@ -2254,7 +2259,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param enable `true` to enable AI smart replies, `false` to disable.
      */
-    fun setEnableSmartReplies(enable: Boolean) {
+    public fun setEnableSmartReplies(enable: Boolean) {
         this.enableSmartReplies = enable
         viewModel?.setEnableSmartReplies(enable)
     }
@@ -2264,7 +2269,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return `true` if AI smart replies are enabled, `false` otherwise.
      */
-    fun isEnableSmartReplies(): Boolean = enableSmartReplies
+    public fun isEnableSmartReplies(): Boolean = enableSmartReplies
 
     /**
      * Sets the keywords for AI smart replies filtering.
@@ -2275,7 +2280,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param keywords The list of keywords for AI smart replies filtering.
      */
-    fun setSmartRepliesKeywords(keywords: List<String>) {
+    public fun setSmartRepliesKeywords(keywords: List<String>) {
         this.smartRepliesKeywords = keywords
         viewModel?.setSmartReplyKeywords(keywords)
     }
@@ -2285,7 +2290,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The list of keywords for AI smart replies filtering.
      */
-    fun getSmartRepliesKeywords(): List<String> = smartRepliesKeywords
+    public fun getSmartRepliesKeywords(): List<String> = smartRepliesKeywords
 
     /**
      * Sets the delay duration before fetching smart replies after receiving a message.
@@ -2296,7 +2301,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param delayMs Delay in milliseconds. Default is 10000 (10 seconds).
      */
-    fun setSmartRepliesDelayDuration(delayMs: Int) {
+    public fun setSmartRepliesDelayDuration(delayMs: Int) {
         this.smartRepliesDelayDuration = delayMs
         viewModel?.setSmartRepliesDelay(delayMs)
     }
@@ -2306,14 +2311,14 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The delay duration in milliseconds.
      */
-    fun getSmartRepliesDelayDuration(): Int = smartRepliesDelayDuration
+    public fun getSmartRepliesDelayDuration(): Int = smartRepliesDelayDuration
 
     /**
      * Sets the style for the AI smart replies view.
      *
      * @param styleResId The style resource ID for the AI smart replies view.
      */
-    fun setAISmartRepliesStyle(@androidx.annotation.StyleRes styleResId: Int) {
+    public fun setAISmartRepliesStyle(@androidx.annotation.StyleRes styleResId: Int) {
         this.smartRepliesStyle = styleResId
         aiSmartRepliesView?.setStyle(styleResId)
     }
@@ -2323,7 +2328,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The style resource ID for the AI smart replies view.
      */
-    fun getAISmartRepliesStyle(): Int = smartRepliesStyle
+    public fun getAISmartRepliesStyle(): Int = smartRepliesStyle
 
     /**
      * Sets the style for the AI smart replies view using a typed style object.
@@ -2333,7 +2338,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param style The [CometChatAISmartRepliesStyle] to apply.
      */
-    fun setAISmartRepliesStyle(style: CometChatAISmartRepliesStyle) {
+    public fun setAISmartRepliesStyle(style: CometChatAISmartRepliesStyle) {
         aiSmartRepliesView?.setStyle(style)
     }
 
@@ -2345,7 +2350,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param style The [CometChatAIConversationStarterStyle] to apply.
      */
-    fun setAIConversationStarterStyle(style: CometChatAIConversationStarterStyle) {
+    public fun setAIConversationStarterStyle(style: CometChatAIConversationStarterStyle) {
         aiConversationStarterView?.setStyle(style)
     }
 
@@ -2357,7 +2362,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param style The [CometChatAIConversationSummaryStyle] to apply.
      */
-    fun setAIConversationSummaryStyle(style: CometChatAIConversationSummaryStyle) {
+    public fun setAIConversationSummaryStyle(style: CometChatAIConversationSummaryStyle) {
         aiConversationSummaryView?.setStyle(style)
     }
 
@@ -2377,7 +2382,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getAIAssistantEmptyChatGreetingView
      */
-    fun setAIAssistantEmptyChatGreetingView(@androidx.annotation.LayoutRes layoutResId: Int) {
+    public fun setAIAssistantEmptyChatGreetingView(@androidx.annotation.LayoutRes layoutResId: Int) {
         this.aiAssistantEmptyChatGreetingViewResId = layoutResId
         if (layoutResId != 0) {
             try {
@@ -2397,7 +2402,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setAIAssistantEmptyChatGreetingView
      */
-    fun getAIAssistantEmptyChatGreetingView(): Int = aiAssistantEmptyChatGreetingViewResId
+    public fun getAIAssistantEmptyChatGreetingView(): Int = aiAssistantEmptyChatGreetingViewResId
 
     // ========================================
     // AI Assistant Suggested Messages
@@ -2416,7 +2421,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see getAIAssistantSuggestedMessages
      * @see setAiAssistantSuggestedMessagesVisibility
      */
-    fun setAIAssistantSuggestedMessages(suggestedMessages: List<String>?) {
+    public fun setAIAssistantSuggestedMessages(suggestedMessages: List<String>?) {
         this.aiAssistantSuggestedMessages = suggestedMessages ?: emptyList()
         updateAISuggestedMessagesView()
     }
@@ -2428,7 +2433,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setAIAssistantSuggestedMessages
      */
-    fun getAIAssistantSuggestedMessages(): List<String> = aiAssistantSuggestedMessages
+    public fun getAIAssistantSuggestedMessages(): List<String> = aiAssistantSuggestedMessages
 
     /**
      * Sets the visibility of AI assistant suggested messages using Android View visibility constants.
@@ -2441,7 +2446,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see getAiAssistantSuggestedMessagesVisibility
      * @see setAIAssistantSuggestedMessages
      */
-    fun setAiAssistantSuggestedMessagesVisibility(visibility: Int) {
+    public fun setAiAssistantSuggestedMessagesVisibility(visibility: Int) {
         this.aiAssistantSuggestedMessagesVisibility = visibility
         aiSuggestedMessagesContainer?.visibility = visibility
     }
@@ -2453,7 +2458,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setAiAssistantSuggestedMessagesVisibility
      */
-    fun getAiAssistantSuggestedMessagesVisibility(): Int = aiAssistantSuggestedMessagesVisibility
+    public fun getAiAssistantSuggestedMessagesVisibility(): Int = aiAssistantSuggestedMessagesVisibility
 
     // ========================================
     // AI Assistant Tools Configuration
@@ -2494,7 +2499,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see getAiAssistantTools
      * @see ToolCallListener
      */
-    fun setAiAssistantTools(tools: HashMap<String, ToolCallListener>) {
+    public fun setAiAssistantTools(tools: HashMap<String, ToolCallListener>) {
         this.aiAssistantTools = tools
     }
 
@@ -2505,7 +2510,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setAiAssistantTools
      */
-    fun getAiAssistantTools(): HashMap<String, ToolCallListener> = aiAssistantTools
+    public fun getAiAssistantTools(): HashMap<String, ToolCallListener> = aiAssistantTools
 
     /**
      * Sets the streaming speed for AI responses.
@@ -2534,7 +2539,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getStreamingSpeed
      */
-    fun setStreamingSpeed(streamingSpeed: Int?) {
+    public fun setStreamingSpeed(streamingSpeed: Int?) {
         this.streamingSpeed = streamingSpeed
         // Apply immediately if stream service is already available
         if (streamingSpeed != null) {
@@ -2550,7 +2555,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setStreamingSpeed
      */
-    fun getStreamingSpeed(): Int? = streamingSpeed
+    public fun getStreamingSpeed(): Int? = streamingSpeed
 
     // ========================================
     // Date/Time Formatting Configuration
@@ -2580,7 +2585,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setDateFormat
      * @see setDateTimeFormatter
      */
-    fun setTimeFormat(timeFormat: SimpleDateFormat?) {
+    public fun setTimeFormat(timeFormat: SimpleDateFormat?) {
         this.timeFormat = timeFormat
         timeFormat?.let { messageAdapter.timeFormat = it }
     }
@@ -2593,7 +2598,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setTimeFormat
      */
-    fun getTimeFormat(): SimpleDateFormat? = timeFormat
+    public fun getTimeFormat(): SimpleDateFormat? = timeFormat
 
     /**
      * Sets the date format for date separators in the message list.
@@ -2618,7 +2623,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setTimeFormat
      * @see setDateTimeFormatter
      */
-    fun setDateFormat(dateFormat: SimpleDateFormat?) {
+    public fun setDateFormat(dateFormat: SimpleDateFormat?) {
         this.dateFormat = dateFormat
         messageAdapter.dateSeparatorFormat = dateFormat
     }
@@ -2631,7 +2636,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setDateFormat
      */
-    fun getDateFormat(): SimpleDateFormat? = dateFormat
+    public fun getDateFormat(): SimpleDateFormat? = dateFormat
 
     /**
      * Sets a custom date/time formatter callback for advanced date/time formatting.
@@ -2666,7 +2671,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setTimeFormat
      * @see setDateFormat
      */
-    fun setDateTimeFormatter(dateTimeFormatter: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatter(dateTimeFormatter: DateTimeFormatterCallback?) {
         this.dateTimeFormatter = dateTimeFormatter
         messageAdapter.dateTimeFormatter = dateTimeFormatter
     }
@@ -2679,7 +2684,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setDateTimeFormatter
      */
-    fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
+    public fun getDateTimeFormatter(): DateTimeFormatterCallback? = dateTimeFormatter
 
     /**
      * Updates the AI suggested messages view in the empty state.
@@ -2784,7 +2789,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setAvatarVisibility
      * @see getAvatarVisibility
      */
-    fun showAvatar(show: Boolean) {
+    public fun showAvatar(show: Boolean) {
         setAvatarVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
@@ -2800,7 +2805,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see showAvatar
      * @see getAvatarVisibility
      */
-    fun setAvatarVisibility(visibility: Int) {
+    public fun setAvatarVisibility(visibility: Int) {
         this.avatarVisibility = visibility
         this.hideAvatar = visibility != View.VISIBLE
         messageAdapter.showAvatar = (visibility == View.VISIBLE)
@@ -2814,7 +2819,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setAvatarVisibility
      * @see showAvatar
      */
-    fun getAvatarVisibility(): Int = avatarVisibility
+    public fun getAvatarVisibility(): Int = avatarVisibility
 
     /**
      * Shows or hides read receipts in the message list.
@@ -2828,7 +2833,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setReceiptsVisibility
      * @see getReceiptsVisibility
      */
-    fun showReceipts(show: Boolean) {
+    public fun showReceipts(show: Boolean) {
         setReceiptsVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
@@ -2844,7 +2849,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see showReceipts
      * @see getReceiptsVisibility
      */
-    fun setReceiptsVisibility(visibility: Int) {
+    public fun setReceiptsVisibility(visibility: Int) {
         this.receiptsVisibility = visibility
         this.hideReceipts = visibility != View.VISIBLE
         messageAdapter.disableReadReceipt = (visibility != View.VISIBLE)
@@ -2858,7 +2863,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setReceiptsVisibility
      * @see showReceipts
      */
-    fun getReceiptsVisibility(): Int = receiptsVisibility
+    public fun getReceiptsVisibility(): Int = receiptsVisibility
 
     /**
      * Shows or hides reactions on message bubbles.
@@ -2872,7 +2877,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setReactionVisibility
      * @see getReactionVisibility
      */
-    fun showReactions(show: Boolean) {
+    public fun showReactions(show: Boolean) {
         setReactionVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
@@ -2888,7 +2893,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see showReactions
      * @see getReactionVisibility
      */
-    fun setReactionVisibility(visibility: Int) {
+    public fun setReactionVisibility(visibility: Int) {
         this.reactionVisibility = visibility
         messageAdapter.disableReactions = (visibility != View.VISIBLE)
     }
@@ -2901,7 +2906,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setReactionVisibility
      * @see showReactions
      */
-    fun getReactionVisibility(): Int = reactionVisibility
+    public fun getReactionVisibility(): Int = reactionVisibility
 
     /**
      * Shows or hides the error state view.
@@ -2915,7 +2920,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setErrorStateVisibility
      * @see getErrorStateVisibility
      */
-    fun showErrorState(show: Boolean) {
+    public fun showErrorState(show: Boolean) {
         setErrorStateVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
@@ -2931,7 +2936,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see showErrorState
      * @see getErrorStateVisibility
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         this.errorStateVisibility = visibility
         this.hideErrorState = visibility != View.VISIBLE
     }
@@ -2944,7 +2949,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setErrorStateVisibility
      * @see showErrorState
      */
-    fun getErrorStateVisibility(): Int = errorStateVisibility
+    public fun getErrorStateVisibility(): Int = errorStateVisibility
 
     /**
      * Shows or hides group action messages (member joined, left, etc.).
@@ -2958,7 +2963,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setGroupActionMessageVisibility
      * @see getGroupActionMessageVisibility
      */
-    fun showGroupActionMessages(show: Boolean) {
+    public fun showGroupActionMessages(show: Boolean) {
         setGroupActionMessageVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
@@ -2974,7 +2979,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see showGroupActionMessages
      * @see getGroupActionMessageVisibility
      */
-    fun setGroupActionMessageVisibility(visibility: Int) {
+    public fun setGroupActionMessageVisibility(visibility: Int) {
         this.groupActionMessageVisibility = visibility
         this.hideGroupActionMessages = visibility != View.VISIBLE
         messageAdapter.hideGroupActionMessage = (visibility != View.VISIBLE)
@@ -2988,7 +2993,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see setGroupActionMessageVisibility
      * @see showGroupActionMessages
      */
-    fun getGroupActionMessageVisibility(): Int = groupActionMessageVisibility
+    public fun getGroupActionMessageVisibility(): Int = groupActionMessageVisibility
 
     /**
      * Sets the visibility of sticky date headers using Android View visibility constants.
@@ -3006,7 +3011,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @see getStickyDateVisibility
      */
     @Suppress("UNCHECKED_CAST")
-    fun setStickyDateVisibility(visibility: Int) {
+    public fun setStickyDateVisibility(visibility: Int) {
         stickyDateVisibility = visibility
         if (visibility == View.VISIBLE) {
             if (stickyHeaderDecoration == null) {
@@ -3033,7 +3038,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setStickyDateVisibility
      */
-    fun getStickyDateVisibility(): Int = stickyDateVisibility
+    public fun getStickyDateVisibility(): Int = stickyDateVisibility
 
     // ========================================
     // Message Option Visibility Configuration
@@ -3076,7 +3081,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getReplyInThreadOptionVisibility
      */
-    fun setReplyInThreadOptionVisibility(visibility: Int) {
+    public fun setReplyInThreadOptionVisibility(visibility: Int) {
         this.replyInThreadOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3087,7 +3092,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setReplyInThreadOptionVisibility
      */
-    fun getReplyInThreadOptionVisibility(): Int = if (replyInThreadOptionVisible) View.VISIBLE else View.GONE
+    public fun getReplyInThreadOptionVisibility(): Int = if (replyInThreadOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "reply notifications" (thread subscription) option in the message
@@ -3097,7 +3102,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param visibility [View.VISIBLE], [View.INVISIBLE], or [View.GONE].
      * @see getThreadSubscriptionOptionVisibility
      */
-    fun setThreadSubscriptionOptionVisibility(visibility: Int) {
+    public fun setThreadSubscriptionOptionVisibility(visibility: Int) {
         this.threadSubscriptionOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3107,7 +3112,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @return [View.VISIBLE] or [View.GONE].
      * @see setThreadSubscriptionOptionVisibility
      */
-    fun getThreadSubscriptionOptionVisibility(): Int =
+    public fun getThreadSubscriptionOptionVisibility(): Int =
         if (threadSubscriptionOptionVisible) View.VISIBLE else View.GONE
 
     /**
@@ -3120,7 +3125,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getReplyOptionVisibility
      */
-    fun setReplyOptionVisibility(visibility: Int) {
+    public fun setReplyOptionVisibility(visibility: Int) {
         this.replyOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3131,7 +3136,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setReplyOptionVisibility
      */
-    fun getReplyOptionVisibility(): Int = if (replyOptionVisible) View.VISIBLE else View.GONE
+    public fun getReplyOptionVisibility(): Int = if (replyOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Copy" option in the message context menu.
@@ -3143,7 +3148,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getCopyMessageOptionVisibility
      */
-    fun setCopyMessageOptionVisibility(visibility: Int) {
+    public fun setCopyMessageOptionVisibility(visibility: Int) {
         this.copyOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3154,7 +3159,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setCopyMessageOptionVisibility
      */
-    fun getCopyMessageOptionVisibility(): Int = if (copyOptionVisible) View.VISIBLE else View.GONE
+    public fun getCopyMessageOptionVisibility(): Int = if (copyOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Edit" option in the message context menu.
@@ -3167,7 +3172,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getEditMessageOptionVisibility
      */
-    fun setEditMessageOptionVisibility(visibility: Int) {
+    public fun setEditMessageOptionVisibility(visibility: Int) {
         this.editOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3178,7 +3183,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setEditMessageOptionVisibility
      */
-    fun getEditMessageOptionVisibility(): Int = if (editOptionVisible) View.VISIBLE else View.GONE
+    public fun getEditMessageOptionVisibility(): Int = if (editOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Delete" option in the message context menu.
@@ -3191,7 +3196,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getDeleteMessageOptionVisibility
      */
-    fun setDeleteMessageOptionVisibility(visibility: Int) {
+    public fun setDeleteMessageOptionVisibility(visibility: Int) {
         this.deleteOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3202,7 +3207,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setDeleteMessageOptionVisibility
      */
-    fun getDeleteMessageOptionVisibility(): Int = if (deleteOptionVisible) View.VISIBLE else View.GONE
+    public fun getDeleteMessageOptionVisibility(): Int = if (deleteOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "React" option in the message context menu.
@@ -3214,7 +3219,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getMessageReactionOptionVisibility
      */
-    fun setMessageReactionOptionVisibility(visibility: Int) {
+    public fun setMessageReactionOptionVisibility(visibility: Int) {
         this.reactOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3225,7 +3230,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setMessageReactionOptionVisibility
      */
-    fun getMessageReactionOptionVisibility(): Int = if (reactOptionVisible) View.VISIBLE else View.GONE
+    public fun getMessageReactionOptionVisibility(): Int = if (reactOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Message Info" option in the message context menu.
@@ -3239,7 +3244,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getMessageInfoOptionVisibility
      */
-    fun setMessageInfoOptionVisibility(visibility: Int) {
+    public fun setMessageInfoOptionVisibility(visibility: Int) {
         this.messageInfoOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3250,7 +3255,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setMessageInfoOptionVisibility
      */
-    fun getMessageInfoOptionVisibility(): Int = if (messageInfoOptionVisible) View.VISIBLE else View.GONE
+    public fun getMessageInfoOptionVisibility(): Int = if (messageInfoOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Translate" option in the message context menu.
@@ -3262,7 +3267,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getTranslateMessageOptionVisibility
      */
-    fun setTranslateMessageOptionVisibility(visibility: Int) {
+    public fun setTranslateMessageOptionVisibility(visibility: Int) {
         this.translateOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3273,7 +3278,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setTranslateMessageOptionVisibility
      */
-    fun getTranslateMessageOptionVisibility(): Int = if (translateOptionVisible) View.VISIBLE else View.GONE
+    public fun getTranslateMessageOptionVisibility(): Int = if (translateOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Share" option in the message context menu.
@@ -3285,7 +3290,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getShareMessageOptionVisibility
      */
-    fun setShareMessageOptionVisibility(visibility: Int) {
+    public fun setShareMessageOptionVisibility(visibility: Int) {
         this.shareOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3296,7 +3301,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setShareMessageOptionVisibility
      */
-    fun getShareMessageOptionVisibility(): Int = if (shareOptionVisible) View.VISIBLE else View.GONE
+    public fun getShareMessageOptionVisibility(): Int = if (shareOptionVisible) View.VISIBLE else View.GONE
 
     /**
      * Sets the visibility of the "Mark as Unread" option in the message context menu.
@@ -3309,7 +3314,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getMarkAsUnreadOptionVisibility
      */
-    fun setMarkAsUnreadOptionVisibility(visibility: Int) {
+    public fun setMarkAsUnreadOptionVisibility(visibility: Int) {
         this.markAsUnreadOptionVisible = (visibility == View.VISIBLE)
     }
 
@@ -3320,7 +3325,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setMarkAsUnreadOptionVisibility
      */
-    fun getMarkAsUnreadOptionVisibility(): Int = if (markAsUnreadOptionVisible) View.VISIBLE else View.GONE
+    public fun getMarkAsUnreadOptionVisibility(): Int = if (markAsUnreadOptionVisible) View.VISIBLE else View.GONE
 
     // ========================================
     // Quick Reactions Configuration
@@ -3339,7 +3344,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getQuickReactions
      */
-    fun setQuickReactions(reactions: List<String>?) {
+    public fun setQuickReactions(reactions: List<String>?) {
         if (reactions != null) {
             this.quickReactions = reactions
         }
@@ -3352,7 +3357,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setQuickReactions
      */
-    fun getQuickReactions(): List<String> = quickReactions
+    public fun getQuickReactions(): List<String> = quickReactions
 
     /**
      * Sets the drawable resource ID for the add reaction icon in the quick reaction bar.
@@ -3365,7 +3370,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getAddReactionIcon
      */
-    fun setAddReactionIcon(addReactionIcon: Int) {
+    public fun setAddReactionIcon(addReactionIcon: Int) {
         this.addReactionIcon = addReactionIcon
     }
 
@@ -3376,7 +3381,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setAddReactionIcon
      */
-    fun getAddReactionIcon(): Int = addReactionIcon
+    public fun getAddReactionIcon(): Int = addReactionIcon
 
     // ========================================
     // Reactions Request Builder Configuration
@@ -3394,7 +3399,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getReactionsRequestBuilder
      */
-    fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder?) {
+    public fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder?) {
         this.reactionsRequestBuilder = builder
     }
 
@@ -3405,7 +3410,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setReactionsRequestBuilder
      */
-    fun getReactionsRequestBuilder(): ReactionsRequest.ReactionsRequestBuilder? = reactionsRequestBuilder
+    public fun getReactionsRequestBuilder(): ReactionsRequest.ReactionsRequestBuilder? = reactionsRequestBuilder
 
     // ========================================
     // Message Alignment Configuration
@@ -3427,7 +3432,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getMessageAlignment
      */
-    fun setMessageAlignment(alignment: UIKitConstants.MessageListAlignment) {
+    public fun setMessageAlignment(alignment: UIKitConstants.MessageListAlignment) {
         this.messageAlignment = alignment
         messageAdapter.listAlignment = alignment
     }
@@ -3439,9 +3444,9 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setMessageAlignment
      */
-    fun getMessageAlignment(): UIKitConstants.MessageListAlignment = messageAlignment
+    public fun getMessageAlignment(): UIKitConstants.MessageListAlignment = messageAlignment
 
-    fun setHideAvatar(hide: Boolean) {
+    public fun setHideAvatar(hide: Boolean) {
         setAvatarVisibility(if (hide) View.GONE else View.VISIBLE)
     }
 
@@ -3450,27 +3455,27 @@ class CometChatMessageList @JvmOverloads constructor(
      * bubbles sharing a `batchId` are grouped in the list — avatar + sender name only above the
      * first bubble, time + receipt only under the last. When false, each bubble renders standalone.
      */
-    fun setEnableMultipleAttachments(enable: Boolean) {
+    public fun setEnableMultipleAttachments(enable: Boolean) {
         messageAdapter.setEnableMultipleAttachments(enable)
     }
 
-    fun setHideReceipts(hide: Boolean) {
+    public fun setHideReceipts(hide: Boolean) {
         setReceiptsVisibility(if (hide) View.GONE else View.VISIBLE)
     }
 
-    fun setHideGroupActionMessages(hide: Boolean) {
+    public fun setHideGroupActionMessages(hide: Boolean) {
         setGroupActionMessageVisibility(if (hide) View.GONE else View.VISIBLE)
     }
 
-    fun setHideLoadingState(hide: Boolean) {
+    public fun setHideLoadingState(hide: Boolean) {
         this.hideLoadingState = hide
     }
 
-    fun setHideEmptyState(hide: Boolean) {
+    public fun setHideEmptyState(hide: Boolean) {
         this.hideEmptyState = hide
     }
 
-    fun setHideErrorState(hide: Boolean) {
+    public fun setHideErrorState(hide: Boolean) {
         setErrorStateVisibility(if (hide) View.GONE else View.VISIBLE)
     }
 
@@ -3487,7 +3492,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param left Left/start margin in dp
      * @param right Right/end margin in dp
      */
-    fun setBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
+    public fun setBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
         messageAdapter.setBubbleMargin(top, bottom, left, right)
     }
 
@@ -3500,7 +3505,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param left Left/start margin in dp
      * @param right Right/end margin in dp
      */
-    fun setLeftBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
+    public fun setLeftBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
         messageAdapter.setLeftBubbleMargin(top, bottom, left, right)
     }
 
@@ -3513,7 +3518,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param left Left/start margin in dp
      * @param right Right/end margin in dp
      */
-    fun setRightBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
+    public fun setRightBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
         messageAdapter.setRightBubbleMargin(top, bottom, left, right)
     }
 
@@ -3545,7 +3550,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getBubbleFactories
      */
-    fun setBubbleFactories(factories: List<BubbleFactory>) {
+    public fun setBubbleFactories(factories: List<BubbleFactory>) {
         // Convert List to Map
         val factoryMap = mutableMapOf<String, BubbleFactory>()
         factories.forEach { factory ->
@@ -3564,7 +3569,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return An immutable copy of the current bubble factories map.
      */
-    fun getBubbleFactories(): Map<String, BubbleFactory> = bubbleFactories.toMap()
+    public fun getBubbleFactories(): Map<String, BubbleFactory> = bubbleFactories.toMap()
 
     // ========================================
     // BubbleViewProvider Methods
@@ -3597,7 +3602,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see BubbleViewProvider
      */
-    fun setLeadingViewProvider(provider: BubbleViewProvider?) {
+    public fun setLeadingViewProvider(provider: BubbleViewProvider?) {
         this.leadingViewProvider = provider
         messageAdapter.setLeadingViewProvider(provider)
     }
@@ -3610,7 +3615,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the header slot, or `null` to remove.
      */
-    fun setHeaderViewProvider(provider: BubbleViewProvider?) {
+    public fun setHeaderViewProvider(provider: BubbleViewProvider?) {
         this.headerViewProvider = provider
         messageAdapter.setHeaderViewProvider(provider)
     }
@@ -3623,7 +3628,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the reply slot, or `null` to remove.
      */
-    fun setReplyViewProvider(provider: BubbleViewProvider?) {
+    public fun setReplyViewProvider(provider: BubbleViewProvider?) {
         this.replyViewProvider = provider
         messageAdapter.setReplyViewProvider(provider)
     }
@@ -3641,7 +3646,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setBubbleFactories
      */
-    fun setContentViewProvider(provider: BubbleViewProvider?) {
+    public fun setContentViewProvider(provider: BubbleViewProvider?) {
         this.contentViewProvider = provider
         messageAdapter.setContentViewProvider(provider)
     }
@@ -3654,7 +3659,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the bottom slot, or `null` to remove.
      */
-    fun setBottomViewProvider(provider: BubbleViewProvider?) {
+    public fun setBottomViewProvider(provider: BubbleViewProvider?) {
         this.bottomViewProvider = provider
         messageAdapter.setBottomViewProvider(provider)
     }
@@ -3667,7 +3672,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the status info slot, or `null` to remove.
      */
-    fun setStatusInfoViewProvider(provider: BubbleViewProvider?) {
+    public fun setStatusInfoViewProvider(provider: BubbleViewProvider?) {
         this.statusInfoViewProvider = provider
         messageAdapter.setStatusInfoViewProvider(provider)
     }
@@ -3680,7 +3685,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the thread slot, or `null` to remove.
      */
-    fun setThreadViewProvider(provider: BubbleViewProvider?) {
+    public fun setThreadViewProvider(provider: BubbleViewProvider?) {
         this.threadViewProvider = provider
         messageAdapter.setThreadViewProvider(provider)
     }
@@ -3693,7 +3698,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param provider The [BubbleViewProvider] for the footer slot, or `null` to remove.
      */
-    fun setFooterViewProvider(provider: BubbleViewProvider?) {
+    public fun setFooterViewProvider(provider: BubbleViewProvider?) {
         this.footerViewProvider = provider
         messageAdapter.setFooterViewProvider(provider)
     }
@@ -3707,7 +3712,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display as header
      */
-    fun setHeaderView(view: View?) {
+    public fun setHeaderView(view: View?) {
         customHeaderView = view
         headerViewContainer?.removeAllViews()
         if (view != null) {
@@ -3723,7 +3728,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display as footer
      */
-    fun setFooterView(view: View?) {
+    public fun setFooterView(view: View?) {
         customFooterView = view
         footerViewContainer?.removeAllViews()
         if (view != null) {
@@ -3739,7 +3744,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display when empty
      */
-    fun setEmptyStateView(view: View?) {
+    public fun setEmptyStateView(view: View?) {
         customEmptyStateView = view
     }
 
@@ -3748,7 +3753,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display on error
      */
-    fun setErrorStateView(view: View?) {
+    public fun setErrorStateView(view: View?) {
         customErrorStateView = view
     }
 
@@ -3757,7 +3762,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display while loading
      */
-    fun setLoadingStateView(view: View?) {
+    public fun setLoadingStateView(view: View?) {
         customLoadingStateView = view
     }
 
@@ -3766,7 +3771,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param view The view to display as new message indicator
      */
-    fun setNewMessageIndicatorView(view: View?) {
+    public fun setNewMessageIndicatorView(view: View?) {
         customNewMessageIndicatorView = view
         // TODO: Replace default indicator with custom view
     }
@@ -3775,29 +3780,29 @@ class CometChatMessageList @JvmOverloads constructor(
     // Callback Setters
     // ========================================
 
-    fun setOnError(callback: ((Throwable) -> Unit)?) {
+    public fun setOnError(callback: ((Throwable) -> Unit)?) {
         this.onError = callback
     }
 
-    fun setOnLoad(callback: (() -> Unit)?) {
+    public fun setOnLoad(callback: (() -> Unit)?) {
         this.onLoad = callback
     }
 
-    fun setOnEmpty(callback: (() -> Unit)?) {
+    public fun setOnEmpty(callback: (() -> Unit)?) {
         this.onEmpty = callback
     }
 
-    fun setOnItemClick(callback: ((BaseMessage, Int) -> Unit)?) {
+    public fun setOnItemClick(callback: ((BaseMessage, Int) -> Unit)?) {
         this.onItemClick = callback
         messageAdapter.setOnItemClickListener(callback)
     }
 
-    fun setOnItemLongClick(callback: ((BaseMessage, Int) -> Boolean)?) {
+    public fun setOnItemLongClick(callback: ((BaseMessage, Int) -> Boolean)?) {
         this.onItemLongClick = callback
         messageAdapter.setOnItemLongClickListener(callback)
     }
 
-    fun setOnThreadRepliesClick(callback: ((BaseMessage) -> Unit)?) {
+    public fun setOnThreadRepliesClick(callback: ((BaseMessage) -> Unit)?) {
         this.onThreadRepliesClick = callback
     }
     
@@ -3810,19 +3815,19 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param callback The callback to invoke with the fetched user, or null to remove.
      */
-    fun setOnMessagePrivately(callback: ((User) -> Unit)?) {
+    public fun setOnMessagePrivately(callback: ((User) -> Unit)?) {
         this.onMessagePrivately = callback
     }
 
-    fun setOnReactionClick(callback: ((BaseMessage, String) -> Unit)?) {
+    public fun setOnReactionClick(callback: ((BaseMessage, String) -> Unit)?) {
         this.onReactionClick = callback
     }
 
-    fun setOnReactionLongClick(callback: ((BaseMessage, String) -> Unit)?) {
+    public fun setOnReactionLongClick(callback: ((BaseMessage, String) -> Unit)?) {
         this.onReactionLongClick = callback
     }
 
-    fun setOnAddMoreReactionsClick(callback: ((BaseMessage) -> Unit)?) {
+    public fun setOnAddMoreReactionsClick(callback: ((BaseMessage) -> Unit)?) {
         this.onAddMoreReactionsClick = callback
     }
 
@@ -3840,7 +3845,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getMessageOptionClickListener
      */
-    fun setMessageOptionClickListener(listener: MessageOptionClickListener?) {
+    public fun setMessageOptionClickListener(listener: MessageOptionClickListener?) {
         this.messageOptionClickListener = listener
     }
 
@@ -3851,7 +3856,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setMessageOptionClickListener
      */
-    fun getMessageOptionClickListener(): MessageOptionClickListener? = messageOptionClickListener
+    public fun getMessageOptionClickListener(): MessageOptionClickListener? = messageOptionClickListener
 
     /**
      * Sets a callback that **replaces** the default message options for a given message.
@@ -3866,7 +3871,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param callback A function receiving the [BaseMessage] and returning either a
      *   replacement list or `null` to keep defaults.
      */
-    fun setOptions(callback: (BaseMessage) -> List<CometChatMessageOption>?) {
+    public fun setOptions(callback: (BaseMessage) -> List<CometChatMessageOption>?) {
         viewModel?.setOptions(callback)
     }
 
@@ -3878,7 +3883,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param callback A function receiving the [BaseMessage] and returning a list of
      *   additional [CometChatMessageOption] to append.
      */
-    fun addOptions(callback: (BaseMessage) -> List<CometChatMessageOption>) {
+    public fun addOptions(callback: (BaseMessage) -> List<CometChatMessageOption>) {
         viewModel?.addOptions(callback)
     }
 
@@ -3892,7 +3897,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getQuickReactionClickListener
      */
-    fun setQuickReactionClickListener(listener: ReactionClickListener?) {
+    public fun setQuickReactionClickListener(listener: ReactionClickListener?) {
         this.quickReactionClickListener = listener
     }
 
@@ -3903,7 +3908,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setQuickReactionClickListener
      */
-    fun getQuickReactionClickListener(): ReactionClickListener? = quickReactionClickListener
+    public fun getQuickReactionClickListener(): ReactionClickListener? = quickReactionClickListener
 
     /**
      * Sets the listener for emoji picker click events.
@@ -3915,7 +3920,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see getEmojiPickerClick
      */
-    fun setEmojiPickerClick(listener: EmojiPickerClickListener?) {
+    public fun setEmojiPickerClick(listener: EmojiPickerClickListener?) {
         this.emojiPickerClickListener = listener
     }
 
@@ -3926,7 +3931,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @see setEmojiPickerClick
      */
-    fun getEmojiPickerClick(): EmojiPickerClickListener? = emojiPickerClickListener
+    public fun getEmojiPickerClick(): EmojiPickerClickListener? = emojiPickerClickListener
 
     // ========================================
     // Message Context Menu Callback Invocation Methods
@@ -3946,7 +3951,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param optionId The ID of the clicked option (e.g., "reply", "copy", "edit", "delete").
      * @param optionName The display name of the clicked option.
      */
-    fun invokeMessageOptionClick(message: BaseMessage, optionId: String, optionName: String) {
+    public fun invokeMessageOptionClick(message: BaseMessage, optionId: String, optionName: String) {
         // Create text formatter callback if formatters are available
         val textFormatterCallback = if (_textFormatters.isNotEmpty()) {
             CometChatMessageListViewModel.TextFormatterCallback { ctx, msg, formattingType, alignment, text ->
@@ -4217,7 +4222,7 @@ class CometChatMessageList @JvmOverloads constructor(
                         )
                     }
                 } catch (e: Exception) {
-                    android.util.Log.e("CometChatMessageList", "Share failed: ${e.message}")
+                    CometChatLogger.e("CometChatMessageList", "Share failed: ${e.message}")
                 }
             }
             message is com.cometchat.chat.models.MediaMessage && 
@@ -4255,7 +4260,7 @@ class CometChatMessageList @JvmOverloads constructor(
                                     )
                                 }
                             } catch (e: Exception) {
-                                android.util.Log.e("CometChatMessageList", "Failed to share image: ${e.message}")
+                                CometChatLogger.e("CometChatMessageList", "Failed to share image: ${e.message}")
                             }
                         }
                         
@@ -4264,7 +4269,7 @@ class CometChatMessageList @JvmOverloads constructor(
                         }
                         
                         override fun onLoadFailed(errorDrawable: android.graphics.drawable.Drawable?) {
-                            android.util.Log.e("CometChatMessageList", "Failed to load image for sharing")
+                            CometChatLogger.e("CometChatMessageList", "Failed to load image for sharing")
                         }
                     })
             }
@@ -4281,7 +4286,7 @@ class CometChatMessageList @JvmOverloads constructor(
                     fileName = fileName,
                     mimeType = mimeType,
                     onError = { e ->
-                        android.util.Log.e("CometChatMessageList", "Failed to download and share media: ${e.message}")
+                        CometChatLogger.e("CometChatMessageList", "Failed to download and share media: ${e.message}")
                     }
                 )
             }
@@ -4316,7 +4321,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * @param message The message for which the reaction was clicked.
      * @param reaction The emoji reaction that was clicked (e.g., "👍", "❤️", "😂").
      */
-    fun invokeQuickReactionClick(message: BaseMessage, reaction: String) {
+    public fun invokeQuickReactionClick(message: BaseMessage, reaction: String) {
         quickReactionClickListener?.onReactionClick(message, reaction)
     }
 
@@ -4326,7 +4331,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * This method should be called by the consumer when the emoji picker button
      * (typically the "+" or "add more reactions" button) is clicked in the context menu.
      */
-    fun invokeEmojiPickerClick() {
+    public fun invokeEmojiPickerClick() {
         emojiPickerClickListener?.onEmojiPickerClick()
     }
 
@@ -4530,7 +4535,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The current long-pressed message, or `null` if no message is being long-pressed.
      */
-    fun getCurrentLongPressedMessage(): BaseMessage? = currentLongPressedMessage
+    public fun getCurrentLongPressedMessage(): BaseMessage? = currentLongPressedMessage
 
     /**
      * Clears the current long-pressed message.
@@ -4538,7 +4543,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * This should be called by the consumer after handling the message option click
      * or when the context menu is dismissed.
      */
-    fun clearCurrentLongPressedMessage() {
+    public fun clearCurrentLongPressedMessage() {
         currentLongPressedMessage = null
     }
 
@@ -4551,7 +4556,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param messageId The ID of the message to scroll to
      */
-    fun gotoMessage(messageId: Long) {
+    public fun gotoMessage(messageId: Long) {
         if (messageId == 0L) return
         this.goToMessageId = messageId
         // Before setUser/setGroup the stored id is consumed during initialization.
@@ -4593,7 +4598,7 @@ class CometChatMessageList @JvmOverloads constructor(
      * 5. Fetches fresh messages from the server (with or without unread count based on position)
      * 6. Hides the new message indicator
      */
-    fun scrollToBottom() {
+    public fun scrollToBottom() {
         newMessageCount = 0
         isGoToMessagePending = false
         recyclerViewMessageList?.stopScroll()
@@ -4665,8 +4670,17 @@ class CometChatMessageList @JvmOverloads constructor(
      * that gradually reduces the highlight alpha from 1.0 to 0.0.
      */
     private fun highlightMessageAtPosition(messageId: Long, position: Int) {
+        // Stop any fade already running so overlapping loops can't fight over the row
+        // background (the cause of the flicker when a reply preview is tapped repeatedly).
+        cancelHighlightFade()
         messageAdapter.setHighlightedMessage(messageId, position, recyclerViewMessageList)
         fadeOutMessageHighlight(position)
+    }
+
+    /** Stops the in-flight highlight fade loop, if any. */
+    private fun cancelHighlightFade() {
+        highlightRunnable?.let { highlightHandler.removeCallbacks(it) }
+        highlightRunnable = null
     }
     
     /**
@@ -4677,10 +4691,9 @@ class CometChatMessageList @JvmOverloads constructor(
      * was being cancelled prematurely by RecyclerView's item animator.
      */
     private fun fadeOutMessageHighlight(position: Int) {
-        // Cancel any existing animation
-        highlightAnimator?.cancel()
-        highlightAnimator = null
-        
+        // Guarantee a single running fade: drop any previously scheduled loop first.
+        cancelHighlightFade()
+
         // Get the ViewHolder to animate directly
         val viewHolder = recyclerViewMessageList?.findViewHolderForAdapterPosition(position)
         if (viewHolder == null) {
@@ -4688,24 +4701,23 @@ class CometChatMessageList @JvmOverloads constructor(
             messageAdapter.clearHighlight(position)
             return
         }
-        
+
         val viewToAnimate = viewHolder.itemView
         val baseColor = CometChatTheme.getExtendedPrimaryColor800(context)
-        
+
         // Use Handler-based animation for reliability
         // Total duration: 2000ms, update every 50ms = 40 steps
         val totalDuration = 2000L
         val stepDuration = 50L
         val totalSteps = (totalDuration / stepDuration).toInt()
         var currentStep = 0
-        
-        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+
         val animationRunnable = object : Runnable {
             override fun run() {
                 currentStep++
                 val progress = currentStep.toFloat() / totalSteps
                 val alpha = 1f - progress
-                
+
                 // Calculate color with current alpha
                 val color = android.graphics.Color.argb(
                     (android.graphics.Color.alpha(baseColor) * alpha).toInt(),
@@ -4713,23 +4725,25 @@ class CometChatMessageList @JvmOverloads constructor(
                     android.graphics.Color.green(baseColor),
                     android.graphics.Color.blue(baseColor)
                 )
-                
+
                 // Update background directly
                 viewToAnimate.setBackgroundColor(color)
                 messageAdapter.highlightAlpha = alpha
-                
+
                 if (currentStep < totalSteps) {
                     // Schedule next step
-                    handler.postDelayed(this, stepDuration)
+                    highlightHandler.postDelayed(this, stepDuration)
                 } else {
                     // Animation complete
+                    highlightRunnable = null
                     messageAdapter.clearHighlight(position)
                 }
             }
         }
-        
-        // Start the animation
-        handler.post(animationRunnable)
+
+        // Start the animation, tracking the runnable so it can be cancelled.
+        highlightRunnable = animationRunnable
+        highlightHandler.post(animationRunnable)
     }
 
     /**
@@ -4761,7 +4775,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param message The message to add
      */
-    fun addMessage(message: BaseMessage) {
+    public fun addMessage(message: BaseMessage) {
         viewModel?.addMessage(message)
     }
 
@@ -4770,7 +4784,7 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param message The updated message
      */
-    fun updateMessage(message: BaseMessage) {
+    public fun updateMessage(message: BaseMessage) {
         viewModel?.updateMessage(message)
     }
 
@@ -4779,14 +4793,14 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @param message The message to remove
      */
-    fun removeMessage(message: BaseMessage) {
+    public fun removeMessage(message: BaseMessage) {
         viewModel?.removeMessage(message)
     }
 
     /**
      * Clears all messages from the list.
      */
-    fun clearMessages() {
+    public fun clearMessages() {
         viewModel?.clear()
     }
 
@@ -4795,12 +4809,12 @@ class CometChatMessageList @JvmOverloads constructor(
      *
      * @return The current messages list
      */
-    fun getMessages(): List<BaseMessage> = messageAdapter.getMessages()
+    public fun getMessages(): List<BaseMessage> = messageAdapter.getMessages()
 
     /**
      * Fetches messages manually.
      */
-    fun fetchMessages() {
+    public fun fetchMessages() {
         viewModel?.fetchMessages()
     }
 
@@ -4808,10 +4822,10 @@ class CometChatMessageList @JvmOverloads constructor(
     // Getters
     // ========================================
 
-    fun getUser(): User? = user
-    fun getGroup(): Group? = group
-    fun getParentMessageId(): Long = parentMessageId
-    fun getRecyclerView(): RecyclerView? = recyclerViewMessageList
-    fun getAdapter(): MessageAdapter = messageAdapter
-    fun getViewModel(): CometChatMessageListViewModel? = viewModel
+    public fun getUser(): User? = user
+    public fun getGroup(): Group? = group
+    public fun getParentMessageId(): Long = parentMessageId
+    public fun getRecyclerView(): RecyclerView? = recyclerViewMessageList
+    internal fun getAdapter(): MessageAdapter = messageAdapter
+    public fun getViewModel(): CometChatMessageListViewModel? = viewModel
 }

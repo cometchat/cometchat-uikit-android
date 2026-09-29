@@ -32,7 +32,7 @@ import com.google.android.material.card.MaterialCardView
  * deprecated fallback). Grid rules (match Compose): 1 = full-width; 2 = two squares side-by-side;
  * 3 = two squares + one full-width; 4 = 2x2; 5+ = 2x2 with a "+N" overlay on the 4th tile.
  */
-open class CometChatImagesBubble @JvmOverloads constructor(
+open public class CometChatImagesBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -84,15 +84,15 @@ open class CometChatImagesBubble @JvmOverloads constructor(
         renderAsVideo = video
     }
 
-    fun setStyle(style: CometChatImageBubbleStyle) {
+    public fun setStyle(style: CometChatImageBubbleStyle) {
         this.style = style
     }
 
-    fun setOnMediaClickListener(listener: (Int, Attachment) -> Unit) {
+    public fun setOnMediaClickListener(listener: (Int, Attachment) -> Unit) {
         onMediaClick = listener
     }
 
-    fun setOnMoreClickListener(listener: (List<Attachment>) -> Unit) {
+    public fun setOnMoreClickListener(listener: (List<Attachment>) -> Unit) {
         onMoreClick = listener
     }
 
@@ -101,7 +101,7 @@ open class CometChatImagesBubble @JvmOverloads constructor(
      * compensate with bottom padding when the row is hidden (non-last message of a batch). Called
      * by [CometChatMessageBubble][com.cometchat.uikit.kotlin.presentation.shared.messagebubble.CometChatMessageBubble].
      */
-    fun setStatusInfoVisible(visible: Boolean) {
+    public fun setStatusInfoVisible(visible: Boolean) {
         if (statusInfoVisible == visible) return
         statusInfoVisible = visible
         applyRootPadding()
@@ -118,7 +118,7 @@ open class CometChatImagesBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setMessage] — the caption is rendered there.
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -126,7 +126,7 @@ open class CometChatImagesBubble @JvmOverloads constructor(
         messageAlignment = alignment
     }
 
-    fun setMessage(message: MediaMessage) {
+    public fun setMessage(message: MediaMessage) {
         // A recycled bubble may have been padded for a hidden timestamp row — restore the default;
         // the adapter re-hides after bind.
         setStatusInfoVisible(true)
@@ -323,7 +323,7 @@ open class CometChatImagesBubble @JvmOverloads constructor(
 
     protected fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
-    companion object {
+    public companion object {
         private const val MAX_VISIBLE = 4
 
         /** Max first-image orientation entries kept (cheap booleans, but bounded to avoid unbounded growth). */

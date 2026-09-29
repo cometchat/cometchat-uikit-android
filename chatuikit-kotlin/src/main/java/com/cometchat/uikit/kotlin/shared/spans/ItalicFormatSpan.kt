@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see RichTextFormat.ITALIC
  */
-class ItalicFormatSpan : StyleSpan(Typeface.ITALIC), RichTextFormatSpan {
+public class ItalicFormatSpan : StyleSpan(Typeface.ITALIC), RichTextFormatSpan {
 
     override fun getFormatType(): RichTextFormat = RichTextFormat.ITALIC
 }

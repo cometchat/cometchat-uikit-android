@@ -66,13 +66,13 @@ import java.text.SimpleDateFormat
  * @see ThreadHeaderViewModel
  * @see CometChatThreadHeaderStyle
  */
-class CometChatThreadHeader @JvmOverloads constructor(
+public class CometChatThreadHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatThreadHeaderStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatThreadHeader::class.java.simpleName
     }
 
@@ -384,7 +384,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param message The parent message to display
      */
-    fun setParentMessage(message: BaseMessage) {
+    public fun setParentMessage(message: BaseMessage) {
         this.parentMessage = message
         viewModel?.setParentMessage(message)
 
@@ -472,13 +472,13 @@ class CometChatThreadHeader @JvmOverloads constructor(
      * Sets the visibility of the thread-subscription control. Also globally gated by the
      * `enableThreadSubscription` UIKit setting; when that gate is off this has no effect.
      */
-    fun setThreadSubscriptionVisibility(visibility: Int) {
+    public fun setThreadSubscriptionVisibility(visibility: Int) {
         threadSubscriptionVisibility = visibility
         refreshThreadSubscriptionControl()
     }
 
     /** Registers a callback invoked after a successful follow-state change from this control. */
-    fun setOnThreadSubscriptionChange(listener: ((Boolean) -> Unit)?) {
+    public fun setOnThreadSubscriptionChange(listener: ((Boolean) -> Unit)?) {
         onThreadSubscriptionChange = listener
     }
     
@@ -524,7 +524,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @return The parent message, or null if not set
      */
-    fun getParentMessage(): BaseMessage? = parentMessage
+    public fun getParentMessage(): BaseMessage? = parentMessage
 
     // ==================== Public API - Visibility Controls ====================
 
@@ -536,7 +536,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setReactionVisibility(visibility: Int) {
+    public fun setReactionVisibility(visibility: Int) {
         reactionVisibility = visibility
         viewModel?.hideReaction = (visibility == View.GONE)
         // Apply to adapter - disableReactions = true hides reactions
@@ -551,7 +551,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setAvatarVisibility(visibility: Int) {
+    public fun setAvatarVisibility(visibility: Int) {
         avatarVisibility = visibility
         // Apply to adapter - when VISIBLE, show avatar; when GONE, hide avatar
         // showAvatar = true shows avatar for all left-aligned messages
@@ -574,7 +574,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setReceiptsVisibility(visibility: Int) {
+    public fun setReceiptsVisibility(visibility: Int) {
         receiptsVisibility = visibility
         // Apply to adapter - disableReadReceipt = true hides receipts
         messageAdapter?.disableReadReceipt = (visibility == View.GONE)
@@ -589,7 +589,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setReplyCountVisibility(visibility: Int) {
+    public fun setReplyCountVisibility(visibility: Int) {
         replyCountVisibility = visibility
         binding.tvReplies.visibility = visibility
     }
@@ -602,7 +602,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE]
      */
-    fun setReplyCountBarVisibility(visibility: Int) {
+    public fun setReplyCountBarVisibility(visibility: Int) {
         replyCountBarVisibility = visibility
         binding.repliesLayout.visibility = visibility
     }
@@ -620,7 +620,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param alignment The alignment mode (STANDARD or LEFT_ALIGNED)
      */
-    fun setAlignment(alignment: MessageListAlignment) {
+    public fun setAlignment(alignment: MessageListAlignment) {
         this.alignment = alignment
         
         // Apply alignment to the message adapter
@@ -636,7 +636,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Gets the current alignment mode.
      */
-    fun getAlignment(): MessageListAlignment = alignment
+    public fun getAlignment(): MessageListAlignment = alignment
 
     // ==================== Public API - Style Customization ====================
 
@@ -645,7 +645,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param maxHeight Maximum height in pixels (0 = no limit)
      */
-    fun setMaxHeight(@Dimension maxHeight: Int) {
+    public fun setMaxHeight(@Dimension maxHeight: Int) {
         maxHeightLimit = maxHeight
         requestLayout()
     }
@@ -655,7 +655,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param style The style to apply to incoming (left-aligned) message bubbles
      */
-    fun setIncomingMessageBubbleStyle(style: CometChatMessageBubbleStyle) {
+    public fun setIncomingMessageBubbleStyle(style: CometChatMessageBubbleStyle) {
         this.style = this.style.copy(incomingMessageBubbleStyle = style)
         messageAdapter?.incomingMessageBubbleStyle = style
     }
@@ -665,7 +665,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param style The style to apply to outgoing (right-aligned) message bubbles
      */
-    fun setOutgoingMessageBubbleStyle(style: CometChatMessageBubbleStyle) {
+    public fun setOutgoingMessageBubbleStyle(style: CometChatMessageBubbleStyle) {
         this.style = this.style.copy(outgoingMessageBubbleStyle = style)
         messageAdapter?.outgoingMessageBubbleStyle = style
     }
@@ -678,7 +678,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      * @param left Left margin in pixels
      * @param right Right margin in pixels
      */
-    fun setLeftBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
+    public fun setLeftBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
         leftBubbleMargin = intArrayOf(top, bottom, left, right)
         messageAdapter?.setLeftBubbleMargin(top, bottom, left, right)
     }
@@ -691,7 +691,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      * @param left Left margin in pixels
      * @param right Right margin in pixels
      */
-    fun setRightBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
+    public fun setRightBubbleMargin(top: Int, bottom: Int, left: Int, right: Int) {
         rightBubbleMargin = intArrayOf(top, bottom, left, right)
         messageAdapter?.setRightBubbleMargin(top, bottom, left, right)
     }
@@ -699,7 +699,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Sets the reply count text color.
      */
-    fun setReplyCountTextColor(@ColorInt color: Int) {
+    public fun setReplyCountTextColor(@ColorInt color: Int) {
         style = style.copy(replyCountTextColor = color)
         if (color != 0) binding.tvReplies.setTextColor(color)
     }
@@ -707,7 +707,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Sets the reply count text appearance.
      */
-    fun setReplyCountTextAppearance(@StyleRes appearance: Int) {
+    public fun setReplyCountTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(replyCountTextAppearance = appearance)
         if (appearance != 0) binding.tvReplies.setTextAppearance(appearance)
     }
@@ -715,7 +715,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Sets the reply count background color.
      */
-    fun setReplyCountBackgroundColor(@ColorInt color: Int) {
+    public fun setReplyCountBackgroundColor(@ColorInt color: Int) {
         style = style.copy(replyCountBackgroundColor = color)
         if (color != 0) binding.repliesLayout.setBackgroundColor(color)
     }
@@ -732,7 +732,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param formatters List of text formatters to apply
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         textFormatters = formatters
         // Extract mentions formatter if present
         mentionsFormatter = formatters.filterIsInstance<CometChatMentionsFormatter>().firstOrNull()
@@ -745,7 +745,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param format The SimpleDateFormat to use for timestamps (e.g., "h:mm a" for "2:30 PM")
      */
-    fun setTimeFormat(format: SimpleDateFormat) {
+    public fun setTimeFormat(format: SimpleDateFormat) {
         timeFormat = format
         // Apply to adapter
         messageAdapter?.timeFormat = format
@@ -756,14 +756,14 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @return The CometChatMentionsFormatter, or null if not set
      */
-    fun getCometchatMentionsFormatter(): CometChatMentionsFormatter? = mentionsFormatter
+    public fun getCometchatMentionsFormatter(): CometChatMentionsFormatter? = mentionsFormatter
 
     // ==================== Public API - Style Object ====================
 
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatThreadHeaderStyle) {
+    public fun setStyle(style: CometChatThreadHeaderStyle) {
         this.style = style
         applyStyle()
     }
@@ -771,7 +771,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatThreadHeader
@@ -784,7 +784,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Gets the current style.
      */
-    fun getStyle(): CometChatThreadHeaderStyle = style
+    public fun getStyle(): CometChatThreadHeaderStyle = style
 
     // ==================== Public API - ViewModel ====================
 
@@ -793,7 +793,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param viewModel The ViewModel to use
      */
-    fun setViewModel(viewModel: CometChatThreadHeaderViewModel) {
+    public fun setViewModel(viewModel: CometChatThreadHeaderViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         attachObservers()
@@ -802,7 +802,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
     /**
      * Gets the current ViewModel.
      */
-    fun getViewModel(): CometChatThreadHeaderViewModel? = viewModel
+    public fun getViewModel(): CometChatThreadHeaderViewModel? = viewModel
 
     // ==================== Public API - MessageBubbleFactory ====================
 
@@ -811,7 +811,7 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @param factories Map of factory key (category_type) to BubbleFactory
      */
-    fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
+    public fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
         messageAdapter?.setBubbleFactories(factories)
     }
 
@@ -820,5 +820,5 @@ class CometChatThreadHeader @JvmOverloads constructor(
      *
      * @return The bubble factories map (read-only copy)
      */
-    fun getBubbleFactories(): Map<String, BubbleFactory>? = messageAdapter?.getBubbleFactories()
+    public fun getBubbleFactories(): Map<String, BubbleFactory>? = messageAdapter?.getBubbleFactories()
 }

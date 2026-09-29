@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.BubbleFactor
  *
  * @see com.cometchat.uikit.kotlin.presentation.messagelist.ui.CometChatMessageList.setOnThreadRepliesClick
  */
-fun interface ThreadReplyClick {
+public fun interface ThreadReplyClick {
     /**
      * Called when the thread reply indicator is clicked.
      *
@@ -20,7 +20,7 @@ fun interface ThreadReplyClick {
      * @param baseMessage The parent message that has thread replies
      * @param factory The BubbleFactory for this message type (may be null)
      */
-    fun onThreadReplyClick(
+    public fun onThreadReplyClick(
         context: Context,
         baseMessage: BaseMessage,
         factory: BubbleFactory?

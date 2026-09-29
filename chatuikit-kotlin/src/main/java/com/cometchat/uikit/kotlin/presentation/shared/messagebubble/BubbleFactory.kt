@@ -63,7 +63,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
  * }
  * ```
  */
-abstract class BubbleFactory {
+abstract public class BubbleFactory {
 
     // ========================================
     // Self-describing identity (mirrors ComposeBubbleFactory)
@@ -73,13 +73,13 @@ abstract class BubbleFactory {
      * Returns the message category this factory handles (e.g., "message", "custom", "call").
      * Returns empty string by default (not self-describing).
      */
-    open fun getCategory(): String = ""
+    open public fun getCategory(): String = ""
 
     /**
      * Returns the message type this factory handles (e.g., "text", "image", "polls").
      * Returns empty string by default (not self-describing).
      */
-    open fun getType(): String = ""
+    open public fun getType(): String = ""
 
     // ========================================
     // Style resolution (mirrors ComposeBubbleFactory)
@@ -92,7 +92,7 @@ abstract class BubbleFactory {
      * @param alignment The bubble alignment
      * @return Custom style or null for alignment-based defaults
      */
-    open fun getBubbleStyle(
+    open public fun getBubbleStyle(
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
     ): CometChatMessageBubbleStyle? = null
@@ -122,7 +122,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to replace the entire bubble, or null to use standard bubble
      */
-    open fun createBubbleView(context: Context): View? = null
+    open public fun createBubbleView(context: Context): View? = null
 
     /**
      * Binds message data to the custom bubble view.
@@ -135,7 +135,7 @@ abstract class BubbleFactory {
      * @param holder The ViewHolder for additional context (may be null)
      * @param position Position in the list (-1 if not applicable)
      */
-    open fun bindBubbleView(
+    open public fun bindBubbleView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
@@ -164,7 +164,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as content view (will be recycled)
      */
-    open fun createContentView(context: Context): View = View(context)
+    open public fun createContentView(context: Context): View = View(context)
 
     /**
      * Binds message data to an existing content view. Called every time a message is displayed.
@@ -177,7 +177,7 @@ abstract class BubbleFactory {
      * @param holder The ViewHolder for additional context (may be null)
      * @param position Position in the list (-1 if not applicable)
      */
-    open fun bindContentView(
+    open public fun bindContentView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment,
@@ -199,7 +199,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as leading view, or null for default/none
      */
-    open fun createLeadingView(context: Context): View? = null
+    open public fun createLeadingView(context: Context): View? = null
 
     /**
      * Binds message data to the leading view.
@@ -208,7 +208,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindLeadingView(
+    open public fun bindLeadingView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -228,7 +228,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as header view, or null for default/none
      */
-    open fun createHeaderView(context: Context): View? = null
+    open public fun createHeaderView(context: Context): View? = null
 
     /**
      * Binds message data to the header view.
@@ -237,7 +237,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindHeaderView(
+    open public fun bindHeaderView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -257,7 +257,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as reply view, or null for default/none
      */
-    open fun createReplyView(context: Context): View? = null
+    open public fun createReplyView(context: Context): View? = null
 
     /**
      * Binds message data to the reply view.
@@ -266,7 +266,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindReplyView(
+    open public fun bindReplyView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -286,7 +286,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as bottom view, or null for default/none
      */
-    open fun createBottomView(context: Context): View? = null
+    open public fun createBottomView(context: Context): View? = null
 
     /**
      * Binds message data to the bottom view.
@@ -295,7 +295,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindBottomView(
+    open public fun bindBottomView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -315,7 +315,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as status info view, or null for default/none
      */
-    open fun createStatusInfoView(context: Context): View? = null
+    open public fun createStatusInfoView(context: Context): View? = null
 
     /**
      * Binds message data to the status info view.
@@ -324,7 +324,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindStatusInfoView(
+    open public fun bindStatusInfoView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -344,7 +344,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as thread view, or null for default/none
      */
-    open fun createThreadView(context: Context): View? = null
+    open public fun createThreadView(context: Context): View? = null
 
     /**
      * Binds message data to the thread view.
@@ -353,7 +353,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindThreadView(
+    open public fun bindThreadView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -373,7 +373,7 @@ abstract class BubbleFactory {
      * @param context The Android context
      * @return View to be used as footer view, or null for default/none
      */
-    open fun createFooterView(context: Context): View? = null
+    open public fun createFooterView(context: Context): View? = null
 
     /**
      * Binds message data to the footer view.
@@ -382,7 +382,7 @@ abstract class BubbleFactory {
      * @param message The message to display
      * @param alignment The bubble alignment
      */
-    open fun bindFooterView(
+    open public fun bindFooterView(
         view: View,
         message: BaseMessage,
         alignment: UIKitConstants.MessageBubbleAlignment
@@ -402,7 +402,7 @@ abstract class BubbleFactory {
      *
      * @param contentView The content view being recycled
      */
-    open fun onViewRecycled(contentView: View) {
+    open public fun onViewRecycled(contentView: View) {
         // Default: no-op
     }
 
@@ -411,7 +411,7 @@ abstract class BubbleFactory {
     // ========================================
 
 
-    companion object {
+    public companion object {
         /**
          * Returns the factory key for a given message.
          *
@@ -422,7 +422,7 @@ abstract class BubbleFactory {
          * @return The factory key string
          */
         @JvmStatic
-        fun getFactoryKey(message: BaseMessage): String {
+        public fun getFactoryKey(message: BaseMessage): String {
             return if (message.deletedAt > 0) {
                 DELETED_KEY
             } else if (message.category == UIKitConstants.MessageCategory.CARD) {
@@ -441,18 +441,18 @@ abstract class BubbleFactory {
          * @return The factory key string in format "category_type"
          */
         @JvmStatic
-        fun getKey(category: String, type: String): String {
+        public fun getKey(category: String, type: String): String {
             return "${category}_${type}"
         }
 
         /**
          * Special key used for deleted messages.
          */
-        const val DELETED_KEY = "deleted"
+        public const val DELETED_KEY: String = "deleted"
 
         /**
          * Special key used for card messages (category-only, type is arbitrary).
          */
-        const val CARD_KEY = "card"
+        public const val CARD_KEY: String = "card"
     }
 }

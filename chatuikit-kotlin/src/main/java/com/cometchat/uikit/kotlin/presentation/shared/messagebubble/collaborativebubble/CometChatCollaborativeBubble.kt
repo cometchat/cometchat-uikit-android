@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -14,6 +13,7 @@ import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.StyleRes
 import com.cometchat.chat.models.CustomMessage
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
@@ -51,13 +51,13 @@ import org.json.JSONObject
  * collaborativeBubble.setBoardUrl("https://...")
  * ```
  */
-class CometChatCollaborativeBubble @JvmOverloads constructor(
+public class CometChatCollaborativeBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCollaborativeBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatCollaborativeBubble::class.java.simpleName
         
         // Extension keys for collaborative data
@@ -70,7 +70,7 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
     /**
      * Enum representing collaborative document types.
      */
-    enum class CollaborativeType {
+    public enum class CollaborativeType {
         DOCUMENT,
         WHITEBOARD
     }
@@ -205,7 +205,7 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
      *
      * @param message The CustomMessage containing collaborative data
      */
-    fun setMessage(message: CustomMessage) {
+    public fun setMessage(message: CustomMessage) {
         this.customMessage = message
         
         // Extract collaborative data from message
@@ -225,17 +225,17 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
     /**
      * Gets the current message.
      */
-    fun getMessage(): CustomMessage? = customMessage
+    public fun getMessage(): CustomMessage? = customMessage
 
     /**
      * Gets the collaborative type.
      */
-    fun getCollaborativeType(): CollaborativeType = collaborativeType
+    public fun getCollaborativeType(): CollaborativeType = collaborativeType
 
     /**
      * Sets the collaborative type and updates the icon.
      */
-    fun setCollaborativeType(type: CollaborativeType) {
+    public fun setCollaborativeType(type: CollaborativeType) {
         this.collaborativeType = type
         updateIconForType(type)
     }
@@ -336,7 +336,7 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting collaborative data: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting collaborative data: ${e.message}")
         }
 
         return CollaborativeData(
@@ -383,72 +383,72 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting extension data: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting extension data: ${e.message}")
         }
         return null
     }
 
-    fun getTitle(): String = titleTextView.text.toString()
+    public fun getTitle(): String = titleTextView.text.toString()
 
     /**
      * Sets the title text.
      */
-    fun setTitle(title: String?) {
+    public fun setTitle(title: String?) {
         if (title != null) {
             this.titleText = title
             titleTextView.text = title
         }
     }
 
-    fun getSubTitle(): String = subtitleTextView.text.toString()
+    public fun getSubTitle(): String = subtitleTextView.text.toString()
 
     /**
      * Sets the subtitle text.
      */
-    fun setSubTitle(subTitle: String?) {
+    public fun setSubTitle(subTitle: String?) {
         subtitleTextView.text = subTitle ?: ""
     }
 
-    fun getButtonText(): String = joinButton.text.toString()
+    public fun getButtonText(): String = joinButton.text.toString()
 
     /**
      * Sets the button text.
      */
-    fun setButtonText(buttonText: String?) {
+    public fun setButtonText(buttonText: String?) {
         joinButton.text = buttonText ?: ""
     }
 
-    fun getBoardUrl(): String = boardUrl
+    public fun getBoardUrl(): String = boardUrl
 
     /**
      * Sets the URL for the collaborative board.
      */
-    fun setBoardUrl(url: String?) {
+    public fun setBoardUrl(url: String?) {
         this.boardUrl = url ?: ""
     }
 
-    fun getIcon(): Drawable? = iconImageView.drawable
+    public fun getIcon(): Drawable? = iconImageView.drawable
 
     /**
      * Sets the icon drawable.
      */
-    fun setIcon(drawable: Drawable?) {
+    public fun setIcon(drawable: Drawable?) {
         iconImageView.setImageDrawable(drawable)
     }
 
     /**
      * Sets the icon from a resource.
      */
-    fun setIcon(@DrawableRes iconRes: Int) {
+    public fun setIcon(@DrawableRes iconRes: Int) {
         iconImageView.setImageResource(iconRes)
     }
 
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
     /**
      * Sets the click listener for the join button.
      */
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         this.onClick = onClick
     }
 
@@ -459,7 +459,7 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatCollaborativeBubbleStyle) {
+    public fun setStyle(style: CometChatCollaborativeBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -467,7 +467,7 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatCollaborativeBubble
@@ -481,90 +481,90 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
-    fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
-    fun getSubtitleTextAppearance(): Int = style?.subtitleTextAppearance ?: 0
-    fun getSubtitleTextColor(): Int = style?.subtitleTextColor ?: 0
-    fun getIconTint(): Int = style?.iconTint ?: 0
-    fun getIconDrawable(): Drawable? = style?.iconDrawable
-    fun getButtonTextAppearance(): Int = style?.buttonTextAppearance ?: 0
-    fun getButtonTextColor(): Int = style?.buttonTextColor ?: 0
-    fun getSeparatorColor(): Int = style?.separatorColor ?: 0
-    fun getImageStrokeColor(): Int = style?.imageStrokeColor ?: 0
-    fun getImageStrokeWidth(): Float = style?.imageStrokeWidth ?: 0f
-    fun getImageCornerRadius(): Float = style?.imageCornerRadius ?: 0f
+    public fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
+    public fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
+    public fun getSubtitleTextAppearance(): Int = style?.subtitleTextAppearance ?: 0
+    public fun getSubtitleTextColor(): Int = style?.subtitleTextColor ?: 0
+    public fun getIconTint(): Int = style?.iconTint ?: 0
+    public fun getIconDrawable(): Drawable? = style?.iconDrawable
+    public fun getButtonTextAppearance(): Int = style?.buttonTextAppearance ?: 0
+    public fun getButtonTextColor(): Int = style?.buttonTextColor ?: 0
+    public fun getSeparatorColor(): Int = style?.separatorColor ?: 0
+    public fun getImageStrokeColor(): Int = style?.imageStrokeColor ?: 0
+    public fun getImageStrokeWidth(): Float = style?.imageStrokeWidth ?: 0f
+    public fun getImageCornerRadius(): Float = style?.imageCornerRadius ?: 0f
 
     // Wrapper property getters
-    fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
-    fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
-    fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
-    fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
-    fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
-    fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
-    fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
-    fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
-    fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
+    public fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
+    public fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
+    public fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
+    public fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
+    public fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
+    public fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
+    public fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
+    public fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(titleTextAppearance = appearance) ?: CometChatCollaborativeBubbleStyle(titleTextAppearance = appearance)
         applyTitleTextAppearance(appearance)
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style?.copy(titleTextColor = color) ?: CometChatCollaborativeBubbleStyle(titleTextColor = color)
         applyTitleTextColor(color)
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(subtitleTextAppearance = appearance) ?: CometChatCollaborativeBubbleStyle(subtitleTextAppearance = appearance)
         applySubtitleTextAppearance(appearance)
     }
 
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style?.copy(subtitleTextColor = color) ?: CometChatCollaborativeBubbleStyle(subtitleTextColor = color)
         applySubtitleTextColor(color)
     }
 
-    fun setIconTint(@ColorInt color: Int) {
+    public fun setIconTint(@ColorInt color: Int) {
         style = style?.copy(iconTint = color) ?: CometChatCollaborativeBubbleStyle(iconTint = color)
         applyIconTint(color)
     }
 
-    fun setIconDrawable(drawable: Drawable?) {
+    public fun setIconDrawable(drawable: Drawable?) {
         style = style?.copy(iconDrawable = drawable) ?: CometChatCollaborativeBubbleStyle(iconDrawable = drawable)
         drawable?.let { iconImageView.setImageDrawable(it) }
     }
 
-    fun setButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setButtonTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(buttonTextAppearance = appearance) ?: CometChatCollaborativeBubbleStyle(buttonTextAppearance = appearance)
         applyButtonTextAppearance(appearance)
     }
 
-    fun setButtonTextColor(@ColorInt color: Int) {
+    public fun setButtonTextColor(@ColorInt color: Int) {
         style = style?.copy(buttonTextColor = color) ?: CometChatCollaborativeBubbleStyle(buttonTextColor = color)
         applyButtonTextColor(color)
     }
 
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style?.copy(separatorColor = color) ?: CometChatCollaborativeBubbleStyle(separatorColor = color)
         applySeparatorColor(color)
     }
 
-    fun setImageStrokeColor(@ColorInt color: Int) {
+    public fun setImageStrokeColor(@ColorInt color: Int) {
         style = style?.copy(imageStrokeColor = color) ?: CometChatCollaborativeBubbleStyle(imageStrokeColor = color)
         imageContainerCard.strokeColor = color
     }
 
-    fun setImageStrokeWidth(@Dimension width: Float) {
+    public fun setImageStrokeWidth(@Dimension width: Float) {
         style = style?.copy(imageStrokeWidth = width) ?: CometChatCollaborativeBubbleStyle(imageStrokeWidth = width)
         imageContainerCard.strokeWidth = width.toInt()
     }
 
-    fun setImageCornerRadius(@Dimension radius: Float) {
+    public fun setImageCornerRadius(@Dimension radius: Float) {
         style = style?.copy(imageCornerRadius = radius) ?: CometChatCollaborativeBubbleStyle(imageCornerRadius = radius)
         imageContainerCard.radius = radius
     }
@@ -575,17 +575,17 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
         setCardBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         style = style?.copy(cornerRadius = radius) ?: CometChatCollaborativeBubbleStyle(cornerRadius = radius)
         setRadius(radius)
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Float) {
+    public fun setBubbleStrokeWidth(@Dimension width: Float) {
         style = style?.copy(strokeWidth = width) ?: CometChatCollaborativeBubbleStyle(strokeWidth = width)
         strokeWidth = width.toInt()
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style?.copy(strokeColor = color) ?: CometChatCollaborativeBubbleStyle(strokeColor = color)
         strokeColor = color
     }
@@ -600,23 +600,23 @@ class CometChatCollaborativeBubble @JvmOverloads constructor(
         drawable?.let { super.setBackgroundDrawable(it) }
     }
 
-    fun setSenderNameTextColor(@ColorInt color: Int) {
+    public fun setSenderNameTextColor(@ColorInt color: Int) {
         style = style?.copy(senderNameTextColor = color) ?: CometChatCollaborativeBubbleStyle(senderNameTextColor = color)
     }
 
-    fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
+    public fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(senderNameTextAppearance = appearance) ?: CometChatCollaborativeBubbleStyle(senderNameTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorTextColor(@ColorInt color: Int) {
+    public fun setThreadIndicatorTextColor(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorTextColor = color) ?: CometChatCollaborativeBubbleStyle(threadIndicatorTextColor = color)
     }
 
-    fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(threadIndicatorTextAppearance = appearance) ?: CometChatCollaborativeBubbleStyle(threadIndicatorTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorIconTint(@ColorInt color: Int) {
+    public fun setThreadIndicatorIconTint(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorIconTint = color) ?: CometChatCollaborativeBubbleStyle(threadIndicatorIconTint = color)
     }
 

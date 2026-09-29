@@ -52,7 +52,7 @@ import java.text.SimpleDateFormat
  * @property start Start margin in pixels, or -1 to not apply
  * @property end End margin in pixels, or -1 to not apply
  */
-data class BubbleMargins(
+public data class BubbleMargins(
     val top: Int = -1,
     val bottom: Int = -1,
     val start: Int = -1,
@@ -71,7 +71,7 @@ data class BubbleMargins(
  * @param factory The BubbleFactory for this message type (may be null)
  * @param bubble The CometChatMessageBubble view
  */
-typealias OnMessageLongClick = (
+public typealias OnMessageLongClick = (
     options: List<CometChatMessageOption>,
     message: BaseMessage,
     factory: BubbleFactory?,
@@ -82,7 +82,7 @@ typealias OnMessageLongClick = (
  * Functional interface for thread reply click events.
  * Invoked when the user clicks on the thread view to view replies.
  */
-fun interface ThreadReplyClick {
+public fun interface ThreadReplyClick {
     /**
      * Called when the thread reply view is clicked.
      *
@@ -90,7 +90,7 @@ fun interface ThreadReplyClick {
      * @param message The message with thread replies
      * @param factory The BubbleFactory for this message type (may be null)
      */
-    fun onThreadReplyClick(
+    public fun onThreadReplyClick(
         context: Context,
         message: BaseMessage,
         factory: BubbleFactory?
@@ -103,7 +103,7 @@ fun interface ThreadReplyClick {
  * @param reaction The reaction that was clicked
  * @param message The message the reaction belongs to
  */
-typealias OnReactionClick = (reaction: Reaction, message: BaseMessage) -> Unit
+public typealias OnReactionClick = (reaction: Reaction, message: BaseMessage) -> Unit
 
 /**
  * Callback invoked when a reaction is long-pressed.
@@ -111,21 +111,21 @@ typealias OnReactionClick = (reaction: Reaction, message: BaseMessage) -> Unit
  * @param reaction The reaction that was long-pressed
  * @param message The message the reaction belongs to
  */
-typealias OnReactionLongClick = (reaction: Reaction, message: BaseMessage) -> Unit
+public typealias OnReactionLongClick = (reaction: Reaction, message: BaseMessage) -> Unit
 
 /**
  * Callback invoked when the "add more reactions" button is clicked.
  *
  * @param message The message to add a reaction to
  */
-typealias OnAddMoreReactionsClick = (message: BaseMessage) -> Unit
+public typealias OnAddMoreReactionsClick = (message: BaseMessage) -> Unit
 
 /**
  * Callback invoked when a message preview is clicked.
  *
  * @param message The message whose preview was clicked
  */
-typealias OnMessagePreviewClick = (message: BaseMessage) -> Unit
+public typealias OnMessagePreviewClick = (message: BaseMessage) -> Unit
 
 /**
  * RecyclerView adapter for displaying messages in a chat list.
@@ -159,7 +159,7 @@ typealias OnMessagePreviewClick = (message: BaseMessage) -> Unit
  * @see StickyHeaderAdapter
  * @see NewMessageIndicatorDecorationAdapter
  */
-class MessageAdapter @JvmOverloads constructor(
+internal class MessageAdapter @JvmOverloads constructor(
     context: Context? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     StickyHeaderAdapter<MessageAdapter.DateItemHolder>,

@@ -28,7 +28,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * Mirrors the standard bubble container pattern of [CometChatTextBubble] — same
  * receipts, reactions, reply, thread, and container styling.
  */
-class CometChatCardBubble @JvmOverloads constructor(
+public class CometChatCardBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -61,7 +61,7 @@ class CometChatCardBubble @JvmOverloads constructor(
      * @param message The CardMessage to render
      * @param alignment The bubble alignment (LEFT, RIGHT, CENTER)
      */
-    fun setMessage(message: CardMessage, alignment: UIKitConstants.MessageBubbleAlignment) {
+    public fun setMessage(message: CardMessage, alignment: UIKitConstants.MessageBubbleAlignment) {
         removeAllViews()
 
         val cardRaw = message.card

@@ -14,14 +14,14 @@ import com.cometchat.uikit.kotlin.R
  * CometChatShimmerFrameLayout is a FrameLayout that displays a shimmer effect
  * over its children. It's used to show loading placeholders.
  */
-class CometChatShimmerFrameLayout @JvmOverloads constructor(
+public class CometChatShimmerFrameLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatShimmerFrameLayout::class.java.simpleName
     }
 
@@ -54,7 +54,7 @@ class CometChatShimmerFrameLayout @JvmOverloads constructor(
         }
     }
 
-    fun setShimmer(shimmer: CometChatShimmer?): CometChatShimmerFrameLayout {
+    public fun setShimmer(shimmer: CometChatShimmer?): CometChatShimmerFrameLayout {
         shimmerDrawable.setShimmer(shimmer)
         if (shimmer != null && shimmer.clipToChildren) {
             setLayerType(LAYER_TYPE_HARDWARE, contentPaint)
@@ -64,23 +64,23 @@ class CometChatShimmerFrameLayout @JvmOverloads constructor(
         return this
     }
 
-    fun getShimmer(): CometChatShimmer? = shimmerDrawable.shimmer
+    public fun getShimmer(): CometChatShimmer? = shimmerDrawable.shimmer
 
-    fun startShimmer() {
+    public fun startShimmer() {
         if (isAttachedToWindow) {
             shimmerDrawable.setShimmer(CometChatShimmerUtils.getCometChatShimmerConfig(context))
             shimmerDrawable.startShimmer()
         }
     }
 
-    fun stopShimmer() {
+    public fun stopShimmer() {
         stoppedShimmerBecauseVisibility = false
         shimmerDrawable.stopShimmer()
     }
 
-    fun isShimmerStarted(): Boolean = shimmerDrawable.isShimmerStarted()
+    public fun isShimmerStarted(): Boolean = shimmerDrawable.isShimmerStarted()
 
-    fun showShimmer(startShimmer: Boolean) {
+    public fun showShimmer(startShimmer: Boolean) {
         showShimmer = true
         if (startShimmer) {
             startShimmer()
@@ -88,15 +88,15 @@ class CometChatShimmerFrameLayout @JvmOverloads constructor(
         invalidate()
     }
 
-    fun hideShimmer() {
+    public fun hideShimmer() {
         stopShimmer()
         showShimmer = false
         invalidate()
     }
 
-    fun isShimmerVisible(): Boolean = showShimmer
+    public fun isShimmerVisible(): Boolean = showShimmer
 
-    fun isShimmerRunning(): Boolean = shimmerDrawable.isShimmerRunning()
+    public fun isShimmerRunning(): Boolean = shimmerDrawable.isShimmerRunning()
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
@@ -137,15 +137,15 @@ class CometChatShimmerFrameLayout @JvmOverloads constructor(
         return super.verifyDrawable(who) || who == shimmerDrawable
     }
 
-    fun setStaticAnimationProgress(value: Float) {
+    public fun setStaticAnimationProgress(value: Float) {
         shimmerDrawable.setStaticAnimationProgress(value)
     }
 
-    fun clearStaticAnimationProgress() {
+    public fun clearStaticAnimationProgress() {
         shimmerDrawable.clearStaticAnimationProgress()
     }
 
-    fun setCustomLayout(@LayoutRes shimmerLayoutDesign: Int) {
+    public fun setCustomLayout(@LayoutRes shimmerLayoutDesign: Int) {
         removeAllViews()
         val view = inflate(context, shimmerLayoutDesign, null)
         addView(view)

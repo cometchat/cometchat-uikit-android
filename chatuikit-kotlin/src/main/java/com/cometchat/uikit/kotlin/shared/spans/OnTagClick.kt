@@ -5,6 +5,6 @@ import android.content.Context
 /**
  * Interface for handling tag click events.
  */
-fun interface OnTagClick<T> {
-    fun onClick(context: Context, item: T)
+public fun interface OnTagClick<T> {
+    public fun onClick(context: Context, item: T)
 }

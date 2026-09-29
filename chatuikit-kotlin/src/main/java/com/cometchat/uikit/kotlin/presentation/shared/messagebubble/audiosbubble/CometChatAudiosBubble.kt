@@ -7,7 +7,6 @@ import android.media.MediaMetadataRetriever
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.util.LruCache
 import android.view.View
 import android.widget.ImageView
@@ -21,6 +20,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.AudioBubblePlaybackState
 import com.cometchat.uikit.core.utils.AudioBubbleStateManager
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.mediaviewer.CometChatImageViewerActivity
@@ -58,7 +58,7 @@ import java.util.Locale
  * Playback state lives in [AudioBubbleStateManager] (download-to-cache on first play, single
  * playback enforcement, survives recycling), same as the single audio bubble.
  */
-class CometChatAudiosBubble @JvmOverloads constructor(
+public class CometChatAudiosBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -95,11 +95,11 @@ class CometChatAudiosBubble @JvmOverloads constructor(
         layoutParams = LayoutParams(bubbleWidthPx, LayoutParams.WRAP_CONTENT)
     }
 
-    fun setStyle(style: CometChatAudioBubbleStyle) {
+    public fun setStyle(style: CometChatAudioBubbleStyle) {
         this.style = style
     }
 
-    fun setOutgoing(outgoing: Boolean) {
+    public fun setOutgoing(outgoing: Boolean) {
         isOutgoing = outgoing
     }
 
@@ -109,7 +109,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
      * with bottom padding itself (0 while the row provides the gap, 4dp when it is hidden so the
      * cards aren't flush with the bubble edge).
      */
-    fun setStatusInfoVisible(visible: Boolean) {
+    public fun setStatusInfoVisible(visible: Boolean) {
         statusInfoVisible = visible
         val voiceEmbed = getChildAt(0) as? CometChatAudioBubble
         if (voiceEmbed != null) {
@@ -128,7 +128,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setMessage] — the caption is rendered there.
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -136,7 +136,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
         messageAlignment = alignment
     }
 
-    fun setMessage(message: MediaMessage) {
+    public fun setMessage(message: MediaMessage) {
         stopTicker()
         holders.clear()
         removeAllViews()
@@ -574,7 +574,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
                     runCatching { retriever.release() }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Duration preload failed: ${e.message}")
+                CometChatLogger.e(TAG, "Duration preload failed: ${e.message}")
                 0L
             }
             if (durationMs > 0) {
@@ -606,7 +606,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
             connection.disconnect()
             if (tempFile.length() > 0 && tempFile.renameTo(targetFile)) targetFile.absolutePath else { tempFile.delete(); null }
         } catch (e: Exception) {
-            Log.e(TAG, "Download failed: ${e.message}")
+            CometChatLogger.e(TAG, "Download failed: ${e.message}")
             tempFile.delete()
             null
         }
@@ -697,7 +697,7 @@ class CometChatAudiosBubble @JvmOverloads constructor(
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatAudiosBubble"
         private const val COLLAPSED_COUNT = 3
         private const val POLL_INTERVAL_MS = 200L

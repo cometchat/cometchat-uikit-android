@@ -30,7 +30,7 @@ import java.util.EnumSet
  *
  * @param context Optional context for theme-aware span creation.
  */
-class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
+public class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
 
     /** Flag to prevent recursive span modifications. */
     private var isModifying = false
@@ -58,20 +58,20 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Sets the context for creating theme-aware spans.
      */
-    fun setContext(context: Context?) {
+    public fun setContext(context: Context?) {
         this.context = context
     }
 
     /**
      * Returns a copy of the current pending formats.
      */
-    fun getPendingFormats(): Set<RichTextFormat> =
+    public fun getPendingFormats(): Set<RichTextFormat> =
         if (pendingFormats.isEmpty()) emptySet() else EnumSet.copyOf(pendingFormats)
 
     /**
      * Returns a copy of the explicitly disabled formats.
      */
-    fun getExplicitlyDisabledFormats(): Set<RichTextFormat> =
+    public fun getExplicitlyDisabledFormats(): Set<RichTextFormat> =
         if (explicitlyDisabledFormats.isEmpty()) emptySet() else EnumSet.copyOf(explicitlyDisabledFormats)
 
     /**
@@ -83,7 +83,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
      *
      * @return `true` if the format is now pending (active), `false` if removed/disabled.
      */
-    fun togglePendingFormat(formatType: RichTextFormat): Boolean {
+    public fun togglePendingFormat(formatType: RichTextFormat): Boolean {
         return when {
             pendingFormats.contains(formatType) -> {
                 pendingFormats.remove(formatType)
@@ -105,18 +105,18 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Checks if a format is pending.
      */
-    fun isPendingFormat(formatType: RichTextFormat): Boolean = formatType in pendingFormats
+    public fun isPendingFormat(formatType: RichTextFormat): Boolean = formatType in pendingFormats
 
     /**
      * Checks if a format is explicitly disabled.
      */
-    fun isExplicitlyDisabled(formatType: RichTextFormat): Boolean = formatType in explicitlyDisabledFormats
+    public fun isExplicitlyDisabled(formatType: RichTextFormat): Boolean = formatType in explicitlyDisabledFormats
 
     /**
      * Clears all pending formats and explicitly disabled formats.
      * Should be called when the cursor moves to a new position.
      */
-    fun clearPendingFormats() {
+    public fun clearPendingFormats() {
         pendingFormats.clear()
         explicitlyDisabledFormats.clear()
     }
@@ -124,7 +124,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Sets the pending formats from a set, clearing explicitly disabled.
      */
-    fun setPendingFormats(formats: Set<RichTextFormat>?) {
+    public fun setPendingFormats(formats: Set<RichTextFormat>?) {
         pendingFormats.clear()
         explicitlyDisabledFormats.clear()
         if (formats != null) {
@@ -135,7 +135,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Marks a format as explicitly disabled without span update.
      */
-    fun disableFormat(formatType: RichTextFormat) {
+    public fun disableFormat(formatType: RichTextFormat) {
         pendingFormats.remove(formatType)
         explicitlyDisabledFormats.add(formatType)
     }
@@ -144,7 +144,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
      * Marks a format as explicitly disabled and updates span flags to prevent
      * auto-extension at the cursor position.
      */
-    fun disableFormatWithSpanUpdate(editable: Editable, format: RichTextFormat, cursorPos: Int) {
+    public fun disableFormatWithSpanUpdate(editable: Editable, format: RichTextFormat, cursorPos: Int) {
         pendingFormats.remove(format)
         explicitlyDisabledFormats.add(format)
         updateSpanFlagsAtPosition(editable, cursorPos, inclusive = false, targetFormat = format)
@@ -153,7 +153,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Enables a format (removes from disabled, adds to pending).
      */
-    fun enableFormat(formatType: RichTextFormat) {
+    public fun enableFormat(formatType: RichTextFormat) {
         explicitlyDisabledFormats.remove(formatType)
         pendingFormats.add(formatType)
     }
@@ -161,14 +161,14 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Clears the explicitly disabled state for a format without adding to pending.
      */
-    fun clearExplicitlyDisabled(formatType: RichTextFormat) {
+    public fun clearExplicitlyDisabled(formatType: RichTextFormat) {
         explicitlyDisabledFormats.remove(formatType)
     }
 
     /**
      * Enables a format and updates span flags to allow auto-extension.
      */
-    fun enableFormatWithSpanUpdate(editable: Editable, format: RichTextFormat, cursorPos: Int) {
+    public fun enableFormatWithSpanUpdate(editable: Editable, format: RichTextFormat, cursorPos: Int) {
         explicitlyDisabledFormats.remove(format)
         pendingFormats.add(format)
         updateSpanFlagsAtPosition(editable, cursorPos, inclusive = true, targetFormat = format)
@@ -209,7 +209,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
      * @param before   The length of text that was removed.
      * @param count    The length of text that was inserted.
      */
-    fun handleTextChanged(editable: Editable?, start: Int, before: Int, count: Int) {
+    public fun handleTextChanged(editable: Editable?, start: Int, before: Int, count: Int) {
         if (isModifying || editable == null) return
 
         isModifying = true
@@ -242,7 +242,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Attaches this watcher to an [Editable], removing any existing watcher first.
      */
-    fun attachTo(editable: Editable?) {
+    public fun attachTo(editable: Editable?) {
         if (editable == null) return
         val existing = editable.getSpans(0, editable.length, FormatSpanWatcher::class.java)
         for (watcher in existing) {
@@ -254,7 +254,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
     /**
      * Detaches this watcher from an [Editable].
      */
-    fun detachFrom(editable: Editable?) {
+    public fun detachFrom(editable: Editable?) {
         editable?.removeSpan(this)
     }
 
@@ -690,7 +690,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
 
     // region Static helpers
 
-    companion object {
+    public companion object {
         /** Formats that should not be applied to newline-only insertions. */
         private val SKIP_ON_NEWLINE_FORMATS = setOf(
             RichTextFormat.ORDERED_LIST,
@@ -728,7 +728,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
          * Extends a span to include newly inserted text at its boundary.
          */
         @JvmStatic
-        fun extendSpan(editable: Editable?, span: RichTextFormatSpan?, newEnd: Int) {
+        public fun extendSpan(editable: Editable?, span: RichTextFormatSpan?, newEnd: Int) {
             if (editable == null || span == null) return
             val spanStart = editable.getSpanStart(span)
             val spanFlags = editable.getSpanFlags(span)
@@ -741,7 +741,7 @@ class FormatSpanWatcher(private var context: Context? = null) : SpanWatcher {
          * Shrinks a span by adjusting its boundaries. Removes if empty.
          */
         @JvmStatic
-        fun shrinkSpan(editable: Editable?, span: RichTextFormatSpan?, newStart: Int, newEnd: Int) {
+        public fun shrinkSpan(editable: Editable?, span: RichTextFormatSpan?, newStart: Int, newEnd: Int) {
             if (editable == null || span == null) return
             if (newStart >= newEnd) {
                 editable.removeSpan(span)

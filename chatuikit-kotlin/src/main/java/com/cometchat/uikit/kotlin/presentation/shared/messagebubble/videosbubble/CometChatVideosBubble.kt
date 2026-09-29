@@ -21,7 +21,7 @@ import java.util.Locale
  * Duration is read on-the-fly from the video URL (iOS-compatible; no metadata) on a background
  * thread. Replaces the single CometChatVideoBubble when `enableMultipleAttachments` is on.
  */
-class CometChatVideosBubble @JvmOverloads constructor(
+public class CometChatVideosBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

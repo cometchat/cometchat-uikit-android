@@ -6,7 +6,6 @@ import android.graphics.PorterDuff
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -19,6 +18,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.AudioBubblePlaybackState
 import com.cometchat.uikit.core.utils.AudioBubbleStateManager
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import com.cometchat.uikit.core.utils.WaveformUtils
 import com.cometchat.uikit.kotlin.R
@@ -45,13 +45,13 @@ import java.util.Locale
  * Uses [AudioBubbleStateManager] and [AudioBubblePlaybackState] from chatuikit-core
  * for per-bubble state management and single-playback enforcement.
  */
-class CometChatAudioBubble @JvmOverloads constructor(
+public class CometChatAudioBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAudioBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatAudioBubble"
         private const val BAR_COUNT = 28
         private const val POLL_INTERVAL_MS = 50L
@@ -187,7 +187,7 @@ class CometChatAudioBubble @JvmOverloads constructor(
      * Tells the bubble whether the message's timestamp/receipt row is visible below it, so it can
      * compensate with bottom padding when the row is hidden. Called by [CometChatMessageBubble].
      */
-    fun setStatusInfoVisible(visible: Boolean) {
+    public fun setStatusInfoVisible(visible: Boolean) {
         if (statusInfoVisible == visible) return
         statusInfoVisible = visible
         applyContentPadding()
@@ -237,7 +237,7 @@ class CometChatAudioBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setMessage] — the caption is rendered there.
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -252,7 +252,7 @@ class CometChatAudioBubble @JvmOverloads constructor(
      *
      * @param mediaMessage The MediaMessage containing audio attachment
      */
-    fun setMessage(mediaMessage: MediaMessage) {
+    public fun setMessage(mediaMessage: MediaMessage) {
         // Release previous state if re-binding; restore the default 0 bottom padding (a recycled
         // bubble may have been padded for a hidden timestamp row — the adapter re-hides after bind).
         setStatusInfoVisible(true)
@@ -303,7 +303,7 @@ class CometChatAudioBubble @JvmOverloads constructor(
      * @param audioUrl The URL of the audio file to be played.
      * @param subtitleText The subtitle text to be displayed (typically file size).
      */
-    fun setAudioUrl(audioUrl: String?, subtitleText: String) {
+    public fun setAudioUrl(audioUrl: String?, subtitleText: String) {
         resetVisualState()
         this.audioUrl = audioUrl
         this.fileName = "audio_${audioUrl.hashCode()}.m4a"
@@ -392,19 +392,19 @@ class CometChatAudioBubble @JvmOverloads constructor(
      * Starts the audio playback. Downloads the file on first play,
      * then plays from cache on subsequent taps.
      */
-    fun startPlaying() { onPlayTap() }
+    public fun startPlaying() { onPlayTap() }
 
     /**
      * Pauses the audio playback, preserving the current position.
      */
-    fun stopPlaying() { onPauseTap() }
+    public fun stopPlaying() { onPauseTap() }
 
     /**
      * Checks if audio is currently playing.
      *
      * @return true if audio is playing, false otherwise
      */
-    fun isPlaying(): Boolean = playbackState?.playState == PlayState.PLAYING
+    public fun isPlaying(): Boolean = playbackState?.playState == PlayState.PLAYING
 
     // ========================================
     // Polling
@@ -518,7 +518,7 @@ class CometChatAudioBubble @JvmOverloads constructor(
             connection.disconnect()
             if (tempFile.length() > 0 && tempFile.renameTo(targetFile)) targetFile.absolutePath else { tempFile.delete(); null }
         } catch (e: Exception) {
-            Log.e(TAG, "Download failed: ${e.message}")
+            CometChatLogger.e(TAG, "Download failed: ${e.message}")
             tempFile.delete()
             null
         }
@@ -540,12 +540,12 @@ class CometChatAudioBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatAudioBubbleStyle) { this.style = style; applyStyle() }
+    public fun setStyle(style: CometChatAudioBubbleStyle) { this.style = style; applyStyle() }
 
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val ta = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatAudioBubble)
             setStyle(CometChatAudioBubbleStyle.fromTypedArray(context, ta))
@@ -553,62 +553,62 @@ class CometChatAudioBubble @JvmOverloads constructor(
     }
 
     /** Sets the tint color for the play icon. */
-    fun setPlayIconTint(@ColorInt color: Int) { style = style.copy(playIconTint = color); playIconImageView.imageTintList = ColorStateList.valueOf(color) }
+    public fun setPlayIconTint(@ColorInt color: Int) { style = style.copy(playIconTint = color); playIconImageView.imageTintList = ColorStateList.valueOf(color) }
     /** Sets the tint color for the pause icon. */
-    fun setPauseIconTint(@ColorInt color: Int) { style = style.copy(pauseIconTint = color); pauseIconImageView.imageTintList = ColorStateList.valueOf(color) }
+    public fun setPauseIconTint(@ColorInt color: Int) { style = style.copy(pauseIconTint = color); pauseIconImageView.imageTintList = ColorStateList.valueOf(color) }
     /** Sets the background color of the play/pause button. */
-    fun setButtonTint(@ColorInt color: Int) { style = style.copy(buttonBackgroundColor = color); buttonCardView.setCardBackgroundColor(ColorStateList.valueOf(color)) }
+    public fun setButtonTint(@ColorInt color: Int) { style = style.copy(buttonBackgroundColor = color); buttonCardView.setCardBackgroundColor(ColorStateList.valueOf(color)) }
     /** Sets the color for the audio wave (legacy, sets unplayed color). */
-    fun setAudioWaveColor(@ColorInt color: Int) { style = style.copy(audioWaveColor = color); waveformView.setUnplayedWaveColor(color) }
+    public fun setAudioWaveColor(@ColorInt color: Int) { style = style.copy(audioWaveColor = color); waveformView.setUnplayedWaveColor(color) }
     /** Sets the color for played (progress) waveform bars. */
-    fun setPlayedWaveColor(@ColorInt color: Int) { style = style.copy(playedWaveColor = color); waveformView.setPlayedWaveColor(color) }
+    public fun setPlayedWaveColor(@ColorInt color: Int) { style = style.copy(playedWaveColor = color); waveformView.setPlayedWaveColor(color) }
     /** Sets the color for unplayed waveform bars. */
-    fun setUnplayedWaveColor(@ColorInt color: Int) { style = style.copy(unplayedWaveColor = color); waveformView.setUnplayedWaveColor(color) }
+    public fun setUnplayedWaveColor(@ColorInt color: Int) { style = style.copy(unplayedWaveColor = color); waveformView.setUnplayedWaveColor(color) }
     /** Sets the color of the subtitle text. */
-    fun setSubtitleTextColor(@ColorInt color: Int) { if (color != 0) { style = style.copy(subtitleTextColor = color); subtitleTextView.setTextColor(color) } }
+    public fun setSubtitleTextColor(@ColorInt color: Int) { if (color != 0) { style = style.copy(subtitleTextColor = color); subtitleTextView.setTextColor(color) } }
     /** Sets the text appearance of the subtitle text. */
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) { if (appearance != 0) { style = style.copy(subtitleTextAppearance = appearance); subtitleTextView.setTextAppearance(appearance) } }
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) { if (appearance != 0) { style = style.copy(subtitleTextAppearance = appearance); subtitleTextView.setTextAppearance(appearance) } }
     /** Sets the play icon drawable resource. */
-    fun setPlayIcon(@DrawableRes icon: Int) { playIcon = icon; playIconImageView.setImageResource(icon) }
+    public fun setPlayIcon(@DrawableRes icon: Int) { playIcon = icon; playIconImageView.setImageResource(icon) }
     /** Sets the pause icon drawable resource. */
-    fun setPauseIcon(@DrawableRes icon: Int) { pauseIcon = icon; pauseIconImageView.setImageResource(icon) }
+    public fun setPauseIcon(@DrawableRes icon: Int) { pauseIcon = icon; pauseIconImageView.setImageResource(icon) }
     /**
      * Sets an OnClick listener for the AudioBubble view.
      * It will be triggered when user clicks on the play button.
      *
      * @param onClick The OnClick listener to be set
      */
-    fun setOnClick(onClick: OnClick?) { this.onClick = onClick }
+    public fun setOnClick(onClick: OnClick?) { this.onClick = onClick }
 
     // Getters
     /** Gets the play icon tint color. */
-    fun getPlayIconTint(): Int = style.playIconTint
+    public fun getPlayIconTint(): Int = style.playIconTint
     /** Gets the pause icon tint color. */
-    fun getPauseIconTint(): Int = style.pauseIconTint
+    public fun getPauseIconTint(): Int = style.pauseIconTint
     /** Gets the button background color. */
-    fun getButtonTint(): Int = style.buttonBackgroundColor
+    public fun getButtonTint(): Int = style.buttonBackgroundColor
     /** Gets the audio wave color (legacy). */
-    fun getAudioWaveColor(): Int = style.audioWaveColor
+    public fun getAudioWaveColor(): Int = style.audioWaveColor
     /** Gets the played waveform bar color. */
-    fun getPlayedWaveColor(): Int = style.playedWaveColor
+    public fun getPlayedWaveColor(): Int = style.playedWaveColor
     /** Gets the unplayed waveform bar color. */
-    fun getUnplayedWaveColor(): Int = style.unplayedWaveColor
+    public fun getUnplayedWaveColor(): Int = style.unplayedWaveColor
     /** Gets the subtitle text color. */
-    fun getSubtitleTextColor(): Int = style.subtitleTextColor
+    public fun getSubtitleTextColor(): Int = style.subtitleTextColor
     /** Gets the subtitle text appearance resource. */
-    fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
+    public fun getSubtitleTextAppearance(): Int = style.subtitleTextAppearance
     /** Gets the play icon drawable resource. */
-    fun getPlayIcon(): Int = playIcon
+    public fun getPlayIcon(): Int = playIcon
     /** Gets the pause icon drawable resource. */
-    fun getPauseIcon(): Int = pauseIcon
+    public fun getPauseIcon(): Int = pauseIcon
     /** Gets the OnClick listener. */
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
     /** Gets the parent layout view. */
-    fun getView(): LinearLayout = parentLayout
+    public fun getView(): LinearLayout = parentLayout
     /** Gets the subtitle TextView. */
-    fun getSubtitle(): TextView = subtitleTextView
+    public fun getSubtitle(): TextView = subtitleTextView
     /** Gets the play icon ImageView. */
-    fun getPlayIconImageView(): View = playIconImageView
+    public fun getPlayIconImageView(): View = playIconImageView
     /** Gets the pause icon ImageView. */
-    fun getPauseIconImageView(): View = pauseIconImageView
+    public fun getPauseIconImageView(): View = pauseIconImageView
 }

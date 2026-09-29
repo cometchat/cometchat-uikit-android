@@ -251,6 +251,168 @@
     <string name="cometchat_notify_everyone_in_this_group">Notifier tout le monde dans ce groupe</string>
     <string name="cometchat_notify_all" translatable="true">tous</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_audio_waveform" translatable="true">Forme d\'onde audio</string>
+    <string name="cometchat_a11y_back" translatable="true">Retour</string>
+    <string name="cometchat_accept_call_button" translatable="true">Accepter l\'appel</string>
+    <string name="cometchat_add_link" translatable="true">Ajouter un lien</string>
+    <string name="cometchat_ai" translatable="true">IA</string>
+    <string name="cometchat_ai_agent_message" translatable="true">Message de l\'agent IA</string>
+    <string name="cometchat_ai_assistant" translatable="true">Assistant IA</string>
+    <string name="cometchat_and" translatable="true">et</string>
+    <string name="cometchat_answer_n" translatable="true">Réponse %1$d</string>
+    <string name="cometchat_apply" translatable="true">Appliquer</string>
+    <string name="cometchat_are_typing" translatable="true">écrivent…</string>
+    <string name="cometchat_attachment" translatable="true">Pièce jointe</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">Vous pouvez joindre jusqu\'à %1$d fichiers</string>
+    <string name="cometchat_attachment_option" translatable="true">Option de pièce jointe</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">Vous pouvez sélectionner encore %1$d fichiers</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">Appuyez pour réessayer</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">Échec de l\'envoi</string>
+    <string name="cometchat_audio_recording" translatable="true">Enregistrement audio</string>
+    <string name="cometchat_audio_visualizer_description" translatable="true">Visualiseur audio affichant l\'amplitude de l\'enregistrement</string>
+    <string name="cometchat_back" translatable="true">Revenir en arrière</string>
+    <string name="cometchat_ban_member" translatable="true">Bannir le membre</string>
+    <string name="cometchat_be_first_to_send_message" translatable="true">Soyez le premier à envoyer un message</string>
+    <string name="cometchat_bold" translatable="true">Gras</string>
+    <string name="cometchat_call_type" translatable="true">Type d\'appel</string>
+    <string name="cometchat_caller_avatar" translatable="true">Avatar de l\'appelant</string>
+    <string name="cometchat_caller_name" translatable="true">Nom de l\'appelant</string>
+    <string name="cometchat_change_scope" translatable="true">Changer le rôle</string>
+    <string name="cometchat_clear" translatable="true">Effacer</string>
+    <string name="cometchat_close" translatable="true">Fermer</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">Voulez-vous vraiment bannir %1$s ?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">Voulez-vous vraiment exclure %1$s ?</string>
+    <string name="cometchat_conversation_with" translatable="true">Conversation avec %s</string>
+    <string name="cometchat_conversation_with_status" translatable="true">Conversation avec %1$s, %2$s</string>
+    <string name="cometchat_create_poll" translatable="true">Créer un sondage</string>
+    <string name="cometchat_decline_call_button" translatable="true">Refuser l\'appel</string>
+    <string name="cometchat_delete_recording" translatable="true">Supprimer l\'enregistrement</string>
+    <string name="cometchat_discard_selection" translatable="true">Abandonner la sélection</string>
+    <string name="cometchat_download" translatable="true">Télécharger</string>
+    <string name="cometchat_edit_link" translatable="true">Modifier le lien</string>
+    <string name="cometchat_edit_message" translatable="true">Modifier le message</string>
+    <string name="cometchat_empty_groups_subtitle" translatable="true">Créez ou rejoignez des groupes pour les voir ici et commencer à collaborer.</string>
+    <string name="cometchat_empty_groups_title" translatable="true">Aucun groupe trouvé</string>
+    <string name="cometchat_end_call" translatable="true">Terminer l\'appel</string>
+    <string name="cometchat_end_call_button" translatable="true">Terminer l\'appel</string>
+    <string name="cometchat_error_groups_subtitle" translatable="true">Une erreur s\'est produite. Veuillez réessayer.</string>
+    <string name="cometchat_error_groups_title" translatable="true">Oups !</string>
+    <string name="cometchat_error_loading_call_logs" translatable="true">Erreur de chargement du journal d\'appels</string>
+    <string name="cometchat_error_loading_conversations" translatable="true">Erreur de chargement des conversations</string>
+    <string name="cometchat_error_loading_groups" translatable="true">Erreur de chargement des groupes</string>
+    <string name="cometchat_error_loading_members" translatable="true">Impossible de charger les membres. Veuillez réessayer.</string>
+    <string name="cometchat_file" translatable="true">Fichier</string>
+    <string name="cometchat_format_blockquote" translatable="true">Citation</string>
+    <string name="cometchat_format_bold" translatable="true">Gras</string>
+    <string name="cometchat_format_bullet_list" translatable="true">Liste à puces</string>
+    <string name="cometchat_format_code" translatable="true">Code</string>
+    <string name="cometchat_format_code_block" translatable="true">Bloc de code</string>
+    <string name="cometchat_format_italic" translatable="true">Italique</string>
+    <string name="cometchat_format_link" translatable="true">Lien</string>
+    <string name="cometchat_format_ordered_list" translatable="true">Liste numérotée</string>
+    <string name="cometchat_format_strikethrough" translatable="true">Barré</string>
+    <string name="cometchat_format_text" translatable="true">Mettre en forme le texte</string>
+    <string name="cometchat_format_underline" translatable="true">Souligné</string>
+    <string name="cometchat_gallery" translatable="true">Galerie</string>
+    <string name="cometchat_group_members" translatable="true">Membres</string>
+    <string name="cometchat_incoming_video_call" translatable="true">Appel vidéo entrant</string>
+    <string name="cometchat_incoming_voice_call" translatable="true">Appel vocal entrant</string>
+    <string name="cometchat_inline_code" translatable="true">Code en ligne</string>
+    <string name="cometchat_insert_link" translatable="true">Insérer un lien</string>
+    <string name="cometchat_italic" translatable="true">Italique</string>
+    <string name="cometchat_kick_member" translatable="true">Exclure le membre</string>
+    <string name="cometchat_link" translatable="true">Lien</string>
+    <string name="cometchat_link_text" translatable="true">Texte du lien</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_loading_call_logs" translatable="true">Chargement du journal d\'appels</string>
+    <string name="cometchat_loading_conversations" translatable="true">Chargement des conversations</string>
+    <string name="cometchat_loading_groups" translatable="true">Chargement des groupes</string>
+    <string name="cometchat_mark_unread" translatable="true">Marquer comme non lu</string>
+    <string name="cometchat_media_recorder_idle" translatable="true">Enregistreur prêt à enregistrer</string>
+    <string name="cometchat_media_recorder_recorded" translatable="true">Enregistrement terminé, prêt à être lu ou envoyé</string>
+    <string name="cometchat_media_recorder_recording" translatable="true">Enregistrement en cours, %s écoulées</string>
+    <string name="cometchat_meeting" translatable="true">Réunion</string>
+    <string name="cometchat_members_count" translatable="true">%d membres</string>
+    <string name="cometchat_message_generic" translatable="true">Message</string>
+    <string name="cometchat_message_type_icon" translatable="true">Icône du type de message</string>
+    <string name="cometchat_missed_video_call" translatable="true">Appel vidéo manqué</string>
+    <string name="cometchat_missed_voice_call" translatable="true">Appel vocal manqué</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d audio</string>
+    <string name="cometchat_n_files" translatable="true">%1$d fichiers</string>
+    <string name="cometchat_n_images" translatable="true">%1$d images</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d autres</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d vidéos</string>
+    <string name="cometchat_navigate_back" translatable="true">Revenir en arrière</string>
+    <string name="cometchat_new" translatable="true">Nouveau</string>
+    <string name="cometchat_no_call_logs" translatable="true">Aucun journal d\'appels</string>
+    <string name="cometchat_no_conversations" translatable="true">Aucune conversation</string>
+    <string name="cometchat_no_groups" translatable="true">Aucun groupe</string>
+    <string name="cometchat_no_members_found" translatable="true">Aucun membre trouvé</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">Ajoutez des membres au groupe pour les voir ici.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">Aucun message pour l\'instant</string>
+    <string name="cometchat_no_preview_available" translatable="true">Aucun aperçu disponible</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">Ce type de fichier n\'est pas pris en charge pour l\'aperçu.</string>
+    <string name="cometchat_no_users_found" translatable="true">Aucun utilisateur trouvé</string>
+    <string name="cometchat_others" translatable="true">autres</string>
+    <string name="cometchat_outgoing_call_calling" translatable="true">Appel en cours…</string>
+    <string name="cometchat_outgoing_video_call" translatable="true">Appel vidéo sortant</string>
+    <string name="cometchat_outgoing_voice_call" translatable="true">Appel vocal sortant</string>
+    <string name="cometchat_pause" translatable="true">Pause</string>
+    <string name="cometchat_pause_playback" translatable="true">Mettre la lecture en pause</string>
+    <string name="cometchat_pause_recording" translatable="true">Mettre l\'enregistrement en pause</string>
+    <string name="cometchat_play" translatable="true">Lire</string>
+    <string name="cometchat_play_recording" translatable="true">Lire l\'enregistrement</string>
+    <string name="cometchat_playback_progress" translatable="true">Progression de la lecture : %d%%</string>
+    <string name="cometchat_recipient_avatar" translatable="true">Avatar du destinataire</string>
+    <string name="cometchat_recipient_name" translatable="true">Nom du destinataire</string>
+    <string name="cometchat_recording_duration" translatable="true">Durée de l\'enregistrement : %s</string>
+    <string name="cometchat_recording_time" translatable="true">Temps d\'enregistrement : %s</string>
+    <string name="cometchat_reply_to_message" translatable="true">Répondre</string>
+    <string name="cometchat_replying_to" translatable="true">Réponse à %s</string>
+    <string name="cometchat_restart" translatable="true">Recommencer</string>
+    <string name="cometchat_restart_recording" translatable="true">Recommencer l\'enregistrement</string>
+    <string name="cometchat_resume" translatable="true">Reprendre</string>
+    <string name="cometchat_resume_recording" translatable="true">Reprendre l\'enregistrement</string>
+    <string name="cometchat_say_hello" translatable="true">Dites bonjour à %s 👋</string>
+    <string name="cometchat_search_in" translatable="true">Rechercher dans</string>
+    <string name="cometchat_select_conversation" translatable="true">Sélectionner la conversation</string>
+    <string name="cometchat_select_group" translatable="true">Sélectionner le groupe</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">Sélectionner un nouveau rôle pour %1$s</string>
+    <string name="cometchat_select_user" translatable="true">Sélectionner l\'utilisateur</string>
+    <string name="cometchat_selection_count" translatable="true">%d sélectionné(s)</string>
+    <string name="cometchat_send_recording" translatable="true">Envoyer l\'enregistrement</string>
+    <string name="cometchat_set_the_answers" translatable="true">Définir les réponses</string>
+    <string name="cometchat_show_less" translatable="true">Afficher moins</string>
+    <string name="cometchat_show_n_more" translatable="true">Afficher +%1$d autres</string>
+    <string name="cometchat_start" translatable="true">Démarrer</string>
+    <string name="cometchat_start_conversation" translatable="true">Démarrer une conversation</string>
+    <string name="cometchat_start_recording" translatable="true">Démarrer l\'enregistrement</string>
+    <string name="cometchat_sticker" translatable="true">Sticker</string>
+    <string name="cometchat_sticker_set" translatable="true">Ensemble de stickers</string>
+    <string name="cometchat_stop" translatable="true">Arrêter</string>
+    <string name="cometchat_stop_recording" translatable="true">Arrêter l\'enregistrement</string>
+    <string name="cometchat_strikethrough" translatable="true">Barré</string>
+    <string name="cometchat_submit_recording" translatable="true">Envoyer l\'enregistrement</string>
+    <string name="cometchat_submit_selection" translatable="true">Valider la sélection</string>
+    <string name="cometchat_text" translatable="true">Texte</string>
+    <string name="cometchat_type_a_message" translatable="true">Saisissez votre message…</string>
+    <string name="cometchat_unread_messages_count" translatable="true">%d messages non lus</string>
+    <string name="cometchat_users_are_typing" translatable="true">personnes écrivent…</string>
+    <string name="cometchat_video" translatable="true">Vidéo</string>
+    <string name="cometchat_voice_call" translatable="true">Appel vocal</string>
+    <string name="cometchat_voice_recording" translatable="true">Enregistrement vocal</string>
+    <string name="cometchat_whiteboard" translatable="true">Tableau blanc</string>
+    <!-- ENG-38656 (X3): audio a11y supplement -->
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">Enregistrement en cours, %1$s écoulées</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">Enregistrement en pause à %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">Enregistrement terminé, durée %1$s</string>
+    <string name="cometchat_a11y_playing_recording" translatable="true">Lecture de l\'enregistrement, %1$s</string>
+    <string name="cometchat_a11y_recording_error" translatable="true">Erreur d\'enregistrement</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">Enregistreur audio</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">Forme d\'onde audio affichant l\'amplitude de l\'enregistrement</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">Forme d\'onde audio affichant la progression de la lecture</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">S\'abonner au fil</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Se désabonner du fil</string>
@@ -274,13 +436,16 @@
     <string name="cometchat_save_message_confirm_body">Voulez-vous enregistrer ce message ?</string>
     <string name="cometchat_unsave_message_confirm_title">Ne plus enregistrer le message</string>
     <string name="cometchat_unsave_message_confirm_body">Voulez-vous ne plus enregistrer ce message ?</string>
+    <string name="cometchat_dont_ask_again" translatable="true">Ne plus demander</string>
     <string name="cometchat_pin_conversation">Épingler la conversation</string>
     <string name="cometchat_unpin_conversation">Désépingler la conversation</string>
     <string name="cometchat_unpin_conversation_confirm_title">Désépingler la conversation</string>
     <string name="cometchat_unpin_conversation_confirm_body">Voulez-vous désépingler cette conversation ?</string>
     <string name="cometchat_pin_conversation_limit_reached">Vous ne pouvez épingler que %1$d discussions. Désépinglez-en une pour en épingler une autre.</string>
     <string name="cometchat_pin_limit_reached">Vous ne pouvez épingler que %1$d messages. Désépinglez-en un pour en épingler un autre.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">Limite de messages épinglés atteinte. Désépinglez-en un pour en épingler un autre.</string>
     <string name="cometchat_save_limit_reached">Vous pouvez enregistrer jusqu\'à %1$d messages.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">Limite de messages enregistrés atteinte. Cessez d\'en enregistrer un pour en enregistrer un autre.</string>
     <string name="cometchat_pin_save_generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="cometchat_message_pinned">Message épinglé</string>
     <string name="cometchat_message_unpinned">Message désépinglé</string>
@@ -295,7 +460,6 @@
     <string name="cometchat_unpin_message">Désépingler le message</string>
     <string name="cometchat_message_option_more">Plus</string>
     <string name="cometchat_message_option_back">Retour</string>
-    <string name="cometchat_message_type_icon">Icône du type de message</string>
     <string name="cometchat_pinned_messages_header">Messages épinglés</string>
     <string name="cometchat_saved_messages_header">Messages enregistrés</string>
     <string name="cometchat_conversation_pinned">Conversation épinglée</string>

@@ -10,7 +10,7 @@ import com.cometchat.chat.models.BaseMessage
  *
  * @see com.cometchat.uikit.kotlin.presentation.messagelist.ui.CometChatMessageList.setMessageOptionClickListener
  */
-fun interface MessageOptionClickListener {
+public fun interface MessageOptionClickListener {
     /**
      * Called when a message option is clicked.
      *
@@ -18,5 +18,5 @@ fun interface MessageOptionClickListener {
      * @param optionId The ID of the clicked option (e.g., "reply", "copy", "edit", "delete").
      * @param optionName The display name of the clicked option.
      */
-    fun onMessageOptionClick(message: BaseMessage, optionId: String, optionName: String)
+    public fun onMessageOptionClick(message: BaseMessage, optionId: String, optionName: String)
 }

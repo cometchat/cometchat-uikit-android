@@ -25,7 +25,7 @@ import java.util.Locale
 /**
  * Enum representing the type of meeting call.
  */
-enum class MeetCallType {
+public enum class MeetCallType {
     VOICE_INCOMING,
     VOICE_OUTGOING,
     VIDEO_INCOMING,
@@ -50,7 +50,7 @@ enum class MeetCallType {
  * meetCallBubble.setMessage(customMessage)
  * ```
  */
-class CometChatMeetCallBubble @JvmOverloads constructor(
+public class CometChatMeetCallBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -202,7 +202,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param message The CustomMessage containing meeting call data
      */
-    fun setMessage(message: CustomMessage?) {
+    public fun setMessage(message: CustomMessage?) {
         if (message == null) return
 
         try {
@@ -260,7 +260,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      * @param isVideo Whether this is a video call
      * @param isIncoming Whether this is an incoming call
      */
-    fun setCallType(isVideo: Boolean, isIncoming: Boolean) {
+    public fun setCallType(isVideo: Boolean, isIncoming: Boolean) {
         currentCallType = when {
             isVideo && isIncoming -> MeetCallType.VIDEO_INCOMING
             isVideo -> MeetCallType.VIDEO_OUTGOING
@@ -275,7 +275,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param callType The MeetCallType enum value
      */
-    fun setCallType(callType: MeetCallType) {
+    public fun setCallType(callType: MeetCallType) {
         currentCallType = callType
         updateCallIcon()
     }
@@ -301,11 +301,11 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
     // Public API Methods (maintained for backward compatibility)
     // ========================================
 
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         titleTextView.text = title
     }
 
-    fun getTitle(): String = titleTextView.text.toString()
+    public fun getTitle(): String = titleTextView.text.toString()
 
     /**
      * Sets the title text of the call bubble.
@@ -313,16 +313,16 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param title The text to be displayed as the title.
      */
-    fun setTitleText(title: String) {
+    public fun setTitleText(title: String) {
         titleTextView.text = title
     }
 
-    fun setSubtitle(subtitle: String) {
+    public fun setSubtitle(subtitle: String) {
         subtitleTextView.text = subtitle
         subtitleTextView.visibility = if (subtitle.isEmpty()) View.GONE else View.VISIBLE
     }
 
-    fun getSubtitle(): String = subtitleTextView.text.toString()
+    public fun getSubtitle(): String = subtitleTextView.text.toString()
 
     /**
      * Shows the pin/save indicators at the END of the time row.
@@ -355,17 +355,17 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param title The text to be displayed as the subtitle.
      */
-    fun setSubtitleText(title: String) {
+    public fun setSubtitleText(title: String) {
         setSubtitle(title)
     }
 
-    fun setSessionId(sessionId: String) {
+    public fun setSessionId(sessionId: String) {
         this.sessionId = sessionId
     }
 
-    fun getSessionId(): String = sessionId
+    public fun getSessionId(): String = sessionId
 
-    fun setOnJoinClick(listener: OnClickListener?) {
+    public fun setOnJoinClick(listener: OnClickListener?) {
         onJoinClickListener = listener
     }
 
@@ -375,7 +375,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param onClick The callback to be invoked when the button is clicked.
      */
-    fun setOnClick(onClick: (() -> Unit)?) {
+    public fun setOnClick(onClick: (() -> Unit)?) {
         if (onClick != null) {
             onJoinClickListener = OnClickListener { onClick() }
         } else {
@@ -383,14 +383,14 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
         }
     }
 
-    fun getCallType(): MeetCallType = currentCallType
+    public fun getCallType(): MeetCallType = currentCallType
 
     /**
      * Sets the text of the join call button.
      *
      * @param text The text to be displayed on the button.
      */
-    fun setButtonText(text: String) {
+    public fun setButtonText(text: String) {
         joinCallText.text = text
     }
 
@@ -401,7 +401,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatMeetCallBubbleStyle) {
+    public fun setStyle(style: CometChatMeetCallBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -409,7 +409,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatMeetCallBubble
@@ -423,24 +423,24 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
-    fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
-    fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
-    fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
-    fun getCallIconTint(): Int = style?.callIconTint ?: 0
-    fun getIconBackgroundColor(): Int = style?.iconBackgroundColor ?: 0
-    fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
-    fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
-    fun getSubtitleTextColor(): Int = style?.subtitleTextColor ?: 0
-    fun getSubtitleTextAppearance(): Int = style?.subtitleTextAppearance ?: 0
-    fun getSeparatorColor(): Int = style?.separatorColor ?: 0
-    fun getJoinButtonTextColor(): Int = style?.joinButtonTextColor ?: 0
-    fun getJoinButtonTextAppearance(): Int = style?.joinButtonTextAppearance ?: 0
-    fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
-    fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
-    fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
-    fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
-    fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
+    public fun getBubbleBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBubbleCornerRadius(): Float = style?.cornerRadius ?: 0f
+    public fun getBubbleStrokeWidth(): Float = style?.strokeWidth ?: 0f
+    public fun getBubbleStrokeColor(): Int = style?.strokeColor ?: 0
+    public fun getCallIconTint(): Int = style?.callIconTint ?: 0
+    public fun getIconBackgroundColor(): Int = style?.iconBackgroundColor ?: 0
+    public fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
+    public fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
+    public fun getSubtitleTextColor(): Int = style?.subtitleTextColor ?: 0
+    public fun getSubtitleTextAppearance(): Int = style?.subtitleTextAppearance ?: 0
+    public fun getSeparatorColor(): Int = style?.separatorColor ?: 0
+    public fun getJoinButtonTextColor(): Int = style?.joinButtonTextColor ?: 0
+    public fun getJoinButtonTextAppearance(): Int = style?.joinButtonTextAppearance ?: 0
+    public fun getSenderNameTextColor(): Int = style?.senderNameTextColor ?: 0
+    public fun getSenderNameTextAppearance(): Int = style?.senderNameTextAppearance ?: 0
+    public fun getThreadIndicatorTextColor(): Int = style?.threadIndicatorTextColor ?: 0
+    public fun getThreadIndicatorTextAppearance(): Int = style?.threadIndicatorTextAppearance ?: 0
+    public fun getThreadIndicatorIconTint(): Int = style?.threadIndicatorIconTint ?: 0
 
     // ========================================
     // Setters (update style object + apply)
@@ -451,17 +451,17 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Float) {
+    public fun setCornerRadius(@Dimension radius: Float) {
         style = style?.copy(cornerRadius = radius) ?: CometChatMeetCallBubbleStyle(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Float) {
+    public fun setBubbleStrokeWidth(@Dimension width: Float) {
         style = style?.copy(strokeWidth = width) ?: CometChatMeetCallBubbleStyle(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style?.copy(strokeColor = color) ?: CometChatMeetCallBubbleStyle(strokeColor = color)
         applyStrokeColor(color)
     }
@@ -476,47 +476,47 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
         drawable?.let { applyBackgroundDrawable(it) }
     }
 
-    fun setCallIconTint(@ColorInt color: Int) {
+    public fun setCallIconTint(@ColorInt color: Int) {
         style = style?.copy(callIconTint = color) ?: CometChatMeetCallBubbleStyle(callIconTint = color)
         applyCallIconTint(color)
     }
 
-    fun setIconBackgroundColor(@ColorInt color: Int) {
+    public fun setIconBackgroundColor(@ColorInt color: Int) {
         style = style?.copy(iconBackgroundColor = color) ?: CometChatMeetCallBubbleStyle(iconBackgroundColor = color)
         applyIconBackgroundColor(color)
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style?.copy(titleTextColor = color) ?: CometChatMeetCallBubbleStyle(titleTextColor = color)
         applyTitleTextColor(color)
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(titleTextAppearance = appearance) ?: CometChatMeetCallBubbleStyle(titleTextAppearance = appearance)
         applyTitleTextAppearance(appearance)
     }
 
-    fun setSubtitleTextColor(@ColorInt color: Int) {
+    public fun setSubtitleTextColor(@ColorInt color: Int) {
         style = style?.copy(subtitleTextColor = color) ?: CometChatMeetCallBubbleStyle(subtitleTextColor = color)
         applySubtitleTextColor(color)
     }
 
-    fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(subtitleTextAppearance = appearance) ?: CometChatMeetCallBubbleStyle(subtitleTextAppearance = appearance)
         applySubtitleTextAppearance(appearance)
     }
 
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style?.copy(separatorColor = color) ?: CometChatMeetCallBubbleStyle(separatorColor = color)
         applySeparatorColor(color)
     }
 
-    fun setJoinButtonTextColor(@ColorInt color: Int) {
+    public fun setJoinButtonTextColor(@ColorInt color: Int) {
         style = style?.copy(joinButtonTextColor = color) ?: CometChatMeetCallBubbleStyle(joinButtonTextColor = color)
         applyJoinButtonTextColor(color)
     }
 
-    fun setJoinButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setJoinButtonTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(joinButtonTextAppearance = appearance) ?: CometChatMeetCallBubbleStyle(joinButtonTextAppearance = appearance)
         applyJoinButtonTextAppearance(appearance)
     }
@@ -527,7 +527,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param color The color to be applied to the button text.
      */
-    fun setButtonTextColor(@ColorInt color: Int) {
+    public fun setButtonTextColor(@ColorInt color: Int) {
         setJoinButtonTextColor(color)
     }
 
@@ -537,52 +537,52 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
      *
      * @param appearance The text style resource defining the appearance of the button text.
      */
-    fun setButtonTextAppearance(@StyleRes appearance: Int) {
+    public fun setButtonTextAppearance(@StyleRes appearance: Int) {
         setJoinButtonTextAppearance(appearance)
     }
 
-    fun setSenderNameTextColor(@ColorInt color: Int) {
+    public fun setSenderNameTextColor(@ColorInt color: Int) {
         style = style?.copy(senderNameTextColor = color) ?: CometChatMeetCallBubbleStyle(senderNameTextColor = color)
     }
 
-    fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
+    public fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(senderNameTextAppearance = appearance) ?: CometChatMeetCallBubbleStyle(senderNameTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorTextColor(@ColorInt color: Int) {
+    public fun setThreadIndicatorTextColor(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorTextColor = color) ?: CometChatMeetCallBubbleStyle(threadIndicatorTextColor = color)
     }
 
-    fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
+    public fun setThreadIndicatorTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(threadIndicatorTextAppearance = appearance) ?: CometChatMeetCallBubbleStyle(threadIndicatorTextAppearance = appearance)
     }
 
-    fun setThreadIndicatorIconTint(@ColorInt color: Int) {
+    public fun setThreadIndicatorIconTint(@ColorInt color: Int) {
         style = style?.copy(threadIndicatorIconTint = color) ?: CometChatMeetCallBubbleStyle(threadIndicatorIconTint = color)
     }
 
-    fun setIncomingVoiceCallIcon(icon: Drawable?) {
+    public fun setIncomingVoiceCallIcon(icon: Drawable?) {
         style = style?.copy(incomingVoiceCallIcon = icon) ?: CometChatMeetCallBubbleStyle(incomingVoiceCallIcon = icon)
         if (currentCallType == MeetCallType.VOICE_INCOMING) {
             icon?.let { callIconImageView.setImageDrawable(it) }
         }
     }
 
-    fun setIncomingVideoCallIcon(icon: Drawable?) {
+    public fun setIncomingVideoCallIcon(icon: Drawable?) {
         style = style?.copy(incomingVideoCallIcon = icon) ?: CometChatMeetCallBubbleStyle(incomingVideoCallIcon = icon)
         if (currentCallType == MeetCallType.VIDEO_INCOMING) {
             icon?.let { callIconImageView.setImageDrawable(it) }
         }
     }
 
-    fun setOutgoingVoiceCallIcon(icon: Drawable?) {
+    public fun setOutgoingVoiceCallIcon(icon: Drawable?) {
         style = style?.copy(outgoingVoiceCallIcon = icon) ?: CometChatMeetCallBubbleStyle(outgoingVoiceCallIcon = icon)
         if (currentCallType == MeetCallType.VOICE_OUTGOING) {
             icon?.let { callIconImageView.setImageDrawable(it) }
         }
     }
 
-    fun setOutgoingVideoCallIcon(icon: Drawable?) {
+    public fun setOutgoingVideoCallIcon(icon: Drawable?) {
         style = style?.copy(outgoingVideoCallIcon = icon) ?: CometChatMeetCallBubbleStyle(outgoingVideoCallIcon = icon)
         if (currentCallType == MeetCallType.VIDEO_OUTGOING) {
             icon?.let { callIconImageView.setImageDrawable(it) }
@@ -659,7 +659,7 @@ class CometChatMeetCallBubble @JvmOverloads constructor(
         }
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMeetCallBubble::class.java.simpleName
     }
 }

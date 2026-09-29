@@ -28,7 +28,7 @@ import com.google.android.material.card.MaterialCardView
  * - "This message was deleted" text with italic styling
  * - Customizable styling via XML attributes or programmatically
  */
-class CometChatDeleteBubble @JvmOverloads constructor(
+public class CometChatDeleteBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -151,7 +151,7 @@ class CometChatDeleteBubble @JvmOverloads constructor(
      *
      * @param message The deleted message
      */
-    fun setMessage(message: BaseMessage?) {
+    public fun setMessage(message: BaseMessage?) {
         // The message is used for context, but display is always the delete text
         messageTextView.text = deleteText
     }
@@ -161,7 +161,7 @@ class CometChatDeleteBubble @JvmOverloads constructor(
      *
      * @param text The text to display
      */
-    fun setText(text: String) {
+    public fun setText(text: String) {
         deleteText = text
         messageTextView.text = text
     }
@@ -171,7 +171,7 @@ class CometChatDeleteBubble @JvmOverloads constructor(
      *
      * @param text The spannable string to display in the bubble.
      */
-    fun setText(text: SpannableString) {
+    public fun setText(text: SpannableString) {
         messageTextView.setText(text, TextView.BufferType.SPANNABLE)
     }
 
@@ -180,19 +180,19 @@ class CometChatDeleteBubble @JvmOverloads constructor(
      *
      * @return The TextView within the bubble.
      */
-    fun getTextView(): TextView = messageTextView
+    public fun getTextView(): TextView = messageTextView
 
     /**
      * Gets the current text displayed in the delete bubble.
      */
-    fun getText(): String = deleteText
+    public fun getText(): String = deleteText
 
     /**
      * Sets the delete icon resource.
      *
      * @param icon The drawable resource ID
      */
-    fun setDeleteIcon(@DrawableRes icon: Int) {
+    public fun setDeleteIcon(@DrawableRes icon: Int) {
         deleteIconImageView.setImageResource(icon)
     }
 
@@ -203,7 +203,7 @@ class CometChatDeleteBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatDeleteBubbleStyle) {
+    public fun setStyle(style: CometChatDeleteBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -211,7 +211,7 @@ class CometChatDeleteBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatDeleteBubble
@@ -225,15 +225,15 @@ class CometChatDeleteBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getBubbleBackgroundColor(): Int = style.backgroundColor
-    fun getBubbleCornerRadius(): Float = style.cornerRadius
-    fun getBubbleStrokeWidth(): Float = style.strokeWidth
-    fun getBubbleStrokeColor(): Int = style.strokeColor
-    fun getTextColor(): Int = style.textColor
-    fun getTextAppearance(): Int = style.textAppearance
-    fun getDeleteIconTint(): Int = style.iconTint
-    fun getSenderNameTextColor(): Int = style.senderNameTextColor
-    fun getSenderNameTextAppearance(): Int = style.senderNameTextAppearance
+    public fun getBubbleBackgroundColor(): Int = style.backgroundColor
+    public fun getBubbleCornerRadius(): Float = style.cornerRadius
+    public fun getBubbleStrokeWidth(): Float = style.strokeWidth
+    public fun getBubbleStrokeColor(): Int = style.strokeColor
+    public fun getTextColor(): Int = style.textColor
+    public fun getTextAppearance(): Int = style.textAppearance
+    public fun getDeleteIconTint(): Int = style.iconTint
+    public fun getSenderNameTextColor(): Int = style.senderNameTextColor
+    public fun getSenderNameTextAppearance(): Int = style.senderNameTextAppearance
 
     // ========================================
     // Setters (update style object + apply)
@@ -244,27 +244,27 @@ class CometChatDeleteBubble @JvmOverloads constructor(
         applyBackgroundColor(color)
     }
 
-    fun setCornerRadius(@Dimension radius: Int) {
+    public fun setCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius.toFloat())
         applyCornerRadius(radius.toFloat())
     }
 
-    fun setBubbleStrokeWidth(@Dimension width: Int) {
+    public fun setBubbleStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width.toFloat())
         applyStrokeWidth(width.toFloat())
     }
 
-    fun setBubbleStrokeColor(@ColorInt color: Int) {
+    public fun setBubbleStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         style = style.copy(textColor = color)
         applyTextColor(color)
     }
 
-    fun setTextAppearance(@StyleRes appearance: Int) {
+    public fun setTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(textAppearance = appearance)
         applyTextAppearance(appearance)
     }
@@ -274,20 +274,20 @@ class CometChatDeleteBubble @JvmOverloads constructor(
      *
      * @param color The tint color
      */
-    fun setDeleteIconTint(@ColorInt color: Int) {
+    public fun setDeleteIconTint(@ColorInt color: Int) {
         style = style.copy(iconTint = color)
         applyIconTint(color)
     }
 
-    fun setSenderNameTextColor(@ColorInt color: Int) {
+    public fun setSenderNameTextColor(@ColorInt color: Int) {
         style = style.copy(senderNameTextColor = color)
     }
 
-    fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
+    public fun setSenderNameTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(senderNameTextAppearance = appearance)
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatDeleteBubble::class.java.simpleName
     }
 }

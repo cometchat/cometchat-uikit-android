@@ -20,7 +20,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see RichTextFormat
  */
-object RichTextSpanManager {
+public object RichTextSpanManager {
 
     /**
      * Inline format types that apply to character ranges within a line.
@@ -46,7 +46,7 @@ object RichTextSpanManager {
      * @param format   The format type to apply.
      * @param context  Optional context for theme-aware span creation.
      */
-    fun applyFormat(
+    public fun applyFormat(
         editable: Editable,
         start: Int,
         end: Int,
@@ -69,7 +69,7 @@ object RichTextSpanManager {
      * @param end      The end index (exclusive).
      * @param format   The format type to remove.
      */
-    fun removeFormat(
+    public fun removeFormat(
         editable: Editable,
         start: Int,
         end: Int,
@@ -111,7 +111,7 @@ object RichTextSpanManager {
      * @param selEnd   The selection end index (exclusive).
      * @param context  Optional context for theme-aware span creation.
      */
-    fun toggleFormat(
+    public fun toggleFormat(
         editable: Editable,
         format: RichTextFormat,
         selStart: Int,
@@ -163,7 +163,7 @@ object RichTextSpanManager {
      * @param position The cursor position to check.
      * @return Set of active format types at the position.
      */
-    fun getFormatsAt(editable: Editable, position: Int): Set<RichTextFormat> {
+    public fun getFormatsAt(editable: Editable, position: Int): Set<RichTextFormat> {
         if (position < 0 || position > editable.length) return emptySet()
 
         val result = mutableSetOf<RichTextFormat>()
@@ -197,7 +197,7 @@ object RichTextSpanManager {
      * @param end      The end index (exclusive).
      * @return Set of format types found in the range.
      */
-    fun getFormatsInRange(editable: Editable, start: Int, end: Int): Set<RichTextFormat> {
+    public fun getFormatsInRange(editable: Editable, start: Int, end: Int): Set<RichTextFormat> {
         if (!isValidRange(editable, start, end)) return emptySet()
 
         val result = mutableSetOf<RichTextFormat>()
@@ -220,7 +220,7 @@ object RichTextSpanManager {
      * @param format The format type to check.
      * @return `true` if the format is an inline text style.
      */
-    fun isTextStyleFormat(format: RichTextFormat): Boolean {
+    public fun isTextStyleFormat(format: RichTextFormat): Boolean {
         return format in TEXT_STYLE_FORMATS
     }
 
@@ -233,7 +233,7 @@ object RichTextSpanManager {
      * @return A new [RichTextFormatSpan] instance for the format.
      * @throws IllegalArgumentException if the format type is not recognized.
      */
-    fun createSpan(format: RichTextFormat, context: Context?): RichTextFormatSpan {
+    public fun createSpan(format: RichTextFormat, context: Context?): RichTextFormatSpan {
         return when (format) {
             RichTextFormat.BOLD -> BoldFormatSpan()
             RichTextFormat.ITALIC -> ItalicFormatSpan()
@@ -269,7 +269,7 @@ object RichTextSpanManager {
      * @param url      The URL to store in the link span.
      * @param context  Optional context for theme-aware span creation.
      */
-    fun applyLinkFormat(
+    public fun applyLinkFormat(
         editable: Editable,
         start: Int,
         end: Int,
@@ -294,7 +294,7 @@ object RichTextSpanManager {
      * @param end      The end index (exclusive).
      * @return The URL string, or `null` if no link is found.
      */
-    fun getLinkUrl(editable: Editable, start: Int, end: Int): String? {
+    public fun getLinkUrl(editable: Editable, start: Int, end: Int): String? {
         if (start < 0 || end < 0 || start > editable.length || end > editable.length) return null
 
         val spans = editable.getSpans(start, end, LinkFormatSpan::class.java)

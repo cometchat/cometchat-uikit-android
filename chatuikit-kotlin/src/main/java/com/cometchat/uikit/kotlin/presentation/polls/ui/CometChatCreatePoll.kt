@@ -30,7 +30,7 @@ import org.json.JSONArray
  * - Submit button enabled only when valid (question + 2+ options)
  * - Consumer handles poll creation via OnSubmitClickListener (same as reference)
  */
-class CometChatCreatePoll @JvmOverloads constructor(
+public class CometChatCreatePoll @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCreatePollStyle
@@ -56,14 +56,14 @@ class CometChatCreatePoll @JvmOverloads constructor(
      * Interface for handling submit button click events.
      * Same pattern as reference Java implementation.
      */
-    fun interface OnSubmitClickListener {
+    public fun interface OnSubmitClickListener {
         /**
          * Called when the submit button is clicked.
          *
          * @param question The question text entered by the user.
          * @param options A JSONArray containing the non-empty options provided by the user.
          */
-        fun onSubmitClick(question: String, options: JSONArray)
+        public fun onSubmitClick(question: String, options: JSONArray)
     }
 
     /**
@@ -209,7 +209,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Sets the visibility of the send button text.
      */
-    fun setSendButtonTextVisibility(visibility: Int) {
+    public fun setSendButtonTextVisibility(visibility: Int) {
         binding.tvSend.visibility = visibility
     }
 
@@ -217,7 +217,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
      * Sets the visibility of the progress indicator.
      * When visible, the send button text is hidden and button is disabled.
      */
-    fun setProgressVisibility(visibility: Int) {
+    public fun setProgressVisibility(visibility: Int) {
         binding.progress.visibility = visibility
         if (visibility == View.VISIBLE) {
             binding.tvSend.visibility = View.GONE
@@ -231,14 +231,14 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Sets the visibility of the error state.
      */
-    fun setErrorStateVisibility(visibility: Int) {
+    public fun setErrorStateVisibility(visibility: Int) {
         binding.tvError.visibility = visibility
     }
 
     /**
      * Sets the error message text.
      */
-    fun setErrorMessage(message: String?) {
+    public fun setErrorMessage(message: String?) {
         binding.tvError.text = message ?: ""
     }
 
@@ -350,7 +350,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Gets the current OnSubmitClickListener.
      */
-    fun getOnSubmitClickListener(): OnSubmitClickListener? = onSubmitClickListener
+    public fun getOnSubmitClickListener(): OnSubmitClickListener? = onSubmitClickListener
 
     /**
      * Sets a listener for submit button click events.
@@ -358,7 +358,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
      *
      * @param listener The listener to be notified of submit button clicks.
      */
-    fun setOnSubmitClickListener(listener: OnSubmitClickListener?) {
+    public fun setOnSubmitClickListener(listener: OnSubmitClickListener?) {
         if (listener != null) {
             this.onSubmitClickListener = listener
             binding.submitBtn.setOnClickListener {
@@ -384,14 +384,14 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Gets the current back click listener.
      */
-    fun getBackClickListener(): View.OnClickListener? = backClickListener
+    public fun getBackClickListener(): View.OnClickListener? = backClickListener
 
     /**
      * Sets a listener for back button click events.
      *
      * @param listener The listener to be notified of back button clicks.
      */
-    fun setBackClickListener(listener: View.OnClickListener?) {
+    public fun setBackClickListener(listener: View.OnClickListener?) {
         if (listener != null) {
             this.backClickListener = listener
             binding.imgBack.setOnClickListener(listener)
@@ -401,7 +401,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Sets the style for the component.
      */
-    fun setStyle(style: CometChatCreatePollStyle) {
+    public fun setStyle(style: CometChatCreatePollStyle) {
         this.style = style
         applyStyle()
     }
@@ -411,7 +411,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
      *
      * @param styleRes The style resource ID to apply
      */
-    fun setStyle(@androidx.annotation.StyleRes styleRes: Int) {
+    public fun setStyle(@androidx.annotation.StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.obtainStyledAttributes(
                 styleRes,
@@ -425,7 +425,7 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Sets whether to hide the toolbar.
      */
-    fun setHideToolbar(hide: Boolean) {
+    public fun setHideToolbar(hide: Boolean) {
         this.hideToolbar = hide
         updateToolbarVisibility()
     }
@@ -433,14 +433,14 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Sets the title text.
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         binding.tvTitle.text = title
     }
 
     /**
      * Resets the form to initial state.
      */
-    fun resetForm() {
+    public fun resetForm() {
         binding.etQuestion.setText("")
         optionsAdapter.reset()
         setErrorStateVisibility(View.GONE)
@@ -450,10 +450,10 @@ class CometChatCreatePoll @JvmOverloads constructor(
     /**
      * Gets the question text.
      */
-    fun getQuestion(): String = binding.etQuestion.text?.toString() ?: ""
+    public fun getQuestion(): String = binding.etQuestion.text?.toString() ?: ""
 
     /**
      * Gets the options list.
      */
-    fun getOptions(): List<String> = optionsAdapter.getOptionsArrayList()
+    public fun getOptions(): List<String> = optionsAdapter.getOptionsArrayList()
 }

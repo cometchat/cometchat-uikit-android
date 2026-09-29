@@ -6,6 +6,7 @@ import android.widget.EditText
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.uikit.core.mentions.TextFormatterProcessor
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.formatters.SuggestionItem
 import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
@@ -22,11 +23,11 @@ import com.cometchat.uikit.kotlin.shared.spans.NonEditableSpan
  * @param editText The EditText for message input
  * @param textFormatters List of text formatters to use
  */
-class MessageComposerMentionHelper(
+public class MessageComposerMentionHelper(
     private val editText: EditText,
     private val textFormatters: List<CometChatTextFormatter>
 ) {
-    companion object {
+    public companion object {
         private const val TAG = "MsgComposerMentionHelper"
     }
     
@@ -40,21 +41,21 @@ class MessageComposerMentionHelper(
      * 
      * @param onMentionDetected Callback when a mention is detected or cleared
      */
-    fun initialize(onMentionDetected: (MentionTextWatcher.MentionDetectionResult) -> Unit) {
-        android.util.Log.d(TAG, "initialize: setting up mention detection with ${textFormatters.size} formatters")
+    public fun initialize(onMentionDetected: (MentionTextWatcher.MentionDetectionResult) -> Unit) {
+        CometChatLogger.d(TAG, "initialize: setting up mention detection with ${textFormatters.size} formatters")
         onMentionDetectedCallback = onMentionDetected
         
         mentionTextWatcher = MentionTextWatcher(
             editText = editText,
             textFormatters = textFormatters,
             onMentionDetected = { result ->
-                android.util.Log.d(TAG, "initialize: mention detected callback - isActive=${result.isActive}, query='${result.query}'")
+                CometChatLogger.d(TAG, "initialize: mention detected callback - isActive=${result.isActive}, query='${result.query}'")
                 onMentionDetectedCallback?.invoke(result)
             }
         )
         
         editText.addTextChangedListener(mentionTextWatcher)
-        android.util.Log.d(TAG, "initialize: text watcher added to EditText")
+        CometChatLogger.d(TAG, "initialize: text watcher added to EditText")
     }
 
     /**
@@ -66,7 +67,7 @@ class MessageComposerMentionHelper(
      * @param suggestionItem The selected suggestion item
      * @param detectionResult The current mention detection result
      */
-    fun onSuggestionSelected(
+    public fun onSuggestionSelected(
         suggestionItem: SuggestionItem,
         detectionResult: MentionTextWatcher.MentionDetectionResult
     ) {
@@ -102,7 +103,7 @@ class MessageComposerMentionHelper(
     /**
      * Sets a callback for when a suggestion is selected.
      */
-    fun setOnSuggestionSelectedCallback(callback: (SuggestionItem) -> Unit) {
+    public fun setOnSuggestionSelectedCallback(callback: (SuggestionItem) -> Unit) {
         onSuggestionSelectedCallback = callback
     }
 
@@ -117,7 +118,7 @@ class MessageComposerMentionHelper(
      * @param message The message being sent (will be modified with processed text)
      * @return The processed text
      */
-    fun processBeforeSend(context: Context, message: BaseMessage): String {
+    public fun processBeforeSend(context: Context, message: BaseMessage): String {
         // Get processed text (spans replaced with underlying text)
         val processedText = mentionInsertionHelper.getProcessedText()
         
@@ -139,28 +140,28 @@ class MessageComposerMentionHelper(
      * 
      * @return The text with spans replaced by underlying text
      */
-    fun getProcessedText(): String {
+    public fun getProcessedText(): String {
         return mentionInsertionHelper.getProcessedText()
     }
 
     /**
      * Gets all selected suggestion items.
      */
-    fun getSelectedSuggestionItems(): List<SuggestionItem> {
+    public fun getSelectedSuggestionItems(): List<SuggestionItem> {
         return mentionInsertionHelper.getSelectedSuggestionItems()
     }
 
     /**
      * Clears all tracked mentions and resets the helper.
      */
-    fun clear() {
+    public fun clear() {
         mentionInsertionHelper.clear()
     }
 
     /**
      * Removes the text watcher and cleans up resources.
      */
-    fun cleanup() {
+    public fun cleanup() {
         mentionTextWatcher?.let { editText.removeTextChangedListener(it) }
         mentionTextWatcher = null
         clear()
@@ -170,19 +171,19 @@ class MessageComposerMentionHelper(
      * Manually triggers mention detection.
      * Useful when cursor position changes without text change.
      */
-    fun checkMention() {
+    public fun checkMention() {
         mentionTextWatcher?.checkMention()
     }
 
     /**
      * Gets the mention insertion helper for advanced operations.
      */
-    fun getMentionInsertionHelper(): MentionInsertionHelper = mentionInsertionHelper
+    public fun getMentionInsertionHelper(): MentionInsertionHelper = mentionInsertionHelper
 
     /**
      * Syncs the tracked mentions with the current EditText content.
      */
-    fun syncMentions() {
+    public fun syncMentions() {
         mentionInsertionHelper.syncWithEditText()
     }
 }
@@ -190,7 +191,7 @@ class MessageComposerMentionHelper(
 /**
  * Extension function to create a MessageComposerMentionHelper for an EditText.
  */
-fun EditText.createMessageComposerMentionHelper(
+public fun EditText.createMessageComposerMentionHelper(
     textFormatters: List<CometChatTextFormatter>
 ): MessageComposerMentionHelper {
     return MessageComposerMentionHelper(this, textFormatters)

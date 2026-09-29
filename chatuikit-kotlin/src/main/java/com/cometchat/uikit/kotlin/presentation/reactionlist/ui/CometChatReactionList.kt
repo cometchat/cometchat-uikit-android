@@ -70,13 +70,13 @@ import kotlinx.coroutines.launch
  * reactionList.setBaseMessage(message)
  * ```
  */
-class CometChatReactionList @JvmOverloads constructor(
+public class CometChatReactionList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatReactionListStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatReactionList::class.java.simpleName
     }
 
@@ -442,7 +442,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param message The BaseMessage to display reactions for
      */
-    fun setBaseMessage(message: BaseMessage) {
+    public fun setBaseMessage(message: BaseMessage) {
         // Reset mock data mode if it was previously set
         if (isUsingMockData) {
             isUsingMockData = false
@@ -461,14 +461,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current BaseMessage
      */
-    fun getBaseMessage(): BaseMessage? = baseMessage
+    public fun getBaseMessage(): BaseMessage? = baseMessage
 
     /**
      * Sets the reactions request builder for custom fetch configuration.
      *
      * @param builder The custom request builder
      */
-    fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder) {
+    public fun setReactionsRequestBuilder(builder: ReactionsRequest.ReactionsRequestBuilder) {
         this.reactionsRequestBuilder = builder
         viewModel?.setReactionsRequestBuilder(builder)
     }
@@ -478,14 +478,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current ReactionsRequestBuilder
      */
-    fun getReactionsRequestBuilder(): ReactionsRequest.ReactionsRequestBuilder? = reactionsRequestBuilder
+    public fun getReactionsRequestBuilder(): ReactionsRequest.ReactionsRequestBuilder? = reactionsRequestBuilder
 
     /**
      * Sets the style for the reaction list.
      *
      * @param style The CometChatReactionListStyle to apply
      */
-    fun setStyle(style: CometChatReactionListStyle) {
+    public fun setStyle(style: CometChatReactionListStyle) {
         this.style = style
         applyStyle()
     }
@@ -495,7 +495,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param styleResId The style resource ID
      */
-    fun setStyle(@StyleRes styleResId: Int) {
+    public fun setStyle(@StyleRes styleResId: Int) {
         if (styleResId != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleResId, R.styleable.CometChatReactionList
@@ -510,14 +510,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current CometChatReactionListStyle
      */
-    fun getStyle(): CometChatReactionListStyle = style
+    public fun getStyle(): CometChatReactionListStyle = style
 
     /**
      * Sets the custom loading view.
      *
      * @param view The custom view to display during loading
      */
-    fun setLoadingView(view: View?) {
+    public fun setLoadingView(view: View?) {
         this.customLoadingView = view
     }
 
@@ -526,14 +526,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The custom loading view
      */
-    fun getLoadingView(): View? = customLoadingView
+    public fun getLoadingView(): View? = customLoadingView
 
     /**
      * Sets the custom error view.
      *
      * @param view The custom view to display on error
      */
-    fun setErrorView(view: View?) {
+    public fun setErrorView(view: View?) {
         this.customErrorView = view
     }
 
@@ -542,14 +542,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The custom error view
      */
-    fun getErrorView(): View? = customErrorView
+    public fun getErrorView(): View? = customErrorView
 
     /**
      * Sets the error text.
      *
      * @param text The error message to display
      */
-    fun setErrorText(text: String?) {
+    public fun setErrorText(text: String?) {
         this.errorText = text
         binding.tvErrorState.text = text
     }
@@ -559,7 +559,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current error text
      */
-    fun getErrorText(): String? = errorText
+    public fun getErrorText(): String? = errorText
 
     /**
      * Sets whether to hide the item separators in the user list.
@@ -567,7 +567,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param hide True to hide the item separators
      */
-    fun hideSeparator(hide: Boolean) {
+    public fun hideSeparator(hide: Boolean) {
         this.hideSeparator = hide
         // Header separator is always visible - only item separators are affected
         reactedUsersAdapter.setHideSeparator(hide)
@@ -578,14 +578,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return True if separator is hidden
      */
-    fun hideSeparator(): Boolean = hideSeparator
+    public fun hideSeparator(): Boolean = hideSeparator
 
     /**
      * Sets the item click callback.
      *
      * @param callback The callback to invoke when an item is clicked
      */
-    fun setOnItemClick(callback: ((Reaction, BaseMessage?) -> Unit)?) {
+    public fun setOnItemClick(callback: ((Reaction, BaseMessage?) -> Unit)?) {
         this.onItemClick = callback
     }
 
@@ -594,7 +594,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param callback The callback to invoke when the list is empty
      */
-    fun setOnEmpty(callback: (() -> Unit)?) {
+    public fun setOnEmpty(callback: (() -> Unit)?) {
         this.onEmpty = callback
     }
 
@@ -603,7 +603,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param callback The callback to invoke on error
      */
-    fun setOnError(callback: ((CometChatException) -> Unit)?) {
+    public fun setOnError(callback: ((CometChatException) -> Unit)?) {
         this.onError = callback
     }
 
@@ -612,7 +612,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param reaction The emoji to select, or null for "All"
      */
-    fun setSelectedReaction(reaction: String?) {
+    public fun setSelectedReaction(reaction: String?) {
         this.selectedReaction = reaction
         viewModel?.setSelectedReaction(reaction)
     }
@@ -622,14 +622,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The currently selected reaction
      */
-    fun getSelectedReaction(): String? = selectedReaction
+    public fun getSelectedReaction(): String? = selectedReaction
 
     /**
      * Sets the ViewModel externally.
      *
      * @param viewModel The ViewModel to use
      */
-    fun setViewModel(viewModel: CometChatReactionListViewModel) {
+    public fun setViewModel(viewModel: CometChatReactionListViewModel) {
         this.viewModel = viewModel
         this.isExternalViewModel = true
         observeViewModel()
@@ -640,14 +640,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current ViewModel
      */
-    fun getViewModel(): CometChatReactionListViewModel? = viewModel
+    public fun getViewModel(): CometChatReactionListViewModel? = viewModel
 
     /**
      * Sets the loading state flag.
      *
      * @param isLoading True if loading
      */
-    fun isReactedUserListLoading(isLoading: Boolean) {
+    public fun isReactedUserListLoading(isLoading: Boolean) {
         this.isReactedUserListLoading = isLoading
     }
 
@@ -659,7 +659,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param listener The listener for custom item view, or null to use default
      */
-    fun setItemView(listener: ReactionListViewHolderListener?) {
+    public fun setItemView(listener: ReactionListViewHolderListener?) {
         reactedUsersAdapter.setItemView(listener)
     }
 
@@ -668,7 +668,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current item view listener
      */
-    fun getItemView(): ReactionListViewHolderListener? = reactedUsersAdapter.getItemView()
+    public fun getItemView(): ReactionListViewHolderListener? = reactedUsersAdapter.getItemView()
 
     /**
      * Sets custom leading view listener (avatar area).
@@ -676,7 +676,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param listener The listener for custom leading view, or null to use default
      */
-    fun setLeadingView(listener: ReactionListViewHolderListener?) {
+    public fun setLeadingView(listener: ReactionListViewHolderListener?) {
         reactedUsersAdapter.setLeadingView(listener)
     }
 
@@ -685,7 +685,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current leading view listener
      */
-    fun getLeadingView(): ReactionListViewHolderListener? = reactedUsersAdapter.getLeadingView()
+    public fun getLeadingView(): ReactionListViewHolderListener? = reactedUsersAdapter.getLeadingView()
 
     /**
      * Sets custom title view listener.
@@ -693,7 +693,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param listener The listener for custom title view, or null to use default
      */
-    fun setTitleView(listener: ReactionListViewHolderListener?) {
+    public fun setTitleView(listener: ReactionListViewHolderListener?) {
         reactedUsersAdapter.setTitleView(listener)
     }
 
@@ -702,7 +702,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current title view listener
      */
-    fun getTitleView(): ReactionListViewHolderListener? = reactedUsersAdapter.getTitleView()
+    public fun getTitleView(): ReactionListViewHolderListener? = reactedUsersAdapter.getTitleView()
 
     /**
      * Sets custom subtitle view listener.
@@ -710,7 +710,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param listener The listener for custom subtitle view, or null to use default
      */
-    fun setSubtitleView(listener: ReactionListViewHolderListener?) {
+    public fun setSubtitleView(listener: ReactionListViewHolderListener?) {
         reactedUsersAdapter.setSubtitleView(listener)
     }
 
@@ -719,7 +719,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current subtitle view listener
      */
-    fun getSubtitleView(): ReactionListViewHolderListener? = reactedUsersAdapter.getSubtitleView()
+    public fun getSubtitleView(): ReactionListViewHolderListener? = reactedUsersAdapter.getSubtitleView()
 
     /**
      * Sets custom trailing view listener (emoji area).
@@ -727,7 +727,7 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @param listener The listener for custom trailing view, or null to use default
      */
-    fun setTrailingView(listener: ReactionListViewHolderListener?) {
+    public fun setTrailingView(listener: ReactionListViewHolderListener?) {
         reactedUsersAdapter.setTrailingView(listener)
     }
 
@@ -736,14 +736,14 @@ class CometChatReactionList @JvmOverloads constructor(
      *
      * @return The current trailing view listener
      */
-    fun getTrailingView(): ReactionListViewHolderListener? = reactedUsersAdapter.getTrailingView()
+    public fun getTrailingView(): ReactionListViewHolderListener? = reactedUsersAdapter.getTrailingView()
 
     // ==================== Individual Style Setters ====================
 
     /**
      * Sets the background color.
      */
-    fun setReactionListBackgroundColor(@ColorInt color: Int) {
+    public fun setReactionListBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         binding.cardReactionList.setCardBackgroundColor(color)
     }
@@ -752,12 +752,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the background color.
      */
     @ColorInt
-    fun getReactionListBackgroundColor(): Int = style.backgroundColor
+    public fun getReactionListBackgroundColor(): Int = style.backgroundColor
 
     /**
      * Sets the stroke color.
      */
-    fun setReactionListStrokeColor(@ColorInt color: Int) {
+    public fun setReactionListStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         binding.cardReactionList.strokeColor = color
     }
@@ -766,12 +766,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the stroke color.
      */
     @ColorInt
-    fun getReactionListStrokeColor(): Int = style.strokeColor
+    public fun getReactionListStrokeColor(): Int = style.strokeColor
 
     /**
      * Sets the stroke width.
      */
-    fun setReactionListStrokeWidth(@Dimension width: Int) {
+    public fun setReactionListStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width)
         binding.cardReactionList.strokeWidth = width
     }
@@ -780,12 +780,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the stroke width.
      */
     @Dimension
-    fun getReactionListStrokeWidth(): Int = style.strokeWidth
+    public fun getReactionListStrokeWidth(): Int = style.strokeWidth
 
     /**
      * Sets the corner radius.
      */
-    fun setReactionListCornerRadius(@Dimension radius: Int) {
+    public fun setReactionListCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         val shapeAppearanceModel = ShapeAppearanceModel()
             .toBuilder()
@@ -801,12 +801,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the corner radius.
      */
     @Dimension
-    fun getReactionListCornerRadius(): Int = style.cornerRadius
+    public fun getReactionListCornerRadius(): Int = style.cornerRadius
 
     /**
      * Sets the tab text color.
      */
-    fun setReactionListTabTextColor(@ColorInt color: Int) {
+    public fun setReactionListTabTextColor(@ColorInt color: Int) {
         style = style.copy(tabTextColor = color)
         reactionsHeaderAdapter.setTextColor(color)
     }
@@ -815,12 +815,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the tab text color.
      */
     @ColorInt
-    fun getReactionListTabTextColor(): Int = style.tabTextColor
+    public fun getReactionListTabTextColor(): Int = style.tabTextColor
 
     /**
      * Sets the active tab text color.
      */
-    fun setReactionListTabTextActiveColor(@ColorInt color: Int) {
+    public fun setReactionListTabTextActiveColor(@ColorInt color: Int) {
         style = style.copy(tabTextActiveColor = color)
         reactionsHeaderAdapter.setTextActiveColor(color)
     }
@@ -829,12 +829,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the active tab text color.
      */
     @ColorInt
-    fun getReactionListTabTextActiveColor(): Int = style.tabTextActiveColor
+    public fun getReactionListTabTextActiveColor(): Int = style.tabTextActiveColor
 
     /**
      * Sets the tab text appearance.
      */
-    fun setReactionListTabTextAppearance(@StyleRes appearance: Int) {
+    public fun setReactionListTabTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(tabTextAppearance = appearance)
         reactionsHeaderAdapter.setTextAppearance(appearance)
     }
@@ -843,12 +843,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the tab text appearance.
      */
     @StyleRes
-    fun getReactionListTabTextAppearance(): Int = style.tabTextAppearance
+    public fun getReactionListTabTextAppearance(): Int = style.tabTextAppearance
 
     /**
      * Sets the active tab indicator color.
      */
-    fun setReactionListTabActiveIndicatorColor(@ColorInt color: Int) {
+    public fun setReactionListTabActiveIndicatorColor(@ColorInt color: Int) {
         style = style.copy(tabActiveIndicatorColor = color)
         reactionsHeaderAdapter.setTabActiveIndicatorColor(color)
     }
@@ -857,12 +857,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the active tab indicator color.
      */
     @ColorInt
-    fun getReactionListTabActiveIndicatorColor(): Int = style.tabActiveIndicatorColor
+    public fun getReactionListTabActiveIndicatorColor(): Int = style.tabActiveIndicatorColor
 
     /**
      * Sets the title text color.
      */
-    fun setReactionListTitleTextColor(@ColorInt color: Int) {
+    public fun setReactionListTitleTextColor(@ColorInt color: Int) {
         val newItemStyle = style.itemStyle.copy(titleTextColor = color)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setTitleTextColor(color)
@@ -872,12 +872,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the title text color.
      */
     @ColorInt
-    fun getReactionListTitleTextColor(): Int = style.itemStyle.titleTextColor
+    public fun getReactionListTitleTextColor(): Int = style.itemStyle.titleTextColor
 
     /**
      * Sets the title text appearance.
      */
-    fun setReactionListTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setReactionListTitleTextAppearance(@StyleRes appearance: Int) {
         val newItemStyle = style.itemStyle.copy(titleTextAppearance = appearance)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setTitleTextAppearance(appearance)
@@ -887,12 +887,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the title text appearance.
      */
     @StyleRes
-    fun getReactionListTitleTextAppearance(): Int = style.itemStyle.titleTextAppearance
+    public fun getReactionListTitleTextAppearance(): Int = style.itemStyle.titleTextAppearance
 
     /**
      * Sets the subtitle text color.
      */
-    fun setReactionListSubTitleTextColor(@ColorInt color: Int) {
+    public fun setReactionListSubTitleTextColor(@ColorInt color: Int) {
         val newItemStyle = style.itemStyle.copy(subtitleTextColor = color)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setSubtitleTextColor(color)
@@ -902,12 +902,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the subtitle text color.
      */
     @ColorInt
-    fun getReactionListSubTitleTextColor(): Int = style.itemStyle.subtitleTextColor
+    public fun getReactionListSubTitleTextColor(): Int = style.itemStyle.subtitleTextColor
 
     /**
      * Sets the subtitle text appearance.
      */
-    fun setReactionListSubTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setReactionListSubTitleTextAppearance(@StyleRes appearance: Int) {
         val newItemStyle = style.itemStyle.copy(subtitleTextAppearance = appearance)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setSubtitleTextAppearance(appearance)
@@ -917,12 +917,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the subtitle text appearance.
      */
     @StyleRes
-    fun getReactionListSubTitleTextAppearance(): Int = style.itemStyle.subtitleTextAppearance
+    public fun getReactionListSubTitleTextAppearance(): Int = style.itemStyle.subtitleTextAppearance
 
     /**
      * Sets the tail view text appearance.
      */
-    fun setReactionListTailViewTextAppearance(@StyleRes appearance: Int) {
+    public fun setReactionListTailViewTextAppearance(@StyleRes appearance: Int) {
         val newItemStyle = style.itemStyle.copy(tailViewTextAppearance = appearance)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setTailViewTextAppearance(appearance)
@@ -932,12 +932,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the tail view text appearance.
      */
     @StyleRes
-    fun getReactionListTailViewTextAppearance(): Int = style.itemStyle.tailViewTextAppearance
+    public fun getReactionListTailViewTextAppearance(): Int = style.itemStyle.tailViewTextAppearance
 
     /**
      * Sets the avatar style.
      */
-    fun setReactionListAvatarStyle(@StyleRes styleResId: Int) {
+    public fun setReactionListAvatarStyle(@StyleRes styleResId: Int) {
         val newItemStyle = style.itemStyle.copy(avatarStyleResId = styleResId)
         style = style.copy(itemStyle = newItemStyle)
         reactedUsersAdapter.setAvatarStyle(styleResId)
@@ -947,12 +947,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the avatar style.
      */
     @StyleRes
-    fun getReactionListAvatarStyle(): Int = style.itemStyle.avatarStyleResId
+    public fun getReactionListAvatarStyle(): Int = style.itemStyle.avatarStyleResId
 
     /**
      * Sets the error text color.
      */
-    fun setReactionListErrorTextColor(@ColorInt color: Int) {
+    public fun setReactionListErrorTextColor(@ColorInt color: Int) {
         style = style.copy(errorTextColor = color)
         binding.tvErrorState.setTextColor(color)
     }
@@ -961,12 +961,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the error text color.
      */
     @ColorInt
-    fun getReactionListErrorTextColor(): Int = style.errorTextColor
+    public fun getReactionListErrorTextColor(): Int = style.errorTextColor
 
     /**
      * Sets the error text appearance.
      */
-    fun setReactionListErrorTextAppearance(@StyleRes appearance: Int) {
+    public fun setReactionListErrorTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(errorTextAppearance = appearance)
         if (appearance != 0) {
             binding.tvErrorState.setTextAppearance(appearance)
@@ -977,12 +977,12 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the error text appearance.
      */
     @StyleRes
-    fun getReactionListErrorTextAppearance(): Int = style.errorTextAppearance
+    public fun getReactionListErrorTextAppearance(): Int = style.errorTextAppearance
 
     /**
      * Sets the separator color.
      */
-    fun setReactionListSeparatorColor(@ColorInt color: Int) {
+    public fun setReactionListSeparatorColor(@ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         binding.viewSeparator.setBackgroundColor(color)
     }
@@ -991,7 +991,7 @@ class CometChatReactionList @JvmOverloads constructor(
      * Gets the separator color.
      */
     @ColorInt
-    fun getReactionListSeparatorColor(): Int = style.separatorColor
+    public fun getReactionListSeparatorColor(): Int = style.separatorColor
 
     // ==================== Mock Data for Showcase ====================
 
@@ -1009,7 +1009,7 @@ class CometChatReactionList @JvmOverloads constructor(
      * @param message The mock BaseMessage with reaction counts
      * @param reactions The list of mock Reaction objects with user data
      */
-    fun setMockData(message: BaseMessage, reactions: List<Reaction>) {
+    public fun setMockData(message: BaseMessage, reactions: List<Reaction>) {
         // Mark as using mock data and cancel ViewModel observations
         isUsingMockData = true
         viewScope?.cancel()

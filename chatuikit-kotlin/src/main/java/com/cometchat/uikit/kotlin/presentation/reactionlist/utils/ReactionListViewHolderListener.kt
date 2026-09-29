@@ -13,7 +13,7 @@ import com.cometchat.chat.models.Reaction
  * 
  * Custom views replace default views when listeners are set.
  */
-interface ReactionListViewHolderListener {
+public interface ReactionListViewHolderListener {
     /**
      * Called once during ViewHolder creation to create the custom view.
      * The returned view will be cached and reused for all bind operations.
@@ -22,7 +22,7 @@ interface ReactionListViewHolderListener {
      * @param reaction The reaction (may be null during initial creation)
      * @return The custom view to display
      */
-    fun createView(context: Context, reaction: Reaction?): View
+    public fun createView(context: Context, reaction: Reaction?): View
 
     /**
      * Called during bind operations to update the custom view with reaction data.
@@ -33,5 +33,5 @@ interface ReactionListViewHolderListener {
      * @param reactionList The full list of reactions
      * @param position The position in the list
      */
-    fun bindView(context: Context, view: View, reaction: Reaction, reactionList: List<Reaction>, position: Int)
+    public fun bindView(context: Context, view: View, reaction: Reaction, reactionList: List<Reaction>, position: Int)
 }

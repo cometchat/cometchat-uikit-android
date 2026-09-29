@@ -25,7 +25,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * to indicate "not set". When not set, they fall back to values from
  * [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatAIAssistantBubbleStyle(
+public data class CometChatAIAssistantBubbleStyle(
     // Content-specific properties
     @ColorInt val textColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
@@ -64,10 +64,10 @@ data class CometChatAIAssistantBubbleStyle(
      * @param messageBubbleStyle The message bubble style to use as fallback
      * @return A new [CometChatAIAssistantBubbleStyle] with all sentinel values resolved
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatAIAssistantBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatAIAssistantBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to incoming since AI assistant messages
          * are always incoming).
@@ -79,7 +79,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatAIAssistantBubbleStyle with default values
          */
-        fun default(context: Context): CometChatAIAssistantBubbleStyle {
+        public fun default(context: Context): CometChatAIAssistantBubbleStyle {
             return incoming(context)
         }
 
@@ -96,7 +96,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatAIAssistantBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatAIAssistantBubbleStyle {
+        public fun incoming(context: Context): CometChatAIAssistantBubbleStyle {
             return extractFromMessageBubbleStyle(context, R.attr.cometchatIncomingMessageBubbleStyle)
         }
 
@@ -153,7 +153,7 @@ data class CometChatAIAssistantBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatAIAssistantBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIAssistantBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatAIAssistantBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

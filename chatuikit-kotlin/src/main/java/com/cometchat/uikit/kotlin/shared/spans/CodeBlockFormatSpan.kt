@@ -26,7 +26,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.CODE_BLOCK
  */
-class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
+public class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
     LineBackgroundSpan, LineHeightSpan {
 
     @ColorInt
@@ -53,7 +53,7 @@ class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
     /**
      * Creates a new CodeBlockFormatSpan with default styling.
      */
-    constructor() {
+    public constructor() {
         this.backgroundColor = DEFAULT_BACKGROUND_COLOR
         this.borderColor = DEFAULT_BORDER_COLOR
         this.borderWidth = DEFAULT_BORDER_WIDTH
@@ -66,7 +66,7 @@ class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
     /**
      * Creates a new CodeBlockFormatSpan with context for theme colors.
      */
-    constructor(context: Context) {
+    public constructor(context: Context) {
         this.context = context
         this.backgroundColor = CometChatTheme.getBackgroundColor2(context)
         this.borderColor = CometChatTheme.getStrokeColorDefault(context)
@@ -79,7 +79,7 @@ class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
     /**
      * Creates a new CodeBlockFormatSpan with custom styling.
      */
-    constructor(
+    public constructor(
         @ColorInt backgroundColor: Int,
         @ColorInt borderColor: Int,
         borderWidth: Float,
@@ -304,46 +304,46 @@ class CodeBlockFormatSpan : LeadingMarginSpan, RichTextFormatSpan,
     // region Getters and Setters
 
     @ColorInt
-    fun getBackgroundColor(): Int {
+    public fun getBackgroundColor(): Int {
         if (backgroundColor != 0) return backgroundColor
         if (context != null) return CometChatTheme.getNeutralColor200(context)
         return DEFAULT_BACKGROUND_COLOR
     }
 
-    fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
+    public fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
 
     @ColorInt
-    fun getBorderColor(): Int {
+    public fun getBorderColor(): Int {
         if (borderColor != 0) return borderColor
         if (context != null) return CometChatTheme.getStrokeColorDefault(context)
         return DEFAULT_BORDER_COLOR
     }
 
-    fun setBorderColor(@ColorInt color: Int) { borderColor = color }
+    public fun setBorderColor(@ColorInt color: Int) { borderColor = color }
 
-    fun getBorderWidth(): Float = borderWidth
-    fun setBorderWidth(width: Float) { borderWidth = width }
+    public fun getBorderWidth(): Float = borderWidth
+    public fun setBorderWidth(width: Float) { borderWidth = width }
 
-    fun getCornerRadius(): Float = cornerRadius
-    fun setCornerRadius(radius: Float) { cornerRadius = radius }
+    public fun getCornerRadius(): Float = cornerRadius
+    public fun setCornerRadius(radius: Float) { cornerRadius = radius }
 
-    fun getPadding(): Float = padding
-    fun setPadding(value: Float) { padding = value }
+    public fun getPadding(): Float = padding
+    public fun setPadding(value: Float) { padding = value }
 
-    fun getHorizontalPadding(): Float = horizontalPadding
-    fun setHorizontalPadding(value: Float) { horizontalPadding = value }
+    public fun getHorizontalPadding(): Float = horizontalPadding
+    public fun setHorizontalPadding(value: Float) { horizontalPadding = value }
 
     // endregion
 
-    companion object {
-        const val DEFAULT_CORNER_RADIUS = 16f
-        const val DEFAULT_BORDER_WIDTH = 1f
-        const val DEFAULT_PADDING = 12f
-        const val DEFAULT_HORIZONTAL_PADDING = 24f
-        const val DEFAULT_BACKGROUND_COLOR = 0xFFF8F8F8.toInt()
-        const val DEFAULT_BORDER_COLOR = 0xFFDDDDDD.toInt()
-        const val DEFAULT_VERTICAL_MARGIN = 16f
+    public companion object {
+        public const val DEFAULT_CORNER_RADIUS: Float = 16f
+        public const val DEFAULT_BORDER_WIDTH: Float = 1f
+        public const val DEFAULT_PADDING: Float = 12f
+        public const val DEFAULT_HORIZONTAL_PADDING: Float = 24f
+        public const val DEFAULT_BACKGROUND_COLOR: Int = 0xFFF8F8F8.toInt()
+        public const val DEFAULT_BORDER_COLOR: Int = 0xFFDDDDDD.toInt()
+        public const val DEFAULT_VERTICAL_MARGIN: Float = 16f
 
-        fun getCodeTypeface(): Typeface = Typeface.MONOSPACE
+        public fun getCodeTypeface(): Typeface = Typeface.MONOSPACE
     }
 }

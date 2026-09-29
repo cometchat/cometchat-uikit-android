@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.text.SpannableString
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +28,7 @@ import com.bumptech.glide.request.target.Target
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
@@ -54,13 +54,13 @@ import java.io.File
  * - 3-4 videos: 2x2 grid
  * - 5+ videos: 2x2 grid with "+N" overlay on 4th item
  */
-class CometChatVideoBubble @JvmOverloads constructor(
+public class CometChatVideoBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatVideoBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatVideoBubble::class.java.simpleName
         private const val MAX_VISIBLE_ITEMS = 4
         private const val GRID_SPACING_DP = 2
@@ -347,7 +347,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      *
      * @param mediaMessage The MediaMessage containing video attachment(s)
      */
-    fun setMessage(mediaMessage: MediaMessage) {
+    public fun setMessage(mediaMessage: MediaMessage) {
         setMessage(mediaMessage, null)
     }
 
@@ -357,7 +357,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * @param mediaMessage The MediaMessage containing video attachment(s)
      * @param localFile Optional local file for the video thumbnail
      */
-    fun setMessage(mediaMessage: MediaMessage, localFile: File?) {
+    public fun setMessage(mediaMessage: MediaMessage, localFile: File?) {
         this.mediaMessage = mediaMessage
         
         // Check for multiple attachments in metadata
@@ -385,7 +385,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      *
      * @param attachments List of Attachment objects to display
      */
-    fun setAttachments(attachments: List<Attachment>) {
+    public fun setAttachments(attachments: List<Attachment>) {
         this.attachments = attachments
         
         if (attachments.size == 1) {
@@ -418,7 +418,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
                 if (result.isNotEmpty()) result else null
             } else null
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting attachments from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting attachments from metadata: ${e.message}")
             null
         }
     }
@@ -440,7 +440,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
             val urlMedium = thumbnailGeneration.optString("url_medium", null)
             if (urlMedium.isNullOrEmpty()) null else sanitizeUrl(urlMedium)
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting thumbnail URL from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting thumbnail URL from metadata: ${e.message}")
             null
         }
     }
@@ -477,7 +477,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
             val file = File(path)
             if (file.exists()) file else null
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting local file from metadata: ${e.message}")
+            CometChatLogger.e(TAG, "Error extracting local file from metadata: ${e.message}")
             null
         }
     }
@@ -523,7 +523,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * @param file Optional local file for the video
      * @param videoUrl The URL of the video
      */
-    fun setVideoUrl(file: File?, videoUrl: String) {
+    public fun setVideoUrl(file: File?, videoUrl: String) {
         this.videoUrl = videoUrl
         this.file = file
         loadThumbnailFromFileOrUrl(file, videoUrl)
@@ -549,14 +549,14 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * @param thumbnailUrl The URL of the thumbnail image
      * @param placeHolderImage The placeholder image resource ID
      */
-    fun setThumbnailUrl(thumbnailUrl: String, @DrawableRes placeHolderImage: Int) {
+    public fun setThumbnailUrl(thumbnailUrl: String, @DrawableRes placeHolderImage: Int) {
         loadThumbnailFromUrl(thumbnailUrl, videoImageView, progressBar, playButtonLayout)
     }
 
     /**
      * Sets the thumbnail image from a URL.
      */
-    fun setVideoThumbnail(url: String) {
+    public fun setVideoThumbnail(url: String) {
         if (url.isNotEmpty()) {
             loadThumbnailFromUrl(url, videoImageView, progressBar, playButtonLayout)
         }
@@ -567,7 +567,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      *
      * @param playIcon The play icon resource ID
      */
-    fun setPlayIcon(@DrawableRes playIcon: Int) {
+    public fun setPlayIcon(@DrawableRes playIcon: Int) {
         if (playIcon != 0) {
             playButton.setImageResource(playIcon)
         }
@@ -769,7 +769,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
     // ========================================
 
     private fun loadThumbnailFromUrl(url: String, imageView: ImageView, progressBar: ProgressBar, playOverlay: View) {
-        Log.d(TAG, "Loading video thumbnail from URL: $url")
+        CometChatLogger.d(TAG, "Loading video thumbnail from URL: $url")
         Glide.with(imageView)
             .asBitmap()
             .load(url)
@@ -782,7 +782,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
     }
 
     private fun loadThumbnailFromFile(file: File, imageView: ImageView, progressBar: ProgressBar, playOverlay: View) {
-        Log.d(TAG, "Loading video thumbnail from file: ${file.absolutePath}")
+        CometChatLogger.d(TAG, "Loading video thumbnail from file: ${file.absolutePath}")
         Glide.with(imageView)
             .asBitmap()
             .load(file)
@@ -802,7 +802,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
                 target: Target<Bitmap>,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.e(TAG, "Video thumbnail load failed for URL: $model", e)
+                CometChatLogger.e(TAG, "Video thumbnail load failed for URL: $model", e)
                 progressBar.visibility = View.GONE
                 playOverlay.visibility = View.VISIBLE
                 return false
@@ -815,7 +815,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
                 dataSource: DataSource,
                 isFirstResource: Boolean
             ): Boolean {
-                Log.d(TAG, "Video thumbnail loaded successfully: ${resource.width}x${resource.height} from $model")
+                CometChatLogger.d(TAG, "Video thumbnail loaded successfully: ${resource.width}x${resource.height} from $model")
                 progressBar.visibility = View.GONE
                 playOverlay.visibility = View.VISIBLE
                 return false
@@ -833,7 +833,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * as block-level views (fenced code blocks, blockquotes, lists) into [captionBlockContainer] via
      * [MultiAttachmentUtils.renderCaptionInto] rather than being flattened into one TextView.
      */
-    fun setCaption(caption: String?) {
+    public fun setCaption(caption: String?) {
         if (!caption.isNullOrEmpty()) {
             captionTextView.visibility = View.GONE
             captionBlockContainer.visibility = View.VISIBLE
@@ -861,7 +861,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * mention resolves to a display name instead of a raw `<@uid:...>` token). Call before
      * [setMessage] — the caption is rendered there.
      */
-    fun setTextFormatters(
+    public fun setTextFormatters(
         formatters: List<CometChatTextFormatter>?,
         alignment: UIKitConstants.MessageBubbleAlignment
     ) {
@@ -873,7 +873,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
      * Sets the caption text using a SpannableString. This legacy path renders into the flat
      * [captionTextView]; the block-caption container is hidden and cleared so the two never overlap.
      */
-    fun setCaption(caption: SpannableString?) {
+    public fun setCaption(caption: SpannableString?) {
         captionBlockContainer.visibility = View.GONE
         captionBlockContainer.removeAllViews()
         if (caption != null) {
@@ -890,7 +890,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
 
     private fun openMediaViewActivity(startIndex: Int = 0) {
         if (mediaMessage == null && attachments.isEmpty() && videoUrl.isNullOrEmpty()) {
-            Log.e(TAG, "No media to display")
+            CometChatLogger.e(TAG, "No media to display")
             return
         }
 
@@ -926,7 +926,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatVideoBubbleStyle) {
+    public fun setStyle(style: CometChatVideoBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -934,7 +934,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatVideoBubble
@@ -948,72 +948,72 @@ class CometChatVideoBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getVideoCornerRadius(): Float = style?.videoCornerRadius ?: 0f
-    fun getPlayIconTint(): Int = style?.playIconTint ?: 0
-    fun getPlayIconBackgroundColor(): Int = style?.playIconBackgroundColor ?: 0
-    fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
-    fun getCaptionTextColor(): Int = style?.captionTextColor ?: 0
-    fun getCaptionTextAppearance(): Int = style?.captionTextAppearance ?: 0
-    fun getMoreOverlayBackgroundColor(): Int = style?.moreOverlayBackgroundColor ?: 0
-    fun getMoreOverlayTextColor(): Int = style?.moreOverlayTextColor ?: 0
-    fun getMoreOverlayTextAppearance(): Int = style?.moreOverlayTextAppearance ?: 0
-    fun getGridSpacing(): Float = style?.gridSpacing ?: 0f
-    fun getMaxGridWidth(): Float = style?.maxGridWidth ?: 0f
-    fun getBackgroundColor(): Int = style?.backgroundColor ?: 0
-    fun getBackgroundDrawable(): Drawable? = style?.backgroundDrawable
-    fun getVideoUrl(): String? = videoUrl
+    public fun getVideoCornerRadius(): Float = style?.videoCornerRadius ?: 0f
+    public fun getPlayIconTint(): Int = style?.playIconTint ?: 0
+    public fun getPlayIconBackgroundColor(): Int = style?.playIconBackgroundColor ?: 0
+    public fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
+    public fun getCaptionTextColor(): Int = style?.captionTextColor ?: 0
+    public fun getCaptionTextAppearance(): Int = style?.captionTextAppearance ?: 0
+    public fun getMoreOverlayBackgroundColor(): Int = style?.moreOverlayBackgroundColor ?: 0
+    public fun getMoreOverlayTextColor(): Int = style?.moreOverlayTextColor ?: 0
+    public fun getMoreOverlayTextAppearance(): Int = style?.moreOverlayTextAppearance ?: 0
+    public fun getGridSpacing(): Float = style?.gridSpacing ?: 0f
+    public fun getMaxGridWidth(): Float = style?.maxGridWidth ?: 0f
+    public fun getBackgroundColor(): Int = style?.backgroundColor ?: 0
+    public fun getBackgroundDrawable(): Drawable? = style?.backgroundDrawable
+    public fun getVideoUrl(): String? = videoUrl
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setVideoCornerRadius(@Dimension radius: Float) {
+    public fun setVideoCornerRadius(@Dimension radius: Float) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(videoCornerRadius = radius)
         applyVideoCornerRadius(radius)
     }
 
-    fun setPlayIconTint(@ColorInt color: Int) {
+    public fun setPlayIconTint(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(playIconTint = color)
         applyPlayIconTint(color)
     }
 
-    fun setPlayIconBackgroundColor(@ColorInt color: Int) {
+    public fun setPlayIconBackgroundColor(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(playIconBackgroundColor = color)
         applyPlayIconBackgroundColor(color)
     }
 
-    fun setProgressIndeterminateTint(@ColorInt color: Int) {
+    public fun setProgressIndeterminateTint(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(progressIndeterminateTint = color)
         applyProgressIndeterminateTint(color)
     }
 
-    fun setCaptionTextColor(@ColorInt color: Int) {
+    public fun setCaptionTextColor(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(captionTextColor = color)
         applyCaptionTextColor(color)
     }
 
-    fun setCaptionTextAppearance(@StyleRes appearance: Int) {
+    public fun setCaptionTextAppearance(@StyleRes appearance: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(captionTextAppearance = appearance)
         applyCaptionTextAppearance(appearance)
     }
 
-    fun setMoreOverlayBackgroundColor(@ColorInt color: Int) {
+    public fun setMoreOverlayBackgroundColor(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(moreOverlayBackgroundColor = color)
     }
 
-    fun setMoreOverlayTextColor(@ColorInt color: Int) {
+    public fun setMoreOverlayTextColor(@ColorInt color: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(moreOverlayTextColor = color)
     }
 
-    fun setMoreOverlayTextAppearance(@StyleRes appearance: Int) {
+    public fun setMoreOverlayTextAppearance(@StyleRes appearance: Int) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(moreOverlayTextAppearance = appearance)
     }
 
-    fun setGridSpacing(@Dimension spacing: Float) {
+    public fun setGridSpacing(@Dimension spacing: Float) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(gridSpacing = spacing)
     }
 
-    fun setMaxGridWidth(@Dimension width: Float) {
+    public fun setMaxGridWidth(@Dimension width: Float) {
         style = (style ?: CometChatVideoBubbleStyle()).copy(maxGridWidth = width)
     }
 
@@ -1036,17 +1036,17 @@ class CometChatVideoBubble @JvmOverloads constructor(
     // Click Listeners
     // ========================================
 
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         this.onClick = onClick
     }
 
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
-    fun setOnVideoClickListener(listener: ((Int, Attachment) -> Unit)?) {
+    public fun setOnVideoClickListener(listener: ((Int, Attachment) -> Unit)?) {
         this.onVideoClick = listener
     }
 
-    fun setOnMoreClickListener(listener: ((List<Attachment>) -> Unit)?) {
+    public fun setOnMoreClickListener(listener: ((List<Attachment>) -> Unit)?) {
         this.onMoreClick = listener
     }
 
@@ -1054,25 +1054,25 @@ class CometChatVideoBubble @JvmOverloads constructor(
     // View Accessors
     // ========================================
 
-    fun getVideoImageView(): ImageView = videoImageView
+    public fun getVideoImageView(): ImageView = videoImageView
 
-    fun getPlayButtonImageView(): ImageView = playButton
+    public fun getPlayButtonImageView(): ImageView = playButton
 
-    fun getProgressBar(): ProgressBar = progressBar
+    public fun getProgressBar(): ProgressBar = progressBar
 
-    fun getVideoContainerCard(): MaterialCardView = videoContainerCard
+    public fun getVideoContainerCard(): MaterialCardView = videoContainerCard
 
-    fun getCaptionTextView(): TextView = captionTextView
+    public fun getCaptionTextView(): TextView = captionTextView
 
-    fun getGridLayout(): GridLayout = gridLayout
+    public fun getGridLayout(): GridLayout = gridLayout
 
-    fun getAttachments(): List<Attachment> = attachments
+    public fun getAttachments(): List<Attachment> = attachments
 
-    fun getMediaMessage(): MediaMessage? = mediaMessage
+    public fun getMediaMessage(): MediaMessage? = mediaMessage
 
-    fun getPlayOverlay(): FrameLayout = playButtonLayout
+    public fun getPlayOverlay(): FrameLayout = playButtonLayout
 
-    fun getView(): LinearLayout = parentLayout
+    public fun getView(): LinearLayout = parentLayout
 
     // ========================================
     // Lifecycle
@@ -1081,7 +1081,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
     /**
      * Cancels any ongoing thumbnail loads. Call this when the view is recycled.
      */
-    fun cancelThumbnailLoads() {
+    public fun cancelThumbnailLoads() {
         try {
             Glide.with(context).clear(videoImageView)
             // Clear grid thumbnails
@@ -1092,7 +1092,7 @@ class CometChatVideoBubble @JvmOverloads constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error canceling thumbnail loads: ${e.message}")
+            CometChatLogger.e(TAG, "Error canceling thumbnail loads: ${e.message}")
         }
     }
 

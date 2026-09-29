@@ -9,7 +9,7 @@ import androidx.annotation.Dimension
  * Style configuration for the CometChatNotificationFeed XML View component.
  * All colors default to 0 (transparent/unset) to inherit from CometChatTheme.
  */
-data class CometChatNotificationFeedStyle(
+public data class CometChatNotificationFeedStyle(
     // Screen
     @ColorInt val backgroundColor: Int = 0,
 
@@ -44,11 +44,11 @@ data class CometChatNotificationFeedStyle(
     // Unread indicator
     @ColorInt val unreadIndicatorColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with sensible defaults.
          */
-        fun default(): CometChatNotificationFeedStyle {
+        public fun default(): CometChatNotificationFeedStyle {
             return CometChatNotificationFeedStyle(
                 backgroundColor = Color.WHITE,
                 headerTitleColor = Color.BLACK,

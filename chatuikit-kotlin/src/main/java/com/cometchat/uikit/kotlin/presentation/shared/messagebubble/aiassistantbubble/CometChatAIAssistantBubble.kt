@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.text.method.LinkMovementMethod
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +25,7 @@ import com.cometchat.chat.models.AIAssistantMessage
 import com.cometchat.uikit.core.CometChatAIStreamService
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.model.StreamMessage
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatAiAssistantBubbleLayoutBinding
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.DIMENSION_NOT_SET
@@ -62,13 +62,13 @@ import org.commonmark.node.Node
  *
  * Both modes share the same Markdown rendering pipeline and styling.
  */
-class CometChatAIAssistantBubble @JvmOverloads constructor(
+public class CometChatAIAssistantBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAIAssistantBubbleStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatAIAssistantBubble"
     }
 
@@ -291,7 +291,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
      * Uses an ordered block list to preserve the sequential rendering of
      * interleaved text and card content from the AI agent.
      */
-    fun setStreamMessage(message: StreamMessage) {
+    public fun setStreamMessage(message: StreamMessage) {
         if (message !== this.streamMessage) {
             // Clean up old listener if switching to a different message
             val oldListener = currentBubbleListener
@@ -379,7 +379,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
      * Renders the final markdown content directly without streaming, shimmer,
      * or error states. This is used for completed AI assistant responses.
      */
-    fun setMessage(message: AIAssistantMessage) {
+    public fun setMessage(message: AIAssistantMessage) {
         // Clean up any active streaming state
         val oldListener = currentBubbleListener
         val oldRunId = streamMessage?.runId ?: -1L
@@ -523,7 +523,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
         isStreaming = true
         val service = aiStreamService ?: CometChatAIStreamService.getInstance()
         if (service == null) {
-            Log.e(TAG, "startStreaming: no AIStreamService available for runId=${message.runId}")
+            CometChatLogger.e(TAG, "startStreaming: no AIStreamService available for runId=${message.runId}")
             return
         }
         // Store the listener reference so we can remove just this listener on RUN_FINISHED,
@@ -829,7 +829,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
             binding.recyclerView.visibility = GONE
         }
         binding.errorCard.visibility = VISIBLE
-        Log.e(TAG, exception.message ?: "Streaming error")
+        CometChatLogger.e(TAG, exception.message ?: "Streaming error")
     }
 
     // ── Markdown Rendering ──────────────────────────────────────────────
@@ -868,12 +868,12 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
 
     // ── Style Setters ───────────────────────────────────────────────────
 
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         this.rootTextColor = color
         binding.streamShimmerTextView.setTextColor(color)
     }
 
-    fun setTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setTextAppearance(@StyleRes textAppearance: Int) {
         this.rootTextAppearance = textAppearance
         binding.streamShimmerTextView.setTextAppearance(textAppearance)
     }
@@ -882,13 +882,13 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
         setCardBackgroundColor(color)
     }
 
-    fun setAvatarStyle(@StyleRes style: Int) {
+    public fun setAvatarStyle(@StyleRes style: Int) {
         if (style != 0) {
             binding.ivAvatar.setStyle(style)
         }
     }
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 style, R.styleable.CometChatAIAssistantBubble
@@ -905,7 +905,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
      * markdown renderer, shimmer properties to the shimmer text view, and error properties to the
      * error layout children.
      */
-    fun setStyle(style: CometChatAIAssistantBubbleStyle) {
+    public fun setStyle(style: CometChatAIAssistantBubbleStyle) {
         // Container properties (MaterialCardView)
         if (style.backgroundColor != STYLE_NOT_SET) {
             setCardBackgroundColor(style.backgroundColor)
@@ -973,11 +973,11 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
         }
     }
 
-    fun setAvatar(name: String, url: String?) {
+    public fun setAvatar(name: String, url: String?) {
         binding.ivAvatar.setAvatar(name, url)
     }
 
-    fun setAIStreamService(service: CometChatAIStreamService?) {
+    public fun setAIStreamService(service: CometChatAIStreamService?) {
         this.aiStreamService = service
     }
 
@@ -1000,7 +1000,7 @@ class CometChatAIAssistantBubble @JvmOverloads constructor(
             )
             extractAttributesAndApplyDefaults(typedArray)
         } catch (e: Exception) {
-            Log.e(TAG, e.message ?: "Error applying style attributes")
+            CometChatLogger.e(TAG, e.message ?: "Error applying style attributes")
         }
     }
 

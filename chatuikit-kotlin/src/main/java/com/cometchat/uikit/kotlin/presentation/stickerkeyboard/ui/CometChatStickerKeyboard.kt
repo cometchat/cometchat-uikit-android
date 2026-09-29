@@ -3,7 +3,6 @@ package com.cometchat.uikit.kotlin.presentation.stickerkeyboard.ui
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -21,6 +20,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.uikit.core.domain.model.Sticker
 import com.cometchat.uikit.core.factory.CometChatStickerKeyboardViewModelFactory
 import com.cometchat.uikit.core.state.StickerKeyboardUIState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerAdapter
@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
  * }
  * ```
  */
-class CometChatStickerKeyboard @JvmOverloads constructor(
+public class CometChatStickerKeyboard @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatStickerKeyboardStyle
@@ -96,7 +96,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     // ==================== Style ====================
     private var style: CometChatStickerKeyboardStyle = CometChatStickerKeyboardStyle.default(context)
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatStickerKeyboard"
     }
 
@@ -154,22 +154,22 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        Log.d(TAG, "onAttachedToWindow: Called")
+        CometChatLogger.d(TAG, "onAttachedToWindow: Called")
         initializeViewModel()
     }
 
     private fun initializeViewModel() {
-        Log.d(TAG, "initializeViewModel: Starting, viewModel=$viewModel")
+        CometChatLogger.d(TAG, "initializeViewModel: Starting, viewModel=$viewModel")
         if (viewModel != null) {
-            Log.d(TAG, "initializeViewModel: ViewModel already exists, skipping")
+            CometChatLogger.d(TAG, "initializeViewModel: ViewModel already exists, skipping")
             return
         }
 
         val lifecycleOwner = findViewTreeLifecycleOwner()
-        Log.d(TAG, "initializeViewModel: findViewTreeLifecycleOwner returned $lifecycleOwner")
+        CometChatLogger.d(TAG, "initializeViewModel: findViewTreeLifecycleOwner returned $lifecycleOwner")
         
         if (lifecycleOwner == null) {
-            Log.e(TAG, "initializeViewModel: No LifecycleOwner found! ViewModel cannot be initialized.")
+            CometChatLogger.e(TAG, "initializeViewModel: No LifecycleOwner found! ViewModel cannot be initialized.")
             return
         }
 
@@ -177,7 +177,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
         viewModel = CometChatStickerKeyboardViewModelFactory().create(
             CometChatStickerKeyboardViewModel::class.java
         )
-        Log.d(TAG, "initializeViewModel: ViewModel created successfully")
+        CometChatLogger.d(TAG, "initializeViewModel: ViewModel created successfully")
 
         // Observe state changes
         observeViewModel(lifecycleOwner)
@@ -210,7 +210,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     }
 
     private fun handleUIState(state: StickerKeyboardUIState) {
-        Log.d(TAG, "handleUIState: state=$state")
+        CometChatLogger.d(TAG, "handleUIState: state=$state")
         when (state) {
             is StickerKeyboardUIState.Loading -> showLoadingState()
             is StickerKeyboardUIState.Content -> showContentState()
@@ -225,7 +225,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     // ==================== State Display Methods ====================
 
     private fun showLoadingState() {
-        Log.d(TAG, "showLoadingState: Showing loading state")
+        CometChatLogger.d(TAG, "showLoadingState: Showing loading state")
         hideAllStates()
         if (customLoadingView != null) {
             customLayout.removeAllViews()
@@ -239,13 +239,13 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     }
 
     private fun showContentState() {
-        Log.d(TAG, "showContentState: Showing content state")
+        CometChatLogger.d(TAG, "showContentState: Showing content state")
         hideAllStates()
         stickersView.visibility = View.VISIBLE
     }
 
     private fun showEmptyState() {
-        Log.d(TAG, "showEmptyState: Showing empty state")
+        CometChatLogger.d(TAG, "showEmptyState: Showing empty state")
         hideAllStates()
         if (customEmptyView != null) {
             customLayout.removeAllViews()
@@ -257,7 +257,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     }
 
     private fun showErrorState() {
-        Log.d(TAG, "showErrorState: Showing error state")
+        CometChatLogger.d(TAG, "showErrorState: Showing error state")
         hideAllStates()
         if (customErrorView != null) {
             customLayout.removeAllViews()
@@ -338,7 +338,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param listener The listener to receive sticker click callbacks
      */
-    fun setStickerClickListener(listener: StickerClickListener?) {
+    public fun setStickerClickListener(listener: StickerClickListener?) {
         this.stickerClickListener = listener
     }
 
@@ -347,7 +347,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param listener Lambda invoked when a sticker is clicked
      */
-    fun setStickerClickListener(listener: (Sticker) -> Unit) {
+    public fun setStickerClickListener(listener: (Sticker) -> Unit) {
         this.stickerClickListener = StickerClickListener { sticker -> listener(sticker) }
     }
 
@@ -356,7 +356,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param callback Lambda invoked when an error occurs
      */
-    fun setOnError(callback: ((CometChatException) -> Unit)?) {
+    public fun setOnError(callback: ((CometChatException) -> Unit)?) {
         this.onError = callback
     }
 
@@ -365,7 +365,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param view The custom view to display during loading
      */
-    fun setLoadingStateView(view: View?) {
+    public fun setLoadingStateView(view: View?) {
         this.customLoadingView = view
     }
 
@@ -374,7 +374,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param layoutRes The layout resource ID for the custom loading view
      */
-    fun setLoadingStateView(@LayoutRes layoutRes: Int) {
+    public fun setLoadingStateView(@LayoutRes layoutRes: Int) {
         this.customLoadingView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
     }
 
@@ -383,7 +383,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param view The custom view to display when no stickers are available
      */
-    fun setEmptyStateView(view: View?) {
+    public fun setEmptyStateView(view: View?) {
         this.customEmptyView = view
     }
 
@@ -392,7 +392,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param layoutRes The layout resource ID for the custom empty view
      */
-    fun setEmptyStateView(@LayoutRes layoutRes: Int) {
+    public fun setEmptyStateView(@LayoutRes layoutRes: Int) {
         this.customEmptyView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
     }
 
@@ -401,7 +401,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param view The custom view to display when an error occurs
      */
-    fun setErrorStateView(view: View?) {
+    public fun setErrorStateView(view: View?) {
         this.customErrorView = view
     }
 
@@ -410,7 +410,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param layoutRes The layout resource ID for the custom error view
      */
-    fun setErrorStateView(@LayoutRes layoutRes: Int) {
+    public fun setErrorStateView(@LayoutRes layoutRes: Int) {
         this.customErrorView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
     }
 
@@ -419,7 +419,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @param style The style configuration to apply
      */
-    fun setStyle(style: CometChatStickerKeyboardStyle) {
+    public fun setStyle(style: CometChatStickerKeyboardStyle) {
         applyStyle(style)
     }
 
@@ -428,14 +428,14 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
      *
      * @return The current style
      */
-    fun getStyle(): CometChatStickerKeyboardStyle = style
+    public fun getStyle(): CometChatStickerKeyboardStyle = style
 
     // ==================== Individual Style Setters ====================
 
     /**
      * Sets the background color of the sticker keyboard.
      */
-    fun setKeyboardBackgroundColor(@ColorInt color: Int) {
+    public fun setKeyboardBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         setCardBackgroundColor(color)
     }
@@ -443,7 +443,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the separator color.
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         separator.setBackgroundColor(color)
     }
@@ -451,7 +451,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the active tab indicator color.
      */
-    fun setTabActiveIndicatorColor(@ColorInt color: Int) {
+    public fun setTabActiveIndicatorColor(@ColorInt color: Int) {
         style = style.copy(tabActiveIndicatorColor = color)
         tabAdapter.setActiveIndicatorColor(color)
     }
@@ -459,7 +459,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the empty state title text color.
      */
-    fun setEmptyStateTitleTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateTitleTextColor(@ColorInt color: Int) {
         style = style.copy(emptyStateTitleTextColor = color)
         tvEmptyTitle.setTextColor(color)
     }
@@ -467,7 +467,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the empty state title text appearance.
      */
-    fun setEmptyStateTitleTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
+    public fun setEmptyStateTitleTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
         style = style.copy(emptyStateTitleTextAppearance = appearance)
         tvEmptyTitle.setTextAppearance(appearance)
     }
@@ -475,7 +475,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the empty state subtitle text color.
      */
-    fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
+    public fun setEmptyStateSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(emptyStateSubtitleTextColor = color)
         tvEmptySubtitle.setTextColor(color)
     }
@@ -483,7 +483,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the empty state subtitle text appearance.
      */
-    fun setEmptyStateSubtitleTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
+    public fun setEmptyStateSubtitleTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
         style = style.copy(emptyStateSubtitleTextAppearance = appearance)
         tvEmptySubtitle.setTextAppearance(appearance)
     }
@@ -491,7 +491,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the error state text color.
      */
-    fun setErrorStateTextColor(@ColorInt color: Int) {
+    public fun setErrorStateTextColor(@ColorInt color: Int) {
         style = style.copy(errorStateTextColor = color)
         tvErrorTitle.setTextColor(color)
     }
@@ -499,7 +499,7 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the error state text appearance.
      */
-    fun setErrorStateTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
+    public fun setErrorStateTextAppearance(@androidx.annotation.StyleRes appearance: Int) {
         style = style.copy(errorStateTextAppearance = appearance)
         tvErrorTitle.setTextAppearance(appearance)
     }
@@ -507,21 +507,21 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Sets the empty state title text.
      */
-    fun setEmptyStateTitleText(text: String) {
+    public fun setEmptyStateTitleText(text: String) {
         tvEmptyTitle.text = text
     }
 
     /**
      * Sets the empty state subtitle text.
      */
-    fun setEmptyStateSubtitleText(text: String) {
+    public fun setEmptyStateSubtitleText(text: String) {
         tvEmptySubtitle.text = text
     }
 
     /**
      * Sets the error state text.
      */
-    fun setErrorStateText(text: String) {
+    public fun setErrorStateText(text: String) {
         tvErrorTitle.text = text
     }
 
@@ -530,30 +530,30 @@ class CometChatStickerKeyboard @JvmOverloads constructor(
     /**
      * Gets the ViewPager2 adapter.
      */
-    fun getPagerAdapter(): StickerPagerAdapter = pagerAdapter
+    internal fun getPagerAdapter(): StickerPagerAdapter = pagerAdapter
 
     /**
      * Gets the tab adapter.
      */
-    fun getTabAdapter(): StickerTabAdapter = tabAdapter
+    internal fun getTabAdapter(): StickerTabAdapter = tabAdapter
 
     /**
      * Gets the sticker click listener.
      */
-    fun getStickerClickListener(): StickerClickListener? = stickerClickListener
+    public fun getStickerClickListener(): StickerClickListener? = stickerClickListener
 
     /**
      * Gets the custom loading view.
      */
-    fun getCustomLoadingView(): View? = customLoadingView
+    public fun getCustomLoadingView(): View? = customLoadingView
 
     /**
      * Gets the custom empty view.
      */
-    fun getCustomEmptyView(): View? = customEmptyView
+    public fun getCustomEmptyView(): View? = customEmptyView
 
     /**
      * Gets the custom error view.
      */
-    fun getCustomErrorView(): View? = customErrorView
+    public fun getCustomErrorView(): View? = customErrorView
 }

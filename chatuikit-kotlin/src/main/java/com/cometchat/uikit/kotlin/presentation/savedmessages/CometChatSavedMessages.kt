@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  * conversation so the cross-conversation list stays legible. Wire navigation via
  * [setOnMessageClickListener] (open the conversation at that message) and [setOnBackClickListener].
  */
-class CometChatSavedMessages @JvmOverloads constructor(
+public class CometChatSavedMessages @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -102,12 +102,12 @@ class CometChatSavedMessages @JvmOverloads constructor(
     }
 
     /** Called when a row is tapped — wire this to open the conversation at the message. */
-    fun setOnMessageClickListener(listener: (BaseMessage) -> Unit) {
+    public fun setOnMessageClickListener(listener: (BaseMessage) -> Unit) {
         onMessageClickListener = listener
     }
 
     /** Called when the toolbar back icon is tapped. */
-    fun setOnBackClickListener(listener: () -> Unit) {
+    public fun setOnBackClickListener(listener: () -> Unit) {
         onBackClickListener = listener
     }
 
@@ -115,7 +115,7 @@ class CometChatSavedMessages @JvmOverloads constructor(
      * Replaces the text formatters used to style subtitle previews (defaults to
      * [CometChatMentionsFormatter], matching the Conversations list).
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>) {
         adapter.setTextFormatters(formatters)
     }
 

@@ -1,7 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.emojikeyboard.model
 
 import android.content.Context
-import android.util.Log
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.IOException
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
  * Singleton that loads and caches emoji data from the bundled `emoji.json` asset.
  * Direct port of `EmojiKeyboardUtils` from the Java chatuikit module.
  */
-object EmojiRepository {
+public object EmojiRepository {
 
     private const val TAG = "EmojiRepository"
 
@@ -27,8 +27,8 @@ object EmojiRepository {
     /**
      * Listener interface for emoji data load completion.
      */
-    interface OnEmojisLoadedListener {
-        fun onEmojisLoaded(categories: List<EmojiCategory>)
+    public interface OnEmojisLoadedListener {
+        public fun onEmojisLoaded(categories: List<EmojiCategory>)
     }
 
     private var onEmojisLoadedListener: OnEmojisLoadedListener? = null
@@ -36,11 +36,11 @@ object EmojiRepository {
     /**
      * Sets a listener to be notified when emoji data finishes loading.
      */
-    fun setOnEmojisLoadedListener(listener: OnEmojisLoadedListener?) {
+    public fun setOnEmojisLoadedListener(listener: OnEmojisLoadedListener?) {
         onEmojisLoadedListener = listener
     }
 
-    fun loadAndSaveEmojis(context: Context) {
+    public fun loadAndSaveEmojis(context: Context) {
         if (emojiCategories == null || emojiCategories!!.isEmpty()) {
             Thread {
                 val categories = mutableListOf<EmojiCategory>()
@@ -58,7 +58,7 @@ object EmojiRepository {
                         onEmojisLoadedListener?.onEmojisLoaded(categories)
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, e.toString())
+                    CometChatLogger.e(TAG, e.toString())
                 }
             }.start()
         }
@@ -67,7 +67,7 @@ object EmojiRepository {
     /**
      * Returns the cached list of emoji categories, or null if not yet loaded.
      */
-    fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
+    public fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
 
     private fun loadJSONFromAsset(context: Context): String? {
         var json: String? = null
@@ -84,12 +84,12 @@ object EmojiRepository {
             }
             json = String(buffer, StandardCharsets.UTF_8)
         } catch (e: Exception) {
-            Log.e(TAG, e.message ?: e.toString())
+            CometChatLogger.e(TAG, e.message ?: e.toString())
         } finally {
             try {
                 inputStream?.close()
             } catch (e: IOException) {
-                Log.e(TAG, e.message ?: e.toString())
+                CometChatLogger.e(TAG, e.message ?: e.toString())
             }
         }
         return json

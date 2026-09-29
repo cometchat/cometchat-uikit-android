@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.shared.formatters.style.PromptTextStyle
  * When code formatting is removed, the ConsumedMentionSpan can be restored back
  * to a NonEditableSpan via [canRestore].
  */
-data class ConsumedMentionSpan(
+public data class ConsumedMentionSpan(
     val id: Char,
     val text: String?,
     val suggestionItem: SuggestionItem?,
@@ -22,5 +22,5 @@ data class ConsumedMentionSpan(
      * Returns true if this consumed mention has enough data to be restored
      * back to a NonEditableSpan.
      */
-    fun canRestore(): Boolean = id != '\u0000' && !text.isNullOrEmpty()
+    public fun canRestore(): Boolean = id != '\u0000' && !text.isNullOrEmpty()
 }

@@ -13,7 +13,7 @@ import com.cometchat.chat.models.User
  * 
  * Custom views replace default views when listeners are set.
  */
-interface UsersViewHolderListener {
+public interface UsersViewHolderListener {
     /**
      * Called once during ViewHolder creation to create the custom view.
      * The returned view will be cached and reused for all bind operations.
@@ -22,7 +22,7 @@ interface UsersViewHolderListener {
      * @param user The user (may be null during initial creation)
      * @return The custom view to display
      */
-    fun createView(context: Context, user: User?): View
+    public fun createView(context: Context, user: User?): View
 
     /**
      * Called during bind operations to update the custom view with user data.
@@ -33,5 +33,5 @@ interface UsersViewHolderListener {
      * @param userList The full list of users
      * @param position The position in the list
      */
-    fun bindView(context: Context, view: View, user: User, userList: List<User>, position: Int)
+    public fun bindView(context: Context, view: View, user: User, userList: List<User>, position: Int)
 }

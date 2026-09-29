@@ -38,9 +38,9 @@ import com.cometchat.uikit.kotlin.shared.interfaces.ViewHolderCallBack
  * })
  * ```
  */
-abstract class GroupsViewHolderListener : ViewHolderCallBack {
+abstract public class GroupsViewHolderListener : ViewHolderCallBack {
 
-    companion object {
+    public companion object {
         private val TAG = GroupsViewHolderListener::class.java.simpleName
     }
 
@@ -52,7 +52,7 @@ abstract class GroupsViewHolderListener : ViewHolderCallBack {
      * @param binding The ViewBinding for the group list item layout
      * @return The custom view to display
      */
-    abstract fun createView(
+    abstract public fun createView(
         context: Context,
         binding: CometchatGroupsListItemBinding
     ): View
@@ -68,7 +68,7 @@ abstract class GroupsViewHolderListener : ViewHolderCallBack {
      * @param groupList The full list of groups
      * @param position The position in the list
      */
-    abstract fun bindView(
+    abstract public fun bindView(
         context: Context,
         createdView: View,
         group: Group,

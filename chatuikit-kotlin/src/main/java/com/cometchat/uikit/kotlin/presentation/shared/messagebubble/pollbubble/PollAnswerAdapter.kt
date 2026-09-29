@@ -32,7 +32,7 @@ import org.json.JSONObject
  * - Progress bar showing vote percentage
  */
 @SuppressLint("NotifyDataSetChanged")
-class PollAnswerAdapter(
+internal class PollAnswerAdapter(
     private val onOptionClick: OnOptionClick
 ) : RecyclerView.Adapter<PollAnswerAdapter.ViewHolder>() {
 

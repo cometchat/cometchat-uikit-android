@@ -18,13 +18,13 @@ import com.cometchat.uikit.core.utils.WaveformUtils
  *
  * Equivalent of the Compose [AudioWaveformBars] composable.
  */
-class AudioWaveformBarsView @JvmOverloads constructor(
+public class AudioWaveformBarsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private const val BAR_COUNT = 28
         private const val BAR_WIDTH_DP = 2.5f
         private const val CORNER_RADIUS_DP = 1.5f
@@ -44,27 +44,27 @@ class AudioWaveformBarsView @JvmOverloads constructor(
     private val barWidthPx = BAR_WIDTH_DP * density
     private val cornerRadiusPx = CORNER_RADIUS_DP * density
 
-    fun setBarHeights(heights: List<Float>) {
+    public fun setBarHeights(heights: List<Float>) {
         barHeights = heights
         invalidate()
     }
 
-    fun setProgress(fraction: Float) {
+    public fun setProgress(fraction: Float) {
         progress = fraction.coerceIn(0f, 1f)
         invalidate()
     }
 
-    fun setPlayedWaveColor(@ColorInt color: Int) {
+    public fun setPlayedWaveColor(@ColorInt color: Int) {
         playedColor = color
         invalidate()
     }
 
-    fun setUnplayedWaveColor(@ColorInt color: Int) {
+    public fun setUnplayedWaveColor(@ColorInt color: Int) {
         unplayedColor = color
         invalidate()
     }
 
-    fun setOnSeekListener(listener: ((Float) -> Unit)?) {
+    public fun setOnSeekListener(listener: ((Float) -> Unit)?) {
         onSeekListener = listener
     }
 

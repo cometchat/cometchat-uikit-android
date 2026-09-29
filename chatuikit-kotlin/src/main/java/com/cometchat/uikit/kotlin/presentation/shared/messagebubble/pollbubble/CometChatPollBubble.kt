@@ -3,7 +3,6 @@ package com.cometchat.uikit.kotlin.presentation.shared.messagebubble.pollbubble
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -16,6 +15,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.core.CometChatUIKit
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
@@ -24,7 +24,7 @@ import org.json.JSONObject
 /**
  * Interface for handling poll option click events.
  */
-fun interface OnOptionClick {
+public fun interface OnOptionClick {
     /**
      * Called when a poll option is clicked.
      *
@@ -32,7 +32,7 @@ fun interface OnOptionClick {
      * @param selectedOption The text of the selected option
      * @param position The 0-indexed position of the clicked option
      */
-    fun onClick(baseMessage: CustomMessage, selectedOption: String, position: Int)
+    public fun onClick(baseMessage: CustomMessage, selectedOption: String, position: Int)
 }
 
 /**
@@ -65,7 +65,7 @@ fun interface OnOptionClick {
  * }
  * ```
  */
-class CometChatPollBubble @JvmOverloads constructor(
+public class CometChatPollBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatPollBubbleStyle
@@ -268,7 +268,7 @@ class CometChatPollBubble @JvmOverloads constructor(
      *
      * @param baseMessage The CustomMessage containing the poll data
      */
-    fun setMessage(baseMessage: CustomMessage?) {
+    public fun setMessage(baseMessage: CustomMessage?) {
         if (baseMessage != null) {
             jsonObject = baseMessage.customData
             try {
@@ -330,7 +330,7 @@ class CometChatPollBubble @JvmOverloads constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error checking user vote: ${e.message}")
+            CometChatLogger.e(TAG, "Error checking user vote: ${e.message}")
         }
         return 0
     }
@@ -361,27 +361,27 @@ class CometChatPollBubble @JvmOverloads constructor(
                 votePayload,
                 object : CometChat.CallbackListener<JSONObject>() {
                     override fun onSuccess(response: JSONObject?) {
-                        Log.d(TAG, "Vote submitted successfully")
+                        CometChatLogger.d(TAG, "Vote submitted successfully")
                     }
                     
                     override fun onError(e: CometChatException?) {
-                        Log.e(TAG, "Failed to submit vote: ${e?.message}")
+                        CometChatLogger.e(TAG, "Failed to submit vote: ${e?.message}")
                     }
                 }
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Error submitting vote: ${e.message}")
+            CometChatLogger.e(TAG, "Error submitting vote: ${e.message}")
         }
     }
 
-    fun getJsonObject(): org.json.JSONObject? = jsonObject
+    public fun getJsonObject(): org.json.JSONObject? = jsonObject
 
-    fun getOnOptionClick(): OnOptionClick? = onOptionClick
+    public fun getOnOptionClick(): OnOptionClick? = onOptionClick
 
     /**
      * Sets the listener for option click events.
      */
-    fun setOnOptionClick(listener: OnOptionClick?) {
+    public fun setOnOptionClick(listener: OnOptionClick?) {
         if (listener != null) {
             this.onOptionClick = listener
         }
@@ -394,7 +394,7 @@ class CometChatPollBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatPollBubbleStyle) {
+    public fun setStyle(style: CometChatPollBubbleStyle) {
         this.style = style
         applyStyle()
     }
@@ -402,7 +402,7 @@ class CometChatPollBubble @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatPollBubble
@@ -443,132 +443,132 @@ class CometChatPollBubble @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getProgressColor(): Int = style?.progressColor ?: 0
-    fun getProgressBackgroundColor(): Int = style?.progressBackgroundColor ?: 0
-    fun getSelectedStateDrawable(): Drawable? = style?.selectedStateDrawable
-    fun getUnselectedStateDrawable(): Drawable? = style?.unselectedStateDrawable
-    fun getVoteCountTextColor(): Int = style?.voteCountTextColor ?: 0
-    fun getSelectedRadioButtonStrokeColor(): Int = style?.selectedRadioButtonStrokeColor ?: 0
-    fun getSelectedIconTint(): Int = style?.selectedIconTint ?: 0
-    fun getSelectedRadioButtonCornerRadius(): Int = style?.selectedRadioButtonCornerRadius ?: 0
-    fun getSelectedRadioButtonStrokeWidth(): Int = style?.selectedRadioButtonStrokeWidth ?: 0
-    fun getUnselectedRadioButtonStrokeColor(): Int = style?.unselectedRadioButtonStrokeColor ?: 0
-    fun getUnselectedIconTint(): Int = style?.unselectedIconTint ?: 0
-    fun getUnselectedRadioButtonCornerRadius(): Int = style?.unselectedRadioButtonCornerRadius ?: 0
-    fun getUnselectedRadioButtonStrokeWidth(): Int = style?.unselectedRadioButtonStrokeWidth ?: 0
-    fun getOptionAvatarStyle(): Int = style?.optionAvatarStyle ?: 0
-    fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
-    fun getOptionTextColor(): Int = style?.optionTextColor ?: 0
-    fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
-    fun getOptionTextAppearance(): Int = style?.optionTextAppearance ?: 0
-    fun getVoteCountTextAppearance(): Int = style?.voteCountTextAppearance ?: 0
-    fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
+    public fun getProgressColor(): Int = style?.progressColor ?: 0
+    public fun getProgressBackgroundColor(): Int = style?.progressBackgroundColor ?: 0
+    public fun getSelectedStateDrawable(): Drawable? = style?.selectedStateDrawable
+    public fun getUnselectedStateDrawable(): Drawable? = style?.unselectedStateDrawable
+    public fun getVoteCountTextColor(): Int = style?.voteCountTextColor ?: 0
+    public fun getSelectedRadioButtonStrokeColor(): Int = style?.selectedRadioButtonStrokeColor ?: 0
+    public fun getSelectedIconTint(): Int = style?.selectedIconTint ?: 0
+    public fun getSelectedRadioButtonCornerRadius(): Int = style?.selectedRadioButtonCornerRadius ?: 0
+    public fun getSelectedRadioButtonStrokeWidth(): Int = style?.selectedRadioButtonStrokeWidth ?: 0
+    public fun getUnselectedRadioButtonStrokeColor(): Int = style?.unselectedRadioButtonStrokeColor ?: 0
+    public fun getUnselectedIconTint(): Int = style?.unselectedIconTint ?: 0
+    public fun getUnselectedRadioButtonCornerRadius(): Int = style?.unselectedRadioButtonCornerRadius ?: 0
+    public fun getUnselectedRadioButtonStrokeWidth(): Int = style?.unselectedRadioButtonStrokeWidth ?: 0
+    public fun getOptionAvatarStyle(): Int = style?.optionAvatarStyle ?: 0
+    public fun getTitleTextColor(): Int = style?.titleTextColor ?: 0
+    public fun getOptionTextColor(): Int = style?.optionTextColor ?: 0
+    public fun getTitleTextAppearance(): Int = style?.titleTextAppearance ?: 0
+    public fun getOptionTextAppearance(): Int = style?.optionTextAppearance ?: 0
+    public fun getVoteCountTextAppearance(): Int = style?.voteCountTextAppearance ?: 0
+    public fun getProgressIndeterminateTint(): Int = style?.progressIndeterminateTint ?: 0
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setProgressColor(@ColorInt color: Int) {
+    public fun setProgressColor(@ColorInt color: Int) {
         style = style?.copy(progressColor = color) ?: CometChatPollBubbleStyle(progressColor = color)
         pollAnswerAdapter.setProgressColor(color)
     }
 
-    fun setProgressBackgroundColor(@ColorInt color: Int) {
+    public fun setProgressBackgroundColor(@ColorInt color: Int) {
         style = style?.copy(progressBackgroundColor = color) ?: CometChatPollBubbleStyle(progressBackgroundColor = color)
         pollAnswerAdapter.setProgressBackgroundColor(color)
     }
 
-    fun setSelectedStateDrawable(drawable: Drawable?) {
+    public fun setSelectedStateDrawable(drawable: Drawable?) {
         style = style?.copy(selectedStateDrawable = drawable) ?: CometChatPollBubbleStyle(selectedStateDrawable = drawable)
         pollAnswerAdapter.setSelectedStateDrawable(drawable)
     }
 
-    fun setUnselectedStateDrawable(drawable: Drawable?) {
+    public fun setUnselectedStateDrawable(drawable: Drawable?) {
         style = style?.copy(unselectedStateDrawable = drawable) ?: CometChatPollBubbleStyle(unselectedStateDrawable = drawable)
         pollAnswerAdapter.setUnselectedStateDrawable(drawable)
     }
 
-    fun setSelectedIconTint(@ColorInt color: Int) {
+    public fun setSelectedIconTint(@ColorInt color: Int) {
         style = style?.copy(selectedIconTint = color) ?: CometChatPollBubbleStyle(selectedIconTint = color)
         pollAnswerAdapter.setSelectedIconTint(color)
     }
 
-    fun setSelectedRadioButtonStrokeColor(@ColorInt color: Int) {
+    public fun setSelectedRadioButtonStrokeColor(@ColorInt color: Int) {
         style = style?.copy(selectedRadioButtonStrokeColor = color) ?: CometChatPollBubbleStyle(selectedRadioButtonStrokeColor = color)
         pollAnswerAdapter.setSelectedRadioButtonStrokeColor(color)
     }
 
-    fun setVoteCountTextColor(@ColorInt color: Int) {
+    public fun setVoteCountTextColor(@ColorInt color: Int) {
         style = style?.copy(voteCountTextColor = color) ?: CometChatPollBubbleStyle(voteCountTextColor = color)
         pollAnswerAdapter.setVoteCountTextColor(color)
     }
 
-    fun setSelectedRadioButtonCornerRadius(@Dimension radius: Int) {
+    public fun setSelectedRadioButtonCornerRadius(@Dimension radius: Int) {
         style = style?.copy(selectedRadioButtonCornerRadius = radius) ?: CometChatPollBubbleStyle(selectedRadioButtonCornerRadius = radius)
         pollAnswerAdapter.setSelectedRadioButtonCornerRadius(radius)
     }
 
-    fun setSelectedRadioButtonStrokeWidth(@Dimension width: Int) {
+    public fun setSelectedRadioButtonStrokeWidth(@Dimension width: Int) {
         style = style?.copy(selectedRadioButtonStrokeWidth = width) ?: CometChatPollBubbleStyle(selectedRadioButtonStrokeWidth = width)
         pollAnswerAdapter.setSelectedRadioButtonStrokeWidth(width)
     }
 
-    fun setUnselectedRadioButtonStrokeColor(@ColorInt color: Int) {
+    public fun setUnselectedRadioButtonStrokeColor(@ColorInt color: Int) {
         style = style?.copy(unselectedRadioButtonStrokeColor = color) ?: CometChatPollBubbleStyle(unselectedRadioButtonStrokeColor = color)
         pollAnswerAdapter.setUnselectedRadioButtonStrokeColor(color)
     }
 
-    fun setUnselectedIconTint(@ColorInt color: Int) {
+    public fun setUnselectedIconTint(@ColorInt color: Int) {
         style = style?.copy(unselectedIconTint = color) ?: CometChatPollBubbleStyle(unselectedIconTint = color)
         pollAnswerAdapter.setUnselectedIconTint(color)
     }
 
-    fun setUnselectedRadioButtonCornerRadius(@Dimension radius: Int) {
+    public fun setUnselectedRadioButtonCornerRadius(@Dimension radius: Int) {
         style = style?.copy(unselectedRadioButtonCornerRadius = radius) ?: CometChatPollBubbleStyle(unselectedRadioButtonCornerRadius = radius)
         pollAnswerAdapter.setUnselectedRadioButtonCornerRadius(radius)
     }
 
-    fun setUnselectedRadioButtonStrokeWidth(@Dimension width: Int) {
+    public fun setUnselectedRadioButtonStrokeWidth(@Dimension width: Int) {
         style = style?.copy(unselectedRadioButtonStrokeWidth = width) ?: CometChatPollBubbleStyle(unselectedRadioButtonStrokeWidth = width)
         pollAnswerAdapter.setUnselectedRadioButtonStrokeWidth(width)
     }
 
-    fun setOptionAvatarStyle(@StyleRes style: Int) {
+    public fun setOptionAvatarStyle(@StyleRes style: Int) {
         this.style = this.style?.copy(optionAvatarStyle = style) ?: CometChatPollBubbleStyle(optionAvatarStyle = style)
         pollAnswerAdapter.setOptionAvatarStyle(style)
     }
 
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         style = style?.copy(titleTextColor = color) ?: CometChatPollBubbleStyle(titleTextColor = color)
         if (color != 0) question.setTextColor(color)
     }
 
-    fun setOptionTextColor(@ColorInt color: Int) {
+    public fun setOptionTextColor(@ColorInt color: Int) {
         style = style?.copy(optionTextColor = color) ?: CometChatPollBubbleStyle(optionTextColor = color)
         pollAnswerAdapter.setOptionTextColor(color)
     }
 
-    fun setTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(titleTextAppearance = appearance) ?: CometChatPollBubbleStyle(titleTextAppearance = appearance)
         if (appearance != 0) question.setTextAppearance(appearance)
     }
 
-    fun setOptionTextAppearance(@StyleRes appearance: Int) {
+    public fun setOptionTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(optionTextAppearance = appearance) ?: CometChatPollBubbleStyle(optionTextAppearance = appearance)
         pollAnswerAdapter.setOptionTextAppearance(appearance)
     }
 
-    fun setVoteCountTextAppearance(@StyleRes appearance: Int) {
+    public fun setVoteCountTextAppearance(@StyleRes appearance: Int) {
         style = style?.copy(voteCountTextAppearance = appearance) ?: CometChatPollBubbleStyle(voteCountTextAppearance = appearance)
         pollAnswerAdapter.setVoteCountTextAppearance(appearance)
     }
 
-    fun setProgressIndeterminateTint(@ColorInt color: Int) {
+    public fun setProgressIndeterminateTint(@ColorInt color: Int) {
         style = style?.copy(progressIndeterminateTint = color) ?: CometChatPollBubbleStyle(progressIndeterminateTint = color)
         pollAnswerAdapter.setProgressIndeterminateTint(color)
     }
 
-    companion object {
+    public companion object {
         private val TAG = CometChatPollBubble::class.java.simpleName
     }
 }

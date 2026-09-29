@@ -21,7 +21,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the scheduler bubble,
  * matching the XML attributes defined in attr_cometchat_scheduler_bubble.xml.
  */
-data class CometChatSchedulerBubbleStyle(
+public data class CometChatSchedulerBubbleStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = STYLE_NOT_SET,
     val backgroundDrawable: Drawable? = null,
@@ -54,7 +54,7 @@ data class CometChatSchedulerBubbleStyle(
     /**
      * Resolves sentinel values against a base [CometChatMessageBubbleStyle].
      */
-    fun resolve(base: CometChatMessageBubbleStyle): CometChatSchedulerBubbleStyle {
+    public fun resolve(base: CometChatMessageBubbleStyle): CometChatSchedulerBubbleStyle {
         return copy(
             backgroundColor = resolveStyleColor(backgroundColor, base.backgroundColor),
             cornerRadius = resolveStyleDimension(cornerRadius, base.cornerRadius),
@@ -68,11 +68,11 @@ data class CometChatSchedulerBubbleStyle(
         )
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style with CometChatTheme defaults.
          */
-        fun default(context: Context): CometChatSchedulerBubbleStyle {
+        public fun default(context: Context): CometChatSchedulerBubbleStyle {
             return CometChatSchedulerBubbleStyle(
                 backgroundColor = CometChatTheme.getBackgroundColor3(context),
                 titleTextAppearance = CometChatTheme.getTextAppearanceHeading4Bold(context),
@@ -86,7 +86,7 @@ data class CometChatSchedulerBubbleStyle(
         /**
          * Creates a style by extracting values from XML TypedArray.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatSchedulerBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatSchedulerBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

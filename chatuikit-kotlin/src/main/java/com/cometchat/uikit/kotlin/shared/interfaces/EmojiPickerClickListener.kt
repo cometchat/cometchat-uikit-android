@@ -8,9 +8,9 @@ package com.cometchat.uikit.kotlin.shared.interfaces
  *
  * @see com.cometchat.uikit.kotlin.presentation.messagelist.ui.CometChatMessageList.setEmojiPickerClick
  */
-fun interface EmojiPickerClickListener {
+public fun interface EmojiPickerClickListener {
     /**
      * Called when the emoji picker is opened.
      */
-    fun onEmojiPickerClick()
+    public fun onEmojiPickerClick()
 }

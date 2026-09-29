@@ -20,9 +20,9 @@ import kotlin.math.max
  * CometChatShimmerDrawable is a drawable that renders the shimmer effect.
  * It handles the animation and drawing of the shimmer gradient.
  */
-class CometChatShimmerDrawable : Drawable() {
+public class CometChatShimmerDrawable : Drawable() {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatShimmerDrawable::class.java.simpleName
     }
 
@@ -35,10 +35,10 @@ class CometChatShimmerDrawable : Drawable() {
     private var valueAnimator: ValueAnimator? = null
     private var staticAnimationProgress = -1f
 
-    var shimmer: CometChatShimmer? = null
+    public var shimmer: CometChatShimmer? = null
         private set
 
-    fun setShimmer(shimmer: CometChatShimmer?) {
+    public fun setShimmer(shimmer: CometChatShimmer?) {
         this.shimmer = shimmer
         shimmer?.let {
             shimmerPaint.xfermode = PorterDuffXfermode(
@@ -50,7 +50,7 @@ class CometChatShimmerDrawable : Drawable() {
         invalidateSelf()
     }
 
-    fun startShimmer() {
+    public fun startShimmer() {
         valueAnimator?.let {
             if (!isShimmerStarted() && callback != null) {
                 it.start()
@@ -58,7 +58,7 @@ class CometChatShimmerDrawable : Drawable() {
         }
     }
 
-    fun stopShimmer() {
+    public fun stopShimmer() {
         valueAnimator?.let {
             if (isShimmerStarted()) {
                 it.cancel()
@@ -66,9 +66,9 @@ class CometChatShimmerDrawable : Drawable() {
         }
     }
 
-    fun isShimmerStarted(): Boolean = valueAnimator?.isStarted == true
+    public fun isShimmerStarted(): Boolean = valueAnimator?.isStarted == true
 
-    fun isShimmerRunning(): Boolean = valueAnimator?.isRunning == true
+    public fun isShimmerRunning(): Boolean = valueAnimator?.isRunning == true
 
     override fun onBoundsChange(bounds: Rect) {
         super.onBoundsChange(bounds)
@@ -77,7 +77,7 @@ class CometChatShimmerDrawable : Drawable() {
         maybeStartShimmer()
     }
 
-    fun setStaticAnimationProgress(value: Float) {
+    public fun setStaticAnimationProgress(value: Float) {
         if (value.compareTo(staticAnimationProgress) == 0 || (value < 0f && staticAnimationProgress < 0f)) {
             return
         }
@@ -85,7 +85,7 @@ class CometChatShimmerDrawable : Drawable() {
         invalidateSelf()
     }
 
-    fun clearStaticAnimationProgress() {
+    public fun clearStaticAnimationProgress() {
         setStaticAnimationProgress(-1f)
     }
 
@@ -153,7 +153,7 @@ class CometChatShimmerDrawable : Drawable() {
         }
     }
 
-    fun maybeStartShimmer() {
+    public fun maybeStartShimmer() {
         valueAnimator?.let { animator ->
             shimmer?.let { shimmerConfig ->
                 if (!animator.isStarted && shimmerConfig.autoStart && callback != null) {

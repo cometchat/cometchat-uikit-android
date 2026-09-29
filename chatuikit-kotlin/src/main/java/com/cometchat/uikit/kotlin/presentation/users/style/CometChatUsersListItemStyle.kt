@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatS
 /**
  * Style configuration for CometChatUsersListItem component.
  */
-data class CometChatUsersListItemStyle(
+public data class CometChatUsersListItemStyle(
     // Background
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val selectedBackgroundColor: Int = 0,
@@ -41,11 +41,11 @@ data class CometChatUsersListItemStyle(
     val avatarStyle: CometChatAvatarStyle = CometChatAvatarStyle(),
     val statusIndicatorStyle: CometChatStatusIndicatorStyle = CometChatStatusIndicatorStyle()
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatUsersStyle.
          */
-        fun default(context: Context): CometChatUsersListItemStyle {
+        public fun default(context: Context): CometChatUsersListItemStyle {
             return extractFromThemeStyle(context)
         }
 
@@ -68,7 +68,7 @@ data class CometChatUsersListItemStyle(
             }
         }
 
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatUsersListItemStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatUsersListItemStyle {
             return try {
                 extractFromTypedArrayInternal(context, typedArray)
             } finally {

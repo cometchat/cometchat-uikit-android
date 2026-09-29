@@ -26,7 +26,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param threadIndicatorTextAppearance Text appearance resource for thread indicator
  * @param threadIndicatorIconTint Tint color for thread indicator icon
  */
-data class CometChatStickerBubbleStyle(
+public data class CometChatStickerBubbleStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @Dimension val cornerRadius: Int = 0,
@@ -42,14 +42,14 @@ data class CometChatStickerBubbleStyle(
     @StyleRes val threadIndicatorTextAppearance: Int = 0,
     @ColorInt val threadIndicatorIconTint: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatStickerBubbleStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatStickerBubbleStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatStickerBubbleStyle {
+        public fun default(context: Context): CometChatStickerBubbleStyle {
             return extractFromThemeStyle(context, R.attr.cometchatStickerBubbleStyle)
         }
 
@@ -61,7 +61,7 @@ data class CometChatStickerBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatStickerBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatStickerBubbleStyle {
+        public fun incoming(context: Context): CometChatStickerBubbleStyle {
             return default(context)
         }
 
@@ -73,7 +73,7 @@ data class CometChatStickerBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatStickerBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatStickerBubbleStyle {
+        public fun outgoing(context: Context): CometChatStickerBubbleStyle {
             return default(context)
         }
 
@@ -105,7 +105,7 @@ data class CometChatStickerBubbleStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatStickerBubbleStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStickerBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatStickerBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

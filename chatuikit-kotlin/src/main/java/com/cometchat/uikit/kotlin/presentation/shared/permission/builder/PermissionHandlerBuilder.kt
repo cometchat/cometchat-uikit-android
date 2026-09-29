@@ -5,23 +5,23 @@ import com.cometchat.uikit.kotlin.presentation.shared.permission.listener.Permis
 /**
  * Builder interface for permission handling.
  */
-interface PermissionHandlerBuilder {
+public interface PermissionHandlerBuilder {
     /**
      * Initiates the permission check/request.
      */
-    fun check()
+    public fun check()
 
     /**
      * Sets the permissions to request.
      * @param permissions Array of permission strings
      * @return This builder for chaining
      */
-    fun withPermissions(permissions: Array<String>): PermissionHandlerBuilder
+    public fun withPermissions(permissions: Array<String>): PermissionHandlerBuilder
 
     /**
      * Sets the listener for permission results.
      * @param listener The listener to receive results
      * @return This builder for chaining
      */
-    fun withListener(listener: PermissionResultListener): PermissionHandlerBuilder
+    public fun withListener(listener: PermissionResultListener): PermissionHandlerBuilder
 }

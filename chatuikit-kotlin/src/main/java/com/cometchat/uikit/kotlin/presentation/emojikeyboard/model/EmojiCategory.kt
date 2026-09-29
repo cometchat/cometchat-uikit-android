@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName
  * @param symbol Drawable resource ID used as a fallback icon for the category tab
  * @param emojis List of emojis belonging to this category
  */
-data class EmojiCategory(
+public data class EmojiCategory(
     @SerializedName("id")
     @Expose
     val id: String,

@@ -19,7 +19,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.BULLET_LIST
  */
-class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
+public class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
 
     @ColorInt
     private var bulletColor: Int
@@ -30,7 +30,7 @@ class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new BulletListFormatSpan with default styling.
      */
-    constructor() : super(DEFAULT_LEADING_MARGIN) {
+    public constructor() : super(DEFAULT_LEADING_MARGIN) {
         this.bulletColor = 0
         this.bulletRadius = DEFAULT_BULLET_RADIUS
         this.gapWidth = DEFAULT_GAP_WIDTH
@@ -40,7 +40,7 @@ class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new BulletListFormatSpan with context for theme colors.
      */
-    constructor(context: Context) : super(DEFAULT_LEADING_MARGIN) {
+    public constructor(context: Context) : super(DEFAULT_LEADING_MARGIN) {
         this.context = context
         this.bulletColor = CometChatTheme.getTextColorPrimary(context)
         this.bulletRadius = DEFAULT_BULLET_RADIUS
@@ -50,7 +50,7 @@ class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new BulletListFormatSpan with custom styling.
      */
-    constructor(
+    public constructor(
         @ColorInt bulletColor: Int,
         bulletRadius: Int,
         gapWidth: Int
@@ -64,7 +64,7 @@ class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
     /**
      * Creates a new BulletListFormatSpan with custom leading margin.
      */
-    constructor(leadingMargin: Int) : super(leadingMargin) {
+    public constructor(leadingMargin: Int) : super(leadingMargin) {
         this.bulletColor = 0
         this.bulletRadius = DEFAULT_BULLET_RADIUS
         this.gapWidth = DEFAULT_GAP_WIDTH
@@ -112,18 +112,18 @@ class BulletListFormatSpan : LeadingMarginSpan.Standard, RichTextFormatSpan {
 
     // region Getters and Setters
 
-    fun getBulletColor(): Int = bulletColor
-    fun setBulletColor(@ColorInt color: Int) { bulletColor = color }
+    public fun getBulletColor(): Int = bulletColor
+    public fun setBulletColor(@ColorInt color: Int) { bulletColor = color }
 
-    fun getBulletRadius(): Int = bulletRadius
-    fun setBulletRadius(radius: Int) { bulletRadius = radius }
+    public fun getBulletRadius(): Int = bulletRadius
+    public fun setBulletRadius(radius: Int) { bulletRadius = radius }
 
-    fun getGapWidth(): Int = gapWidth
-    fun setGapWidth(width: Int) { gapWidth = width }
+    public fun getGapWidth(): Int = gapWidth
+    public fun setGapWidth(width: Int) { gapWidth = width }
 
     // endregion
 
-    companion object {
+    public companion object {
         private const val DEFAULT_BULLET_RADIUS = 4
         private const val DEFAULT_GAP_WIDTH = 16
         private const val DEFAULT_LEADING_MARGIN = 48

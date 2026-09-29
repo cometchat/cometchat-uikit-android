@@ -42,13 +42,13 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * toolbar.setOnBackPress { finish() }
  * ```
  */
-class CometChatToolbar @JvmOverloads constructor(
+public class CometChatToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatToolbar::class.java.simpleName
         private const val DEFAULT_HEIGHT_DP = 56
     }
@@ -331,19 +331,19 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the toolbar title.
      */
-    fun setTitle(title: String) {
+    public fun setTitle(title: String) {
         titleTextView.text = title
     }
 
     /**
      * Gets the current toolbar title.
      */
-    fun getTitle(): String = titleTextView.text.toString()
+    public fun getTitle(): String = titleTextView.text.toString()
 
     /**
      * Sets the title text color.
      */
-    fun setTitleTextColor(@ColorInt color: Int) {
+    public fun setTitleTextColor(@ColorInt color: Int) {
         titleTextColor = color
         titleTextView.setTextColor(color)
     }
@@ -351,7 +351,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the title text appearance.
      */
-    fun setTitleTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes textAppearance: Int) {
         titleTextAppearance = textAppearance
         if (textAppearance != 0) {
             titleTextView.setTextAppearance(textAppearance)
@@ -361,7 +361,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the back icon visibility.
      */
-    fun setBackIconVisibility(visibility: Int) {
+    public fun setBackIconVisibility(visibility: Int) {
         backIconView.visibility = visibility
         // Also update saved visibility so it's restored correctly after selection mode
         savedBackIconVisibility = visibility
@@ -370,7 +370,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the back icon drawable.
      */
-    fun setBackIcon(@DrawableRes iconRes: Int) {
+    public fun setBackIcon(@DrawableRes iconRes: Int) {
         backIconRes = iconRes
         backIconView.setImageResource(iconRes)
     }
@@ -378,14 +378,14 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the back icon drawable.
      */
-    fun setBackIcon(drawable: Drawable?) {
+    public fun setBackIcon(drawable: Drawable?) {
         backIconView.setImageDrawable(drawable)
     }
 
     /**
      * Sets the back icon tint color.
      */
-    fun setBackIconTint(@ColorInt color: Int) {
+    public fun setBackIconTint(@ColorInt color: Int) {
         backIconTint = color
         backIconView.setColorFilter(color)
     }
@@ -393,21 +393,21 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the callback for back button press.
      */
-    fun setOnBackPress(callback: (() -> Unit)?) {
+    public fun setOnBackPress(callback: (() -> Unit)?) {
         onBackPress = callback
     }
 
     /**
      * Sets the callback for discard selection action.
      */
-    fun setOnDiscardSelection(callback: (() -> Unit)?) {
+    public fun setOnDiscardSelection(callback: (() -> Unit)?) {
         onDiscardSelection = callback
     }
 
     /**
      * Sets the callback for submit selection action.
      */
-    fun setOnSubmitSelection(callback: (() -> Unit)?) {
+    public fun setOnSubmitSelection(callback: (() -> Unit)?) {
         onSubmitSelection = callback
     }
 
@@ -416,7 +416,7 @@ class CometChatToolbar @JvmOverloads constructor(
      * In selection mode, the title is replaced with selection count,
      * and discard/submit icons are shown.
      */
-    fun setSelectionMode(enabled: Boolean) {
+    public fun setSelectionMode(enabled: Boolean) {
         isSelectionMode = enabled
         updateSelectionModeUI()
     }
@@ -424,7 +424,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the selection count to display in selection mode.
      */
-    fun setSelectionCount(count: Int) {
+    public fun setSelectionCount(count: Int) {
         selectionCount = count
         updateSelectionCountText()
     }
@@ -432,7 +432,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Shows or hides the separator line at the bottom of the toolbar.
      */
-    fun setShowSeparator(show: Boolean) {
+    public fun setShowSeparator(show: Boolean) {
         showSeparator = show
         separatorView.visibility = if (show) View.VISIBLE else View.GONE
     }
@@ -440,7 +440,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the separator color.
      */
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         separatorColor = color
         separatorView.setBackgroundColor(color)
     }
@@ -456,14 +456,14 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Adds a custom action view to the toolbar.
      */
-    fun addActionView(view: View) {
+    public fun addActionView(view: View) {
         actionsContainer.addView(view, 0)
     }
 
     /**
      * Removes all custom action views from the toolbar.
      */
-    fun clearActionViews() {
+    public fun clearActionViews() {
         // Keep discard and submit icons, remove others
         val childCount = actionsContainer.childCount
         for (i in childCount - 1 downTo 0) {
@@ -477,7 +477,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Applies a style to the toolbar.
      */
-    fun setStyle(style: CometChatToolbarStyle) {
+    public fun setStyle(style: CometChatToolbarStyle) {
         if (style.backgroundColor != 0) setBackgroundColor(style.backgroundColor)
         // Apply text appearance first, then text color (text appearance may override color)
         if (style.titleTextAppearance != 0) setTitleTextAppearance(style.titleTextAppearance)
@@ -515,14 +515,14 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the discard icon drawable.
      */
-    fun setDiscardIcon(drawable: Drawable?) {
+    public fun setDiscardIcon(drawable: Drawable?) {
         discardIconView.setImageDrawable(drawable)
     }
 
     /**
      * Sets the discard icon resource.
      */
-    fun setDiscardIcon(@DrawableRes iconRes: Int) {
+    public fun setDiscardIcon(@DrawableRes iconRes: Int) {
         discardIconRes = iconRes
         discardIconView.setImageResource(iconRes)
     }
@@ -530,7 +530,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the discard icon tint color.
      */
-    fun setDiscardIconTint(@ColorInt color: Int) {
+    public fun setDiscardIconTint(@ColorInt color: Int) {
         discardIconTint = color
         discardIconView.setColorFilter(color)
     }
@@ -538,14 +538,14 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the submit icon drawable.
      */
-    fun setSubmitIcon(drawable: Drawable?) {
+    public fun setSubmitIcon(drawable: Drawable?) {
         submitIconView.setImageDrawable(drawable)
     }
 
     /**
      * Sets the submit icon resource.
      */
-    fun setSubmitIcon(@DrawableRes iconRes: Int) {
+    public fun setSubmitIcon(@DrawableRes iconRes: Int) {
         submitIconRes = iconRes
         submitIconView.setImageResource(iconRes)
     }
@@ -553,7 +553,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the submit icon tint color.
      */
-    fun setSubmitIconTint(@ColorInt color: Int) {
+    public fun setSubmitIconTint(@ColorInt color: Int) {
         submitIconTint = color
         submitIconView.setColorFilter(color)
     }
@@ -561,7 +561,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the selection count text color.
      */
-    fun setSelectionCountTextColor(@ColorInt color: Int) {
+    public fun setSelectionCountTextColor(@ColorInt color: Int) {
         selectionCountTextColor = color
         selectionCountTextView.setTextColor(color)
     }
@@ -569,7 +569,7 @@ class CometChatToolbar @JvmOverloads constructor(
     /**
      * Sets the selection count text appearance.
      */
-    fun setSelectionCountTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setSelectionCountTextAppearance(@StyleRes textAppearance: Int) {
         selectionCountTextAppearance = textAppearance
         if (textAppearance != 0) {
             selectionCountTextView.setTextAppearance(textAppearance)

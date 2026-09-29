@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * ActionBubble is a centered system message (e.g., "User joined the group").
  * Unlike directional message bubbles, action bubbles do not have incoming/outgoing variants.
  */
-data class CometChatActionBubbleStyle(
+public data class CometChatActionBubbleStyle(
     // Content-specific properties
     @ColorInt val textColor: Int = 0,
     @StyleRes val textAppearance: Int = 0,
@@ -27,14 +27,14 @@ data class CometChatActionBubbleStyle(
     @Dimension val strokeWidth: Float = 0f,
     @ColorInt val strokeColor: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatActionBubbleStyle with default values
          */
-        fun default(context: Context): CometChatActionBubbleStyle {
+        public fun default(context: Context): CometChatActionBubbleStyle {
             return extractFromStyleResource(context, 0)
         }
 
@@ -65,7 +65,7 @@ data class CometChatActionBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatActionBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatActionBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatActionBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

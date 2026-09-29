@@ -13,7 +13,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatToolbar.
  */
-data class CometChatToolbarStyle(
+public data class CometChatToolbarStyle(
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val titleTextColor: Int = 0,
     @StyleRes val titleTextAppearance: Int = 0,
@@ -31,11 +31,11 @@ data class CometChatToolbarStyle(
     @ColorInt val selectionCountTextColor: Int = 0,
     @StyleRes val selectionCountTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style using CometChatTheme values.
          */
-        fun default(context: Context): CometChatToolbarStyle {
+        public fun default(context: Context): CometChatToolbarStyle {
             return CometChatToolbarStyle(
                 backgroundColor = CometChatTheme.getBackgroundColor1(context),
                 titleTextColor = CometChatTheme.getTextColorPrimary(context),
@@ -56,7 +56,7 @@ data class CometChatToolbarStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatToolbarStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatToolbarStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatToolbarStyle {
             return try {
                 CometChatToolbarStyle(
                     // Background

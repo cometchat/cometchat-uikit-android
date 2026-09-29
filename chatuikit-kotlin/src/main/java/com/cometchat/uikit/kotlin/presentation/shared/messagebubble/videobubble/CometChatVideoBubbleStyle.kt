@@ -24,7 +24,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * [DIMENSION_NOT_SET]) to indicate "not set". When not set, they fall back to
  * values from [CometChatMessageBubbleStyle] via [resolve].
  */
-data class CometChatVideoBubbleStyle(
+public data class CometChatVideoBubbleStyle(
     // Content-specific properties
     @Dimension val videoCornerRadius: Float = 0f,
     @Dimension val videoStrokeWidth: Float = 0f,
@@ -65,10 +65,10 @@ data class CometChatVideoBubbleStyle(
      * @param messageBubbleStyle The message bubble style to use as fallback
      * @return A new [CometChatVideoBubbleStyle] with all sentinel values resolved
      */
-    fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatVideoBubbleStyle =
+    public fun resolve(messageBubbleStyle: CometChatMessageBubbleStyle): CometChatVideoBubbleStyle =
         mergeWithBase(this, messageBubbleStyle)
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style (delegates to outgoing).
          *
@@ -79,7 +79,7 @@ data class CometChatVideoBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatVideoBubbleStyle with default values
          */
-        fun default(context: Context): CometChatVideoBubbleStyle {
+        public fun default(context: Context): CometChatVideoBubbleStyle {
             return outgoing(context)
         }
 
@@ -94,7 +94,7 @@ data class CometChatVideoBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatVideoBubbleStyle configured for outgoing messages
          */
-        fun outgoing(context: Context): CometChatVideoBubbleStyle {
+        public fun outgoing(context: Context): CometChatVideoBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatOutgoingMessageBubbleStyle
@@ -112,7 +112,7 @@ data class CometChatVideoBubbleStyle(
          * @param context The context to access theme resources
          * @return A CometChatVideoBubbleStyle configured for incoming messages
          */
-        fun incoming(context: Context): CometChatVideoBubbleStyle {
+        public fun incoming(context: Context): CometChatVideoBubbleStyle {
             return extractFromMessageBubbleStyle(
                 context,
                 R.attr.cometchatIncomingMessageBubbleStyle
@@ -169,7 +169,7 @@ data class CometChatVideoBubbleStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatVideoBubbleStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatVideoBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatVideoBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

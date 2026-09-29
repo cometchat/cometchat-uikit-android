@@ -41,6 +41,7 @@ import com.cometchat.uikit.core.models.AttachmentSource
 import com.cometchat.uikit.core.models.StagedAttachmentInput
 import com.cometchat.uikit.core.models.defaultAttachmentCategory
 import com.cometchat.uikit.core.utils.AgentChatDetector
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.extractMediaDurationMillis
 import com.cometchat.uikit.core.factory.CometChatMessageComposerViewModelFactory
 import com.cometchat.uikit.core.formatter.RichTextConfiguration
@@ -136,13 +137,13 @@ import java.io.File
  * messageComposer.setOnSendButtonClick { text -> /* Handle send */ }
  * ```
  */
-class CometChatMessageComposer @JvmOverloads constructor(
+public class CometChatMessageComposer @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageComposerStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMessageComposer::class.java.simpleName
         
         // Observer type constants for formatter observer tracking
@@ -181,7 +182,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * When true, no typing indicator events are sent while the user types.
      */
-    var disableTypingEvents: Boolean = false
+    public var disableTypingEvents: Boolean = false
         set(value) {
             field = value
             viewModel?.disableTypingEvents = value
@@ -384,14 +385,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
         initSuggestionList()
         // Initialize default mentions formatter (like Java implementation)
         processMentionsFormatter()
-        android.util.Log.d(TAG, "init: initialization complete, textFormatters.size=${textFormatters.size}")
+        CometChatLogger.d(TAG, "init: initialization complete, textFormatters.size=${textFormatters.size}")
     }
 
     /**
      * Enables or disables the multi-attachment staging flow. When disabled, attachment picks revert
      * to the legacy single-pick, send-immediately behavior. Defaults to `true`.
      */
-    fun setEnableMultipleAttachments(enable: Boolean) {
+    public fun setEnableMultipleAttachments(enable: Boolean) {
         enableMultipleAttachments = enable
         if (!enable) {
             viewModel?.clearAttachments()
@@ -487,7 +488,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
                 else -> Unit
             }
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Failed to open staged attachment preview: ${e.message}")
+            CometChatLogger.e(TAG, "Failed to open staged attachment preview: ${e.message}")
         }
     }
 
@@ -511,7 +512,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * similar to how the Java implementation auto-initializes formatters.
      */
     private fun processMentionsFormatter() {
-        android.util.Log.d(TAG, "processMentionsFormatter: creating default CometChatMentionsFormatter")
+        CometChatLogger.d(TAG, "processMentionsFormatter: creating default CometChatMentionsFormatter")
         cometchatMentionsFormatter = CometChatMentionsFormatter(context)
         
         // Apply mention text style
@@ -525,7 +526,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
         // Add to formatters list
         cometchatMentionsFormatter?.let { formatter ->
             textFormatters.add(formatter)
-            android.util.Log.d(TAG, "processMentionsFormatter: added formatter, textFormatters.size=${textFormatters.size}")
+            CometChatLogger.d(TAG, "processMentionsFormatter: added formatter, textFormatters.size=${textFormatters.size}")
         }
         
         // Initialize mention helper with the formatter
@@ -570,9 +571,9 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Should be called after text formatters are set.
      */
     private fun initMentionHelper() {
-        android.util.Log.d(TAG, "initMentionHelper: textFormatters.size=${textFormatters.size}")
+        CometChatLogger.d(TAG, "initMentionHelper: textFormatters.size=${textFormatters.size}")
         if (textFormatters.isEmpty()) {
-            android.util.Log.d(TAG, "initMentionHelper: no formatters, returning")
+            CometChatLogger.d(TAG, "initMentionHelper: no formatters, returning")
             return
         }
         
@@ -608,23 +609,23 @@ class CometChatMessageComposer @JvmOverloads constructor(
         for (formatter in textFormatters) {
             // Observe suggestion item list - matches Java's setTagList method exactly
             val itemListObserver = Observer<List<SuggestionItem>> { items ->
-                android.util.Log.d("MentionDebug", "[$TAG] Observer received ${items.size} items from formatter: ${items.map { it.name }}")
+                CometChatLogger.d("MentionDebug", "[$TAG] Observer received ${items.size} items from formatter: ${items.map { it.name }}")
                 
                 // Match Java: only process if tempTextFormatter != null (we're in active mention context)
                 // AND the current formatter matches this observer's formatter
                 val isInMentionContext = currentMentionDetectionResult?.isActive == true
                 val isCurrentFormatter = currentMentionDetectionResult?.formatter == formatter
                 
-                android.util.Log.d("MentionDebug", "[$TAG] Observer - isInMentionContext=$isInMentionContext, isCurrentFormatter=$isCurrentFormatter, items.isNotEmpty=${items.isNotEmpty()}")
+                CometChatLogger.d("MentionDebug", "[$TAG] Observer - isInMentionContext=$isInMentionContext, isCurrentFormatter=$isCurrentFormatter, items.isNotEmpty=${items.isNotEmpty()}")
                 
                 // Match Java's setTagList: show only if in context AND current formatter AND items not empty
                 // Otherwise HIDE (this fixes the "amannn" showing 4 users issue)
                 if (isInMentionContext && isCurrentFormatter && items.isNotEmpty()) {
-                    android.util.Log.d("MentionDebug", "[$TAG] Observer - SHOWING suggestion list with ${items.size} items")
+                    CometChatLogger.d("MentionDebug", "[$TAG] Observer - SHOWING suggestion list with ${items.size} items")
                     binding.suggestionListLayout.visibility = View.VISIBLE
                     suggestionList?.setList(items)
                 } else {
-                    android.util.Log.d("MentionDebug", "[$TAG] Observer - HIDING suggestion list (context=$isInMentionContext, formatter=$isCurrentFormatter, empty=${items.isEmpty()})")
+                    CometChatLogger.d("MentionDebug", "[$TAG] Observer - HIDING suggestion list (context=$isInMentionContext, formatter=$isCurrentFormatter, empty=${items.isEmpty()})")
                     // Hide when: not in mention context OR items empty
                     binding.suggestionListLayout.visibility = View.GONE
                 }
@@ -634,16 +635,16 @@ class CometChatMessageComposer @JvmOverloads constructor(
             
             // Observe loading indicator - matches Java's setLoadingStateVisibility
             val loadingObserver = Observer<Boolean> { show ->
-                android.util.Log.d("MentionDebug", "[$TAG] Loading observer - show=$show")
+                CometChatLogger.d("MentionDebug", "[$TAG] Loading observer - show=$show")
                 // Only show shimmer if this formatter is the current active one
                 val isCurrentFormatter = currentMentionDetectionResult?.formatter == formatter
                 if (show && isCurrentFormatter) {
-                    android.util.Log.d("MentionDebug", "[$TAG] Loading observer - SHOWING shimmer")
+                    CometChatLogger.d("MentionDebug", "[$TAG] Loading observer - SHOWING shimmer")
                     // Show shimmer and make visible
                     binding.suggestionListLayout.visibility = View.VISIBLE
                     suggestionList?.showShimmer(true)
                 } else if (!show) {
-                    android.util.Log.d("MentionDebug", "[$TAG] Loading observer - HIDING shimmer")
+                    CometChatLogger.d("MentionDebug", "[$TAG] Loading observer - HIDING shimmer")
                     suggestionList?.showShimmer(false)
                 }
             }
@@ -699,7 +700,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * - When inactive: hide suggestion list
      */
     private fun handleMentionDetection(result: MentionTextWatcher.MentionDetectionResult) {
-        android.util.Log.d("MentionDebug", "[$TAG] handleMentionDetection() - isActive=${result.isActive}, query='${result.query}', formatter=${result.formatter?.javaClass?.simpleName}")
+        CometChatLogger.d("MentionDebug", "[$TAG] handleMentionDetection() - isActive=${result.isActive}, query='${result.query}', formatter=${result.formatter?.javaClass?.simpleName}")
         
         // Update mention suppression flag based on current cursor position
         val editable = binding.etMessageInput.text
@@ -712,14 +713,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
         // Suppress mention detection when cursor is inside a code block or inline code span
         if (suppressMentionDetection && result.isActive) {
-            android.util.Log.d("MentionDebug", "[$TAG] handleMentionDetection() - SUPPRESSED (cursor inside code format)")
+            CometChatLogger.d("MentionDebug", "[$TAG] handleMentionDetection() - SUPPRESSED (cursor inside code format)")
             binding.suggestionListLayout.visibility = View.GONE
             suggestionList?.setList(emptyList())
             return
         }
 
         if (result.isActive && result.formatter != null) {
-            android.util.Log.d("MentionDebug", "[$TAG] handleMentionDetection() - ACTIVE mention, triggering search")
+            CometChatLogger.d("MentionDebug", "[$TAG] handleMentionDetection() - ACTIVE mention, triggering search")
             // Set flag to ignore stale LiveData callbacks until fresh search completes
             // This prevents old cached results from showing when @ is typed again
             isWaitingForFreshResults = true
@@ -728,7 +729,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
             // The formatter will handle showing shimmer and updating the list
             sendSearchQueryWithInterval(result.formatter, result.query)
         } else {
-            android.util.Log.d("MentionDebug", "[$TAG] handleMentionDetection() - INACTIVE mention, hiding list")
+            CometChatLogger.d("MentionDebug", "[$TAG] handleMentionDetection() - INACTIVE mention, hiding list")
             // Cancel any pending search
             searchQueryTimer?.cancel()
             searchQueryTimer = null
@@ -742,7 +743,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
             
             // Reset formatter state by calling search(null) - this clears the cached list
             // so old results don't show when @ is typed again
-            android.util.Log.d("MentionDebug", "[$TAG] handleMentionDetection() - calling formatter.search(null) to clear cache")
+            CometChatLogger.d("MentionDebug", "[$TAG] handleMentionDetection() - calling formatter.search(null) to clear cache")
             currentMentionDetectionResult?.formatter?.search(context, null)
         }
     }
@@ -752,7 +753,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Matches Java's sendSearchQueryWithInterval method.
      */
     private fun sendSearchQueryWithInterval(formatter: CometChatTextFormatter, query: String) {
-        android.util.Log.d("MentionDebug", "[$TAG] sendSearchQueryWithInterval() - query='$query', interval=${searchQueryInterval}ms")
+        CometChatLogger.d("MentionDebug", "[$TAG] sendSearchQueryWithInterval() - query='$query', interval=${searchQueryInterval}ms")
         // Cancel any pending search
         searchQueryTimer?.cancel()
         searchQueryTimer = java.util.Timer()
@@ -761,7 +762,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
             override fun run() {
                 // Run on main thread
                 post {
-                    android.util.Log.d("MentionDebug", "[$TAG] sendSearchQueryWithInterval() - timer fired, calling formatter.search('$query')")
+                    CometChatLogger.d("MentionDebug", "[$TAG] sendSearchQueryWithInterval() - timer fired, calling formatter.search('$query')")
                     // Clear the flag BEFORE calling search - this allows the observer
                     // to process the fresh results that will come from this search
                     isWaitingForFreshResults = false
@@ -809,14 +810,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
         val isInMentionContext = currentMentionDetectionResult?.isActive == true
         val shouldShow = visible && isInMentionContext
         
-        android.util.Log.d(TAG, "updateSuggestionListVisibility: visible=$visible, isInMentionContext=$isInMentionContext, shouldShow=$shouldShow, currentVisibility=${binding.suggestionListLayout.visibility}")
+        CometChatLogger.d(TAG, "updateSuggestionListVisibility: visible=$visible, isInMentionContext=$isInMentionContext, shouldShow=$shouldShow, currentVisibility=${binding.suggestionListLayout.visibility}")
         
         // Use direct visibility changes like Java implementation to avoid animation flickering
         if (shouldShow && binding.suggestionListLayout.visibility != View.VISIBLE) {
-            android.util.Log.d(TAG, "updateSuggestionListVisibility: showing suggestion list")
+            CometChatLogger.d(TAG, "updateSuggestionListVisibility: showing suggestion list")
             binding.suggestionListLayout.visibility = View.VISIBLE
         } else if (!shouldShow && binding.suggestionListLayout.visibility == View.VISIBLE) {
-            android.util.Log.d(TAG, "updateSuggestionListVisibility: hiding suggestion list")
+            CometChatLogger.d(TAG, "updateSuggestionListVisibility: hiding suggestion list")
             binding.suggestionListLayout.visibility = View.GONE
             // Clear the list and reset formatter like Java implementation
             suggestionList?.setList(emptyList())
@@ -1221,7 +1222,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     private fun setupClickListeners() {
         // Attachment button - show popup
         binding.ivAttachment.setOnClickListener {
-            android.util.Log.d(TAG, "━━━ ivAttachment.onClick ━━━ isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, thread=${Thread.currentThread().name}, time=${System.currentTimeMillis()}")
+            CometChatLogger.d(TAG, "━━━ ivAttachment.onClick ━━━ isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, thread=${Thread.currentThread().name}, time=${System.currentTimeMillis()}")
             toggleAttachmentPopup()
         }
 
@@ -2576,14 +2577,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     private fun toggleAttachmentPopup() {
         val now = android.os.SystemClock.uptimeMillis()
         val timeSinceDismiss = now - lastAttachmentDismissTime
-        android.util.Log.d(TAG, "toggleAttachmentPopup() ENTER — isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, timeSinceDismiss=${timeSinceDismiss}ms, time=${System.currentTimeMillis()}")
+        CometChatLogger.d(TAG, "toggleAttachmentPopup() ENTER — isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, timeSinceDismiss=${timeSinceDismiss}ms, time=${System.currentTimeMillis()}")
         
         // If popup is logically open, just dismiss it and return.
         if (isAttachmentPopupOpen) {
-            android.util.Log.d(TAG, "toggleAttachmentPopup() — FLAG IS TRUE, dismissing and returning. popupIsShowing=${attachmentPopup?.isShowing()}")
+            CometChatLogger.d(TAG, "toggleAttachmentPopup() — FLAG IS TRUE, dismissing and returning. popupIsShowing=${attachmentPopup?.isShowing()}")
             attachmentPopup?.dismiss()
             // Flag is reset in the dismiss listener
-            android.util.Log.d(TAG, "toggleAttachmentPopup() — after dismiss call, isAttachmentPopupOpen=$isAttachmentPopupOpen")
+            CometChatLogger.d(TAG, "toggleAttachmentPopup() — after dismiss call, isAttachmentPopupOpen=$isAttachmentPopupOpen")
             return
         }
 
@@ -2594,13 +2595,13 @@ class CometChatMessageComposer @JvmOverloads constructor(
         // is already false, so the flag guard above doesn't catch it. This debounce window
         // ensures we treat that stale click as a "close" rather than a "re-open".
         if (timeSinceDismiss < DISMISS_DEBOUNCE_MS) {
-            android.util.Log.d(TAG, "toggleAttachmentPopup() — DEBOUNCE: ignoring click ${timeSinceDismiss}ms after dismiss (threshold=${DISMISS_DEBOUNCE_MS}ms)")
+            CometChatLogger.d(TAG, "toggleAttachmentPopup() — DEBOUNCE: ignoring click ${timeSinceDismiss}ms after dismiss (threshold=${DISMISS_DEBOUNCE_MS}ms)")
             return
         }
 
         // Mark as open BEFORE showing so any re-entrant click is guarded
         isAttachmentPopupOpen = true
-        android.util.Log.d(TAG, "toggleAttachmentPopup() — OPENING popup, set flag=true")
+        CometChatLogger.d(TAG, "toggleAttachmentPopup() — OPENING popup, set flag=true")
         
         // Rotate the attachment icon to indicate popup is open (45 degrees to form an X)
         binding.ivAttachment.animate()
@@ -2619,9 +2620,9 @@ class CometChatMessageComposer @JvmOverloads constructor(
             
             // Set dismiss listener to rotate icon back and reset open flag
             setOnDismissListener {
-                android.util.Log.d(TAG, "onDismissListener FIRED — isAttachmentPopupOpen was $isAttachmentPopupOpen, setting to false, popupIsShowing=${attachmentPopup?.isShowing()}, time=${System.currentTimeMillis()}")
+                CometChatLogger.d(TAG, "onDismissListener FIRED — isAttachmentPopupOpen was $isAttachmentPopupOpen, setting to false, popupIsShowing=${attachmentPopup?.isShowing()}, time=${System.currentTimeMillis()}")
                 Exception("Composer dismiss listener stacktrace").also { e ->
-                    android.util.Log.d(TAG, "onDismissListener stacktrace:", e)
+                    CometChatLogger.d(TAG, "onDismissListener stacktrace:", e)
                 }
                 isAttachmentPopupOpen = false
                 lastAttachmentDismissTime = android.os.SystemClock.uptimeMillis()
@@ -2629,7 +2630,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
                     .rotation(0f)
                     .setDuration(200)
                     .start()
-                android.util.Log.d(TAG, "onDismissListener DONE — isAttachmentPopupOpen=$isAttachmentPopupOpen, lastDismissTime=$lastAttachmentDismissTime")
+                CometChatLogger.d(TAG, "onDismissListener DONE — isAttachmentPopupOpen=$isAttachmentPopupOpen, lastDismissTime=$lastAttachmentDismissTime")
             }
             
             // Get attachment options from ViewModel (filtered by visibility flags)
@@ -2734,7 +2735,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
         
         // Show popup above the attachment button
         attachmentPopup?.show(binding.ivAttachment, PopupPosition.ABOVE)
-        android.util.Log.d(TAG, "toggleAttachmentPopup() EXIT — popup shown, isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, time=${System.currentTimeMillis()}")
+        CometChatLogger.d(TAG, "toggleAttachmentPopup() EXIT — popup shown, isAttachmentPopupOpen=$isAttachmentPopupOpen, popupIsShowing=${attachmentPopup?.isShowing()}, popup=${attachmentPopup?.hashCode()}, time=${System.currentTimeMillis()}")
     }
 
     // Bottom sheet dialog for create poll
@@ -2908,7 +2909,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
                 viewModel?.sendMediaMessage(it, contentType)
             }
         } catch (e: Exception) {
-            android.util.Log.e(TAG, "Error handling activity result: ${e.message}")
+            CometChatLogger.e(TAG, "Error handling activity result: ${e.message}")
             onError?.invoke(CometChatException("MEDIA_SELECTION_ERROR", e.message ?: "Media selection failed"))
         } finally {
             currentAttachmentAction = ""
@@ -3085,6 +3086,17 @@ class CometChatMessageComposer @JvmOverloads constructor(
     private fun stageAsync(uris: List<Uri>, toInput: (Uri) -> StagedAttachmentInput?) {
         val scope = viewScope
         if (uris.isEmpty() || scope == null) return
+        // The picked uris' read grant is owned by the transient CometChatPermissionActivity, which
+        // is finished as soon as this call returns. The copy below runs later on a background
+        // coroutine, so by then the grant is gone and every openInputStream past the first one or
+        // two throws SecurityException — the extra images are silently dropped (ENG-39521, only on
+        // slower real devices where finish() wins the race). Re-grant the read to our own package
+        // now, while the grant is still alive on the main thread, so the background copy can read
+        // every uri; release it once staging finishes.
+        val flag = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val granted = uris.filter { uri ->
+            runCatching { context.grantUriPermission(context.packageName, uri, flag) }.isSuccess
+        }
         pendingStagingCount += uris.size
         scope.launch {
             try {
@@ -3093,12 +3105,16 @@ class CometChatMessageComposer @JvmOverloads constructor(
                 }
                 if (inputs.isNotEmpty()) viewModel?.stageAttachments(inputs)
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "Error staging attachments: ${e.message}")
+                CometChatLogger.e(TAG, "Error staging attachments: ${e.message}")
                 onError?.invoke(CometChatException("MEDIA_SELECTION_ERROR", e.message ?: "Media selection failed"))
             } finally {
                 // Release the reservation in the same main-thread hop that staged the tiles (or on
                 // failure/cancellation), so the count moves from pending to tiles without a gap.
                 pendingStagingCount -= uris.size
+                // Drop the read grants taken above now that the copies are done.
+                granted.forEach { uri ->
+                    runCatching { context.revokeUriPermission(uri, flag) }
+                }
             }
         }
     }
@@ -3275,7 +3291,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
                 // Set up callbacks using individual listener setters
                 setOnSubmitListener { file ->
                     // Send the audio file with correct CometChat message type
-                    android.util.Log.d("CometChatMessageComposer", "onSubmitListener: received file = ${file.absolutePath}, exists = ${file.exists()}, size = ${file.length()}")
+                    CometChatLogger.d("CometChatMessageComposer", "onSubmitListener: received file = ${file.absolutePath}, exists = ${file.exists()}, size = ${file.length()}")
                     // Recorded voice note → mark it (DD / iOS metaData["audioType"] = "voice_note").
                     viewModel?.sendMediaMessage(file, CometChatConstants.MESSAGE_TYPE_AUDIO, isVoiceNote = true)
                     hideInlineRecorder()
@@ -3389,14 +3405,12 @@ class CometChatMessageComposer @JvmOverloads constructor(
     }
 
     private fun handleSendClick(text: String) {
-        android.util.Log.d(TAG, "handleSendClick: input text='$text'")
-        android.util.Log.d(TAG, "handleSendClick: mentionHelper=${mentionHelper != null}")
+        CometChatLogger.d(TAG, "handleSendClick: mentionHelper=${mentionHelper != null}")
         
         // Get processed text with mentions replaced by underlying format
         val processedText = mentionHelper?.getProcessedText() ?: text
         
-        android.util.Log.d(TAG, "handleSendClick: processedText='$processedText'")
-        android.util.Log.d(TAG, "handleSendClick: text changed=${text != processedText}")
+        CometChatLogger.d(TAG, "handleSendClick: text changed=${text != processedText}")
         
         // Use span-based MarkdownConverter to convert WYSIWYG spans to markdown
         val markdownText = if (richTextConfiguration.hasAnyEnabled()) {
@@ -3430,7 +3444,6 @@ class CometChatMessageComposer @JvmOverloads constructor(
             processedText
         }
         
-        android.util.Log.d(TAG, "handleSendClick: markdownText='$markdownText'")
 
         // Extract consumed mention metadata from code blocks before sending (Req 17.1)
         val consumedMentionMetadata: org.json.JSONArray? = if (richTextConfiguration.hasAnyEnabled()) {
@@ -3454,7 +3467,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
         when {
             // ── Edit mode ──────────────────────────────────────────────
             editMsg != null -> {
-                android.util.Log.d(TAG, "handleSendClick: EDIT mode, editingMessageId=${editMsg.id}")
+                CometChatLogger.d(TAG, "handleSendClick: EDIT mode, editingMessageId=${editMsg.id}")
                 // Call handlePreMessageSend on formatters before editing
                 for (formatter in textFormatters) {
                     formatter.handlePreMessageSend(context, editMsg)
@@ -3468,7 +3481,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
             // ── Reply mode ─────────────────────────────────────────────
             replyingToMessageId != null -> {
-                android.util.Log.d(TAG, "handleSendClick: REPLY mode, replyingToMessageId=$replyingToMessageId")
+                CometChatLogger.d(TAG, "handleSendClick: REPLY mode, replyingToMessageId=$replyingToMessageId")
                 // Create message — ViewModel's createTextMessage already sets parentMessageId.
                 // The ViewModel's sendTextMessageWithMentions attaches the replyMessage
                 // as quotedMessage so the server treats it as a threaded reply.
@@ -3488,7 +3501,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
             // ── Normal mode ────────────────────────────────────────────
             else -> {
-                android.util.Log.d(TAG, "handleSendClick: NORMAL mode")
+                CometChatLogger.d(TAG, "handleSendClick: NORMAL mode")
                 val message = viewModel?.createTextMessage(markdownText)
                 if (message != null) {
                     for (formatter in textFormatters) {
@@ -3723,7 +3736,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
                 try {
                     formatter.applyComposerSpans(editable)
                 } catch (e: Exception) {
-                    android.util.Log.w(TAG, "applyComposerSpans failed for ${formatter.javaClass.simpleName}", e)
+                    CometChatLogger.w(TAG, "applyComposerSpans failed for ${formatter.javaClass.simpleName}", e)
                 }
             }
         } finally {
@@ -4748,7 +4761,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the user as the message receiver.
      */
-    fun setUser(user: User) {
+    public fun setUser(user: User) {
         this.user = user
         this.group = null
         isAgentChat = AgentChatDetector.isAgentChat(user)
@@ -4779,7 +4792,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the group as the message receiver.
      */
-    fun setGroup(group: Group) {
+    public fun setGroup(group: Group) {
         this.group = group
         this.user = null
         viewModel?.setGroup(group)
@@ -4796,14 +4809,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the parent message ID for threaded messages.
      */
-    fun setParentMessageId(id: Long) {
+    public fun setParentMessageId(id: Long) {
         viewModel?.setParentMessageId(id)
     }
 
     /**
      * Sets the compose text programmatically.
      */
-    fun setText(text: String) {
+    public fun setText(text: String) {
         binding.etMessageInput.setText(text)
         viewModel?.setComposeText(text)
     }
@@ -4811,14 +4824,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Gets the current compose text.
      */
-    fun getText(): String {
+    public fun getText(): String {
         return binding.etMessageInput.text?.toString() ?: ""
     }
 
     /**
      * Sets the placeholder text.
      */
-    fun setPlaceholderText(text: String) {
+    public fun setPlaceholderText(text: String) {
         placeholderText = text
         binding.etMessageInput.hint = text
     }
@@ -4826,21 +4839,21 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sends a media message.
      */
-    fun sendMediaMessage(file: File, contentType: String) {
+    public fun sendMediaMessage(file: File, contentType: String) {
         viewModel?.sendMediaMessage(file, contentType)
     }
 
     /**
      * Sets the message to be edited.
      */
-    fun setEditMessage(message: TextMessage) {
+    public fun setEditMessage(message: TextMessage) {
         viewModel?.setEditMessage(message)
     }
 
     /**
      * Clears the edit message state.
      */
-    fun clearEditMessage() {
+    public fun clearEditMessage() {
         exitEditMode()
     }
 
@@ -4852,7 +4865,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * Requirements: 12.1, 12.2
      */
-    fun enterEditMode(message: TextMessage) {
+    public fun enterEditMode(message: TextMessage) {
         // Store editing state in ViewModel (drives preview bar visibility via flow)
         viewModel?.setEditMessage(message)
 
@@ -4908,7 +4921,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * Requirements: 12.4
      */
-    fun exitEditMode() {
+    public fun exitEditMode() {
         viewModel?.clearEditMessage()
         binding.etMessageInput.setText("")
 
@@ -4927,14 +4940,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the message to be replied to.
      */
-    fun setReplyMessage(message: BaseMessage) {
+    public fun setReplyMessage(message: BaseMessage) {
         enterReplyMode(message)
     }
 
     /**
      * Clears the reply message state.
      */
-    fun clearReplyMessage() {
+    public fun clearReplyMessage() {
         exitReplyMode()
     }
 
@@ -4950,7 +4963,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * Requirements: 13.1, 13.2
      */
-    fun enterReplyMode(message: BaseMessage) {
+    public fun enterReplyMode(message: BaseMessage) {
         // Store reply state in ViewModel (drives preview bar visibility via flow)
         viewModel?.setReplyMessage(message)
         replyingToMessageId = message.id.toLong()
@@ -4961,7 +4974,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * Requirements: 13.4
      */
-    fun exitReplyMode() {
+    public fun exitReplyMode() {
         viewModel?.clearReplyMessage()
         replyingToMessageId = null
     }
@@ -4992,24 +5005,24 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
     // ==================== Visibility Setters ====================
 
-    fun setHideAttachmentButton(hide: Boolean) {
+    public fun setHideAttachmentButton(hide: Boolean) {
         if (isAgentChat && !hide) return // Agent chat always hides attachment button
         hideAttachmentButton = hide
         updateButtonVisibility()
     }
 
-    fun setHideVoiceRecordingButton(hide: Boolean) {
+    public fun setHideVoiceRecordingButton(hide: Boolean) {
         if (isAgentChat && !hide) return // Agent chat always hides voice recording button
         hideVoiceRecordingButton = hide
         updateButtonVisibility()
     }
 
-    fun setHideAIButton(hide: Boolean) {
+    public fun setHideAIButton(hide: Boolean) {
         hideAIButton = hide
         updateButtonVisibility()
     }
 
-    fun setHideStickerButton(hide: Boolean) {
+    public fun setHideStickerButton(hide: Boolean) {
         if (isAgentChat && !hide) return // Agent chat always hides sticker button
         hideStickerButton = hide
         updateButtonVisibility()
@@ -5022,7 +5035,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE to show the toolbar, View.GONE to hide it
      */
-    fun setRichTextToolbarVisibility(visibility: Int) {
+    public fun setRichTextToolbarVisibility(visibility: Int) {
         // Agent chat always hides the rich text toolbar
         if (isAgentChat && visibility == View.VISIBLE) return
         richTextToolbarVisibility = visibility
@@ -5043,7 +5056,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @return View.VISIBLE or View.GONE
      */
-    fun getRichTextToolbarVisibility(): Int = richTextToolbarVisibility
+    public fun getRichTextToolbarVisibility(): Int = richTextToolbarVisibility
 
     /**
      * Enables or disables rich text formatting.
@@ -5051,7 +5064,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param enable true to enable rich text formatting, false to disable
      */
-    fun setEnableRichTextFormatting(enable: Boolean) {
+    public fun setEnableRichTextFormatting(enable: Boolean) {
         enableRichTextFormatting = enable
         setupTextSelectionMenu()
     }
@@ -5059,7 +5072,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Returns whether rich text formatting is enabled.
      */
-    fun isEnableRichTextFormatting(): Boolean = enableRichTextFormatting
+    public fun isEnableRichTextFormatting(): Boolean = enableRichTextFormatting
 
     // ==================== Multiline Mode ====================
 
@@ -5070,7 +5083,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *             [ComposerLayoutMode.MULTI_LINE] for two-row layout with text input
      *             in Row 1 and action buttons in Row 2.
      */
-    fun setLayoutMode(mode: ComposerLayoutMode) {
+    public fun setLayoutMode(mode: ComposerLayoutMode) {
         composerLayoutMode = mode
         updateMultilineModeLayout()
     }
@@ -5078,7 +5091,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Returns the current composer layout mode.
      */
-    fun getComposerMode(): ComposerLayoutMode = composerLayoutMode
+    public fun getComposerMode(): ComposerLayoutMode = composerLayoutMode
 
     /**
      * Programmatically shows or hides the formatting toolbar in multiline mode.
@@ -5086,7 +5099,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param show true to show the formatting toolbar, false to show action buttons
      */
-    fun setShowFormattingToolbar(show: Boolean) {
+    public fun setShowFormattingToolbar(show: Boolean) {
         if (composerLayoutMode != ComposerLayoutMode.MULTI_LINE || !enableRichTextFormatting) return
         isFormattingToolbarVisible = show
         updateMultilineRow2Visibility()
@@ -5095,7 +5108,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Returns whether the formatting toolbar is currently visible in multiline mode.
      */
-    fun isFormattingToolbarVisible(): Boolean = isFormattingToolbarVisible
+    public fun isFormattingToolbarVisible(): Boolean = isFormattingToolbarVisible
 
     /**
      * Updates the layout based on multiline mode state.
@@ -5282,7 +5295,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param show true to show formatting options in selection menu, false to hide
      */
-    fun setShowTextSelectionMenuItems(show: Boolean) {
+    public fun setShowTextSelectionMenuItems(show: Boolean) {
         showTextSelectionMenuItems = show
         setupTextSelectionMenu()
     }
@@ -5290,14 +5303,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Returns whether formatting options are shown in the text selection menu.
      */
-    fun isShowTextSelectionMenuItems(): Boolean = showTextSelectionMenuItems
+    public fun isShowTextSelectionMenuItems(): Boolean = showTextSelectionMenuItems
 
-    fun setHideEditPreview(hide: Boolean) {
+    public fun setHideEditPreview(hide: Boolean) {
         hideEditPreview = hide
         updateEditPreview(viewModel?.editMessage?.value)
     }
 
-    fun setHideMessagePreview(hide: Boolean) {
+    public fun setHideMessagePreview(hide: Boolean) {
         hideMessagePreview = hide
         updateMessagePreview(viewModel?.replyMessage?.value)
     }
@@ -5309,7 +5322,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setCameraOptionVisibility(visibility: Int) {
+    public fun setCameraOptionVisibility(visibility: Int) {
         viewModel?.setCameraOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5318,7 +5331,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setImageOptionVisibility(visibility: Int) {
+    public fun setImageOptionVisibility(visibility: Int) {
         viewModel?.setImageOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5327,7 +5340,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setVideoOptionVisibility(visibility: Int) {
+    public fun setVideoOptionVisibility(visibility: Int) {
         viewModel?.setVideoOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5336,7 +5349,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setAudioOptionVisibility(visibility: Int) {
+    public fun setAudioOptionVisibility(visibility: Int) {
         viewModel?.setAudioOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5345,7 +5358,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setFileOptionVisibility(visibility: Int) {
+    public fun setFileOptionVisibility(visibility: Int) {
         viewModel?.setFileOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5354,7 +5367,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setPollOptionVisibility(visibility: Int) {
+    public fun setPollOptionVisibility(visibility: Int) {
         viewModel?.setPollOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5363,7 +5376,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setCollaborativeDocumentOptionVisibility(visibility: Int) {
+    public fun setCollaborativeDocumentOptionVisibility(visibility: Int) {
         viewModel?.setCollaborativeDocumentOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5372,7 +5385,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param visibility View.VISIBLE or View.GONE
      */
-    fun setCollaborativeWhiteboardOptionVisibility(visibility: Int) {
+    public fun setCollaborativeWhiteboardOptionVisibility(visibility: Int) {
         viewModel?.setCollaborativeWhiteboardOptionVisibility(visibility == View.VISIBLE)
     }
 
@@ -5400,7 +5413,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param options The list of custom attachment options to set
      */
-    fun setAttachmentOptions(options: List<CometChatMessageComposerAction>) {
+    public fun setAttachmentOptions(options: List<CometChatMessageComposerAction>) {
         viewModel?.setAttachmentOptions(options)
     }
 
@@ -5421,17 +5434,17 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param option The custom attachment option to add
      */
-    fun addAttachmentOption(option: CometChatMessageComposerAction) {
+    public fun addAttachmentOption(option: CometChatMessageComposerAction) {
         viewModel?.addAttachmentOption(option)
     }
 
     // ==================== Callback Setters ====================
 
-    fun setOnSendButtonClick(callback: (String) -> Unit) {
+    public fun setOnSendButtonClick(callback: (String) -> Unit) {
         onSendButtonClick = callback
     }
 
-    fun setOnAttachmentClick(callback: () -> Unit) {
+    public fun setOnAttachmentClick(callback: () -> Unit) {
         onAttachmentClick = callback
     }
 
@@ -5450,7 +5463,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnCameraClick(callback: () -> Boolean) {
+    public fun setOnCameraClick(callback: () -> Boolean) {
         onCameraClick = callback
     }
 
@@ -5469,7 +5482,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnImageClick(callback: () -> Boolean) {
+    public fun setOnImageClick(callback: () -> Boolean) {
         onImageClick = callback
     }
 
@@ -5488,7 +5501,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnVideoClick(callback: () -> Boolean) {
+    public fun setOnVideoClick(callback: () -> Boolean) {
         onVideoClick = callback
     }
 
@@ -5507,7 +5520,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnAudioClick(callback: () -> Boolean) {
+    public fun setOnAudioClick(callback: () -> Boolean) {
         onAudioClick = callback
     }
 
@@ -5526,7 +5539,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnDocumentClick(callback: () -> Boolean) {
+    public fun setOnDocumentClick(callback: () -> Boolean) {
         onDocumentClick = callback
     }
 
@@ -5545,7 +5558,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnPollClick(callback: () -> Boolean) {
+    public fun setOnPollClick(callback: () -> Boolean) {
         onPollClick = callback
     }
 
@@ -5564,7 +5577,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnCollaborativeDocumentClick(callback: () -> Boolean) {
+    public fun setOnCollaborativeDocumentClick(callback: () -> Boolean) {
         onCollaborativeDocumentClick = callback
     }
 
@@ -5583,7 +5596,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnCollaborativeWhiteboardClick(callback: () -> Boolean) {
+    public fun setOnCollaborativeWhiteboardClick(callback: () -> Boolean) {
         onCollaborativeWhiteboardClick = callback
     }
 
@@ -5613,53 +5626,53 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * }
      * ```
      */
-    fun setOnAttachmentOptionClick(callback: (CometChatMessageComposerAction) -> Unit) {
+    public fun setOnAttachmentOptionClick(callback: (CometChatMessageComposerAction) -> Unit) {
         onAttachmentOptionClick = callback
     }
 
-    fun setOnVoiceRecordingClick(callback: () -> Unit) {
+    public fun setOnVoiceRecordingClick(callback: () -> Unit) {
         onVoiceRecordingClick = callback
     }
 
-    fun setOnAIClick(callback: () -> Unit) {
+    public fun setOnAIClick(callback: () -> Unit) {
         onAIClick = callback
     }
 
-    fun setOnStickerClick(callback: () -> Unit) {
+    public fun setOnStickerClick(callback: () -> Unit) {
         onStickerClick = callback
     }
 
-    fun setOnError(callback: (CometChatException) -> Unit) {
+    public fun setOnError(callback: (CometChatException) -> Unit) {
         onError = callback
     }
 
-    fun setOnTextChanged(callback: (String) -> Unit) {
+    public fun setOnTextChanged(callback: (String) -> Unit) {
         onTextChanged = callback
     }
 
     // ==================== Custom View Listener Setters ====================
 
-    fun setHeaderViewListener(listener: MessageComposerViewHolderListener) {
+    public fun setHeaderViewListener(listener: MessageComposerViewHolderListener) {
         headerViewListener = listener
         invokeViewCallbacks()
     }
 
-    fun setFooterViewListener(listener: MessageComposerViewHolderListener) {
+    public fun setFooterViewListener(listener: MessageComposerViewHolderListener) {
         footerViewListener = listener
         invokeViewCallbacks()
     }
 
-    fun setSecondaryButtonViewListener(listener: MessageComposerViewHolderListener) {
+    public fun setSecondaryButtonViewListener(listener: MessageComposerViewHolderListener) {
         secondaryButtonViewListener = listener
         invokeViewCallbacks()
     }
 
-    fun setSendButtonViewListener(listener: MessageComposerViewHolderListener) {
+    public fun setSendButtonViewListener(listener: MessageComposerViewHolderListener) {
         sendButtonViewListener = listener
         invokeViewCallbacks()
     }
 
-    fun setAuxiliaryButtonViewListener(listener: MessageComposerViewHolderListener) {
+    public fun setAuxiliaryButtonViewListener(listener: MessageComposerViewHolderListener) {
         auxiliaryButtonViewListener = listener
         invokeViewCallbacks()
     }
@@ -5671,7 +5684,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * Only visible while the rich-text toolbar is shown; not shown in the multiline selection row.
      */
-    fun setRichTextToolbarTrailingViewListener(listener: RichTextToolbarTrailingViewListener) {
+    public fun setRichTextToolbarTrailingViewListener(listener: RichTextToolbarTrailingViewListener) {
         richTextToolbarTrailingViewListener = listener
         applyRichTextToolbarTrailingView()
     }
@@ -5712,7 +5725,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
     // ==================== Rich Text Configuration ====================
 
-    fun setRichTextConfiguration(configuration: RichTextConfiguration) {
+    public fun setRichTextConfiguration(configuration: RichTextConfiguration) {
         richTextConfiguration = configuration
         richTextFormatterManager = RichTextFormatterManager(configuration)
         
@@ -5742,7 +5755,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Returns whether the rich text toolbar is currently visible.
      * Visibility is based on: richTextToolbarVisibility=VISIBLE AND hasFormats
      */
-    fun isRichTextToolbarVisible(): Boolean {
+    public fun isRichTextToolbarVisible(): Boolean {
         return richTextToolbarVisibility == View.VISIBLE && richTextConfiguration.hasAnyEnabled()
     }
 
@@ -5751,7 +5764,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the style from a style object.
      */
-    fun setStyle(style: CometChatMessageComposerStyle) {
+    public fun setStyle(style: CometChatMessageComposerStyle) {
         this.style = style
         applyStyle()
     }
@@ -5759,7 +5772,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 styleRes, R.styleable.CometChatMessageComposer
@@ -5771,101 +5784,101 @@ class CometChatMessageComposer @JvmOverloads constructor(
 
     // ==================== Getters (read from style object) ====================
 
-    fun getComposerBackgroundColor(): Int = style.backgroundColor
-    fun getComposerStrokeColor(): Int = style.strokeColor
-    fun getComposerStrokeWidth(): Int = style.strokeWidth
-    fun getComposerCornerRadius(): Int = style.cornerRadius
-    fun getComposeBoxBackgroundColor(): Int = style.composeBoxBackgroundColor
-    fun getComposeBoxStrokeColor(): Int = style.composeBoxStrokeColor
-    fun getComposeBoxStrokeWidth(): Int = style.composeBoxStrokeWidth
-    fun getComposeBoxCornerRadius(): Int = style.composeBoxCornerRadius
-    fun getSeparatorColor(): Int = style.separatorColor
-    fun getAttachmentIcon(): Drawable? = style.attachmentIcon
-    fun getAttachmentIconTint(): Int = style.attachmentIconTint
-    fun getVoiceRecordingIcon(): Drawable? = style.voiceRecordingIcon
-    fun getVoiceRecordingIconTint(): Int = style.voiceRecordingIconTint
-    fun getAIIcon(): Drawable? = style.aiIcon
-    fun getAIIconTint(): Int = style.aiIconTint
-    fun getStickerIcon(): Drawable? = style.stickerIcon
-    fun getStickerIconTint(): Int = style.stickerIconTint
-    fun getSendButtonActiveIcon(): Drawable? = style.sendButtonActiveIcon
-    fun getSendButtonInactiveIcon(): Drawable? = style.sendButtonInactiveIcon
-    fun getSendButtonActiveBackgroundColor(): Int = style.sendButtonActiveBackgroundColor
-    fun getSendButtonInactiveBackgroundColor(): Int = style.sendButtonInactiveBackgroundColor
-    fun getSendButtonStopIcon(): Drawable? = style.sendButtonStopIcon
-    fun getEditPreviewTitleTextColor(): Int = style.editPreviewTitleTextColor
-    fun getEditPreviewTitleTextAppearance(): Int = style.editPreviewTitleTextAppearance
-    fun getEditPreviewMessageTextColor(): Int = style.editPreviewMessageTextColor
-    fun getEditPreviewMessageTextAppearance(): Int = style.editPreviewMessageTextAppearance
-    fun getEditPreviewBackgroundColor(): Int = style.editPreviewBackgroundColor
-    fun getEditPreviewCornerRadius(): Int = style.editPreviewCornerRadius
-    fun getEditPreviewStrokeColor(): Int = style.editPreviewStrokeColor
-    fun getEditPreviewStrokeWidth(): Int = style.editPreviewStrokeWidth
-    fun getEditPreviewCloseIcon(): Drawable? = style.editPreviewCloseIcon
-    fun getEditPreviewCloseIconTint(): Int = style.editPreviewCloseIconTint
-    fun getMessagePreviewSeparatorColor(): Int = style.messagePreviewSeparatorColor
-    fun getMessagePreviewTitleTextColor(): Int = style.messagePreviewTitleTextColor
-    fun getMessagePreviewTitleTextAppearance(): Int = style.messagePreviewTitleTextAppearance
-    fun getMessagePreviewSubtitleTextColor(): Int = style.messagePreviewSubtitleTextColor
-    fun getMessagePreviewSubtitleTextAppearance(): Int = style.messagePreviewSubtitleTextAppearance
-    fun getMessagePreviewBackgroundColor(): Int = style.messagePreviewBackgroundColor
-    fun getMessagePreviewCornerRadius(): Int = style.messagePreviewCornerRadius
-    fun getMessagePreviewStrokeColor(): Int = style.messagePreviewStrokeColor
-    fun getMessagePreviewStrokeWidth(): Int = style.messagePreviewStrokeWidth
-    fun getMessagePreviewCloseIcon(): Drawable? = style.messagePreviewCloseIcon
-    fun getMessagePreviewCloseIconTint(): Int = style.messagePreviewCloseIconTint
-    fun getInputTextColor(): Int = style.inputTextColor
-    fun getInputTextAppearance(): Int = style.inputTextAppearance
-    fun getInputPlaceholderColor(): Int = style.inputPlaceholderColor
-    fun getInputPlaceholderAppearance(): Int = style.inputPlaceholderAppearance
-    fun getRichTextToolbarBackgroundColor(): Int = style.richTextToolbarBackgroundColor
-    fun getRichTextToolbarIconTint(): Int = style.richTextToolbarIconTint
-    fun getRichTextToolbarActiveIconTint(): Int = style.richTextToolbarActiveIconTint
-    fun getRichTextToolbarActiveIconBackgroundColor(): Int = style.richTextToolbarActiveIconBackgroundColor
+    public fun getComposerBackgroundColor(): Int = style.backgroundColor
+    public fun getComposerStrokeColor(): Int = style.strokeColor
+    public fun getComposerStrokeWidth(): Int = style.strokeWidth
+    public fun getComposerCornerRadius(): Int = style.cornerRadius
+    public fun getComposeBoxBackgroundColor(): Int = style.composeBoxBackgroundColor
+    public fun getComposeBoxStrokeColor(): Int = style.composeBoxStrokeColor
+    public fun getComposeBoxStrokeWidth(): Int = style.composeBoxStrokeWidth
+    public fun getComposeBoxCornerRadius(): Int = style.composeBoxCornerRadius
+    public fun getSeparatorColor(): Int = style.separatorColor
+    public fun getAttachmentIcon(): Drawable? = style.attachmentIcon
+    public fun getAttachmentIconTint(): Int = style.attachmentIconTint
+    public fun getVoiceRecordingIcon(): Drawable? = style.voiceRecordingIcon
+    public fun getVoiceRecordingIconTint(): Int = style.voiceRecordingIconTint
+    public fun getAIIcon(): Drawable? = style.aiIcon
+    public fun getAIIconTint(): Int = style.aiIconTint
+    public fun getStickerIcon(): Drawable? = style.stickerIcon
+    public fun getStickerIconTint(): Int = style.stickerIconTint
+    public fun getSendButtonActiveIcon(): Drawable? = style.sendButtonActiveIcon
+    public fun getSendButtonInactiveIcon(): Drawable? = style.sendButtonInactiveIcon
+    public fun getSendButtonActiveBackgroundColor(): Int = style.sendButtonActiveBackgroundColor
+    public fun getSendButtonInactiveBackgroundColor(): Int = style.sendButtonInactiveBackgroundColor
+    public fun getSendButtonStopIcon(): Drawable? = style.sendButtonStopIcon
+    public fun getEditPreviewTitleTextColor(): Int = style.editPreviewTitleTextColor
+    public fun getEditPreviewTitleTextAppearance(): Int = style.editPreviewTitleTextAppearance
+    public fun getEditPreviewMessageTextColor(): Int = style.editPreviewMessageTextColor
+    public fun getEditPreviewMessageTextAppearance(): Int = style.editPreviewMessageTextAppearance
+    public fun getEditPreviewBackgroundColor(): Int = style.editPreviewBackgroundColor
+    public fun getEditPreviewCornerRadius(): Int = style.editPreviewCornerRadius
+    public fun getEditPreviewStrokeColor(): Int = style.editPreviewStrokeColor
+    public fun getEditPreviewStrokeWidth(): Int = style.editPreviewStrokeWidth
+    public fun getEditPreviewCloseIcon(): Drawable? = style.editPreviewCloseIcon
+    public fun getEditPreviewCloseIconTint(): Int = style.editPreviewCloseIconTint
+    public fun getMessagePreviewSeparatorColor(): Int = style.messagePreviewSeparatorColor
+    public fun getMessagePreviewTitleTextColor(): Int = style.messagePreviewTitleTextColor
+    public fun getMessagePreviewTitleTextAppearance(): Int = style.messagePreviewTitleTextAppearance
+    public fun getMessagePreviewSubtitleTextColor(): Int = style.messagePreviewSubtitleTextColor
+    public fun getMessagePreviewSubtitleTextAppearance(): Int = style.messagePreviewSubtitleTextAppearance
+    public fun getMessagePreviewBackgroundColor(): Int = style.messagePreviewBackgroundColor
+    public fun getMessagePreviewCornerRadius(): Int = style.messagePreviewCornerRadius
+    public fun getMessagePreviewStrokeColor(): Int = style.messagePreviewStrokeColor
+    public fun getMessagePreviewStrokeWidth(): Int = style.messagePreviewStrokeWidth
+    public fun getMessagePreviewCloseIcon(): Drawable? = style.messagePreviewCloseIcon
+    public fun getMessagePreviewCloseIconTint(): Int = style.messagePreviewCloseIconTint
+    public fun getInputTextColor(): Int = style.inputTextColor
+    public fun getInputTextAppearance(): Int = style.inputTextAppearance
+    public fun getInputPlaceholderColor(): Int = style.inputPlaceholderColor
+    public fun getInputPlaceholderAppearance(): Int = style.inputPlaceholderAppearance
+    public fun getRichTextToolbarBackgroundColor(): Int = style.richTextToolbarBackgroundColor
+    public fun getRichTextToolbarIconTint(): Int = style.richTextToolbarIconTint
+    public fun getRichTextToolbarActiveIconTint(): Int = style.richTextToolbarActiveIconTint
+    public fun getRichTextToolbarActiveIconBackgroundColor(): Int = style.richTextToolbarActiveIconBackgroundColor
 
     // ==================== Setters (update style object + apply) ====================
 
-    fun setComposerBackgroundColor(@ColorInt color: Int) {
+    public fun setComposerBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         if (color != 0) setCardBackgroundColor(color)
     }
 
-    fun setComposerStrokeColor(@ColorInt color: Int) {
+    public fun setComposerStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         if (color != 0) setStrokeColor(color)
     }
 
-    fun setComposerStrokeWidth(@Dimension width: Int) {
+    public fun setComposerStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width)
         if (width != 0) strokeWidth = width
     }
 
-    fun setComposerCornerRadius(@Dimension radius: Int) {
+    public fun setComposerCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         if (radius != 0) this.radius = radius.toFloat()
     }
 
-    fun setComposeBoxBackgroundColor(@ColorInt color: Int) {
+    public fun setComposeBoxBackgroundColor(@ColorInt color: Int) {
         style = style.copy(composeBoxBackgroundColor = color)
         if (color != 0) binding.composeBoxCard.setCardBackgroundColor(color)
     }
 
-    fun setComposeBoxStrokeColor(@ColorInt color: Int) {
+    public fun setComposeBoxStrokeColor(@ColorInt color: Int) {
         style = style.copy(composeBoxStrokeColor = color)
         if (color != 0) binding.composeBoxCard.setStrokeColor(color)
     }
 
-    fun setComposeBoxStrokeWidth(@Dimension width: Int) {
+    public fun setComposeBoxStrokeWidth(@Dimension width: Int) {
         style = style.copy(composeBoxStrokeWidth = width)
         if (width != 0) binding.composeBoxCard.strokeWidth = width
     }
 
-    fun setComposeBoxCornerRadius(@Dimension radius: Int) {
+    public fun setComposeBoxCornerRadius(@Dimension radius: Int) {
         style = style.copy(composeBoxCornerRadius = radius)
         if (radius != 0) binding.composeBoxCard.radius = radius.toFloat()
     }
 
-    fun setSeparatorColor(@ColorInt color: Int) {
+    public fun setSeparatorColor(@ColorInt color: Int) {
         style = style.copy(separatorColor = color)
         if (color != 0) {
             binding.separatorView.setBackgroundColor(color)
@@ -5876,219 +5889,219 @@ class CometChatMessageComposer @JvmOverloads constructor(
         }
     }
 
-    fun setAttachmentIcon(icon: Drawable?) {
+    public fun setAttachmentIcon(icon: Drawable?) {
         style = style.copy(attachmentIcon = icon)
         icon?.let { binding.ivAttachment.setImageDrawable(it) }
         icon?.let { binding.ivMultilineAttachment?.setImageDrawable(it) }
     }
 
-    fun setAttachmentIconTint(@ColorInt color: Int) {
+    public fun setAttachmentIconTint(@ColorInt color: Int) {
         style = style.copy(attachmentIconTint = color)
         if (color != 0) binding.ivAttachment.setColorFilter(color)
         if (color != 0) binding.ivMultilineAttachment?.setColorFilter(color)
     }
 
-    fun setVoiceRecordingIcon(icon: Drawable?) {
+    public fun setVoiceRecordingIcon(icon: Drawable?) {
         style = style.copy(voiceRecordingIcon = icon)
         icon?.let { binding.ivVoiceRecording.setImageDrawable(it) }
         icon?.let { binding.ivMultilineVoiceRecording?.setImageDrawable(it) }
     }
 
-    fun setVoiceRecordingIconTint(@ColorInt color: Int) {
+    public fun setVoiceRecordingIconTint(@ColorInt color: Int) {
         style = style.copy(voiceRecordingIconTint = color)
         if (color != 0) binding.ivVoiceRecording.setColorFilter(color)
         if (color != 0) binding.ivMultilineVoiceRecording?.setColorFilter(color)
     }
 
-    fun setAIIcon(icon: Drawable?) {
+    public fun setAIIcon(icon: Drawable?) {
         style = style.copy(aiIcon = icon)
         icon?.let { binding.ivAI.setImageDrawable(it) }
     }
 
-    fun setAIIconTint(@ColorInt color: Int) {
+    public fun setAIIconTint(@ColorInt color: Int) {
         style = style.copy(aiIconTint = color)
         if (color != 0) binding.ivAI.setColorFilter(color)
     }
 
-    fun setStickerIcon(icon: Drawable?) {
+    public fun setStickerIcon(icon: Drawable?) {
         style = style.copy(stickerIcon = icon)
         icon?.let { binding.ivSticker.setImageDrawable(it) }
         icon?.let { binding.ivMultilineSticker?.setImageDrawable(it) }
     }
 
-    fun setStickerIconTint(@ColorInt color: Int) {
+    public fun setStickerIconTint(@ColorInt color: Int) {
         style = style.copy(stickerIconTint = color)
         if (color != 0) binding.ivSticker.setColorFilter(color)
         if (color != 0) binding.ivMultilineSticker?.setColorFilter(color)
     }
 
-    fun setSendButtonActiveIcon(icon: Drawable?) {
+    public fun setSendButtonActiveIcon(icon: Drawable?) {
         style = style.copy(sendButtonActiveIcon = icon)
         updateSendButtonState(binding.etMessageInput.text?.isNotBlank() ?: false)
     }
 
-    fun setSendButtonInactiveIcon(icon: Drawable?) {
+    public fun setSendButtonInactiveIcon(icon: Drawable?) {
         style = style.copy(sendButtonInactiveIcon = icon)
         updateSendButtonState(binding.etMessageInput.text?.isNotBlank() ?: false)
     }
 
-    fun setSendButtonActiveBackgroundColor(@ColorInt color: Int) {
+    public fun setSendButtonActiveBackgroundColor(@ColorInt color: Int) {
         style = style.copy(sendButtonActiveBackgroundColor = color)
         updateSendButtonState(binding.etMessageInput.text?.isNotBlank() ?: false)
     }
 
-    fun setSendButtonInactiveBackgroundColor(@ColorInt color: Int) {
+    public fun setSendButtonInactiveBackgroundColor(@ColorInt color: Int) {
         style = style.copy(sendButtonInactiveBackgroundColor = color)
         updateSendButtonState(binding.etMessageInput.text?.isNotBlank() ?: false)
     }
 
-    fun setSendButtonStopIcon(icon: Drawable?) {
+    public fun setSendButtonStopIcon(icon: Drawable?) {
         style = style.copy(sendButtonStopIcon = icon)
         updateSendButtonState(binding.etMessageInput.text?.isNotBlank() ?: false)
     }
 
-    fun setEditPreviewTitleTextColor(@ColorInt color: Int) {
+    public fun setEditPreviewTitleTextColor(@ColorInt color: Int) {
         style = style.copy(editPreviewTitleTextColor = color)
         if (color != 0) binding.tvEditPreviewTitle.setTextColor(color)
     }
 
-    fun setEditPreviewTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setEditPreviewTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(editPreviewTitleTextAppearance = appearance)
         if (appearance != 0) binding.tvEditPreviewTitle.setTextAppearance(appearance)
     }
 
-    fun setEditPreviewMessageTextColor(@ColorInt color: Int) {
+    public fun setEditPreviewMessageTextColor(@ColorInt color: Int) {
         style = style.copy(editPreviewMessageTextColor = color)
         if (color != 0) binding.tvEditPreviewMessage.setTextColor(color)
     }
 
-    fun setEditPreviewMessageTextAppearance(@StyleRes appearance: Int) {
+    public fun setEditPreviewMessageTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(editPreviewMessageTextAppearance = appearance)
         if (appearance != 0) binding.tvEditPreviewMessage.setTextAppearance(appearance)
     }
 
-    fun setEditPreviewBackgroundColor(@ColorInt color: Int) {
+    public fun setEditPreviewBackgroundColor(@ColorInt color: Int) {
         style = style.copy(editPreviewBackgroundColor = color)
         if (color != 0) binding.editPreviewCard.setCardBackgroundColor(color)
     }
 
-    fun setEditPreviewCornerRadius(@Dimension radius: Int) {
+    public fun setEditPreviewCornerRadius(@Dimension radius: Int) {
         style = style.copy(editPreviewCornerRadius = radius)
         if (radius != 0) binding.editPreviewCard.radius = radius.toFloat()
     }
 
-    fun setEditPreviewStrokeColor(@ColorInt color: Int) {
+    public fun setEditPreviewStrokeColor(@ColorInt color: Int) {
         style = style.copy(editPreviewStrokeColor = color)
         if (color != 0) binding.editPreviewCard.setStrokeColor(color)
     }
 
-    fun setEditPreviewStrokeWidth(@Dimension width: Int) {
+    public fun setEditPreviewStrokeWidth(@Dimension width: Int) {
         style = style.copy(editPreviewStrokeWidth = width)
         if (width != 0) binding.editPreviewCard.strokeWidth = width
     }
 
-    fun setEditPreviewCloseIcon(icon: Drawable?) {
+    public fun setEditPreviewCloseIcon(icon: Drawable?) {
         style = style.copy(editPreviewCloseIcon = icon)
         icon?.let { binding.ivEditPreviewClose.setImageDrawable(it) }
     }
 
-    fun setEditPreviewCloseIconTint(@ColorInt color: Int) {
+    public fun setEditPreviewCloseIconTint(@ColorInt color: Int) {
         style = style.copy(editPreviewCloseIconTint = color)
         if (color != 0) binding.ivEditPreviewClose.setColorFilter(color)
     }
 
-    fun setMessagePreviewSeparatorColor(@ColorInt color: Int) {
+    public fun setMessagePreviewSeparatorColor(@ColorInt color: Int) {
         style = style.copy(messagePreviewSeparatorColor = color)
         if (color != 0) binding.messagePreviewSeparator.setBackgroundColor(color)
     }
 
-    fun setMessagePreviewTitleTextColor(@ColorInt color: Int) {
+    public fun setMessagePreviewTitleTextColor(@ColorInt color: Int) {
         style = style.copy(messagePreviewTitleTextColor = color)
         if (color != 0) binding.tvMessagePreviewTitle.setTextColor(color)
     }
 
-    fun setMessagePreviewTitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessagePreviewTitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(messagePreviewTitleTextAppearance = appearance)
         if (appearance != 0) binding.tvMessagePreviewTitle.setTextAppearance(appearance)
     }
 
-    fun setMessagePreviewSubtitleTextColor(@ColorInt color: Int) {
+    public fun setMessagePreviewSubtitleTextColor(@ColorInt color: Int) {
         style = style.copy(messagePreviewSubtitleTextColor = color)
         if (color != 0) binding.tvMessagePreviewSubtitle.setTextColor(color)
     }
 
-    fun setMessagePreviewSubtitleTextAppearance(@StyleRes appearance: Int) {
+    public fun setMessagePreviewSubtitleTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(messagePreviewSubtitleTextAppearance = appearance)
         if (appearance != 0) binding.tvMessagePreviewSubtitle.setTextAppearance(appearance)
     }
 
-    fun setMessagePreviewBackgroundColor(@ColorInt color: Int) {
+    public fun setMessagePreviewBackgroundColor(@ColorInt color: Int) {
         style = style.copy(messagePreviewBackgroundColor = color)
         if (color != 0) binding.messagePreviewCard.setCardBackgroundColor(color)
     }
 
-    fun setMessagePreviewCornerRadius(@Dimension radius: Int) {
+    public fun setMessagePreviewCornerRadius(@Dimension radius: Int) {
         style = style.copy(messagePreviewCornerRadius = radius)
         if (radius != 0) binding.messagePreviewCard.radius = radius.toFloat()
     }
 
-    fun setMessagePreviewStrokeColor(@ColorInt color: Int) {
+    public fun setMessagePreviewStrokeColor(@ColorInt color: Int) {
         style = style.copy(messagePreviewStrokeColor = color)
         if (color != 0) binding.messagePreviewCard.setStrokeColor(color)
     }
 
-    fun setMessagePreviewStrokeWidth(@Dimension width: Int) {
+    public fun setMessagePreviewStrokeWidth(@Dimension width: Int) {
         style = style.copy(messagePreviewStrokeWidth = width)
         if (width != 0) binding.messagePreviewCard.strokeWidth = width
     }
 
-    fun setMessagePreviewCloseIcon(icon: Drawable?) {
+    public fun setMessagePreviewCloseIcon(icon: Drawable?) {
         style = style.copy(messagePreviewCloseIcon = icon)
         icon?.let { binding.ivMessagePreviewClose.setImageDrawable(it) }
     }
 
-    fun setMessagePreviewCloseIconTint(@ColorInt color: Int) {
+    public fun setMessagePreviewCloseIconTint(@ColorInt color: Int) {
         style = style.copy(messagePreviewCloseIconTint = color)
         if (color != 0) binding.ivMessagePreviewClose.setColorFilter(color)
     }
 
-    fun setInputTextColor(@ColorInt color: Int) {
+    public fun setInputTextColor(@ColorInt color: Int) {
         style = style.copy(inputTextColor = color)
         if (color != 0) binding.etMessageInput.setTextColor(color)
     }
 
-    fun setInputTextAppearance(@StyleRes appearance: Int) {
+    public fun setInputTextAppearance(@StyleRes appearance: Int) {
         style = style.copy(inputTextAppearance = appearance)
         if (appearance != 0) binding.etMessageInput.setTextAppearance(appearance)
     }
 
-    fun setInputPlaceholderColor(@ColorInt color: Int) {
+    public fun setInputPlaceholderColor(@ColorInt color: Int) {
         style = style.copy(inputPlaceholderColor = color)
         if (color != 0) binding.etMessageInput.setHintTextColor(color)
     }
 
-    fun setInputPlaceholderAppearance(@StyleRes appearance: Int) {
+    public fun setInputPlaceholderAppearance(@StyleRes appearance: Int) {
         style = style.copy(inputPlaceholderAppearance = appearance)
         // Hint appearance is handled via text appearance
     }
 
-    fun setRichTextToolbarBackgroundColor(@ColorInt color: Int) {
+    public fun setRichTextToolbarBackgroundColor(@ColorInt color: Int) {
         style = style.copy(richTextToolbarBackgroundColor = color)
         if (color != 0) binding.richTextToolbarLayout.setBackgroundColor(color)
     }
 
-    fun setRichTextToolbarIconTint(@ColorInt color: Int) {
+    public fun setRichTextToolbarIconTint(@ColorInt color: Int) {
         style = style.copy(richTextToolbarIconTint = color)
         if (color != 0) applyRichTextToolbarIconTints()
     }
 
-    fun setRichTextToolbarActiveIconTint(@ColorInt color: Int) {
+    public fun setRichTextToolbarActiveIconTint(@ColorInt color: Int) {
         style = style.copy(richTextToolbarActiveIconTint = color)
         // Applied when format buttons are toggled active
         updateToolbarButtonStates()
     }
 
-    fun setRichTextToolbarActiveIconBackgroundColor(@ColorInt color: Int) {
+    public fun setRichTextToolbarActiveIconBackgroundColor(@ColorInt color: Int) {
         style = style.copy(richTextToolbarActiveIconBackgroundColor = color)
         updateToolbarButtonStates()
     }
@@ -6105,19 +6118,19 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param formatters List of text formatters to add
      */
-    fun setTextFormatters(formatters: List<CometChatTextFormatter>?) {
-        android.util.Log.d(TAG, "setTextFormatters: received ${formatters?.size ?: 0} formatters")
+    public fun setTextFormatters(formatters: List<CometChatTextFormatter>?) {
+        CometChatLogger.d(TAG, "setTextFormatters: received ${formatters?.size ?: 0} formatters")
         
         // If null, just process existing formatters (like Java implementation)
         if (formatters == null) {
-            android.util.Log.d(TAG, "setTextFormatters: formatters is null, processing existing ${textFormatters.size} formatters")
+            CometChatLogger.d(TAG, "setTextFormatters: formatters is null, processing existing ${textFormatters.size} formatters")
             processFormatters()
             return
         }
         
         // Add new formatters to existing list (like Java implementation)
         textFormatters.addAll(formatters)
-        android.util.Log.d(TAG, "setTextFormatters: added formatters, total now ${textFormatters.size}")
+        CometChatLogger.d(TAG, "setTextFormatters: added formatters, total now ${textFormatters.size}")
         
         processFormatters()
     }
@@ -6127,11 +6140,11 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * This is called after formatters are added to ensure they're properly configured.
      */
     private fun processFormatters() {
-        android.util.Log.d(TAG, "processFormatters: processing ${textFormatters.size} formatters")
+        CometChatLogger.d(TAG, "processFormatters: processing ${textFormatters.size} formatters")
         
         // Update formatters with current user/group context and apply mention style
         for (formatter in textFormatters) {
-            android.util.Log.d(TAG, "processFormatters: processing formatter ${formatter.javaClass.simpleName}")
+            CometChatLogger.d(TAG, "processFormatters: processing formatter ${formatter.javaClass.simpleName}")
             user?.let { formatter.setUser(it) }
             group?.let { formatter.setGroup(it) }
             
@@ -6147,14 +6160,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
         }
         
         // Re-initialize mention helper with updated formatters
-        android.util.Log.d(TAG, "processFormatters: calling initMentionHelper")
+        CometChatLogger.d(TAG, "processFormatters: calling initMentionHelper")
         initMentionHelper()
     }
 
     /**
      * Gets the current text formatters.
      */
-    fun getTextFormatters(): List<CometChatTextFormatter> = textFormatters.toList()
+    public fun getTextFormatters(): List<CometChatTextFormatter> = textFormatters.toList()
 
     /**
      * Sets the mention text style for the message composer.
@@ -6162,7 +6175,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param style The style resource ID (e.g., R.style.CometChatMessageComposerMentionsStyle)
      */
-    fun setMentionTextStyle(@StyleRes style: Int) {
+    public fun setMentionTextStyle(@StyleRes style: Int) {
         mentionTextStyle = style
         
         // Apply to existing formatters if already set
@@ -6177,14 +6190,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Gets the mention text style resource ID.
      */
     @StyleRes
-    fun getMentionTextStyle(): Int = mentionTextStyle
+    public fun getMentionTextStyle(): Int = mentionTextStyle
 
     /**
      * Sets the style for the suggestion list.
      * 
      * @param style The style configuration for the suggestion list
      */
-    fun setSuggestionListStyle(style: CometChatSuggestionListStyle) {
+    public fun setSuggestionListStyle(style: CometChatSuggestionListStyle) {
         suggestionListStyle = style
         suggestionList?.setStyle(style)
     }
@@ -6192,14 +6205,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Gets the suggestion list style.
      */
-    fun getSuggestionListStyle(): CometChatSuggestionListStyle? = suggestionListStyle
+    public fun getSuggestionListStyle(): CometChatSuggestionListStyle? = suggestionListStyle
 
     /**
      * Sets the maximum height for the suggestion list.
      * 
      * @param maxHeight Maximum height in pixels
      */
-    fun setSuggestionListMaxHeight(maxHeight: Int) {
+    public fun setSuggestionListMaxHeight(maxHeight: Int) {
         suggestionList?.setMaxHeightLimit(maxHeight)
     }
 
@@ -6208,13 +6221,13 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * 
      * @param show True to show avatars, false to hide
      */
-    fun showSuggestionListAvatar(show: Boolean) {
+    public fun showSuggestionListAvatar(show: Boolean) {
         suggestionList?.showAvatar(show)
     }
 
     // ==================== ViewModel Setter ====================
 
-    fun setViewModel(viewModel: CometChatMessageComposerViewModel) {
+    public fun setViewModel(viewModel: CometChatMessageComposerViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         viewModel.disableTypingEvents = disableTypingEvents
@@ -6278,7 +6291,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Toggles the sticker keyboard visibility.
      * Shows the keyboard if hidden, hides it if visible.
      */
-    fun toggleStickerKeyboard() {
+    public fun toggleStickerKeyboard() {
         if (isStickerKeyboardVisible) {
             hideStickerKeyboard()
         } else {
@@ -6290,7 +6303,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Shows the sticker keyboard in the bottom panel with smooth expand animation.
      * Creates a fresh sticker keyboard instance each time (like old Java implementation).
      */
-    fun showStickerKeyboard() {
+    public fun showStickerKeyboard() {
         if (isStickerKeyboardVisible) return
 
         // Hide soft keyboard first
@@ -6333,7 +6346,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      * Hides the sticker keyboard with smooth collapse animation.
      * Removes the sticker keyboard instance (like old Java implementation).
      */
-    fun hideStickerKeyboard() {
+    public fun hideStickerKeyboard() {
         if (!isStickerKeyboardVisible) return
 
         // Animate visibility with smooth collapse animation
@@ -6352,14 +6365,14 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Returns whether the sticker keyboard is currently visible.
      */
-    fun isStickerKeyboardVisible(): Boolean = isStickerKeyboardVisible
+    public fun isStickerKeyboardVisible(): Boolean = isStickerKeyboardVisible
 
     /**
      * Sets the style for the sticker keyboard.
      *
      * @param style The style configuration to apply
      */
-    fun setStickerKeyboardStyle(style: CometChatStickerKeyboardStyle) {
+    public fun setStickerKeyboardStyle(style: CometChatStickerKeyboardStyle) {
         this.stickerKeyboardStyle = style
         stickerKeyboard?.setStyle(style)
     }
@@ -6369,7 +6382,7 @@ class CometChatMessageComposer @JvmOverloads constructor(
      *
      * @param listener Lambda invoked when a sticker is clicked
      */
-    fun setOnStickerSelected(listener: ((Sticker) -> Unit)?) {
+    public fun setOnStickerSelected(listener: ((Sticker) -> Unit)?) {
         this.onStickerSelected = listener
         stickerKeyboard?.setStickerClickListener { sticker ->
             // Send the sticker as a custom message
@@ -6387,5 +6400,5 @@ class CometChatMessageComposer @JvmOverloads constructor(
     /**
      * Gets the bottom panel layout for custom content.
      */
-    fun getBottomPanelLayout(): android.widget.FrameLayout = binding.bottomPanelLayout
+    public fun getBottomPanelLayout(): android.widget.FrameLayout = binding.bottomPanelLayout
 }

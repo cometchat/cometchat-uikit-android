@@ -23,7 +23,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @see RichTextFormatSpan
  * @see RichTextFormat.INLINE_CODE
  */
-class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
+public class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
 
     @ColorInt
     private var backgroundColor: Int
@@ -45,7 +45,7 @@ class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
     /**
      * Creates a new InlineCodeFormatSpan with default styling.
      */
-    constructor() {
+    public constructor() {
         this.backgroundColor = DEFAULT_BACKGROUND_COLOR
         this.textColor = DEFAULT_TEXT_COLOR
         this.strokeColor = DEFAULT_STROKE_COLOR
@@ -59,7 +59,7 @@ class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
     /**
      * Creates a new InlineCodeFormatSpan with context for theme colors.
      */
-    constructor(context: Context) {
+    public constructor(context: Context) {
         this.context = context
         this.backgroundColor = CometChatTheme.getBackgroundColor3(context)
         this.textColor = CometChatTheme.getPrimaryColor(context)
@@ -73,7 +73,7 @@ class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
     /**
      * Creates a new InlineCodeFormatSpan with custom styling.
      */
-    constructor(
+    public constructor(
         @ColorInt backgroundColor: Int,
         @ColorInt textColor: Int,
         cornerRadius: Float,
@@ -125,30 +125,30 @@ class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
 
     // region Getters and Setters
 
-    fun getBackgroundColor(): Int = backgroundColor
-    fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
+    public fun getBackgroundColor(): Int = backgroundColor
+    public fun setBackgroundColor(@ColorInt color: Int) { backgroundColor = color }
 
-    fun getTextColor(): Int = textColor
-    fun setTextColor(@ColorInt color: Int) { textColor = color }
+    public fun getTextColor(): Int = textColor
+    public fun setTextColor(@ColorInt color: Int) { textColor = color }
 
-    fun getCornerRadius(): Float = cornerRadius
-    fun setCornerRadius(radius: Float) { cornerRadius = radius }
+    public fun getCornerRadius(): Float = cornerRadius
+    public fun setCornerRadius(radius: Float) { cornerRadius = radius }
 
-    fun getStrokeColor(): Int = strokeColor
-    fun setStrokeColor(@ColorInt color: Int) { strokeColor = color }
+    public fun getStrokeColor(): Int = strokeColor
+    public fun setStrokeColor(@ColorInt color: Int) { strokeColor = color }
 
-    fun getStrokeWidth(): Float = strokeWidth
-    fun setStrokeWidth(width: Float) { strokeWidth = width }
+    public fun getStrokeWidth(): Float = strokeWidth
+    public fun setStrokeWidth(width: Float) { strokeWidth = width }
 
-    fun getPadding(): Float = padding
-    fun setPadding(value: Float) { padding = value }
+    public fun getPadding(): Float = padding
+    public fun setPadding(value: Float) { padding = value }
 
-    fun getBackgroundAlpha(): Int = backgroundAlpha
-    fun setBackgroundAlpha(alpha: Int) { backgroundAlpha = alpha }
+    public fun getBackgroundAlpha(): Int = backgroundAlpha
+    public fun setBackgroundAlpha(alpha: Int) { backgroundAlpha = alpha }
 
-    fun isSenderBubble(): Boolean = isSenderBubble
+    public fun isSenderBubble(): Boolean = isSenderBubble
 
-    fun setSenderBubble(senderBubble: Boolean) {
+    public fun setSenderBubble(senderBubble: Boolean) {
         this.isSenderBubble = senderBubble
         if (context != null) {
             if (senderBubble) {
@@ -167,7 +167,7 @@ class InlineCodeFormatSpan : MetricAffectingSpan, RichTextFormatSpan {
 
     // endregion
 
-    companion object {
+    public companion object {
         private const val DEFAULT_BACKGROUND_COLOR = 0xFFFCEAE8.toInt()
         private const val DEFAULT_TEXT_COLOR = 0xFFC41E3A.toInt()
         private const val DEFAULT_STROKE_COLOR = 0xFFDDDDDD.toInt()

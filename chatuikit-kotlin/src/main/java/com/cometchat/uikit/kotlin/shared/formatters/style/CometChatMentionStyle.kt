@@ -23,7 +23,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param selfTextStyle Typography style for self-mentions
  * @param selfBackgroundColor Background color for self-mentions
  */
-data class CometChatMentionStyle(
+public data class CometChatMentionStyle(
     @ColorInt val textColor: Int,
     val textStyle: Typeface?,
     @ColorInt val backgroundColor: Int,
@@ -31,7 +31,7 @@ data class CometChatMentionStyle(
     val selfTextStyle: Typeface?,
     @ColorInt val selfBackgroundColor: Int
 ) {
-    companion object {
+    public companion object {
         /**
          * Alpha value for default translucent background colors (51/255 ≈ 0.2 or 20% opacity)
          */
@@ -52,7 +52,7 @@ data class CometChatMentionStyle(
          * @param selfBackgroundColor Background color for self-mentions. Defaults to selfTextColor with 20% opacity.
          * @return A new CometChatMentionStyle instance with theme-based default values
          */
-        fun default(
+        public fun default(
             context: Context,
             @ColorInt textColor: Int = CometChatTheme.getTextColorHighlight(context),
             textStyle: Typeface? = null,
@@ -92,7 +92,7 @@ data class CometChatMentionStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatMentionStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMentionStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMentionStyle {
             return try {
                 val defaultTextColor = CometChatTheme.getTextColorHighlight(context)
                 val defaultSelfTextColor = CometChatTheme.getWarningColor(context)
@@ -136,7 +136,7 @@ data class CometChatMentionStyle(
      *
      * @return A PromptTextStyle configured with textColor and backgroundColor
      */
-    fun toPromptTextStyle(): PromptTextStyle {
+    public fun toPromptTextStyle(): PromptTextStyle {
         return PromptTextStyle()
             .setColor(textColor)
             .setBackgroundColor(backgroundColor)
@@ -151,7 +151,7 @@ data class CometChatMentionStyle(
      *
      * @return A PromptTextStyle configured with selfTextColor and selfBackgroundColor
      */
-    fun toSelfPromptTextStyle(): PromptTextStyle {
+    public fun toSelfPromptTextStyle(): PromptTextStyle {
         return PromptTextStyle()
             .setColor(selfTextColor)
             .setBackgroundColor(selfBackgroundColor)

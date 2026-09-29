@@ -7,7 +7,7 @@ import com.cometchat.uikit.kotlin.databinding.CometchatUserListStickyHeaderBindi
 /**
  * ViewHolder for sticky header items in the users list.
  */
-class StickyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val binding: CometchatUserListStickyHeaderBinding =
+public class StickyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    public val binding: CometchatUserListStickyHeaderBinding =
         CometchatUserListStickyHeaderBinding.bind(itemView)
 }

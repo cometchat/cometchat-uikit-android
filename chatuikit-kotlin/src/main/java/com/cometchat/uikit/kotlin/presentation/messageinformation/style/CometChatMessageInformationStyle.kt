@@ -16,7 +16,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the message information view,
  * matching the XML attributes defined in attr_cometchat_message_information.xml.
  */
-data class CometChatMessageInformationStyle(
+public data class CometChatMessageInformationStyle(
     // Title styling
     @StyleRes val titleTextAppearance: Int = 0,
     @ColorInt val titleTextColor: Int = 0,
@@ -48,14 +48,14 @@ data class CometChatMessageInformationStyle(
     val itemAvatarStyle: CometChatAvatarStyle? = null,
     val messageReceiptStyle: CometChatReceiptStyle? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style with theme-appropriate values.
          *
          * @param context The context to access theme resources
          * @return A CometChatMessageInformationStyle with default values
          */
-        fun default(context: Context): CometChatMessageInformationStyle {
+        public fun default(context: Context): CometChatMessageInformationStyle {
             return extractFromTypedArray(context, null)
         }
 
@@ -69,7 +69,7 @@ data class CometChatMessageInformationStyle(
          * @param typedArray The TypedArray containing style attributes
          * @return A CometChatMessageInformationStyle with values from the TypedArray
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageInformationStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatMessageInformationStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {
@@ -84,7 +84,7 @@ data class CometChatMessageInformationStyle(
          * @param typedArray The TypedArray containing style attributes, or null for defaults
          * @return A CometChatMessageInformationStyle with extracted values
          */
-        fun extractFromTypedArray(
+        public fun extractFromTypedArray(
             context: Context,
             typedArray: TypedArray?
         ): CometChatMessageInformationStyle {

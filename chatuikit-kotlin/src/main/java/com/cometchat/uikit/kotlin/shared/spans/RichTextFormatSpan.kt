@@ -17,7 +17,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  *
  * @see RichTextFormat
  */
-interface RichTextFormatSpan {
+public interface RichTextFormatSpan {
 
     /**
      * Returns the format type associated with this span.
@@ -27,5 +27,5 @@ interface RichTextFormatSpan {
      *
      * @return The [RichTextFormat] that this span represents.
      */
-    fun getFormatType(): RichTextFormat
+    public fun getFormatType(): RichTextFormat
 }

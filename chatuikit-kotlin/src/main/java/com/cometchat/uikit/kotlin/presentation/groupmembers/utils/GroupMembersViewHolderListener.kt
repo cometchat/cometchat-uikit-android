@@ -15,7 +15,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.ViewHolderCallBack
  * - [createView] is called once during ViewHolder creation
  * - [bindView] is called during bind operations with member data
  */
-abstract class GroupMembersViewHolderListener : ViewHolderCallBack {
+abstract public class GroupMembersViewHolderListener : ViewHolderCallBack {
 
     /**
      * Creates a custom view to be used in the group member list item.
@@ -25,7 +25,7 @@ abstract class GroupMembersViewHolderListener : ViewHolderCallBack {
      * @param binding The ViewBinding for the group member list item layout
      * @return The custom view to display
      */
-    abstract fun createView(
+    abstract public fun createView(
         context: Context,
         binding: CometchatGroupMemberListItemBinding
     ): View
@@ -42,7 +42,7 @@ abstract class GroupMembersViewHolderListener : ViewHolderCallBack {
      * @param memberList The full list of group members
      * @param position The position in the list
      */
-    abstract fun bindView(
+    abstract public fun bindView(
         context: Context,
         createdView: View,
         groupMember: GroupMember,

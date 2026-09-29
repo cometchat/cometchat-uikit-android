@@ -20,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
  * The activity is transparent and non-touchable, so it appears invisible to the user.
  * Only the system permission dialog or picker is shown.
  */
-class CometChatPermissionActivity : AppCompatActivity() {
+public class CometChatPermissionActivity : AppCompatActivity() {
 
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
@@ -101,8 +101,8 @@ class CometChatPermissionActivity : AppCompatActivity() {
         CometChatPermissionHandler.onActivityReady(this)
     }
 
-    companion object {
-        const val PERMISSION_STRING = "permissionString"
-        const val INTENT_STRING = "intentString"
+    public companion object {
+        public const val PERMISSION_STRING: String = "permissionString"
+        public const val INTENT_STRING: String = "intentString"
     }
 }

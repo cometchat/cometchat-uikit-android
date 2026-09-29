@@ -21,7 +21,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the form bubble,
  * matching the XML attributes defined in attr_cometchat_form_bubble.xml.
  */
-data class CometChatFormBubbleStyle(
+public data class CometChatFormBubbleStyle(
     // Container styling
     @ColorInt val backgroundColor: Int = STYLE_NOT_SET,
     val backgroundDrawable: Drawable? = null,
@@ -69,7 +69,7 @@ data class CometChatFormBubbleStyle(
     /**
      * Resolves sentinel values against a base [CometChatMessageBubbleStyle].
      */
-    fun resolve(base: CometChatMessageBubbleStyle): CometChatFormBubbleStyle {
+    public fun resolve(base: CometChatMessageBubbleStyle): CometChatFormBubbleStyle {
         return copy(
             backgroundColor = resolveStyleColor(backgroundColor, base.backgroundColor),
             cornerRadius = resolveStyleDimension(cornerRadius, base.cornerRadius),
@@ -83,11 +83,11 @@ data class CometChatFormBubbleStyle(
         )
     }
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style with CometChatTheme defaults.
          */
-        fun default(context: Context): CometChatFormBubbleStyle {
+        public fun default(context: Context): CometChatFormBubbleStyle {
             return CometChatFormBubbleStyle(
                 backgroundColor = CometChatTheme.getBackgroundColor3(context),
                 titleTextAppearance = CometChatTheme.getTextAppearanceHeading4Bold(context),
@@ -109,7 +109,7 @@ data class CometChatFormBubbleStyle(
         /**
          * Creates a style by extracting values from XML TypedArray.
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatFormBubbleStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatFormBubbleStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

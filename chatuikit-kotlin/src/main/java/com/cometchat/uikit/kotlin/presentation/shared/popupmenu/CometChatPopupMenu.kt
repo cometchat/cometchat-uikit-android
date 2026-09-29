@@ -18,6 +18,7 @@ import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.google.android.material.card.MaterialCardView
@@ -25,7 +26,7 @@ import com.google.android.material.card.MaterialCardView
 /**
  * Enum defining the position of the popup menu relative to the anchor view.
  */
-enum class PopupPosition {
+public enum class PopupPosition {
     /** Show popup above the anchor view */
     ABOVE,
     /** Show popup below the anchor view */
@@ -38,11 +39,11 @@ enum class PopupPosition {
  * CometChatPopupMenu displays a popup menu with customizable menu items.
  * Used for long-press context menus in conversation lists and other components.
  */
-class CometChatPopupMenu(
+public class CometChatPopupMenu(
     private val context: Context,
     @StyleRes style: Int = 0
 ) {
-    companion object {
+    public companion object {
         private val TAG = CometChatPopupMenu::class.java.simpleName
     }
 
@@ -138,15 +139,15 @@ class CometChatPopupMenu(
         }
     }
 
-    fun setOnMenuItemClickListener(listener: OnMenuItemClickListener?) {
+    public fun setOnMenuItemClickListener(listener: OnMenuItemClickListener?) {
         this.onMenuItemClickListener = listener
     }
     
-    fun setOnDismissListener(listener: (() -> Unit)?) {
+    public fun setOnDismissListener(listener: (() -> Unit)?) {
         this.onDismissListener = listener
     }
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val attributes = context.theme.obtainStyledAttributes(style, R.styleable.CometChatPopupMenu)
             extractAttributesAndApplyDefaults(attributes)
@@ -158,7 +159,7 @@ class CometChatPopupMenu(
      *
      * @param style The CometChatPopupMenuStyle to apply
      */
-    fun setStyle(style: CometChatPopupMenuStyle) {
+    public fun setStyle(style: CometChatPopupMenuStyle) {
         elevation = style.elevation
         cornerRadius = style.cornerRadius
         backgroundColor = style.backgroundColor
@@ -173,14 +174,14 @@ class CometChatPopupMenu(
         minWidth = style.minWidth
     }
 
-    fun dismiss() {
-        android.util.Log.d(TAG, "dismiss() called — popupWindow=${popupWindow?.hashCode()}, isShowing=${popupWindow?.isShowing}")
+    public fun dismiss() {
+        CometChatLogger.d(TAG, "dismiss() called — popupWindow=${popupWindow?.hashCode()}, isShowing=${popupWindow?.isShowing}")
         popupWindow?.let {
             if (it.isShowing) {
-                android.util.Log.d(TAG, "dismiss() — actually dismissing popupWindow=${it.hashCode()}")
+                CometChatLogger.d(TAG, "dismiss() — actually dismissing popupWindow=${it.hashCode()}")
                 it.dismiss()
             } else {
-                android.util.Log.d(TAG, "dismiss() — popupWindow NOT showing, skipping")
+                CometChatLogger.d(TAG, "dismiss() — popupWindow NOT showing, skipping")
             }
         }
     }
@@ -188,58 +189,58 @@ class CometChatPopupMenu(
     /**
      * Returns whether the popup window is currently showing.
      */
-    fun isShowing(): Boolean {
+    public fun isShowing(): Boolean {
         val showing = popupWindow?.isShowing == true
-        android.util.Log.d(TAG, "isShowing() = $showing, popupWindow=${popupWindow?.hashCode()}")
+        CometChatLogger.d(TAG, "isShowing() = $showing, popupWindow=${popupWindow?.hashCode()}")
         return showing
     }
 
-    fun setMenuItems(items: List<MenuItem>) {
+    public fun setMenuItems(items: List<MenuItem>) {
         menuItems.clear()
         menuItems.addAll(items)
     }
     
-    fun setElevation(@Dimension elevationPx: Int) {
+    public fun setElevation(@Dimension elevationPx: Int) {
         this.elevation = elevationPx
     }
     
-    fun setCornerRadius(@Dimension radiusPx: Int) {
+    public fun setCornerRadius(@Dimension radiusPx: Int) {
         this.cornerRadius = radiusPx
     }
     
-    fun setBackgroundColor(@ColorInt color: Int) {
+    public fun setBackgroundColor(@ColorInt color: Int) {
         this.backgroundColor = color
     }
     
-    fun setTextColor(@ColorInt color: Int) {
+    public fun setTextColor(@ColorInt color: Int) {
         this.textColor = color
     }
     
-    fun setStrokeColor(@ColorInt color: Int) {
+    public fun setStrokeColor(@ColorInt color: Int) {
         this.strokeColor = color
     }
     
-    fun setStrokeWidth(@Dimension widthPx: Int) {
+    public fun setStrokeWidth(@Dimension widthPx: Int) {
         this.strokeWidth = widthPx
     }
     
-    fun setStartIconTint(@ColorInt color: Int) {
+    public fun setStartIconTint(@ColorInt color: Int) {
         this.startIconTint = color
     }
     
-    fun setEndIconTint(@ColorInt color: Int) {
+    public fun setEndIconTint(@ColorInt color: Int) {
         this.endIconTint = color
     }
     
-    fun setItemPaddingHorizontal(@Dimension paddingPx: Int) {
+    public fun setItemPaddingHorizontal(@Dimension paddingPx: Int) {
         this.itemPaddingHorizontal = paddingPx
     }
     
-    fun setItemPaddingVertical(@Dimension paddingPx: Int) {
+    public fun setItemPaddingVertical(@Dimension paddingPx: Int) {
         this.itemPaddingVertical = paddingPx
     }
     
-    fun setMinWidth(@Dimension widthPx: Int) {
+    public fun setMinWidth(@Dimension widthPx: Int) {
         this.minWidth = widthPx
     }
 
@@ -250,7 +251,7 @@ class CometChatPopupMenu(
      * @param anchorView The view to anchor the popup to
      * @param position The position of the popup relative to the anchor (ABOVE, BELOW, or AUTO)
      */
-    fun showAsDropDown(anchorView: View, position: PopupPosition = PopupPosition.AUTO) {
+    public fun showAsDropDown(anchorView: View, position: PopupPosition = PopupPosition.AUTO) {
         show(anchorView, position)
     }
 
@@ -260,7 +261,7 @@ class CometChatPopupMenu(
      * @param anchorView The view to anchor the popup to
      * @param position The position of the popup relative to the anchor (ABOVE, BELOW, or AUTO)
      */
-    fun show(anchorView: View, position: PopupPosition = PopupPosition.AUTO) {
+    public fun show(anchorView: View, position: PopupPosition = PopupPosition.AUTO) {
         val popupView = LayoutInflater.from(context).inflate(R.layout.cometchat_popup_recycler_view, null)
 
         val recyclerView = popupView.findViewById<RecyclerView>(R.id.recycler_view)
@@ -298,14 +299,14 @@ class CometChatPopupMenu(
             elevation = this@CometChatPopupMenu.elevation.toFloat()
             animationStyle = R.style.CometChatPopupMenuAnimation
             setOnDismissListener {
-                android.util.Log.d(TAG, "PopupWindow.onDismiss fired — popupWindow=${this.hashCode()}, thread=${Thread.currentThread().name}")
+                CometChatLogger.d(TAG, "PopupWindow.onDismiss fired — popupWindow=${this.hashCode()}, thread=${Thread.currentThread().name}")
                 Exception("PopupWindow dismiss stacktrace").also { e ->
-                    android.util.Log.d(TAG, "PopupWindow.onDismiss stacktrace:", e)
+                    CometChatLogger.d(TAG, "PopupWindow.onDismiss stacktrace:", e)
                 }
                 this@CometChatPopupMenu.onDismissListener?.invoke()
             }
         }
-        android.util.Log.d(TAG, "show() — created popupWindow=${popupWindow?.hashCode()}, focusable=${popupWindow?.isFocusable}, outsideTouchable=${popupWindow?.isOutsideTouchable}")
+        CometChatLogger.d(TAG, "show() — created popupWindow=${popupWindow?.hashCode()}, focusable=${popupWindow?.isFocusable}, outsideTouchable=${popupWindow?.isOutsideTouchable}")
 
         // Convert dp offsets to pixels (matching Java: 12dp margin, 10dp vertical offset)
         val marginInPixels = (12 * context.resources.displayMetrics.density + 0.5f).toInt()
@@ -356,22 +357,22 @@ class CometChatPopupMenu(
             }
         }
 
-        android.util.Log.d(TAG, "show() — showAtLocation: x=$adjustedXOffset, y=$yOffset, position=$position, popupWindow=${popupWindow?.hashCode()}")
+        CometChatLogger.d(TAG, "show() — showAtLocation: x=$adjustedXOffset, y=$yOffset, position=$position, popupWindow=${popupWindow?.hashCode()}")
         popupWindow?.showAtLocation(anchorView, Gravity.NO_GRAVITY, adjustedXOffset, yOffset)
-        android.util.Log.d(TAG, "show() — popup shown, isShowing=${popupWindow?.isShowing}")
+        CometChatLogger.d(TAG, "show() — popup shown, isShowing=${popupWindow?.isShowing}")
     }
 
     /**
      * Listener interface for menu item clicks.
      */
-    fun interface OnMenuItemClickListener {
-        fun onMenuItemClick(id: String, item: String)
+    public fun interface OnMenuItemClickListener {
+        public fun onMenuItemClick(id: String, item: String)
     }
 
     /**
      * Data class representing a menu item.
      */
-    data class MenuItem(
+    public data class MenuItem(
         val id: String,
         val name: String,
         val startIcon: Drawable? = null,
@@ -382,7 +383,7 @@ class CometChatPopupMenu(
         @StyleRes val textAppearance: Int = 0,
         val onClick: (() -> Unit)? = null
     ) {
-        companion object {
+        public companion object {
             /**
              * Creates a simple MenuItem with just id, name, and optional click handler.
              *
@@ -391,7 +392,7 @@ class CometChatPopupMenu(
              * @param onClick Optional callback invoked when the menu item is clicked
              * @return A new MenuItem instance with minimal configuration
              */
-            fun simple(
+            public fun simple(
                 id: String,
                 name: String,
                 onClick: (() -> Unit)? = null
@@ -411,7 +412,7 @@ class CometChatPopupMenu(
              * @param onClick Optional callback invoked when the menu item is clicked
              * @return A new MenuItem instance with icon configuration
              */
-            fun withIcons(
+            public fun withIcons(
                 id: String,
                 name: String,
                 startIcon: Drawable? = null,
@@ -426,11 +427,11 @@ class CometChatPopupMenu(
             )
         }
 
-        constructor(id: String, name: String, onClick: (() -> Unit)?) : this(
+        public constructor(id: String, name: String, onClick: (() -> Unit)?) : this(
             id, name, null, null, 0, 0, 0, 0, onClick
         )
 
-        constructor(
+        public constructor(
             id: String,
             name: String,
             startIcon: Drawable?,

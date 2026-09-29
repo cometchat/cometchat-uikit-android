@@ -17,13 +17,13 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
  * CometChatReceipt is a custom view that displays message receipt status icons.
  * It shows different icons for sent, delivered, and read states.
  */
-class CometChatReceipt @JvmOverloads constructor(
+public class CometChatReceipt @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatReceipt::class.java.simpleName
     }
 
@@ -108,7 +108,7 @@ class CometChatReceipt @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatMessageReceipt)
             // fromTypedArray handles recycling internally
@@ -119,7 +119,7 @@ class CometChatReceipt @JvmOverloads constructor(
     /**
      * Applies a style to the receipt view.
      */
-    fun setStyle(style: CometChatReceiptStyle) {
+    public fun setStyle(style: CometChatReceiptStyle) {
         this.style = style
         applyStyle()
     }
@@ -127,7 +127,7 @@ class CometChatReceipt @JvmOverloads constructor(
     /**
      * Sets the receipt status from a BaseMessage.
      */
-    fun setReceipt(message: BaseMessage) {
+    public fun setReceipt(message: BaseMessage) {
         currentStatus = getReceiptStatus(message)
         updateReceiptIcon()
     }
@@ -135,7 +135,7 @@ class CometChatReceipt @JvmOverloads constructor(
     /**
      * Sets the receipt status directly.
      */
-    fun setReceipt(status: ReceiptStatus) {
+    public fun setReceipt(status: ReceiptStatus) {
         currentStatus = status
         updateReceiptIcon()
     }
@@ -144,76 +144,76 @@ class CometChatReceipt @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getWaitIconTint(): Int = style.waitIconTint
+    public fun getWaitIconTint(): Int = style.waitIconTint
 
-    fun getSentIconTint(): Int = style.sentIconTint
+    public fun getSentIconTint(): Int = style.sentIconTint
 
-    fun getDeliveredIconTint(): Int = style.deliveredIconTint
+    public fun getDeliveredIconTint(): Int = style.deliveredIconTint
 
-    fun getReadIconTint(): Int = style.readIconTint
+    public fun getReadIconTint(): Int = style.readIconTint
 
-    fun getErrorIconTint(): Int = style.errorIconTint
+    public fun getErrorIconTint(): Int = style.errorIconTint
 
-    fun getWaitIcon(): Drawable? = style.waitIcon
+    public fun getWaitIcon(): Drawable? = style.waitIcon
 
-    fun getSentIcon(): Drawable? = style.sentIcon
+    public fun getSentIcon(): Drawable? = style.sentIcon
 
-    fun getDeliveredIcon(): Drawable? = style.deliveredIcon
+    public fun getDeliveredIcon(): Drawable? = style.deliveredIcon
 
-    fun getReadIcon(): Drawable? = style.readIcon
+    public fun getReadIcon(): Drawable? = style.readIcon
 
-    fun getErrorIcon(): Drawable? = style.errorIcon
+    public fun getErrorIcon(): Drawable? = style.errorIcon
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setWaitIconTint(@ColorInt tint: Int) {
+    public fun setWaitIconTint(@ColorInt tint: Int) {
         style = style.copy(waitIconTint = tint)
         if (currentStatus == ReceiptStatus.IN_PROGRESS) updateReceiptIcon()
     }
 
-    fun setSentIconTint(@ColorInt tint: Int) {
+    public fun setSentIconTint(@ColorInt tint: Int) {
         style = style.copy(sentIconTint = tint)
         if (currentStatus == ReceiptStatus.SENT) updateReceiptIcon()
     }
 
-    fun setDeliveredIconTint(@ColorInt tint: Int) {
+    public fun setDeliveredIconTint(@ColorInt tint: Int) {
         style = style.copy(deliveredIconTint = tint)
         if (currentStatus == ReceiptStatus.DELIVERED) updateReceiptIcon()
     }
 
-    fun setReadIconTint(@ColorInt tint: Int) {
+    public fun setReadIconTint(@ColorInt tint: Int) {
         style = style.copy(readIconTint = tint)
         if (currentStatus == ReceiptStatus.READ) updateReceiptIcon()
     }
 
-    fun setErrorIconTint(@ColorInt tint: Int) {
+    public fun setErrorIconTint(@ColorInt tint: Int) {
         style = style.copy(errorIconTint = tint)
         if (currentStatus == ReceiptStatus.ERROR) updateReceiptIcon()
     }
 
-    fun setWaitIcon(icon: Drawable?) {
+    public fun setWaitIcon(icon: Drawable?) {
         style = style.copy(waitIcon = icon)
         if (currentStatus == ReceiptStatus.IN_PROGRESS) updateReceiptIcon()
     }
 
-    fun setSentIcon(icon: Drawable?) {
+    public fun setSentIcon(icon: Drawable?) {
         style = style.copy(sentIcon = icon)
         if (currentStatus == ReceiptStatus.SENT) updateReceiptIcon()
     }
 
-    fun setDeliveredIcon(icon: Drawable?) {
+    public fun setDeliveredIcon(icon: Drawable?) {
         style = style.copy(deliveredIcon = icon)
         if (currentStatus == ReceiptStatus.DELIVERED) updateReceiptIcon()
     }
 
-    fun setReadIcon(icon: Drawable?) {
+    public fun setReadIcon(icon: Drawable?) {
         style = style.copy(readIcon = icon)
         if (currentStatus == ReceiptStatus.READ) updateReceiptIcon()
     }
 
-    fun setErrorIcon(icon: Drawable?) {
+    public fun setErrorIcon(icon: Drawable?) {
         style = style.copy(errorIcon = icon)
         if (currentStatus == ReceiptStatus.ERROR) updateReceiptIcon()
     }

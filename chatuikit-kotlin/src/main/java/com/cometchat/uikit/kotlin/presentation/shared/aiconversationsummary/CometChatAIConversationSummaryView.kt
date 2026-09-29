@@ -52,13 +52,13 @@ import com.google.android.material.card.MaterialCardView
  *
  * @see AIConversationSummaryAdapter
  */
-class CometChatAIConversationSummaryView @JvmOverloads constructor(
+public class CometChatAIConversationSummaryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAIConversationSummaryStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatAIConversationSummaryView::class.java.simpleName
     }
 
@@ -326,7 +326,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      *
      * @param summary The conversation summary text to display.
      */
-    fun setSummary(summary: String?) {
+    public fun setSummary(summary: String?) {
         if (!summary.isNullOrEmpty()) {
             binding.recyclerView.isVisible = true
             aiConversationSummaryAdapter.setList(listOf(summary))
@@ -339,7 +339,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Displays the error view and hides other content views.
      */
-    fun showErrorView() {
+    public fun showErrorView() {
         binding.errorViewLayout.isVisible = true
         binding.loadingViewLayout.isVisible = false
         binding.recyclerView.isVisible = false
@@ -349,7 +349,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Displays the loading view with a shimmer effect.
      */
-    fun showLoadingView() {
+    public fun showLoadingView() {
         binding.errorViewLayout.isVisible = false
         binding.loadingViewLayout.isVisible = true
         setShimmerVisibility(View.VISIBLE)
@@ -361,7 +361,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      *
      * @param view The custom view to display in place of the default loaded view.
      */
-    fun setCustomView(view: View?) {
+    public fun setCustomView(view: View?) {
         if (view != null) {
             binding.loadedViewParentLayout.removeAllViews()
             binding.loadingViewLayout.isVisible = false
@@ -374,7 +374,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      *
      * @param errorText Text to display for error.
      */
-    fun setErrorStateText(errorText: String?) {
+    public fun setErrorStateText(errorText: String?) {
         if (!errorText.isNullOrEmpty()) {
             binding.tvError.text = errorText
         }
@@ -405,7 +405,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the corner radius for the view's card.
      */
-    fun setCornerRadius(@Dimension cornerRadius: Int) {
+    public fun setCornerRadius(@Dimension cornerRadius: Int) {
         this.viewCornerRadius = cornerRadius
         super.setRadius(cornerRadius.toFloat())
     }
@@ -429,7 +429,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the text color for the title.
      */
-    fun setTitleTextColor(@ColorInt titleTextColor: Int) {
+    public fun setTitleTextColor(@ColorInt titleTextColor: Int) {
         this.titleTextColor = titleTextColor
         binding.title.setTextColor(titleTextColor)
     }
@@ -437,7 +437,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the text appearance for the title.
      */
-    fun setTitleTextAppearance(@StyleRes titleTextAppearance: Int) {
+    public fun setTitleTextAppearance(@StyleRes titleTextAppearance: Int) {
         this.titleTextAppearance = titleTextAppearance
         if (titleTextAppearance != 0) {
             binding.title.setTextAppearance(titleTextAppearance)
@@ -447,7 +447,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the close icon drawable.
      */
-    fun setCloseIcon(closeIcon: Drawable?) {
+    public fun setCloseIcon(closeIcon: Drawable?) {
         this.closeIcon = closeIcon
         closeIcon?.let { binding.ivClose.setImageDrawable(it) }
     }
@@ -455,7 +455,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the tint color for the close icon.
      */
-    fun setCloseIconTint(@ColorInt closeIconTint: Int) {
+    public fun setCloseIconTint(@ColorInt closeIconTint: Int) {
         this.closeIconTint = closeIconTint
         binding.ivClose.setColorFilter(closeIconTint)
     }
@@ -463,7 +463,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the background color for each item in the list.
      */
-    fun setItemBackgroundColor(@ColorInt itemBackgroundColor: Int) {
+    public fun setItemBackgroundColor(@ColorInt itemBackgroundColor: Int) {
         this.itemBackgroundColor = itemBackgroundColor
         aiConversationSummaryAdapter.setItemBackgroundColor(itemBackgroundColor)
     }
@@ -471,7 +471,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets a custom drawable as the background for each item in the list.
      */
-    fun setItemBackgroundDrawable(itemBackgroundDrawable: Drawable?) {
+    public fun setItemBackgroundDrawable(itemBackgroundDrawable: Drawable?) {
         this.itemBackgroundDrawable = itemBackgroundDrawable
         aiConversationSummaryAdapter.setItemBackgroundDrawable(itemBackgroundDrawable)
     }
@@ -479,7 +479,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the corner radius for each item in the list.
      */
-    fun setItemCornerRadius(@Dimension itemCornerRadius: Int) {
+    public fun setItemCornerRadius(@Dimension itemCornerRadius: Int) {
         this.itemCornerRadius = itemCornerRadius
         aiConversationSummaryAdapter.setItemCornerRadius(itemCornerRadius)
     }
@@ -487,7 +487,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the width of the stroke for each item in the list.
      */
-    fun setItemStrokeWidth(@Dimension itemStrokeWidth: Int) {
+    public fun setItemStrokeWidth(@Dimension itemStrokeWidth: Int) {
         this.itemStrokeWidth = itemStrokeWidth
         aiConversationSummaryAdapter.setItemStrokeWidth(itemStrokeWidth)
     }
@@ -495,7 +495,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the color of the stroke for each item in the list.
      */
-    fun setItemStrokeColor(@ColorInt itemStrokeColor: Int) {
+    public fun setItemStrokeColor(@ColorInt itemStrokeColor: Int) {
         this.itemStrokeColor = itemStrokeColor
         aiConversationSummaryAdapter.setItemStrokeColor(itemStrokeColor)
     }
@@ -503,7 +503,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the text color for each item in the list.
      */
-    fun setItemTextColor(@ColorInt itemTextColor: Int) {
+    public fun setItemTextColor(@ColorInt itemTextColor: Int) {
         this.itemTextColor = itemTextColor
         aiConversationSummaryAdapter.setItemTextColor(itemTextColor)
     }
@@ -511,7 +511,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the text appearance for each item in the list.
      */
-    fun setItemTextAppearance(@StyleRes itemTextAppearance: Int) {
+    public fun setItemTextAppearance(@StyleRes itemTextAppearance: Int) {
         this.itemTextAppearance = itemTextAppearance
         aiConversationSummaryAdapter.setItemTextAppearance(itemTextAppearance)
     }
@@ -519,7 +519,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the text color of the error state.
      */
-    fun setErrorStateTextColor(@ColorInt color: Int) {
+    public fun setErrorStateTextColor(@ColorInt color: Int) {
         this.errorStateTextColor = color
         binding.tvError.setTextColor(color)
     }
@@ -527,7 +527,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the appearance of the error state text.
      */
-    fun setErrorStateTextAppearance(@StyleRes errorStateTextAppearance: Int) {
+    public fun setErrorStateTextAppearance(@StyleRes errorStateTextAppearance: Int) {
         this.errorStateTextAppearance = errorStateTextAppearance
         if (errorStateTextAppearance != 0) {
             binding.tvError.setTextAppearance(errorStateTextAppearance)
@@ -537,7 +537,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the layout resource to use for the error view.
      */
-    fun setErrorViewLayout(@LayoutRes errorViewLayout: Int) {
+    public fun setErrorViewLayout(@LayoutRes errorViewLayout: Int) {
         if (errorViewLayout != 0) {
             this.errorViewLayout = errorViewLayout
             binding.errorViewLayout.removeAllViews()
@@ -549,7 +549,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the layout resource to use for the loading view.
      */
-    fun setLoadingViewLayout(@LayoutRes loadingViewLayout: Int) {
+    public fun setLoadingViewLayout(@LayoutRes loadingViewLayout: Int) {
         if (loadingViewLayout != 0) {
             this.loadingViewLayout = loadingViewLayout
             binding.loadingViewLayout.removeAllViews()
@@ -561,7 +561,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the style of the AIConversationSummary from a specific style resource.
      */
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             this.viewStyle = style
             val typedArray = context.theme.obtainStyledAttributes(
@@ -579,7 +579,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      *
      * @param style The [CometChatAIConversationSummaryStyle] to apply
      */
-    fun setStyle(style: CometChatAIConversationSummaryStyle) {
+    public fun setStyle(style: CometChatAIConversationSummaryStyle) {
         // Title styling
         setTitleTextColor(style.titleTextColor)
         if (style.titleTextAppearance != 0) {
@@ -622,7 +622,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      *
      * @param maxHeightInDp Maximum height in dp for the view.
      */
-    fun setMaxHeight(maxHeightInDp: Int) {
+    public fun setMaxHeight(maxHeightInDp: Int) {
         if (maxHeightInDp > 0) {
             this.maxHeight = Utils.convertDpToPx(context, maxHeightInDp)
             requestLayout()
@@ -632,14 +632,14 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Sets the click listener to handle item selection events in the RecyclerView.
      */
-    fun setOnItemClickListener(onClick: OnItemClickListener?) {
+    public fun setOnItemClickListener(onClick: OnItemClickListener?) {
         this.onItemClickListener = onClick
     }
 
     /**
      * Sets the click listener for the close icon.
      */
-    fun setOnCloseClickListener(onCloseClick: OnCloseClickListener?) {
+    public fun setOnCloseClickListener(onCloseClick: OnCloseClickListener?) {
         this.onCloseClickListener = onCloseClick
     }
 
@@ -650,18 +650,18 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      * Gets the background color applied to the component.
      */
     @ColorInt
-    fun getBackgroundColor(): Int = viewBackgroundColor
+    public fun getBackgroundColor(): Int = viewBackgroundColor
 
     /**
      * Retrieves the background drawable for the component.
      */
-    fun getBackgroundDrawable(): Drawable? = backgroundDrawable
+    public fun getBackgroundDrawable(): Drawable? = backgroundDrawable
 
     /**
      * Gets the corner radius for the component.
      */
     @Dimension
-    fun getCornerRadius(): Int = viewCornerRadius
+    public fun getCornerRadius(): Int = viewCornerRadius
 
     /**
      * Retrieves the stroke width for the component's border.
@@ -679,121 +679,121 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
      * Gets the text color for the title.
      */
     @ColorInt
-    fun getTitleTextColor(): Int = titleTextColor
+    public fun getTitleTextColor(): Int = titleTextColor
 
     /**
      * Gets the text appearance resource ID for the title.
      */
     @StyleRes
-    fun getTitleTextAppearance(): Int = titleTextAppearance
+    public fun getTitleTextAppearance(): Int = titleTextAppearance
 
     /**
      * Gets the close icon drawable.
      */
-    fun getCloseIcon(): Drawable? = closeIcon
+    public fun getCloseIcon(): Drawable? = closeIcon
 
     /**
      * Gets the tint color for the close icon.
      */
     @ColorInt
-    fun getCloseIconTint(): Int = closeIconTint
+    public fun getCloseIconTint(): Int = closeIconTint
 
     /**
      * Retrieves the background color for each item in the list.
      */
     @ColorInt
-    fun getItemBackgroundColor(): Int = itemBackgroundColor
+    public fun getItemBackgroundColor(): Int = itemBackgroundColor
 
     /**
      * Gets the background drawable for each item in the list.
      */
-    fun getItemBackgroundDrawable(): Drawable? = itemBackgroundDrawable
+    public fun getItemBackgroundDrawable(): Drawable? = itemBackgroundDrawable
 
     /**
      * Retrieves the corner radius for each item in the list.
      */
     @Dimension
-    fun getItemCornerRadius(): Int = itemCornerRadius
+    public fun getItemCornerRadius(): Int = itemCornerRadius
 
     /**
      * Gets the stroke width for each item in the list.
      */
     @Dimension
-    fun getItemStrokeWidth(): Int = itemStrokeWidth
+    public fun getItemStrokeWidth(): Int = itemStrokeWidth
 
     /**
      * Retrieves the color of the stroke for each item in the list.
      */
     @ColorInt
-    fun getItemStrokeColor(): Int = itemStrokeColor
+    public fun getItemStrokeColor(): Int = itemStrokeColor
 
     /**
      * Gets the text color for each item in the list.
      */
     @ColorInt
-    fun getItemTextColor(): Int = itemTextColor
+    public fun getItemTextColor(): Int = itemTextColor
 
     /**
      * Retrieves the text appearance style resource for each item.
      */
     @StyleRes
-    fun getItemTextAppearance(): Int = itemTextAppearance
+    public fun getItemTextAppearance(): Int = itemTextAppearance
 
     /**
      * Gets the text color for error state messages.
      */
     @ColorInt
-    fun getErrorStateTextColor(): Int = errorStateTextColor
+    public fun getErrorStateTextColor(): Int = errorStateTextColor
 
     /**
      * Retrieves the text appearance style for error state messages.
      */
     @StyleRes
-    fun getErrorStateTextAppearance(): Int = errorStateTextAppearance
+    public fun getErrorStateTextAppearance(): Int = errorStateTextAppearance
 
     /**
      * Gets the layout resource for the error view.
      */
     @LayoutRes
-    fun getErrorViewLayout(): Int = errorViewLayout
+    public fun getErrorViewLayout(): Int = errorViewLayout
 
     /**
      * Retrieves the layout resource for the loading view.
      */
     @LayoutRes
-    fun getLoadingViewLayout(): Int = loadingViewLayout
+    public fun getLoadingViewLayout(): Int = loadingViewLayout
 
     /**
      * Gets the style resource associated with the component.
      */
     @StyleRes
-    fun getStyle(): Int = viewStyle
+    public fun getStyle(): Int = viewStyle
 
     /**
      * Retrieves the maximum height for the component.
      */
     @Dimension
-    fun getMaxHeight(): Int = maxHeight
+    public fun getMaxHeight(): Int = maxHeight
 
     /**
      * Retrieves the OnItemClickListener for click events on the component.
      */
-    fun getOnItemClickListener(): OnItemClickListener? = onItemClickListener
+    public fun getOnItemClickListener(): OnItemClickListener? = onItemClickListener
 
     /**
      * Retrieves the OnCloseClickListener for close icon click events.
      */
-    fun getOnCloseClickListener(): OnCloseClickListener? = onCloseClickListener
+    public fun getOnCloseClickListener(): OnCloseClickListener? = onCloseClickListener
 
     /**
      * Provides access to the binding instance associated with this component.
      */
-    fun getBinding(): CometchatAiConversationSummaryBinding = binding
+    public fun getBinding(): CometchatAiConversationSummaryBinding = binding
 
     /**
      * Provides the adapter for managing conversation summary items.
      */
-    fun getAIConversationSummaryAdapter(): AIConversationSummaryAdapter = aiConversationSummaryAdapter
+    internal fun getAIConversationSummaryAdapter(): AIConversationSummaryAdapter = aiConversationSummaryAdapter
 
     // ==================== Private Helper Methods ====================
 
@@ -830,7 +830,7 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
     /**
      * Interface defining a click event callback for item selection.
      */
-    fun interface OnItemClickListener {
+    public fun interface OnItemClickListener {
         /**
          * Called when an item is clicked.
          *
@@ -838,18 +838,18 @@ class CometChatAIConversationSummaryView @JvmOverloads constructor(
          * @param summary The summary text.
          * @param position Position of the clicked item.
          */
-        fun onClick(view: View, summary: String, position: Int)
+        public fun onClick(view: View, summary: String, position: Int)
     }
 
     /**
      * Interface defining a click event callback for close icon.
      */
-    fun interface OnCloseClickListener {
+    public fun interface OnCloseClickListener {
         /**
          * Called when the close icon is clicked.
          *
          * @param view The view that was clicked.
          */
-        fun onClick(view: View)
+        public fun onClick(view: View)
     }
 }

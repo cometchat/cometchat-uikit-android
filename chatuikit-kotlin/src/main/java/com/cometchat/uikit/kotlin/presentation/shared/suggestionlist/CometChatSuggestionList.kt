@@ -10,6 +10,7 @@ import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatSuggestionListBinding
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerAdapter
@@ -95,13 +96,13 @@ import com.google.android.material.card.MaterialCardView
  * @see SuggestionItem Data model for suggestion items
  * @see SuggestionListAdapter Adapter for rendering items
  */
-class CometChatSuggestionList @JvmOverloads constructor(
+public class CometChatSuggestionList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatSuggestionListStyle
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatSuggestionList::class.java.simpleName
     }
 
@@ -279,7 +280,7 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Sets the style using a style resource.
      */
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             val typedArray = context.theme.obtainStyledAttributes(
                 style, R.styleable.CometChatSuggestionList
@@ -291,7 +292,7 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Sets the style using a CometChatSuggestionListStyle object.
      */
-    fun setStyle(style: CometChatSuggestionListStyle) {
+    public fun setStyle(style: CometChatSuggestionListStyle) {
         suggestionListBackgroundColor = style.backgroundColor
         suggestionListStrokeColor = style.strokeColor
         suggestionListStrokeWidth = style.strokeWidth
@@ -308,20 +309,20 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Updates the suggestion list with new items.
      */
-    fun setList(items: List<SuggestionItem>) {
-        android.util.Log.d("MentionDebug", "[$TAG] setList() - received ${items.size} items: ${items.map { it.name }}")
+    public fun setList(items: List<SuggestionItem>) {
+        CometChatLogger.d("MentionDebug", "[$TAG] setList() - received ${items.size} items: ${items.map { it.name }}")
         if (items.isNotEmpty()) {
-            android.util.Log.d("MentionDebug", "[$TAG] setList() - hiding shimmer (items not empty)")
+            CometChatLogger.d("MentionDebug", "[$TAG] setList() - hiding shimmer (items not empty)")
             showShimmer(false)
         }
-        android.util.Log.d("MentionDebug", "[$TAG] setList() - calling adapter.updateList()")
+        CometChatLogger.d("MentionDebug", "[$TAG] setList() - calling adapter.updateList()")
         suggestionListAdapter.updateList(items)
     }
 
     /**
      * Shows or hides the shimmer loading state.
      */
-    fun showShimmer(show: Boolean) {
+    public fun showShimmer(show: Boolean) {
         if (show) {
             // Use 1 shimmer item like Java implementation
             val shimmerAdapter = CometChatShimmerAdapter(
@@ -342,7 +343,7 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Sets whether to show avatars in suggestion items.
      */
-    fun showAvatar(show: Boolean) {
+    public fun showAvatar(show: Boolean) {
         showAvatar = show
         suggestionListAdapter.showAvatar(show)
     }
@@ -350,7 +351,7 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Sets the maximum height limit for the suggestion list.
      */
-    fun setMaxHeightLimit(@Dimension maxHeight: Int) {
+    public fun setMaxHeightLimit(@Dimension maxHeight: Int) {
         if (maxHeight > 0) {
             maxHeightLimit = maxHeight
             requestLayout()
@@ -360,85 +361,85 @@ class CometChatSuggestionList @JvmOverloads constructor(
     /**
      * Sets the item click listener.
      */
-    fun setItemClickListener(listener: OnItemClickListener<SuggestionItem>?) {
+    public fun setItemClickListener(listener: OnItemClickListener<SuggestionItem>?) {
         onItemClickListener = listener
     }
 
     /**
      * Sets the scroll to bottom listener for pagination.
      */
-    fun setOnScrollToBottomListener(listener: (() -> Unit)?) {
+    public fun setOnScrollToBottomListener(listener: (() -> Unit)?) {
         onScrollToBottomListener = listener
     }
 
     /**
      * Sets a custom view holder listener for custom item views.
      */
-    fun setListItemView(listener: SuggestionListViewHolderListener?) {
+    public fun setListItemView(listener: SuggestionListViewHolderListener?) {
         suggestionListAdapter.setViewHolderListener(listener)
     }
 
     // ==================== Style Setters ====================
 
-    fun setSuggestionListBackgroundColor(@ColorInt color: Int) {
+    public fun setSuggestionListBackgroundColor(@ColorInt color: Int) {
         suggestionListBackgroundColor = color
         setCardBackgroundColor(color)
     }
 
-    fun setSuggestionListStrokeColor(@ColorInt color: Int) {
+    public fun setSuggestionListStrokeColor(@ColorInt color: Int) {
         suggestionListStrokeColor = color
         setStrokeColor(color)
     }
 
-    fun setSuggestionListStrokeWidth(@Dimension width: Int) {
+    public fun setSuggestionListStrokeWidth(@Dimension width: Int) {
         suggestionListStrokeWidth = width
         strokeWidth = width
     }
 
-    fun setSuggestionListCornerRadius(@Dimension radius: Int) {
+    public fun setSuggestionListCornerRadius(@Dimension radius: Int) {
         suggestionListCornerRadius = radius
         this.radius = radius.toFloat()
     }
 
-    fun setSuggestionListItemAvatarStyle(@StyleRes style: Int) {
+    public fun setSuggestionListItemAvatarStyle(@StyleRes style: Int) {
         suggestionListItemAvatarStyle = style
         suggestionListAdapter.setItemAvatarStyle(style)
     }
 
-    fun setSuggestionListItemTextAppearance(@StyleRes style: Int) {
+    public fun setSuggestionListItemTextAppearance(@StyleRes style: Int) {
         suggestionListItemTextAppearance = style
         suggestionListAdapter.setItemTextAppearance(style)
     }
 
-    fun setSuggestionListItemTextColor(@ColorInt color: Int) {
+    public fun setSuggestionListItemTextColor(@ColorInt color: Int) {
         suggestionListItemTextColor = color
         suggestionListAdapter.setItemTextColor(color)
     }
 
-    fun setSuggestionListItemInfoTextAppearance(@StyleRes style: Int) {
+    public fun setSuggestionListItemInfoTextAppearance(@StyleRes style: Int) {
         suggestionListItemInfoTextAppearance = style
         suggestionListAdapter.setItemInfoTextAppearance(style)
     }
 
-    fun setSuggestionListItemInfoTextColor(@ColorInt color: Int) {
+    public fun setSuggestionListItemInfoTextColor(@ColorInt color: Int) {
         suggestionListItemInfoTextColor = color
         suggestionListAdapter.setItemInfoTextColor(color)
     }
 
     // ==================== Getters ====================
 
-    fun getSuggestionListBackgroundColor(): Int = suggestionListBackgroundColor
-    fun getSuggestionListStrokeColor(): Int = suggestionListStrokeColor
-    fun getSuggestionListStrokeWidth(): Int = suggestionListStrokeWidth
-    fun getSuggestionListCornerRadius(): Int = suggestionListCornerRadius
-    fun getSuggestionListItemAvatarStyle(): Int = suggestionListItemAvatarStyle
-    fun getSuggestionListItemTextAppearance(): Int = suggestionListItemTextAppearance
-    fun getSuggestionListItemTextColor(): Int = suggestionListItemTextColor
-    fun getSuggestionListItemInfoTextAppearance(): Int = suggestionListItemInfoTextAppearance
-    fun getSuggestionListItemInfoTextColor(): Int = suggestionListItemInfoTextColor
+    public fun getSuggestionListBackgroundColor(): Int = suggestionListBackgroundColor
+    public fun getSuggestionListStrokeColor(): Int = suggestionListStrokeColor
+    public fun getSuggestionListStrokeWidth(): Int = suggestionListStrokeWidth
+    public fun getSuggestionListCornerRadius(): Int = suggestionListCornerRadius
+    public fun getSuggestionListItemAvatarStyle(): Int = suggestionListItemAvatarStyle
+    public fun getSuggestionListItemTextAppearance(): Int = suggestionListItemTextAppearance
+    public fun getSuggestionListItemTextColor(): Int = suggestionListItemTextColor
+    public fun getSuggestionListItemInfoTextAppearance(): Int = suggestionListItemInfoTextAppearance
+    public fun getSuggestionListItemInfoTextColor(): Int = suggestionListItemInfoTextColor
 
     /**
      * Returns the binding for advanced customization.
      */
-    fun getBinding(): CometchatSuggestionListBinding = binding
+    public fun getBinding(): CometchatSuggestionListBinding = binding
 }

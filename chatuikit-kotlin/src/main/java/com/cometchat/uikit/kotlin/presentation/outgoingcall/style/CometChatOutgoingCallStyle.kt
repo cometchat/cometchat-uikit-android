@@ -33,7 +33,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * @param endCallButtonBackgroundColor Background color for the end call button
  * @param avatarStyle Style configuration for the recipient's avatar
  */
-data class CometChatOutgoingCallStyle private constructor(
+public data class CometChatOutgoingCallStyle private constructor(
     // Container styling
     @ColorInt val backgroundColor: Int,
     @Dimension val cornerRadius: Float,
@@ -62,7 +62,7 @@ data class CometChatOutgoingCallStyle private constructor(
      *
      * **Validates: Requirements 12a.15** - Builder pattern for construction
      */
-    class Builder(private val context: Context) {
+    public class Builder(private val context: Context) {
         // Container styling
         @ColorInt private var backgroundColor: Int = CometChatTheme.getBackgroundColor3(context)
         @Dimension private var cornerRadius: Float = 0f
@@ -90,82 +90,82 @@ data class CometChatOutgoingCallStyle private constructor(
          * Sets the background color for the outgoing call container.
          * **Validates: Requirements 12a.2**
          */
-        fun setBackgroundColor(@ColorInt color: Int) = apply { backgroundColor = color }
+        public fun setBackgroundColor(@ColorInt color: Int): Builder = apply { backgroundColor = color }
         
         /**
          * Sets the corner radius of the outgoing call container.
          * **Validates: Requirements 12a.3**
          */
-        fun setCornerRadius(@Dimension radius: Float) = apply { cornerRadius = radius }
+        public fun setCornerRadius(@Dimension radius: Float): Builder = apply { cornerRadius = radius }
         
         /**
          * Sets the stroke width of the container border.
          * **Validates: Requirements 12a.4**
          */
-        fun setStrokeWidth(@Dimension width: Int) = apply { strokeWidth = width }
+        public fun setStrokeWidth(@Dimension width: Int): Builder = apply { strokeWidth = width }
         
         /**
          * Sets the stroke color of the container border.
          * **Validates: Requirements 12a.5**
          */
-        fun setStrokeColor(@ColorInt color: Int) = apply { strokeColor = color }
+        public fun setStrokeColor(@ColorInt color: Int): Builder = apply { strokeColor = color }
         
         // Title setters
         /**
          * Sets the text color for the recipient name.
          * **Validates: Requirements 12a.6**
          */
-        fun setTitleTextColor(@ColorInt color: Int) = apply { titleTextColor = color }
+        public fun setTitleTextColor(@ColorInt color: Int): Builder = apply { titleTextColor = color }
         
         /**
          * Sets the text appearance for the recipient name.
          * **Validates: Requirements 12a.7**
          */
-        fun setTitleTextAppearance(@StyleRes appearance: Int) = apply { titleTextAppearance = appearance }
+        public fun setTitleTextAppearance(@StyleRes appearance: Int): Builder = apply { titleTextAppearance = appearance }
         
         // Subtitle setters
         /**
          * Sets the text color for the "Calling..." subtitle.
          * **Validates: Requirements 12a.8**
          */
-        fun setSubtitleTextColor(@ColorInt color: Int) = apply { subtitleTextColor = color }
+        public fun setSubtitleTextColor(@ColorInt color: Int): Builder = apply { subtitleTextColor = color }
         
         /**
          * Sets the text appearance for the "Calling..." subtitle.
          * **Validates: Requirements 12a.9**
          */
-        fun setSubtitleTextAppearance(@StyleRes appearance: Int) = apply { subtitleTextAppearance = appearance }
+        public fun setSubtitleTextAppearance(@StyleRes appearance: Int): Builder = apply { subtitleTextAppearance = appearance }
         
         // End call button setters
         /**
          * Sets the drawable resource for the end call button icon.
          * **Validates: Requirements 12a.10**
          */
-        fun setEndCallIcon(@DrawableRes icon: Int) = apply { endCallIcon = icon }
+        public fun setEndCallIcon(@DrawableRes icon: Int): Builder = apply { endCallIcon = icon }
         
         /**
          * Sets the tint color for the end call icon.
          * **Validates: Requirements 12a.11**
          */
-        fun setEndCallIconTint(@ColorInt color: Int) = apply { endCallIconTint = color }
+        public fun setEndCallIconTint(@ColorInt color: Int): Builder = apply { endCallIconTint = color }
         
         /**
          * Sets the background color for the end call button.
          * **Validates: Requirements 12a.12**
          */
-        fun setEndCallButtonBackgroundColor(@ColorInt color: Int) = apply { endCallButtonBackgroundColor = color }
+        public fun setEndCallButtonBackgroundColor(@ColorInt color: Int): Builder = apply { endCallButtonBackgroundColor = color }
         
         // Avatar setter
         /**
          * Sets the avatar style configuration.
          * **Validates: Requirements 12a.13**
          */
-        fun setAvatarStyle(style: CometChatAvatarStyle?) = apply { avatarStyle = style }
+        public fun setAvatarStyle(style: CometChatAvatarStyle?): Builder = apply { avatarStyle = style }
 
         /**
          * Builds the CometChatOutgoingCallStyle instance.
          */
-        fun build() = CometChatOutgoingCallStyle(
+        public fun build(): CometChatOutgoingCallStyle = CometChatOutgoingCallStyle(
             backgroundColor = backgroundColor,
             cornerRadius = cornerRadius,
             strokeWidth = strokeWidth,
@@ -182,7 +182,7 @@ data class CometChatOutgoingCallStyle private constructor(
     }
 
 
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * All colors and typography are derived from the current theme.
@@ -190,7 +190,7 @@ data class CometChatOutgoingCallStyle private constructor(
          * @param context The Android context for accessing theme attributes
          * @return A fully configured CometChatOutgoingCallStyle with theme defaults
          */
-        fun default(context: Context): CometChatOutgoingCallStyle {
+        public fun default(context: Context): CometChatOutgoingCallStyle {
             return Builder(context).build()
         }
 
@@ -200,7 +200,7 @@ data class CometChatOutgoingCallStyle private constructor(
          * @param context The Android context for accessing theme attributes
          * @return A new Builder instance with theme defaults
          */
-        fun builder(context: Context) = Builder(context)
+        public fun builder(context: Context): Builder = Builder(context)
         
         /**
          * Creates a style by extracting values from the theme's cometchatOutgoingCallStyle.
@@ -208,7 +208,7 @@ data class CometChatOutgoingCallStyle private constructor(
          * @param context The context to access theme resources
          * @return A CometChatOutgoingCallStyle with values from theme or fallback defaults
          */
-        fun fromTheme(context: Context): CometChatOutgoingCallStyle {
+        public fun fromTheme(context: Context): CometChatOutgoingCallStyle {
             val themeTypedArray = context.obtainStyledAttributes(intArrayOf(R.attr.cometchatOutgoingCallStyle))
             val styleResId = themeTypedArray.getResourceId(0, 0)
             themeTypedArray.recycle()
@@ -235,7 +235,7 @@ data class CometChatOutgoingCallStyle private constructor(
          * @param typedArray The TypedArray containing XML attribute values
          * @return A CometChatOutgoingCallStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatOutgoingCallStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatOutgoingCallStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

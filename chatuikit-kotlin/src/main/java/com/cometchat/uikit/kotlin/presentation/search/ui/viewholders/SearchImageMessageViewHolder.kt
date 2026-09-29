@@ -23,7 +23,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param binding The ViewBinding for the image message item layout
  */
-class SearchImageMessageViewHolder(
+internal class SearchImageMessageViewHolder(
     val binding: CometchatSearchMessageItemImageBinding
 ) : BaseSearchMessageViewHolder(binding.root) {
 

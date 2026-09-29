@@ -22,7 +22,7 @@ import com.cometchat.uikit.kotlin.presentation.groups.utils.GroupsViewHolderList
  * 
  * Implements DiffUtil for efficient list updates.
  */
-class GroupsAdapter : RecyclerView.Adapter<GroupsViewHolder>() {
+internal class GroupsAdapter : RecyclerView.Adapter<GroupsViewHolder>() {
 
     private var groupList: List<Group> = emptyList()
     private var selectedGroups: Set<Group> = emptySet()

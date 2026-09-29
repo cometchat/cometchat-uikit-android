@@ -12,7 +12,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
 /**
  * Style configuration for CometChatUsers component.
  */
-data class CometChatUsersStyle(
+public data class CometChatUsersStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     @ColorInt val strokeColor: Int = 0,
@@ -79,11 +79,11 @@ data class CometChatUsersStyle(
     // Item style
     val itemStyle: CometChatUsersListItemStyle = CometChatUsersListItemStyle()
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatUsersStyle.
          */
-        fun default(context: Context): CometChatUsersStyle {
+        public fun default(context: Context): CometChatUsersStyle {
             return extractFromThemeStyle(context, R.attr.cometchatUsersStyle)
         }
 
@@ -106,7 +106,7 @@ data class CometChatUsersStyle(
             }
         }
 
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatUsersStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatUsersStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

@@ -16,13 +16,13 @@ import com.google.android.material.card.MaterialCardView
  * It provides methods to customize the appearance of the status indicator such as setting
  * the stroke color, stroke width, corner radius, background color, and background image.
  */
-class CometChatStatusIndicator @JvmOverloads constructor(
+public class CometChatStatusIndicator @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatStatusIndicator::class.java.simpleName
     }
 
@@ -107,7 +107,7 @@ class CometChatStatusIndicator @JvmOverloads constructor(
         }
     }
 
-    fun setStatusIndicatorBackgroundImage(image: Drawable?) {
+    public fun setStatusIndicatorBackgroundImage(image: Drawable?) {
         image?.let { imageView.setImageDrawable(it) }
     }
 
@@ -118,7 +118,7 @@ class CometChatStatusIndicator @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatStatusIndicator)
             // fromTypedArray handles recycling internally
@@ -129,7 +129,7 @@ class CometChatStatusIndicator @JvmOverloads constructor(
     /**
      * Sets the style from a CometChatStatusIndicatorStyle object.
      */
-    fun setStyle(style: CometChatStatusIndicatorStyle) {
+    public fun setStyle(style: CometChatStatusIndicatorStyle) {
         this.style = style
         applyStyle()
     }
@@ -138,59 +138,59 @@ class CometChatStatusIndicator @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getStatusIndicatorStrokeWidth(): Float = style.strokeWidth
+    public fun getStatusIndicatorStrokeWidth(): Float = style.strokeWidth
 
-    fun getStatusIndicatorStrokeColor(): Int = style.strokeColor
+    public fun getStatusIndicatorStrokeColor(): Int = style.strokeColor
 
-    fun getStatusIndicatorCornerRadius(): Float = style.cornerRadius
+    public fun getStatusIndicatorCornerRadius(): Float = style.cornerRadius
 
-    fun getStatusIndicatorOnlineIcon(): Drawable? = style.onlineIcon
+    public fun getStatusIndicatorOnlineIcon(): Drawable? = style.onlineIcon
 
-    fun getStatusIndicatorPrivateGroupIcon(): Drawable? = style.privateGroupIcon
+    public fun getStatusIndicatorPrivateGroupIcon(): Drawable? = style.privateGroupIcon
 
-    fun getStatusIndicatorProtectedGroupIcon(): Drawable? = style.protectedGroupIcon
+    public fun getStatusIndicatorProtectedGroupIcon(): Drawable? = style.protectedGroupIcon
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun setStatusIndicatorStrokeWidth(@Dimension width: Float) {
+    public fun setStatusIndicatorStrokeWidth(@Dimension width: Float) {
         style = style.copy(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setStatusIndicatorStrokeColor(@ColorInt color: Int) {
+    public fun setStatusIndicatorStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setStatusIndicatorCornerRadius(@Dimension radius: Float) {
+    public fun setStatusIndicatorCornerRadius(@Dimension radius: Float) {
         style = style.copy(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setStatusIndicatorBackgroundColor(@ColorInt color: Int) {
+    public fun setStatusIndicatorBackgroundColor(@ColorInt color: Int) {
         setCardBackgroundColor(color)
     }
 
-    fun setStatusIndicatorOnlineIcon(icon: Drawable?) {
+    public fun setStatusIndicatorOnlineIcon(icon: Drawable?) {
         style = style.copy(onlineIcon = icon)
         updateStatusIndicatorDisplay()
     }
 
-    fun setStatusIndicatorPrivateGroupIcon(icon: Drawable?) {
+    public fun setStatusIndicatorPrivateGroupIcon(icon: Drawable?) {
         style = style.copy(privateGroupIcon = icon)
         updateStatusIndicatorDisplay()
     }
 
-    fun setStatusIndicatorProtectedGroupIcon(icon: Drawable?) {
+    public fun setStatusIndicatorProtectedGroupIcon(icon: Drawable?) {
         style = style.copy(protectedGroupIcon = icon)
         updateStatusIndicatorDisplay()
     }
 
-    fun getStatusIndicator(): StatusIndicator = statusIndicator
+    public fun getStatusIndicator(): StatusIndicator = statusIndicator
 
-    fun setStatusIndicator(indicator: StatusIndicator) {
+    public fun setStatusIndicator(indicator: StatusIndicator) {
         this.statusIndicator = indicator
         updateStatusIndicatorDisplay()
     }

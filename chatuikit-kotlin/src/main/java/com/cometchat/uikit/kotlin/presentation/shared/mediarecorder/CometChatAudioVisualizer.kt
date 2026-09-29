@@ -50,7 +50,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * visualizer.setProgress(0.5f) // Set playback progress for active/inactive coloring
  * ```
  */
-class CometChatAudioVisualizer @JvmOverloads constructor(
+public class CometChatAudioVisualizer @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -127,7 +127,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @param amplitude The amplitude value (0.0 to 1.0)
      */
-    fun setAmplitude(amplitude: Float) {
+    public fun setAmplitude(amplitude: Float) {
         this.amplitude = amplitude.coerceIn(0f, 1f)
         if (isAnimating) {
             amplitudeHistory.add(this.amplitude)
@@ -140,7 +140,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @return The current amplitude (0.0 to 1.0)
      */
-    fun getAmplitude(): Float = amplitude
+    public fun getAmplitude(): Float = amplitude
 
     /**
      * Sets whether the visualizer should animate.
@@ -148,7 +148,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @param animating True to enable animation, false for static display
      */
-    fun setAnimating(animating: Boolean) {
+    public fun setAnimating(animating: Boolean) {
         if (this.isAnimating != animating) {
             this.isAnimating = animating
             if (!animating) {
@@ -163,7 +163,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @return True if animating, false otherwise
      */
-    fun isAnimating(): Boolean = isAnimating
+    public fun isAnimating(): Boolean = isAnimating
     
     /**
      * Sets the playback progress for active/inactive bar coloring.
@@ -172,7 +172,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @param progress The playback progress (0.0 to 1.0)
      */
-    fun setProgress(progress: Float) {
+    public fun setProgress(progress: Float) {
         this.progress = progress.coerceIn(0f, 1f)
         invalidate()
     }
@@ -182,7 +182,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @return The current progress (0.0 to 1.0)
      */
-    fun getProgress(): Float = progress
+    public fun getProgress(): Float = progress
 
     /**
      * Sets the color for the visualizer bars (legacy method).
@@ -190,7 +190,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @param color The color to use for bars
      */
-    fun setChunkColor(@ColorInt color: Int) {
+    public fun setChunkColor(@ColorInt color: Int) {
         chunkColor = color
         activeBarColor = color
         barColor = adjustAlpha(color, 0.2f)
@@ -204,14 +204,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The current bar color
      */
     @ColorInt
-    fun getChunkColor(): Int = chunkColor
+    public fun getChunkColor(): Int = chunkColor
     
     /**
      * Sets the color for inactive bars (bars after progress position).
      *
      * @param color The color for inactive bars
      */
-    fun setBarColor(@ColorInt color: Int) {
+    public fun setBarColor(@ColorInt color: Int) {
         barColor = color
         invalidate()
     }
@@ -222,14 +222,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The inactive bar color
      */
     @ColorInt
-    fun getBarColor(): Int = barColor
+    public fun getBarColor(): Int = barColor
     
     /**
      * Sets the color for active bars (bars before progress position).
      *
      * @param color The color for active bars
      */
-    fun setActiveBarColor(@ColorInt color: Int) {
+    public fun setActiveBarColor(@ColorInt color: Int) {
         activeBarColor = color
         invalidate()
     }
@@ -240,14 +240,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The active bar color
      */
     @ColorInt
-    fun getActiveBarColor(): Int = activeBarColor
+    public fun getActiveBarColor(): Int = activeBarColor
 
     /**
      * Sets the width of each visualizer bar.
      *
      * @param width The bar width in pixels
      */
-    fun setChunkWidth(@Dimension width: Float) {
+    public fun setChunkWidth(@Dimension width: Float) {
         chunkWidth = width
         invalidate()
     }
@@ -258,14 +258,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The bar width in pixels
      */
     @Dimension
-    fun getChunkWidth(): Float = chunkWidth
+    public fun getChunkWidth(): Float = chunkWidth
 
     /**
      * Sets the spacing between visualizer bars.
      *
      * @param spacing The spacing in pixels
      */
-    fun setChunkSpacing(@Dimension spacing: Float) {
+    public fun setChunkSpacing(@Dimension spacing: Float) {
         chunkSpacing = spacing
         invalidate()
     }
@@ -276,14 +276,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The spacing in pixels
      */
     @Dimension
-    fun getChunkSpacing(): Float = chunkSpacing
+    public fun getChunkSpacing(): Float = chunkSpacing
 
     /**
      * Sets the minimum height for visualizer bars.
      *
      * @param height The minimum height in pixels
      */
-    fun setChunkMinHeight(@Dimension height: Float) {
+    public fun setChunkMinHeight(@Dimension height: Float) {
         chunkMinHeight = height
         invalidate()
     }
@@ -294,14 +294,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The minimum height in pixels
      */
     @Dimension
-    fun getChunkMinHeight(): Float = chunkMinHeight
+    public fun getChunkMinHeight(): Float = chunkMinHeight
 
     /**
      * Sets the maximum height for visualizer bars.
      *
      * @param height The maximum height in pixels
      */
-    fun setChunkMaxHeight(@Dimension height: Float) {
+    public fun setChunkMaxHeight(@Dimension height: Float) {
         chunkMaxHeight = height
         invalidate()
     }
@@ -312,14 +312,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The maximum height in pixels
      */
     @Dimension
-    fun getChunkMaxHeight(): Float = chunkMaxHeight
+    public fun getChunkMaxHeight(): Float = chunkMaxHeight
 
     /**
      * Sets the corner radius for visualizer bars.
      *
      * @param radius The corner radius in pixels
      */
-    fun setChunkCornerRadius(@Dimension radius: Float) {
+    public fun setChunkCornerRadius(@Dimension radius: Float) {
         chunkCornerRadius = radius
         invalidate()
     }
@@ -330,14 +330,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      * @return The corner radius in pixels
      */
     @Dimension
-    fun getChunkCornerRadius(): Float = chunkCornerRadius
+    public fun getChunkCornerRadius(): Float = chunkCornerRadius
 
     /**
      * Sets the number of visualizer bars to display.
      *
      * @param count The number of bars
      */
-    fun setChunkCount(count: Int) {
+    public fun setChunkCount(count: Int) {
         if (count != chunkCount && count > 0) {
             chunkCount = count
             amplitudeHistory = AmplitudeHistory(count)
@@ -350,14 +350,14 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
      *
      * @return The number of bars
      */
-    fun getChunkCount(): Int = chunkCount
+    public fun getChunkCount(): Int = chunkCount
 
     /**
      * Applies a style to the visualizer.
      *
      * @param style The style to apply
      */
-    fun setStyle(style: CometChatMediaRecorderStyle) {
+    public fun setStyle(style: CometChatMediaRecorderStyle) {
         if (style.recordingChunkColor != 0) {
             chunkColor = style.recordingChunkColor
             activeBarColor = style.recordingChunkColor
@@ -395,7 +395,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
     /**
      * Clears the amplitude history and resets the visualizer.
      */
-    fun reset() {
+    public fun reset() {
         amplitude = 0f
         amplitudeHistory.clear()
         invalidate()
@@ -547,7 +547,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
         setMeasuredDimension(width, height)
     }
 
-    companion object {
+    public companion object {
         /**
          * Calculates bar height based on amplitude using the formula:
          * barHeight = minHeight + (amplitude × (maxHeight - minHeight))
@@ -559,7 +559,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
          * @param maxHeight Maximum bar height in pixels
          * @return Calculated bar height in pixels, clamped to [minHeight, maxHeight]
          */
-        fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
+        public fun calculateBarHeight(amplitude: Float, minHeight: Float, maxHeight: Float): Float {
             val height = minHeight + (amplitude * (maxHeight - minHeight))
             return height.coerceIn(minHeight, maxHeight)
         }
@@ -577,7 +577,7 @@ class CometChatAudioVisualizer @JvmOverloads constructor(
  *
  * @param size Number of amplitude values to store (typically matches chunk count)
  */
-class AmplitudeHistory(private val size: Int = 20) {
+public class AmplitudeHistory(private val size: Int = 20) {
     private val history = FloatArray(size) { 0f }
     private var index = 0
 
@@ -587,7 +587,7 @@ class AmplitudeHistory(private val size: Int = 20) {
      *
      * @param amplitude The amplitude value to add
      */
-    fun add(amplitude: Float) {
+    public fun add(amplitude: Float) {
         history[index] = amplitude.coerceIn(0f, 1f)
         index = (index + 1) % size
     }
@@ -600,7 +600,7 @@ class AmplitudeHistory(private val size: Int = 20) {
      * @param barIndex The index of the bar (0 to size-1)
      * @return The smoothed amplitude value for this bar
      */
-    fun getSmoothedAmplitude(barIndex: Int): Float {
+    public fun getSmoothedAmplitude(barIndex: Int): Float {
         // Calculate the history index for this bar
         // This creates a wave effect where each bar shows a different
         // point in the amplitude history
@@ -611,7 +611,7 @@ class AmplitudeHistory(private val size: Int = 20) {
     /**
      * Clears all amplitude history, resetting all values to 0.
      */
-    fun clear() {
+    public fun clear() {
         history.fill(0f)
         index = 0
     }

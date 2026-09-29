@@ -31,9 +31,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  * bottomSheet.show(supportFragmentManager, "message_info")
  * ```
  */
-class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
+public class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
 
-    companion object {
+    public companion object {
         private const val TAG = "MessageInfoBottomSheet"
 
         /**
@@ -42,7 +42,7 @@ class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
          * @param message The message to display information for
          * @return A new CometChatMessageInformationBottomSheet instance
          */
-        fun newInstance(message: BaseMessage): CometChatMessageInformationBottomSheet {
+        public fun newInstance(message: BaseMessage): CometChatMessageInformationBottomSheet {
             return CometChatMessageInformationBottomSheet().apply {
                 this.message = message
             }
@@ -127,7 +127,7 @@ class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
      *
      * @param listener Callback invoked when an error occurs
      */
-    fun setOnErrorListener(listener: (CometChatException) -> Unit) {
+    public fun setOnErrorListener(listener: (CometChatException) -> Unit) {
         this.onError = listener
         messageInformationView?.setOnError(listener)
     }
@@ -140,7 +140,7 @@ class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
      *
      * @param factories Map of factory key to BubbleFactory
      */
-    fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
+    public fun setBubbleFactories(factories: Map<String, BubbleFactory>) {
         this.bubbleFactories = factories
         messageInformationView?.setBubbleFactories(factories)
     }
@@ -153,7 +153,7 @@ class CometChatMessageInformationBottomSheet : BottomSheetDialogFragment() {
      *
      * @param formatters The list of text formatters to use for text rendering
      */
-    fun setTextFormatters(formatters: List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter>) {
+    public fun setTextFormatters(formatters: List<com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter>) {
         this.textFormatters = formatters
         messageInformationView?.setTextFormatters(formatters)
     }

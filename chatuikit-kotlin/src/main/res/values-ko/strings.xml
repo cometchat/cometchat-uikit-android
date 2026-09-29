@@ -250,6 +250,168 @@
     <string name="cometchat_notify_everyone_in_this_group">이 그룹의 모든 사람에게 알림</string>
     <string name="cometchat_notify_all" translatable="true">모든</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_audio_waveform" translatable="true">오디오 파형</string>
+    <string name="cometchat_a11y_back" translatable="true">뒤로</string>
+    <string name="cometchat_accept_call_button" translatable="true">통화 수락</string>
+    <string name="cometchat_add_link" translatable="true">링크 추가</string>
+    <string name="cometchat_ai" translatable="true">AI</string>
+    <string name="cometchat_ai_agent_message" translatable="true">AI 에이전트 메시지</string>
+    <string name="cometchat_ai_assistant" translatable="true">AI 어시스턴트</string>
+    <string name="cometchat_and" translatable="true">및</string>
+    <string name="cometchat_answer_n" translatable="true">답변 %1$d</string>
+    <string name="cometchat_apply" translatable="true">적용</string>
+    <string name="cometchat_are_typing" translatable="true">입력 중…</string>
+    <string name="cometchat_attachment" translatable="true">첨부 파일</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">최대 %1$d개의 파일을 첨부할 수 있습니다</string>
+    <string name="cometchat_attachment_option" translatable="true">첨부 옵션</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">%1$d개의 파일을 더 선택할 수 있습니다</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">탭하여 다시 시도</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">업로드 실패</string>
+    <string name="cometchat_audio_recording" translatable="true">오디오 녹음</string>
+    <string name="cometchat_audio_visualizer_description" translatable="true">녹음 진폭을 보여주는 오디오 시각화</string>
+    <string name="cometchat_back" translatable="true">뒤로 가기</string>
+    <string name="cometchat_ban_member" translatable="true">멤버 차단</string>
+    <string name="cometchat_be_first_to_send_message" translatable="true">가장 먼저 메시지를 보내보세요</string>
+    <string name="cometchat_bold" translatable="true">굵게</string>
+    <string name="cometchat_call_type" translatable="true">통화 유형</string>
+    <string name="cometchat_caller_avatar" translatable="true">발신자 아바타</string>
+    <string name="cometchat_caller_name" translatable="true">발신자 이름</string>
+    <string name="cometchat_change_scope" translatable="true">역할 변경</string>
+    <string name="cometchat_clear" translatable="true">지우기</string>
+    <string name="cometchat_close" translatable="true">닫기</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">%1$s님을 차단하시겠습니까?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">%1$s님을 내보내시겠습니까?</string>
+    <string name="cometchat_conversation_with" translatable="true">%s님과의 대화</string>
+    <string name="cometchat_conversation_with_status" translatable="true">%1$s님과의 대화, %2$s</string>
+    <string name="cometchat_create_poll" translatable="true">투표 만들기</string>
+    <string name="cometchat_decline_call_button" translatable="true">통화 거절</string>
+    <string name="cometchat_delete_recording" translatable="true">녹음 삭제</string>
+    <string name="cometchat_discard_selection" translatable="true">선택 취소</string>
+    <string name="cometchat_download" translatable="true">다운로드</string>
+    <string name="cometchat_edit_link" translatable="true">링크 편집</string>
+    <string name="cometchat_edit_message" translatable="true">메시지 편집</string>
+    <string name="cometchat_empty_groups_subtitle" translatable="true">그룹을 만들거나 참여하면 여기에 표시되고 협업을 시작할 수 있습니다.</string>
+    <string name="cometchat_empty_groups_title" translatable="true">그룹을 찾을 수 없음</string>
+    <string name="cometchat_end_call" translatable="true">통화 종료</string>
+    <string name="cometchat_end_call_button" translatable="true">통화 종료</string>
+    <string name="cometchat_error_groups_subtitle" translatable="true">문제가 발생한 것 같습니다. 다시 시도해 주세요.</string>
+    <string name="cometchat_error_groups_title" translatable="true">이런!</string>
+    <string name="cometchat_error_loading_call_logs" translatable="true">통화 기록 불러오기 오류</string>
+    <string name="cometchat_error_loading_conversations" translatable="true">대화 불러오기 오류</string>
+    <string name="cometchat_error_loading_groups" translatable="true">그룹 불러오기 오류</string>
+    <string name="cometchat_error_loading_members" translatable="true">멤버를 불러올 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="cometchat_file" translatable="true">파일</string>
+    <string name="cometchat_format_blockquote" translatable="true">인용</string>
+    <string name="cometchat_format_bold" translatable="true">굵게</string>
+    <string name="cometchat_format_bullet_list" translatable="true">글머리 기호 목록</string>
+    <string name="cometchat_format_code" translatable="true">코드</string>
+    <string name="cometchat_format_code_block" translatable="true">코드 블록</string>
+    <string name="cometchat_format_italic" translatable="true">기울임꼴</string>
+    <string name="cometchat_format_link" translatable="true">링크</string>
+    <string name="cometchat_format_ordered_list" translatable="true">번호 매기기 목록</string>
+    <string name="cometchat_format_strikethrough" translatable="true">취소선</string>
+    <string name="cometchat_format_text" translatable="true">텍스트 서식</string>
+    <string name="cometchat_format_underline" translatable="true">밑줄</string>
+    <string name="cometchat_gallery" translatable="true">갤러리</string>
+    <string name="cometchat_group_members" translatable="true">멤버</string>
+    <string name="cometchat_incoming_video_call" translatable="true">수신 영상 통화</string>
+    <string name="cometchat_incoming_voice_call" translatable="true">수신 음성 통화</string>
+    <string name="cometchat_inline_code" translatable="true">인라인 코드</string>
+    <string name="cometchat_insert_link" translatable="true">링크 삽입</string>
+    <string name="cometchat_italic" translatable="true">기울임꼴</string>
+    <string name="cometchat_kick_member" translatable="true">멤버 내보내기</string>
+    <string name="cometchat_link" translatable="true">링크</string>
+    <string name="cometchat_link_text" translatable="true">링크 텍스트</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_loading_call_logs" translatable="true">통화 기록 불러오는 중</string>
+    <string name="cometchat_loading_conversations" translatable="true">대화 불러오는 중</string>
+    <string name="cometchat_loading_groups" translatable="true">그룹 불러오는 중</string>
+    <string name="cometchat_mark_unread" translatable="true">읽지 않음으로 표시</string>
+    <string name="cometchat_media_recorder_idle" translatable="true">미디어 레코더가 녹음 준비됨</string>
+    <string name="cometchat_media_recorder_recorded" translatable="true">녹음 완료, 재생 또는 전송 준비됨</string>
+    <string name="cometchat_media_recorder_recording" translatable="true">녹음 중, %s 경과</string>
+    <string name="cometchat_meeting" translatable="true">회의</string>
+    <string name="cometchat_members_count" translatable="true">멤버 %d명</string>
+    <string name="cometchat_message_generic" translatable="true">메시지</string>
+    <string name="cometchat_message_type_icon" translatable="true">메시지 유형 아이콘</string>
+    <string name="cometchat_missed_video_call" translatable="true">부재중 영상 통화</string>
+    <string name="cometchat_missed_voice_call" translatable="true">부재중 음성 통화</string>
+    <string name="cometchat_n_audio" translatable="true">오디오 %1$d개</string>
+    <string name="cometchat_n_files" translatable="true">파일 %1$d개</string>
+    <string name="cometchat_n_images" translatable="true">이미지 %1$d개</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d개 더</string>
+    <string name="cometchat_n_videos" translatable="true">동영상 %1$d개</string>
+    <string name="cometchat_navigate_back" translatable="true">뒤로 가기</string>
+    <string name="cometchat_new" translatable="true">새로 만들기</string>
+    <string name="cometchat_no_call_logs" translatable="true">통화 기록 없음</string>
+    <string name="cometchat_no_conversations" translatable="true">대화 없음</string>
+    <string name="cometchat_no_groups" translatable="true">그룹 없음</string>
+    <string name="cometchat_no_members_found" translatable="true">멤버를 찾을 수 없음</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">그룹에 멤버를 추가하면 여기에 표시됩니다.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">아직 메시지가 없음</string>
+    <string name="cometchat_no_preview_available" translatable="true">미리보기를 사용할 수 없음</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">이 파일 형식은 미리보기를 지원하지 않습니다.</string>
+    <string name="cometchat_no_users_found" translatable="true">사용자를 찾을 수 없음</string>
+    <string name="cometchat_others" translatable="true">외</string>
+    <string name="cometchat_outgoing_call_calling" translatable="true">발신 중…</string>
+    <string name="cometchat_outgoing_video_call" translatable="true">발신 영상 통화</string>
+    <string name="cometchat_outgoing_voice_call" translatable="true">발신 음성 통화</string>
+    <string name="cometchat_pause" translatable="true">일시정지</string>
+    <string name="cometchat_pause_playback" translatable="true">재생 일시정지</string>
+    <string name="cometchat_pause_recording" translatable="true">녹음 일시정지</string>
+    <string name="cometchat_play" translatable="true">재생</string>
+    <string name="cometchat_play_recording" translatable="true">녹음 재생</string>
+    <string name="cometchat_playback_progress" translatable="true">재생 진행률: %d%%</string>
+    <string name="cometchat_recipient_avatar" translatable="true">수신자 아바타</string>
+    <string name="cometchat_recipient_name" translatable="true">수신자 이름</string>
+    <string name="cometchat_recording_duration" translatable="true">녹음 길이: %s</string>
+    <string name="cometchat_recording_time" translatable="true">녹음 시간: %s</string>
+    <string name="cometchat_reply_to_message" translatable="true">답장</string>
+    <string name="cometchat_replying_to" translatable="true">%s님에게 답장 중</string>
+    <string name="cometchat_restart" translatable="true">다시 시작</string>
+    <string name="cometchat_restart_recording" translatable="true">녹음 다시 시작</string>
+    <string name="cometchat_resume" translatable="true">재개</string>
+    <string name="cometchat_resume_recording" translatable="true">녹음 재개</string>
+    <string name="cometchat_say_hello" translatable="true">%s님에게 인사하세요 👋</string>
+    <string name="cometchat_search_in" translatable="true">검색 범위</string>
+    <string name="cometchat_select_conversation" translatable="true">대화 선택</string>
+    <string name="cometchat_select_group" translatable="true">그룹 선택</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">%1$s님의 새 역할 선택</string>
+    <string name="cometchat_select_user" translatable="true">사용자 선택</string>
+    <string name="cometchat_selection_count" translatable="true">%d개 선택됨</string>
+    <string name="cometchat_send_recording" translatable="true">녹음 전송</string>
+    <string name="cometchat_set_the_answers" translatable="true">답변 설정</string>
+    <string name="cometchat_show_less" translatable="true">간략히 보기</string>
+    <string name="cometchat_show_n_more" translatable="true">+%1$d개 더 보기</string>
+    <string name="cometchat_start" translatable="true">시작</string>
+    <string name="cometchat_start_conversation" translatable="true">대화 시작</string>
+    <string name="cometchat_start_recording" translatable="true">녹음 시작</string>
+    <string name="cometchat_sticker" translatable="true">스티커</string>
+    <string name="cometchat_sticker_set" translatable="true">스티커 세트</string>
+    <string name="cometchat_stop" translatable="true">정지</string>
+    <string name="cometchat_stop_recording" translatable="true">녹음 정지</string>
+    <string name="cometchat_strikethrough" translatable="true">취소선</string>
+    <string name="cometchat_submit_recording" translatable="true">녹음 전송</string>
+    <string name="cometchat_submit_selection" translatable="true">선택 확인</string>
+    <string name="cometchat_text" translatable="true">텍스트</string>
+    <string name="cometchat_type_a_message" translatable="true">메시지를 입력하세요…</string>
+    <string name="cometchat_unread_messages_count" translatable="true">읽지 않은 메시지 %d개</string>
+    <string name="cometchat_users_are_typing" translatable="true">명이 입력 중…</string>
+    <string name="cometchat_video" translatable="true">동영상</string>
+    <string name="cometchat_voice_call" translatable="true">음성 통화</string>
+    <string name="cometchat_voice_recording" translatable="true">음성 녹음</string>
+    <string name="cometchat_whiteboard" translatable="true">화이트보드</string>
+    <!-- ENG-38656 (X3): audio a11y supplement -->
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">녹음 중, %1$s 경과</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">%1$s에서 녹음 일시정지됨</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">녹음 완료, 길이 %1$s</string>
+    <string name="cometchat_a11y_playing_recording" translatable="true">녹음 재생 중, %1$s</string>
+    <string name="cometchat_a11y_recording_error" translatable="true">녹음 오류</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">오디오 레코더</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">녹음 진폭을 보여주는 오디오 파형</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">재생 진행률을 보여주는 오디오 파형</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">스레드 구독</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">스레드 구독 취소</string>
@@ -273,13 +435,16 @@
     <string name="cometchat_save_message_confirm_body">이 메시지를 저장할까요?</string>
     <string name="cometchat_unsave_message_confirm_title">메시지 저장 해제</string>
     <string name="cometchat_unsave_message_confirm_body">이 메시지의 저장을 해제할까요?</string>
+    <string name="cometchat_dont_ask_again" translatable="true">다시 묻지 않기</string>
     <string name="cometchat_pin_conversation">대화 고정</string>
     <string name="cometchat_unpin_conversation">대화 고정 해제</string>
     <string name="cometchat_unpin_conversation_confirm_title">대화 고정 해제</string>
     <string name="cometchat_unpin_conversation_confirm_body">이 대화의 고정을 해제할까요?</string>
     <string name="cometchat_pin_conversation_limit_reached">채팅은 %1$d개까지만 고정할 수 있습니다. 다른 채팅을 고정하려면 하나를 해제하세요.</string>
     <string name="cometchat_pin_limit_reached">메시지는 %1$d개까지만 고정할 수 있습니다. 다른 메시지를 고정하려면 하나를 해제하세요.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">고정된 메시지 수가 한도에 도달했습니다. 다른 메시지를 고정하려면 하나를 해제하세요.</string>
     <string name="cometchat_save_limit_reached">메시지는 최대 %1$d개까지 저장할 수 있습니다.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">저장된 메시지 수가 한도에 도달했습니다. 다른 메시지를 저장하려면 하나를 해제하세요.</string>
     <string name="cometchat_pin_save_generic_error">문제가 발생했습니다. 다시 시도해 주세요.</string>
     <string name="cometchat_message_pinned">메시지가 고정되었습니다</string>
     <string name="cometchat_message_unpinned">메시지 고정이 해제되었습니다</string>
@@ -294,7 +459,6 @@
     <string name="cometchat_unpin_message">메시지 고정 해제</string>
     <string name="cometchat_message_option_more">더보기</string>
     <string name="cometchat_message_option_back">뒤로</string>
-    <string name="cometchat_message_type_icon">메시지 유형 아이콘</string>
     <string name="cometchat_pinned_messages_header">고정된 메시지</string>
     <string name="cometchat_saved_messages_header">저장된 메시지</string>
     <string name="cometchat_conversation_pinned">대화가 고정되었습니다</string>

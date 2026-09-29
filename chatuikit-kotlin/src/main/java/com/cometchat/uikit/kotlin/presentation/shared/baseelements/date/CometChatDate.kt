@@ -39,13 +39,13 @@ import java.util.Locale
  * ```
  */
 @Suppress("unused")
-class CometChatDate @JvmOverloads constructor(
+public class CometChatDate @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatDateStyle
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatDate::class.java.simpleName
     }
 
@@ -159,7 +159,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Configures whether the background should be transparent.
      */
-    fun setTransparentBackground(isTransparent: Boolean) {
+    public fun setTransparentBackground(isTransparent: Boolean) {
         if (isTransparent) {
             binding.layoutDate.strokeColor = Color.TRANSPARENT
             binding.layoutDate.strokeWidth = 0
@@ -177,7 +177,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the style from a style resource.
      */
-    fun setStyle(@StyleRes styleRes: Int) {
+    public fun setStyle(@StyleRes styleRes: Int) {
         if (styleRes != 0) {
             val typedArray = context.theme.obtainStyledAttributes(styleRes, R.styleable.CometChatDate)
             // fromTypedArray handles recycling internally
@@ -188,7 +188,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the style from a CometChatDateStyle object.
      */
-    fun setStyle(style: CometChatDateStyle) {
+    public fun setStyle(style: CometChatDateStyle) {
         this.style = style
         applyStyle()
     }
@@ -197,67 +197,67 @@ class CometChatDate @JvmOverloads constructor(
     // Getters (read from style object)
     // ========================================
 
-    fun getDateTextAppearance(): Int = style.textAppearance
+    public fun getDateTextAppearance(): Int = style.textAppearance
 
-    fun getStrokeColor(): Int = style.strokeColor
+    public fun getStrokeColor(): Int = style.strokeColor
 
-    fun getDateTextColor(): Int = style.textColor
+    public fun getDateTextColor(): Int = style.textColor
 
-    fun getDateStrokeWidth(): Int = style.strokeWidth
+    public fun getDateStrokeWidth(): Int = style.strokeWidth
 
-    fun getDateCornerRadius(): Int = style.cornerRadius
+    public fun getDateCornerRadius(): Int = style.cornerRadius
 
-    fun getDateBackgroundColor(): Int = style.backgroundColor
+    public fun getDateBackgroundColor(): Int = style.backgroundColor
 
     // ========================================
     // Setters (update style object + apply)
     // ========================================
 
-    fun getDateText(): String = dateText
+    public fun getDateText(): String = dateText
 
-    fun setDateText(text: String) {
+    public fun setDateText(text: String) {
         dateText = text
         binding.tvDate.text = text
     }
 
-    fun setDateTextAppearance(@StyleRes textAppearance: Int) {
+    public fun setDateTextAppearance(@StyleRes textAppearance: Int) {
         style = style.copy(textAppearance = textAppearance)
         applyTextAppearance(textAppearance)
     }
 
-    fun setStrokeColor(@ColorInt color: Int) {
+    public fun setStrokeColor(@ColorInt color: Int) {
         style = style.copy(strokeColor = color)
         applyStrokeColor(color)
     }
 
-    fun setDateTextColor(@ColorInt color: Int) {
+    public fun setDateTextColor(@ColorInt color: Int) {
         style = style.copy(textColor = color)
         applyTextColor(color)
     }
 
-    fun setDateStrokeWidth(@Dimension width: Int) {
+    public fun setDateStrokeWidth(@Dimension width: Int) {
         style = style.copy(strokeWidth = width)
         applyStrokeWidth(width)
     }
 
-    fun setDateCornerRadius(@Dimension radius: Int) {
+    public fun setDateCornerRadius(@Dimension radius: Int) {
         style = style.copy(cornerRadius = radius)
         applyCornerRadius(radius)
     }
 
-    fun setDateBackgroundColor(@ColorInt color: Int) {
+    public fun setDateBackgroundColor(@ColorInt color: Int) {
         style = style.copy(backgroundColor = color)
         applyBackgroundColor(color)
     }
 
-    fun setDateTextAlignment(alignment: Int) {
+    public fun setDateTextAlignment(alignment: Int) {
         binding.tvDate.textAlignment = alignment
     }
 
     /**
      * Sets the date using a timestamp and format string.
      */
-    fun setDate(timestamp: Long, format: String) {
+    public fun setDate(timestamp: Long, format: String) {
         val cal = Calendar.getInstance(Locale.ENGLISH)
         cal.timeInMillis = timestamp * 1000L
         val date = DateFormat.format(format, cal).toString()
@@ -267,7 +267,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the timestamp.
      */
-    fun setTimestamp(timestamp: Long) {
+    public fun setTimestamp(timestamp: Long) {
         if (timestamp != 0L) {
             this.timestamp = timestamp
             pattern?.let { setDate(timestamp, it) }
@@ -277,7 +277,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the date using a timestamp and DatePattern.
      */
-    fun setDate(timestamp: Long, pattern: DatePattern) {
+    public fun setDate(timestamp: Long, pattern: DatePattern) {
         binding.tvDate.visibility = View.VISIBLE
         val customText = getCustomPattern(timestamp)
         if (customText != null) {
@@ -294,14 +294,14 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the date using a timestamp with default DAY_DATE_TIME pattern.
      */
-    fun setDate(timestamp: Long) {
+    public fun setDate(timestamp: Long) {
         setDate(timestamp, DatePattern.DAY_DATE_TIME)
     }
 
     /**
      * Sets the date using a timestamp and custom formatter function.
      */
-    fun setDate(timestamp: Long, formatter: (Long) -> String) {
+    public fun setDate(timestamp: Long, formatter: (Long) -> String) {
         binding.tvDate.visibility = View.VISIBLE
         binding.tvDate.text = formatter(timestamp)
     }
@@ -309,7 +309,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the date from a Date object.
      */
-    fun setDate(date: Date) {
+    public fun setDate(date: Date) {
         setTimestamp(date.time / 1000)
     }
 
@@ -404,7 +404,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets the pattern for displaying the date.
      */
-    fun setPattern(pattern: DatePattern) {
+    public fun setPattern(pattern: DatePattern) {
         this.pattern = pattern
         setDate(timestamp, pattern)
     }
@@ -412,7 +412,7 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets a custom date string.
      */
-    fun setCustomDateString(string: String) {
+    public fun setCustomDateString(string: String) {
         if (string.isNotEmpty()) {
             binding.tvDate.text = string
         }
@@ -431,58 +431,58 @@ class CometChatDate @JvmOverloads constructor(
     /**
      * Sets a custom date format function.
      */
-    fun setCustomDateFormat(formatter: (Long) -> String) {
+    public fun setCustomDateFormat(formatter: (Long) -> String) {
         customPattern = formatter
         pattern?.let { setDate(timestamp, it) }
     }
 
     // Format getters and setters (matching Java implementation)
 
-    fun getTimeFormat(): SimpleDateFormat = simpleTimeFormat
+    public fun getTimeFormat(): SimpleDateFormat = simpleTimeFormat
 
-    fun setTimeFormat(timeFormat: SimpleDateFormat?) {
+    public fun setTimeFormat(timeFormat: SimpleDateFormat?) {
         if (timeFormat != null) {
             this.simpleTimeFormat = timeFormat
         }
     }
 
-    fun getDateFormat(): SimpleDateFormat = simpleDateFormat
+    public fun getDateFormat(): SimpleDateFormat = simpleDateFormat
 
-    fun setDateFormat(dateFormat: SimpleDateFormat?) {
+    public fun setDateFormat(dateFormat: SimpleDateFormat?) {
         if (dateFormat != null) {
             this.simpleDateFormat = dateFormat
         }
     }
 
-    fun getDayFormat(): SimpleDateFormat = simpleDayFormat
+    public fun getDayFormat(): SimpleDateFormat = simpleDayFormat
 
-    fun setDayFormat(dayFormat: SimpleDateFormat?) {
+    public fun setDayFormat(dayFormat: SimpleDateFormat?) {
         if (dayFormat != null) {
             this.simpleDayFormat = dayFormat
         }
     }
 
-    fun getDatePattern(): String = datePatternString
+    public fun getDatePattern(): String = datePatternString
 
-    fun setDatePattern(pattern: String?) {
+    public fun setDatePattern(pattern: String?) {
         if (!pattern.isNullOrEmpty()) {
             this.datePatternString = pattern
             this.simpleDateFormat = SimpleDateFormat(pattern, CometChatLocalize.getDefault())
         }
     }
 
-    fun getDayPattern(): String = dayPatternString
+    public fun getDayPattern(): String = dayPatternString
 
-    fun setDayPattern(pattern: String?) {
+    public fun setDayPattern(pattern: String?) {
         if (!pattern.isNullOrEmpty()) {
             this.dayPatternString = pattern
             this.simpleDayFormat = SimpleDateFormat(pattern, CometChatLocalize.getDefault())
         }
     }
 
-    fun getTimePattern(): String = timePatternString
+    public fun getTimePattern(): String = timePatternString
 
-    fun setTimePattern(pattern: String?) {
+    public fun setTimePattern(pattern: String?) {
         if (!pattern.isNullOrEmpty()) {
             this.timePatternString = pattern
             this.simpleTimeFormat = SimpleDateFormat(pattern, CometChatLocalize.getDefault())
@@ -516,11 +516,11 @@ class CometChatDate @JvmOverloads constructor(
      * @deprecated Use setPadding instead for consistency with Java implementation.
      */
     @Deprecated("Use setPadding instead", ReplaceWith("setPadding(left, top, right, bottom)"))
-    fun setDatePadding(left: Int, top: Int, right: Int, bottom: Int) {
+    public fun setDatePadding(left: Int, top: Int, right: Int, bottom: Int) {
         setPadding(left, top, right, bottom)
     }
 
-    fun setDateTimeFormatterCallback(callback: DateTimeFormatterCallback?) {
+    public fun setDateTimeFormatterCallback(callback: DateTimeFormatterCallback?) {
         if (callback != null) {
             dateTimeFormatterCallback = callback
         }

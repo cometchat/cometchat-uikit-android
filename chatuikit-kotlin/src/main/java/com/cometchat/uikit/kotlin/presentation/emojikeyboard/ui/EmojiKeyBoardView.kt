@@ -31,7 +31,7 @@ import com.google.android.material.tabs.TabLayout
  *
  * Direct 1:1 port of `EmojiKeyBoardView.java` from the Java chatuikit module.
  */
-class EmojiKeyBoardView @JvmOverloads constructor(
+public class EmojiKeyBoardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatEmojiKeyboardStyle
@@ -40,12 +40,12 @@ class EmojiKeyBoardView @JvmOverloads constructor(
     /**
      * Interface for handling emoji click events.
      */
-    interface OnClick {
-        fun onClick(emoji: String)
-        fun onLongClick(emoji: String)
+    public interface OnClick {
+        public fun onClick(emoji: String)
+        public fun onLongClick(emoji: String)
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "EmojiKeyBoardView"
     }
 
@@ -299,7 +299,7 @@ class EmojiKeyBoardView @JvmOverloads constructor(
 
     // ==================== Public API ====================
 
-    fun setOnClick(onClick: OnClick?) {
+    public fun setOnClick(onClick: OnClick?) {
         if (onClick != null) {
             this.onClick = onClick
             emojiAdapter.setOnClick(object : EmojiItemOnClick {
@@ -309,7 +309,7 @@ class EmojiKeyBoardView @JvmOverloads constructor(
         }
     }
 
-    fun setStyle(@StyleRes style: Int) {
+    public fun setStyle(@StyleRes style: Int) {
         if (style != 0) {
             this.style = style
             val typedArray = context.theme.obtainStyledAttributes(
@@ -319,7 +319,7 @@ class EmojiKeyBoardView @JvmOverloads constructor(
         }
     }
 
-    fun setCornerRadius(@Dimension cornerRadius: Int) {
+    public fun setCornerRadius(@Dimension cornerRadius: Int) {
         this.cornerRadius = cornerRadius
         val shapeAppearanceModel = ShapeAppearanceModel()
             .toBuilder()
@@ -336,30 +336,30 @@ class EmojiKeyBoardView @JvmOverloads constructor(
         super.setCardBackgroundColor(backgroundColor)
     }
 
-    fun setSeparatorColor(@ColorInt separatorColor: Int) {
+    public fun setSeparatorColor(@ColorInt separatorColor: Int) {
         this.separatorColor = separatorColor
         separator.setBackgroundColor(separatorColor)
     }
 
-    fun setCategoryTextColor(@ColorInt categoryTextColor: Int) {
+    public fun setCategoryTextColor(@ColorInt categoryTextColor: Int) {
         this.categoryTextColor = categoryTextColor
         emojiAdapter.setCategoryTextColor(categoryTextColor)
     }
 
-    fun setCategoryTextAppearance(@StyleRes categoryTextAppearance: Int) {
+    public fun setCategoryTextAppearance(@StyleRes categoryTextAppearance: Int) {
         this.categoryTextAppearance = categoryTextAppearance
         emojiAdapter.setCategoryTextAppearance(categoryTextAppearance)
     }
 
-    fun setSelectedCategoryBackgroundColor(@ColorInt backgroundColor: Int) {
+    public fun setSelectedCategoryBackgroundColor(@ColorInt backgroundColor: Int) {
         this.selectedCategoryBackgroundColor = backgroundColor
     }
 
-    fun setSelectedCategoryIconTint(@ColorInt selectedCategoryIconTint: Int) {
+    public fun setSelectedCategoryIconTint(@ColorInt selectedCategoryIconTint: Int) {
         this.selectedCategoryIconTint = selectedCategoryIconTint
     }
 
-    fun setCategoryIconTint(@ColorInt categoryIconTint: Int) {
+    public fun setCategoryIconTint(@ColorInt categoryIconTint: Int) {
         this.categoryIconTint = categoryIconTint
     }
 
@@ -375,41 +375,41 @@ class EmojiKeyBoardView @JvmOverloads constructor(
 
     // ==================== Getters ====================
 
-    fun getCornerRadius(): Int = cornerRadius
+    public fun getCornerRadius(): Int = cornerRadius
 
-    fun getStyle(): Int = style
+    public fun getStyle(): Int = style
 
-    fun getBackgroundColor(): Int = backgroundColor
+    public fun getBackgroundColor(): Int = backgroundColor
 
-    fun getSeparatorColor(): Int = separatorColor
+    public fun getSeparatorColor(): Int = separatorColor
 
-    fun getCategoryTextColor(): Int = categoryTextColor
+    public fun getCategoryTextColor(): Int = categoryTextColor
 
-    fun getCategoryTextAppearance(): Int = categoryTextAppearance
+    public fun getCategoryTextAppearance(): Int = categoryTextAppearance
 
-    fun getSelectedCategoryBackgroundColor(): Int = selectedCategoryBackgroundColor
+    public fun getSelectedCategoryBackgroundColor(): Int = selectedCategoryBackgroundColor
 
-    fun getSelectedCategoryIconTint(): Int = selectedCategoryIconTint
+    public fun getSelectedCategoryIconTint(): Int = selectedCategoryIconTint
 
-    fun getCategoryIconTint(): Int = categoryIconTint
+    public fun getCategoryIconTint(): Int = categoryIconTint
 
-    fun getOnClick(): OnClick? = onClick
+    public fun getOnClick(): OnClick? = onClick
 
     override fun getStrokeWidth(): Int = strokeWidthValue
 
     override fun getStrokeColor(): Int = strokeColorValue
 
-    fun isScrolling(): Boolean = isScrolling
+    public fun isScrolling(): Boolean = isScrolling
 
-    fun getLinearLayoutManager(): LinearLayoutManager = linearLayoutManager
+    public fun getLinearLayoutManager(): LinearLayoutManager = linearLayoutManager
 
-    fun getTabLayout(): TabLayout = tabLayout
+    public fun getTabLayout(): TabLayout = tabLayout
 
-    fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
+    public fun getEmojiCategories(): List<EmojiCategory>? = emojiCategories
 
-    fun getEmojiAdapter(): EmojiAdapter = emojiAdapter
+    internal fun getEmojiAdapter(): EmojiAdapter = emojiAdapter
 
-    fun getEmojiListRecyclerView(): RecyclerView = emojiListRecyclerView
+    public fun getEmojiListRecyclerView(): RecyclerView = emojiListRecyclerView
 
-    fun getSeparator(): TextView = separator
+    public fun getSeparator(): TextView = separator
 }

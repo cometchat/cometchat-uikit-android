@@ -8,11 +8,11 @@ import com.cometchat.uikit.core.domain.model.Sticker
  * Implement this interface to receive callbacks when a sticker is clicked
  * in the CometChatStickerKeyboard component.
  */
-fun interface StickerClickListener {
+public fun interface StickerClickListener {
     /**
      * Called when a sticker is clicked.
      *
      * @param sticker The sticker that was clicked
      */
-    fun onStickerClick(sticker: Sticker)
+    public fun onStickerClick(sticker: Sticker)
 }

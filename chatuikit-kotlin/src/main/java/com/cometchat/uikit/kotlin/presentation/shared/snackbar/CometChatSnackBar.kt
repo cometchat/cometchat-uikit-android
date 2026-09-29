@@ -26,10 +26,10 @@ import java.lang.ref.WeakReference
  *
  * A bar already on screen is replaced by the next [show] call.
  */
-object CometChatSnackBar {
+public object CometChatSnackBar {
 
     /** Seconds the bar stays on screen before auto-dismissing (milliseconds). */
-    var displayDurationMillis: Long = 4000L
+    public var displayDurationMillis: Long = 4000L
 
     private var current: WeakReference<PopupWindow>? = null
 
@@ -42,7 +42,7 @@ object CometChatSnackBar {
      */
     @JvmStatic
     @JvmOverloads
-    fun show(
+    public fun show(
         anchor: View,
         message: CharSequence,
         style: CometChatSnackBarStyle? = null
@@ -87,7 +87,7 @@ object CometChatSnackBar {
 
     /** Dismisses the bar currently on screen, if any. */
     @JvmStatic
-    fun dismissCurrent() {
+    public fun dismissCurrent() {
         current?.get()?.let { runCatching { it.dismiss() } }
         current = null
     }

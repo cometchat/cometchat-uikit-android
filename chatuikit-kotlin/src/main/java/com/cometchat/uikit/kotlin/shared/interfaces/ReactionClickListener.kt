@@ -10,12 +10,12 @@ import com.cometchat.chat.models.BaseMessage
  *
  * @see com.cometchat.uikit.kotlin.presentation.messagelist.ui.CometChatMessageList.setQuickReactionClickListener
  */
-fun interface ReactionClickListener {
+public fun interface ReactionClickListener {
     /**
      * Called when a quick reaction is clicked.
      *
      * @param message The message for which the reaction was clicked.
      * @param reaction The emoji reaction that was clicked (e.g., "👍", "❤️", "😂").
      */
-    fun onReactionClick(message: BaseMessage, reaction: String)
+    public fun onReactionClick(message: BaseMessage, reaction: String)
 }

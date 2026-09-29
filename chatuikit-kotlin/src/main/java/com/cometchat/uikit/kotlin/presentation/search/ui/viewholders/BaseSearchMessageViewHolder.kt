@@ -37,7 +37,7 @@ import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
  *
  * @param itemView The root view for the ViewHolder
  */
-abstract class BaseSearchMessageViewHolder(
+internal abstract class BaseSearchMessageViewHolder(
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
 

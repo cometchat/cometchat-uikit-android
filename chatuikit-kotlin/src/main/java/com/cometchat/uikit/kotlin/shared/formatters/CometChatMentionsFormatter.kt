@@ -18,6 +18,7 @@ import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.formatters.style.CometChatMentionStyle
 import com.cometchat.uikit.kotlin.shared.formatters.style.PromptTextStyle
@@ -85,12 +86,12 @@ import java.util.regex.Pattern
  * @see PromptTextStyle Style configuration for mention text
  * @see SuggestionItem Data model for suggestion items
  */
-open class CometChatMentionsFormatter(
+open public class CometChatMentionsFormatter(
     private val context: Context,
     trackingCharacter: Char = '@'
 ) : CometChatTextFormatter(trackingCharacter) {
 
-    companion object {
+    public companion object {
         private val TAG = CometChatMentionsFormatter::class.java.simpleName
         private const val REQUEST_LIMIT = 10
     }
@@ -150,7 +151,7 @@ open class CometChatMentionsFormatter(
         mentionAllPattern = Pattern.compile(generateMentionAllRegexPattern(mentionAllId))
     }
 
-    constructor(context: Context, trackingCharacter: Char, regexPattern: String) : this(context, trackingCharacter) {
+    public constructor(context: Context, trackingCharacter: Char, regexPattern: String) : this(context, trackingCharacter) {
         pattern = Pattern.compile(regexPattern)
     }
 
@@ -163,7 +164,7 @@ open class CometChatMentionsFormatter(
      * @param context The context to resolve resources
      * @param style The style resource ID (e.g., R.style.CometChatOutgoingBubbleMentionsStyle)
      */
-    fun setOutgoingBubbleMentionTextStyle(context: Context, @StyleRes style: Int) {
+    public fun setOutgoingBubbleMentionTextStyle(context: Context, @StyleRes style: Int) {
         if (style != 0) {
             outgoingBubbleMentionTextStyle = style
             // Note: In Java chatuikit, outgoing style sets incoming bubble styles (swapped for RTL support)
@@ -179,7 +180,7 @@ open class CometChatMentionsFormatter(
      * @param context The context to resolve resources
      * @param style The style resource ID (e.g., R.style.CometChatIncomingBubbleMentionsStyle)
      */
-    fun setIncomingBubbleMentionTextStyle(context: Context, @StyleRes style: Int) {
+    public fun setIncomingBubbleMentionTextStyle(context: Context, @StyleRes style: Int) {
         if (style != 0) {
             incomingBubbleMentionTextStyle = style
             // Note: In Java chatuikit, incoming style sets outgoing bubble styles (swapped for RTL support)
@@ -195,7 +196,7 @@ open class CometChatMentionsFormatter(
      * @param context The context to resolve resources
      * @param style The style resource ID (e.g., R.style.CometChatMessageComposerMentionsStyle)
      */
-    fun setMessageComposerMentionTextStyle(context: Context, @StyleRes style: Int) {
+    public fun setMessageComposerMentionTextStyle(context: Context, @StyleRes style: Int) {
         if (style != 0) {
             messageComposerMentionTextStyle = style
             tagStyle = getPromptTextStyleFromResource(context, style)
@@ -210,7 +211,7 @@ open class CometChatMentionsFormatter(
      * @param context The context to resolve resources
      * @param style The style resource ID (e.g., R.style.CometChatConversationsMentionsStyle)
      */
-    fun setConversationsMentionTextStyle(context: Context, @StyleRes style: Int) {
+    public fun setConversationsMentionTextStyle(context: Context, @StyleRes style: Int) {
         if (style != 0) {
             conversationsMentionTextStyle = style
             conversationTagStyle = getPromptTextStyleFromResource(context, style)
@@ -220,10 +221,10 @@ open class CometChatMentionsFormatter(
 
     // ==================== @StyleRes Getter Methods ====================
 
-    fun getMessageComposerMentionTextStyle(): Int = messageComposerMentionTextStyle
-    fun getIncomingBubbleMentionTextStyle(): Int = incomingBubbleMentionTextStyle
-    fun getOutgoingBubbleMentionTextStyle(): Int = outgoingBubbleMentionTextStyle
-    fun getConversationsMentionTextStyle(): Int = conversationsMentionTextStyle
+    public fun getMessageComposerMentionTextStyle(): Int = messageComposerMentionTextStyle
+    public fun getIncomingBubbleMentionTextStyle(): Int = incomingBubbleMentionTextStyle
+    public fun getOutgoingBubbleMentionTextStyle(): Int = outgoingBubbleMentionTextStyle
+    public fun getConversationsMentionTextStyle(): Int = conversationsMentionTextStyle
 
     // ==================== Helper Methods for @StyleRes ====================
 
@@ -394,25 +395,25 @@ open class CometChatMentionsFormatter(
     }
 
     // Style setters
-    fun setMentionLimit(limit: Int) { localMentionLimit = limit }
-    fun setMentionsVisibility(visibility: UIKitConstants.MentionsVisibility) { mentionsVisibility = visibility }
-    fun setMentionsType(type: UIKitConstants.MentionsType) { mentionType = type }
-    fun setOnMentionClick(click: (Context, User) -> Unit) { onTagClick = click }
-    fun setOnMentionAllClick(click: () -> Unit) { mentionAllClick = click }
-    fun setDisableMentionAll(disable: Boolean) { disableMentionAll = disable }
-    fun setOutgoingBubbleSelfTagStyle(style: PromptTextStyle?) { outgoingBubbleSelfTagStyle = style }
-    fun setOutgoingBubbleTagStyle(style: PromptTextStyle?) { outgoingBubbleTagStyle = style }
-    fun setIncomingBubbleSelfTagStyle(style: PromptTextStyle?) { incomingBubbleSelfTagStyle = style }
-    fun setIncomingBubbleTagStyle(style: PromptTextStyle?) { incomingBubbleTagStyle = style }
-    fun setSelfTagStyle(style: PromptTextStyle?) { selfTagStyle = style }
-    fun setTagStyle(style: PromptTextStyle?) { tagStyle = style }
-    fun setConversationSelfTagStyle(style: PromptTextStyle?) { conversationSelfTagStyle = style }
-    fun setConversationTagStyle(style: PromptTextStyle?) { conversationTagStyle = style }
+    public fun setMentionLimit(limit: Int) { localMentionLimit = limit }
+    public fun setMentionsVisibility(visibility: UIKitConstants.MentionsVisibility) { mentionsVisibility = visibility }
+    public fun setMentionsType(type: UIKitConstants.MentionsType) { mentionType = type }
+    public fun setOnMentionClick(click: (Context, User) -> Unit) { onTagClick = click }
+    public fun setOnMentionAllClick(click: () -> Unit) { mentionAllClick = click }
+    public fun setDisableMentionAll(disable: Boolean) { disableMentionAll = disable }
+    public fun setOutgoingBubbleSelfTagStyle(style: PromptTextStyle?) { outgoingBubbleSelfTagStyle = style }
+    public fun setOutgoingBubbleTagStyle(style: PromptTextStyle?) { outgoingBubbleTagStyle = style }
+    public fun setIncomingBubbleSelfTagStyle(style: PromptTextStyle?) { incomingBubbleSelfTagStyle = style }
+    public fun setIncomingBubbleTagStyle(style: PromptTextStyle?) { incomingBubbleTagStyle = style }
+    public fun setSelfTagStyle(style: PromptTextStyle?) { selfTagStyle = style }
+    public fun setTagStyle(style: PromptTextStyle?) { tagStyle = style }
+    public fun setConversationSelfTagStyle(style: PromptTextStyle?) { conversationSelfTagStyle = style }
+    public fun setConversationTagStyle(style: PromptTextStyle?) { conversationTagStyle = style }
 
     /**
      * Sets the mention style for all contexts (bubbles, conversations, composer).
      */
-    fun setMentionStyle(style: CometChatMentionStyle) {
+    public fun setMentionStyle(style: CometChatMentionStyle) {
         val promptStyle = style.toPromptTextStyle()
         val selfPromptStyle = style.toSelfPromptTextStyle()
 
@@ -429,12 +430,12 @@ open class CometChatMentionsFormatter(
     /**
      * Sets the mention style specifically for conversation list previews.
      */
-    fun setConversationsMentionStyle(style: CometChatMentionStyle) {
+    public fun setConversationsMentionStyle(style: CometChatMentionStyle) {
         conversationTagStyle = style.toPromptTextStyle()
         conversationSelfTagStyle = style.toSelfPromptTextStyle()
     }
 
-    fun setMentionAllLabel(labelId: String, labelText: String) {
+    public fun setMentionAllLabel(labelId: String, labelText: String) {
         if (labelId.isNotEmpty() && labelText.isNotEmpty()) {
             mentionAllLabelText = labelText
             mentionAllId = labelId
@@ -442,15 +443,15 @@ open class CometChatMentionsFormatter(
         }
     }
 
-    fun setMentionAllInfoText(infoText: String) { mentionAllInfoText = infoText }
+    public fun setMentionAllInfoText(infoText: String) { mentionAllInfoText = infoText }
 
-    fun setGroupMembersRequestBuilder(callback: (Group) -> GroupMembersRequest.GroupMembersRequestBuilder) {
+    public fun setGroupMembersRequestBuilder(callback: (Group) -> GroupMembersRequest.GroupMembersRequestBuilder) {
         groupMembersRequestBuilderCallback = callback
         getGroup()?.let { groupMembersRequestBuilder = callback(it) }
         initializeGroupMemberRequestBuilder()
     }
 
-    fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) { usersRequestBuilder = builder }
+    public fun setUsersRequestBuilder(builder: UsersRequest.UsersRequestBuilder) { usersRequestBuilder = builder }
 
     private fun initializeGroupMemberRequestBuilder() {
         if (groupMembersRequestBuilder == null && groupId != null) {
@@ -481,7 +482,7 @@ open class CometChatMentionsFormatter(
         }
     }
 
-    fun searchMentions(queryString: String) {
+    public fun searchMentions(queryString: String) {
         when (mentionType) {
             UIKitConstants.MentionsType.USERS -> searchUser(queryString)
             UIKitConstants.MentionsType.USERS_AND_GROUP_MEMBERS -> {
@@ -490,7 +491,7 @@ open class CometChatMentionsFormatter(
         }
     }
 
-    fun searchUser(queryString: String) {
+    public fun searchUser(queryString: String) {
         // Always create a fresh request builder for new searches to avoid pagination issues
         val builder = usersRequestBuilder?.setSearchKeyword(queryString) 
             ?: UsersRequest.UsersRequestBuilder().setLimit(REQUEST_LIMIT).setSearchKeyword(queryString)
@@ -500,7 +501,7 @@ open class CometChatMentionsFormatter(
         fetchUsers()
     }
 
-    fun searchGroupMember(queryString: String) {
+    public fun searchGroupMember(queryString: String) {
         // Always create a fresh request builder for new searches to avoid pagination issues
         val builder = if (groupMembersRequestBuilder != null) {
             groupMembersRequestBuilder?.setSearchKeyword(queryString)
@@ -515,7 +516,7 @@ open class CometChatMentionsFormatter(
         fetchGroupMembers()
     }
 
-    fun fetchUsers() {
+    public fun fetchUsers() {
         usersRequest?.fetchNext(object : CometChat.CallbackListener<List<User>>() {
             override fun onSuccess(users: List<User>) {
                 val suggestions = users.map { user ->
@@ -544,7 +545,7 @@ open class CometChatMentionsFormatter(
         })
     }
 
-    fun fetchGroupMembers() {
+    public fun fetchGroupMembers() {
         groupMembersRequest?.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
             override fun onSuccess(groupMembers: List<GroupMember>) {
                 val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
@@ -610,7 +611,7 @@ open class CometChatMentionsFormatter(
         baseMessage.mentionedUsers = getMentionUsers()
     }
 
-    fun getMentionUsers(): List<User> {
+    public fun getMentionUsers(): List<User> {
         return getSelectedList().mapNotNull { item ->
             try {
                 item.data?.let { User.fromJson(it.toString()) }
@@ -792,8 +793,7 @@ open class CometChatMentionsFormatter(
         val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
         val replacements = mutableListOf<BubbleMentionReplacement>()
 
-        android.util.Log.d(TAG, "getBubbleSpan: originalText='$originalText', messageId=${baseMessage.id}, muid=${baseMessage.muid}")
-        android.util.Log.d(TAG, "getBubbleSpan: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
+        CometChatLogger.d(TAG, "getBubbleSpan: mentionedUsers=${baseMessage.mentionedUsers?.map { it.uid }}")
 
         // Process mention all
         if (!disableMentionAll) {
@@ -816,16 +816,14 @@ open class CometChatMentionsFormatter(
 
         // Process user mentions
         val mentionedUsers = baseMessage.mentionedUsers
-        android.util.Log.d(TAG, "getBubbleSpan: mentionedUsers isNull=${mentionedUsers == null}, isEmpty=${mentionedUsers?.isEmpty()}")
+        CometChatLogger.d(TAG, "getBubbleSpan: mentionedUsers isNull=${mentionedUsers == null}, isEmpty=${mentionedUsers?.isEmpty()}")
         if (mentionedUsers != null && mentionedUsers.isNotEmpty()) {
             val matcher = pattern.matcher(originalText)
-            android.util.Log.d(TAG, "getBubbleSpan: pattern=$pattern, looking for matches in '$originalText'")
             while (matcher.find()) {
                 val userId = matcher.group(1)
-                android.util.Log.d(TAG, "getBubbleSpan: found match for userId='$userId' at ${matcher.start()}-${matcher.end()}")
+                CometChatLogger.d(TAG, "getBubbleSpan: found match for userId='$userId' at ${matcher.start()}-${matcher.end()}")
                 val user = mentionedUsers.find { it.uid == userId }
                 if (user != null) {
-                    android.util.Log.d(TAG, "getBubbleSpan: found user ${user.name} for userId=$userId")
                     val isSelf = user.uid == loggedInUser?.uid
                     replacements.add(BubbleMentionReplacement(
                         start = matcher.start(),
@@ -837,12 +835,12 @@ open class CometChatMentionsFormatter(
                         data = try { user.toJson() } catch (e: Exception) { null }
                     ))
                 } else {
-                    android.util.Log.d(TAG, "getBubbleSpan: user NOT found for userId=$userId in mentionedUsers")
+                    CometChatLogger.d(TAG, "getBubbleSpan: user NOT found for userId=$userId in mentionedUsers")
                 }
             }
         }
 
-        android.util.Log.d(TAG, "getBubbleSpan: total replacements=${replacements.size}")
+        CometChatLogger.d(TAG, "getBubbleSpan: total replacements=${replacements.size}")
         return buildBubbleStyledSpannable(spannable, replacements)
     }
 

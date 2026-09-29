@@ -16,7 +16,7 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This data class holds all styling properties for the create poll view,
  * including container styling, question styling, option styling, and submit button styling.
  */
-data class CometChatCreatePollStyle(
+public data class CometChatCreatePollStyle(
     // Container
     @ColorInt val backgroundColor: Int = 0,
     val backgroundDrawable: Drawable? = null,
@@ -74,14 +74,14 @@ data class CometChatCreatePollStyle(
     @ColorInt val errorTextColor: Int = 0,
     @StyleRes val errorTextAppearance: Int = 0
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style by extracting values from the theme's cometchatCreatePollStyle.
          *
          * @param context The context to access theme resources
          * @return A CometChatCreatePollStyle with values from theme or fallback defaults
          */
-        fun default(context: Context): CometChatCreatePollStyle {
+        public fun default(context: Context): CometChatCreatePollStyle {
             return extractFromThemeStyle(context, R.attr.cometchatCreatePollStyle)
         }
 
@@ -111,7 +111,7 @@ data class CometChatCreatePollStyle(
          * @param typedArray The TypedArray containing XML attribute values (will be recycled)
          * @return A CometChatCreatePollStyle with values from XML or theme defaults
          */
-        fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCreatePollStyle {
+        public fun fromTypedArray(context: Context, typedArray: TypedArray): CometChatCreatePollStyle {
             return try {
                 extractFromTypedArray(context, typedArray)
             } finally {

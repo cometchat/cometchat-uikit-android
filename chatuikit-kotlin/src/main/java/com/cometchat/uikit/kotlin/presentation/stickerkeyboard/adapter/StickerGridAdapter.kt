@@ -25,7 +25,7 @@ import com.cometchat.uikit.kotlin.R
  *
  * @param onStickerClick Callback invoked when a sticker is clicked
  */
-class StickerGridAdapter(
+internal class StickerGridAdapter(
     private val onStickerClick: ((Sticker) -> Unit)? = null
 ) : ListAdapter<Sticker, StickerGridAdapter.StickerViewHolder>(StickerDiffCallback()) {
 

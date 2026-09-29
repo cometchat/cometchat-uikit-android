@@ -23,15 +23,15 @@ import com.cometchat.uikit.kotlin.presentation.groups.utils.GroupsViewHolderList
  * The change detection logic ensures proper restoration when custom views are removed,
  * preventing the "lag" issue where old custom views appear briefly before being replaced.
  */
-class GroupsViewHolder(
-    val groupsItem: CometChatGroupsItem
+public class GroupsViewHolder(
+    public val groupsItem: CometChatGroupsItem
 ) : RecyclerView.ViewHolder(groupsItem) {
 
-    companion object {
+    public companion object {
         /**
          * Creates a new GroupsViewHolder with CometChatGroupsItem as the row view.
          */
-        fun create(parent: ViewGroup): GroupsViewHolder {
+        public fun create(parent: ViewGroup): GroupsViewHolder {
             val context = parent.context
             val groupsItem = CometChatGroupsItem(context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -77,7 +77,7 @@ class GroupsViewHolder(
      * 
      * This ensures proper restoration when custom views are removed.
      */
-    fun createCustomViews(
+    public fun createCustomViews(
         itemViewListener: GroupsViewHolderListener?,
         leadingViewListener: GroupsViewHolderListener?,
         titleViewListener: GroupsViewHolderListener?,
@@ -193,7 +193,7 @@ class GroupsViewHolder(
      * 1. Sets the group on CometChatGroupsItem (renders default data)
      * 2. Calls bindView() on all non-null listeners (allows custom views to update)
      */
-    fun bind(
+    public fun bind(
         group: Group,
         groupList: List<Group>,
         position: Int,

@@ -21,7 +21,7 @@ import com.cometchat.uikit.core.formatter.RichTextFormat
  * @see RichTextFormatSpan
  * @see MarkdownRenderer
  */
-object MarkdownConverter {
+public object MarkdownConverter {
 
     // ── Markdown delimiter mapping ──────────────────────────────────────
 
@@ -60,7 +60,7 @@ object MarkdownConverter {
      * 3. Within each line, collect inline span boundaries and emit open/close
      *    delimiters at the correct character positions.
      */
-    fun toMarkdown(editable: Editable): String {
+    public fun toMarkdown(editable: Editable): String {
         if (editable.isEmpty()) return ""
 
         val text = editable.toString()
@@ -223,7 +223,7 @@ object MarkdownConverter {
      * Uses [MarkdownRenderer.parse] to get structured segments, then applies
      * corresponding [RichTextFormatSpan] instances to a [SpannableStringBuilder].
      */
-    fun fromMarkdown(markdown: String, context: Context?): Editable {
+    public fun fromMarkdown(markdown: String, context: Context?): Editable {
         if (markdown.isEmpty()) return SpannableStringBuilder("")
 
         val segments = MarkdownRenderer.parse(markdown)
