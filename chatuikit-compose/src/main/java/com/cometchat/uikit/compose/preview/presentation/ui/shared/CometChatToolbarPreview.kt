@@ -9,8 +9,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.toolbar.CometChatToolbar
 import com.cometchat.uikit.compose.presentation.shared.toolbar.CometChatToolbarStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
@@ -24,7 +26,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "Toolbar - Default")
 @Composable
-fun PreviewToolbarDefault() {
+public fun PreviewToolbarDefault() {
     CometChatTheme {
         CometChatToolbar(title = "Chats")
     }
@@ -35,7 +37,7 @@ fun PreviewToolbarDefault() {
  */
 @Preview(showBackground = true, name = "Toolbar - With Back Icon")
 @Composable
-fun PreviewToolbarWithBackIcon() {
+public fun PreviewToolbarWithBackIcon() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -50,7 +52,7 @@ fun PreviewToolbarWithBackIcon() {
  */
 @Preview(showBackground = true, name = "Toolbar - No Back Icon")
 @Composable
-fun PreviewToolbarNoBackIcon() {
+public fun PreviewToolbarNoBackIcon() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -68,7 +70,7 @@ fun PreviewToolbarNoBackIcon() {
  */
 @Preview(showBackground = true, name = "Toolbar - With Actions")
 @Composable
-fun PreviewToolbarWithActions() {
+public fun PreviewToolbarWithActions() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -77,7 +79,7 @@ fun PreviewToolbarWithActions() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
+                        contentDescription = stringResource(R.string.cometchat_a11y_search),
                         tint = CometChatTheme.colorScheme.iconTintPrimary,
                         modifier = Modifier.size(24.dp)
                     )
@@ -85,7 +87,7 @@ fun PreviewToolbarWithActions() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more),
                         tint = CometChatTheme.colorScheme.iconTintPrimary,
                         modifier = Modifier.size(24.dp)
                     )
@@ -104,7 +106,7 @@ fun PreviewToolbarWithActions() {
  */
 @Preview(showBackground = true, name = "Toolbar - Selection Mode")
 @Composable
-fun PreviewToolbarSelectionMode() {
+public fun PreviewToolbarSelectionMode() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -121,7 +123,7 @@ fun PreviewToolbarSelectionMode() {
  */
 @Preview(showBackground = true, name = "Toolbar - Selection Mode - Zero")
 @Composable
-fun PreviewToolbarSelectionModeZero() {
+public fun PreviewToolbarSelectionModeZero() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -142,7 +144,7 @@ fun PreviewToolbarSelectionModeZero() {
  */
 @Preview(showBackground = true, name = "Toolbar - Custom Background")
 @Composable
-fun PreviewToolbarCustomBackground() {
+public fun PreviewToolbarCustomBackground() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",
@@ -159,7 +161,7 @@ fun PreviewToolbarCustomBackground() {
  */
 @Preview(showBackground = true, name = "Toolbar - Custom Title Color")
 @Composable
-fun PreviewToolbarCustomTitleColor() {
+public fun PreviewToolbarCustomTitleColor() {
     CometChatTheme {
         CometChatToolbar(
             title = "Chats",

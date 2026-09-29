@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.ReactionListRepository
  *
  * @param dataSource The data source to fetch data (interface, not concrete)
  */
-class ReactionListRepositoryImpl(
+public class ReactionListRepositoryImpl(
     private val dataSource: ReactionListDataSource
 ) : ReactionListRepository {
 

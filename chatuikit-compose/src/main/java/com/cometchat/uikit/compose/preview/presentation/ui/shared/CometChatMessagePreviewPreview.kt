@@ -11,7 +11,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 
 @Preview(showBackground = true, name = "MessagePreview - Default")
 @Composable
-fun PreviewMessagePreviewDefault() {
+public fun PreviewMessagePreviewDefault() {
     CometChatTheme {
         CometChatMessagePreview(
             message = PreviewMockData.createMockTextMessage(
@@ -26,7 +26,7 @@ fun PreviewMessagePreviewDefault() {
 
 @Preview(showBackground = true, name = "MessagePreview - No Close Icon")
 @Composable
-fun PreviewMessagePreviewNoCloseIcon() {
+public fun PreviewMessagePreviewNoCloseIcon() {
     CometChatTheme {
         CometChatMessagePreview(
             message = PreviewMockData.createMockTextMessage(
@@ -41,7 +41,7 @@ fun PreviewMessagePreviewNoCloseIcon() {
 
 @Preview(showBackground = true, name = "MessagePreview - Long Message")
 @Composable
-fun PreviewMessagePreviewLongMessage() {
+public fun PreviewMessagePreviewLongMessage() {
     CometChatTheme {
         CometChatMessagePreview(
             message = PreviewMockData.createMockTextMessage(
@@ -56,7 +56,7 @@ fun PreviewMessagePreviewLongMessage() {
 
 @Preview(showBackground = true, name = "MessagePreview - With Click")
 @Composable
-fun PreviewMessagePreviewWithClick() {
+public fun PreviewMessagePreviewWithClick() {
     CometChatTheme {
         CometChatMessagePreview(
             message = PreviewMockData.createMockTextMessage(

@@ -15,7 +15,7 @@ import kotlin.coroutines.resumeWithException
  * Contains NO business logic - just raw data fetching/saving.
  * This is the default implementation used for remote data operations.
  */
-class MessageListDataSourceImpl : MessageListDataSource {
+internal class MessageListDataSourceImpl : MessageListDataSource {
 
     override suspend fun fetchPreviousMessages(
         request: MessagesRequest

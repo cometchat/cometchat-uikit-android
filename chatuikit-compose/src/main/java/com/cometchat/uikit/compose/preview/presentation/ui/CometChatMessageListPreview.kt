@@ -158,7 +158,7 @@ private fun SimulatedDateSeparator(date: String = "Today") {
  */
 @Preview(showBackground = true, name = "MessageList - Content - User Conversation")
 @Composable
-fun PreviewMessageListUserConversation() {
+public fun PreviewMessageListUserConversation() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Column(
@@ -182,7 +182,7 @@ fun PreviewMessageListUserConversation() {
  */
 @Preview(showBackground = true, name = "MessageList - Content - Group Conversation")
 @Composable
-fun PreviewMessageListGroupConversation() {
+public fun PreviewMessageListGroupConversation() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Column(
@@ -210,7 +210,7 @@ fun PreviewMessageListGroupConversation() {
  */
 @Preview(showBackground = true, name = "MessageList - State - Loading")
 @Composable
-fun PreviewMessageListLoading() {
+public fun PreviewMessageListLoading() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Box(
@@ -228,7 +228,7 @@ fun PreviewMessageListLoading() {
  */
 @Preview(showBackground = true, name = "MessageList - State - Empty")
 @Composable
-fun PreviewMessageListEmpty() {
+public fun PreviewMessageListEmpty() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Box(
@@ -249,7 +249,7 @@ fun PreviewMessageListEmpty() {
  */
 @Preview(showBackground = true, name = "MessageList - State - Error")
 @Composable
-fun PreviewMessageListError() {
+public fun PreviewMessageListError() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Box(
@@ -275,7 +275,7 @@ fun PreviewMessageListError() {
  */
 @Preview(showBackground = true, name = "MessageList - Visibility - No Avatar")
 @Composable
-fun PreviewMessageListNoAvatar() {
+public fun PreviewMessageListNoAvatar() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Column(
@@ -309,7 +309,7 @@ fun PreviewMessageListNoAvatar() {
  */
 @Preview(showBackground = true, name = "MessageList - Visibility - No Date Separator")
 @Composable
-fun PreviewMessageListNoDateSeparator() {
+public fun PreviewMessageListNoDateSeparator() {
     CometChatTheme {
         val style = CometChatMessageListStyle.default()
         Column(
@@ -334,7 +334,7 @@ fun PreviewMessageListNoDateSeparator() {
  */
 @Preview(showBackground = true, name = "MessageList - Alignment - Standard")
 @Composable
-fun PreviewMessageListStandardAlignment() {
+public fun PreviewMessageListStandardAlignment() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -354,7 +354,7 @@ fun PreviewMessageListStandardAlignment() {
  */
 @Preview(showBackground = true, name = "MessageList - Alignment - Left Aligned")
 @Composable
-fun PreviewMessageListLeftAligned() {
+public fun PreviewMessageListLeftAligned() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -378,7 +378,7 @@ fun PreviewMessageListLeftAligned() {
  */
 @Preview(showBackground = true, name = "MessageList - Style - Custom Background")
 @Composable
-fun PreviewMessageListCustomBackground() {
+public fun PreviewMessageListCustomBackground() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -401,7 +401,7 @@ fun PreviewMessageListCustomBackground() {
  */
 @Preview(showBackground = true, name = "MessageList - Comprehensive - Full Chat")
 @Composable
-fun PreviewMessageListFullChat() {
+public fun PreviewMessageListFullChat() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -472,7 +472,7 @@ fun PreviewMessageListFullChat() {
  */
 @Preview(showBackground = true, name = "MessageList - Comprehensive - Thread")
 @Composable
-fun PreviewMessageListThread() {
+public fun PreviewMessageListThread() {
     CometChatTheme {
         Column(
             modifier = Modifier

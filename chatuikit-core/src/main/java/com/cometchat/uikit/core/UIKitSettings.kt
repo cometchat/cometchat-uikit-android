@@ -16,27 +16,27 @@ package com.cometchat.uikit.core
  * @property enableCalling Whether calling features are enabled (default false)
  * @property callSettingsBuilder Custom SessionSettingsBuilder for call configuration (CometChatCalls.SessionSettingsBuilder)
  */
-class UIKitSettings private constructor(
-    val appId: String?,
-    val region: String?,
-    val subscriptionType: String,
-    val autoEstablishSocketConnection: Boolean,
-    val authKey: String?,
-    val roles: List<String>?,
-    val overrideAdminHost: String?,
-    val overrideClientHost: String?,
-    val enableCalling: Boolean,
-    val callSettingsBuilder: Any?,
-    val enableThreadSubscription: Boolean
+public class UIKitSettings private constructor(
+    public val appId: String?,
+    public val region: String?,
+    public val subscriptionType: String,
+    public val autoEstablishSocketConnection: Boolean,
+    public val authKey: String?,
+    public val roles: List<String>?,
+    public val overrideAdminHost: String?,
+    public val overrideClientHost: String?,
+    public val enableCalling: Boolean,
+    public val callSettingsBuilder: Any?,
+    public val enableThreadSubscription: Boolean
 ) {
-    companion object {
+    public companion object {
         private const val TAG = "UIKitSettings"
     }
 
     /**
      * Builder class for constructing [UIKitSettings] instances.
      */
-    class UIKitSettingsBuilder {
+    public class UIKitSettingsBuilder {
         private var appId: String? = null
         private var region: String? = null
         private var subscriptionType: String = "NONE"
@@ -47,7 +47,7 @@ class UIKitSettings private constructor(
         private var overrideClientHost: String? = null
         private var enableCalling: Boolean = false
         private var callSettingsBuilder: Any? = null
-        private var enableThreadSubscription: Boolean = false
+        private var enableThreadSubscription: Boolean = true
 
         /**
          * Sets the CometChat App ID.
@@ -55,7 +55,7 @@ class UIKitSettings private constructor(
          * @param appId The app ID
          * @return This builder instance
          */
-        fun setAppId(appId: String): UIKitSettingsBuilder {
+        public fun setAppId(appId: String): UIKitSettingsBuilder {
             this.appId = appId
             return this
         }
@@ -66,7 +66,7 @@ class UIKitSettings private constructor(
          * @param region The region (e.g., "us", "eu")
          * @return This builder instance
          */
-        fun setRegion(region: String): UIKitSettingsBuilder {
+        public fun setRegion(region: String): UIKitSettingsBuilder {
             this.region = region
             return this
         }
@@ -76,7 +76,7 @@ class UIKitSettings private constructor(
          *
          * @return This builder instance
          */
-        fun subscribePresenceForAllUsers(): UIKitSettingsBuilder {
+        public fun subscribePresenceForAllUsers(): UIKitSettingsBuilder {
             this.subscriptionType = "ALL_USERS"
             return this
         }
@@ -87,7 +87,7 @@ class UIKitSettings private constructor(
          * @param roles The list of roles to subscribe to
          * @return This builder instance
          */
-        fun subscribePresenceForRoles(roles: List<String>): UIKitSettingsBuilder {
+        public fun subscribePresenceForRoles(roles: List<String>): UIKitSettingsBuilder {
             this.subscriptionType = "ROLES"
             this.roles = roles
             return this
@@ -98,7 +98,7 @@ class UIKitSettings private constructor(
          *
          * @return This builder instance
          */
-        fun subscribePresenceForFriends(): UIKitSettingsBuilder {
+        public fun subscribePresenceForFriends(): UIKitSettingsBuilder {
             this.subscriptionType = "FRIENDS"
             return this
         }
@@ -109,7 +109,7 @@ class UIKitSettings private constructor(
          * @param roles The list of roles
          * @return This builder instance
          */
-        fun setRoles(roles: List<String>): UIKitSettingsBuilder {
+        public fun setRoles(roles: List<String>): UIKitSettingsBuilder {
             this.roles = roles
             return this
         }
@@ -120,7 +120,7 @@ class UIKitSettings private constructor(
          * @param autoEstablishSocketConnection Flag indicating whether to auto-connect
          * @return This builder instance
          */
-        fun setAutoEstablishSocketConnection(autoEstablishSocketConnection: Boolean): UIKitSettingsBuilder {
+        public fun setAutoEstablishSocketConnection(autoEstablishSocketConnection: Boolean): UIKitSettingsBuilder {
             this.autoEstablishSocketConnection = autoEstablishSocketConnection
             return this
         }
@@ -131,7 +131,7 @@ class UIKitSettings private constructor(
          * @param authKey The authentication key
          * @return This builder instance
          */
-        fun setAuthKey(authKey: String): UIKitSettingsBuilder {
+        public fun setAuthKey(authKey: String): UIKitSettingsBuilder {
             this.authKey = authKey
             return this
         }
@@ -142,7 +142,7 @@ class UIKitSettings private constructor(
          * @param adminHost The admin host URL
          * @return This builder instance
          */
-        fun overrideAdminHost(adminHost: String): UIKitSettingsBuilder {
+        public fun overrideAdminHost(adminHost: String): UIKitSettingsBuilder {
             this.overrideAdminHost = adminHost
             return this
         }
@@ -153,7 +153,7 @@ class UIKitSettings private constructor(
          * @param clientHost The client host URL
          * @return This builder instance
          */
-        fun overrideClientHost(clientHost: String): UIKitSettingsBuilder {
+        public fun overrideClientHost(clientHost: String): UIKitSettingsBuilder {
             this.overrideClientHost = clientHost
             return this
         }
@@ -165,7 +165,7 @@ class UIKitSettings private constructor(
          * @param enable True to enable calling features, false to disable (default is false)
          * @return This builder instance
          */
-        fun setEnableCalling(enable: Boolean): UIKitSettingsBuilder {
+        public fun setEnableCalling(enable: Boolean): UIKitSettingsBuilder {
             this.enableCalling = enable
             return this
         }
@@ -177,20 +177,27 @@ class UIKitSettings private constructor(
          * @param builder The CometChatCalls.SessionSettingsBuilder instance
          * @return This builder instance
          */
-        fun setCallSettingsBuilder(builder: Any): UIKitSettingsBuilder {
+        public fun setCallSettingsBuilder(builder: Any): UIKitSettingsBuilder {
             this.callSettingsBuilder = builder
             return this
         }
 
         /**
          * Sets whether the thread-subscription (follow/unfollow) feature is enabled.
-         * When off (the default) neither the thread-header control nor the message
-         * action-sheet option renders, and no subscription request is ever made.
+         * **On by default**, matching the React and React Native UI Kits — integrators opt
+         * OUT. When off, neither the thread-header control nor the message action-sheet
+         * option renders, and no subscription request is ever made.
          *
-         * @param enable True to enable thread subscription surfaces, false to disable (default is false)
+         * @param enable True to enable thread subscription surfaces, false to disable (default is true)
          * @return This builder instance
          */
-        fun setEnableThreadSubscription(enable: Boolean): UIKitSettingsBuilder {
+        @Deprecated(
+            "Thread subscription is on by default now, so passing true is a no-op. Kept only as a " +
+                "global opt-out; prefer hiding the surfaces per screen with " +
+                "setThreadSubscriptionOptionVisibility / setThreadSubscriptionVisibility (View) or " +
+                "hideThreadSubscriptionOption / hideThreadSubscription (Compose)."
+        )
+        public fun setEnableThreadSubscription(enable: Boolean): UIKitSettingsBuilder {
             this.enableThreadSubscription = enable
             return this
         }
@@ -200,7 +207,7 @@ class UIKitSettings private constructor(
          *
          * @return A new [UIKitSettings] instance
          */
-        fun build(): UIKitSettings {
+        public fun build(): UIKitSettings {
             return UIKitSettings(
                 appId = appId,
                 region = region,

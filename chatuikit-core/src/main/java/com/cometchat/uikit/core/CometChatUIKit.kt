@@ -1,7 +1,8 @@
 package com.cometchat.uikit.core
 
 import android.content.Context
-import android.util.Log
+import android.os.Looper
+import androidx.annotation.MainThread
 import com.cometchat.calls.core.CallAppSettings
 import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.chat.core.AppSettings
@@ -16,6 +17,7 @@ import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
+import com.cometchat.uikit.core.utils.CometChatLogger
 import org.json.JSONObject
 
 /**
@@ -37,13 +39,41 @@ import org.json.JSONObject
  *     override fun onError(e: CometChatException) { }
  * })
  * ```
+ *
+ * ## Threading contract (ENG-38658 / X5)
+ *
+ * [init], [initFromSettings], [login], [loginWithAuthToken] and [logout] MUST be
+ * called from the main thread; each fails fast with [IllegalStateException]
+ * when called from any other thread. Their callbacks are invoked on the main
+ * thread by the underlying Chat SDK. The singleton's mutable state is marked
+ * @Volatile so late writes are visible across threads, but the entry points
+ * themselves are main-thread-only by contract.
  */
-object CometChatUIKit {
+public object CometChatUIKit {
     private const val TAG = "CometChatUIKit"
 
+    @Volatile
     private var authenticationSettings: UIKitSettings? = null
+
+    @Volatile
     private var isCallsSDKInitialized: Boolean = false
+
+    @Volatile
     private var storedSessionSettingsBuilder: CometChatCalls.SessionSettingsBuilder? = null
+
+    /**
+     * Fails fast when a main-thread-only entry point is called off the main
+     * thread. A wrong-thread call is a programming error: better an immediate,
+     * clearly-attributed crash at the call site than settings written from two
+     * threads or callbacks observed in a half-initialized state.
+     */
+    private fun requireMainThread(method: String) {
+        check(Looper.myLooper() == Looper.getMainLooper()) {
+            "CometChatUIKit.$method must be called from the main thread " +
+                "(current: ${Thread.currentThread().name}). See the threading " +
+                "contract in the CometChatUIKit documentation."
+        }
+    }
 
     /**
      * Initializes the CometChat SDK with the provided authentication settings.
@@ -52,11 +82,14 @@ object CometChatUIKit {
      * @param authSettings The UIKitSettings object containing the authentication settings
      * @param callbackListener The callback listener to handle initialization success or failure
      */
-    fun init(
+    @MainThread
+    public fun init(
         context: Context,
         authSettings: UIKitSettings,
         callbackListener: CometChat.CallbackListener<String>?
     ) {
+        requireMainThread("init")
+        CometChatLogger.initFromContext(context)
         authenticationSettings = authSettings
 
         if (!checkAuthSettings(callbackListener)) return
@@ -119,10 +152,13 @@ object CometChatUIKit {
      * @param callbackListener The callback listener to handle initialization success or failure
      *
      */
-    fun initFromSettings(
+    @MainThread
+    public fun initFromSettings(
         context: Context,
         callbackListener: CometChat.CallbackListener<String>?
     ) {
+        requireMainThread("initFromSettings")
+        CometChatLogger.initFromContext(context)
         // 1. Read cometchat-settings.json from assets
         val settingsJson: JSONObject
         try {
@@ -165,8 +201,12 @@ object CometChatUIKit {
         // settings door could never initialize the Calls SDK at all (UIKitSettings
         // defaults enableCalling to false and the file was the only input here).
         val enableCalling = uiKitSection?.optBoolean("enableCalling", false) ?: false
-        val enableThreadSubscription = uiKitSection?.optBoolean("enableThreadSubscription", false) ?: false
+        // On by default, like the builder path — an absent key must not silently disable the feature.
+        val enableThreadSubscription = uiKitSection?.optBoolean("enableThreadSubscription", true) ?: true
 
+        // The thread-subscription setter is deprecated but still the only global opt-out, and the
+        // settings file must keep honouring an explicit `false`.
+        @Suppress("DEPRECATION")
         val settingsBuilder = UIKitSettings.UIKitSettingsBuilder()
             .setAppId(appId)
             .setRegion(region)
@@ -233,13 +273,13 @@ object CometChatUIKit {
 
         val callsInitCallback = object : CometChatCalls.CallbackListener<String>() {
             override fun onSuccess(result: String?) {
-                Log.d(TAG, "CometChatCalls initialized successfully: $result")
+                CometChatLogger.d(TAG, "CometChatCalls initialized successfully: $result")
                 isCallsSDKInitialized = true
                 callbackListener?.onSuccess(chatInitResult)
             }
 
             override fun onError(e: com.cometchat.calls.exceptions.CometChatException?) {
-                Log.e(TAG, "CometChatCalls initialization failed: ${e?.message}")
+                CometChatLogger.e(TAG, "CometChatCalls initialization failed: ${e?.message}")
                 isCallsSDKInitialized = false
                 // Still report success for Chat SDK, but log the Calls SDK error
                 callbackListener?.onSuccess(chatInitResult)
@@ -259,7 +299,7 @@ object CometChatUIKit {
         val clientHost = authenticationSettings?.overrideClientHost
 
         if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot initialize CometChatCalls: missing appId or region")
+            CometChatLogger.e(TAG, "Cannot initialize CometChatCalls: missing appId or region")
             callbackListener?.onSuccess(chatInitResult)
             return
         }
@@ -309,14 +349,14 @@ object CometChatUIKit {
      *
      * @return The User object representing the logged-in user, or null if no user is logged in
      */
-    fun getLoggedInUser(): User? = CometChat.getLoggedInUser()
+    public fun getLoggedInUser(): User? = CometChat.getLoggedInUser()
 
     /**
      * Checks if the SDK has been initialized.
      *
      * @return True if the SDK is initialized, false otherwise
      */
-    fun isSDKInitialized(): Boolean = CometChat.isInitialized()
+    public fun isSDKInitialized(): Boolean = CometChat.isInitialized()
 
     /**
      * Checks if the CometChatCalls SDK has been initialized.
@@ -325,37 +365,39 @@ object CometChatUIKit {
      *
      * @return True if the Calls SDK is initialized, false otherwise
      */
-    fun isCallsSDKInitialized(): Boolean = isCallsSDKInitialized
+    public fun isCallsSDKInitialized(): Boolean = isCallsSDKInitialized
 
     /**
      * Checks whether the thread-subscription (follow/unfollow) feature is enabled.
-     * Returns true only if [UIKitSettings.enableThreadSubscription] was set to true.
-     * The thread-subscription UI surfaces are gated on this; when false, neither the
-     * thread-header control nor the message action-sheet option renders.
+     * Reads [UIKitSettings.enableThreadSubscription], which is **on by default** — an
+     * integrator opts OUT with the deprecated `setEnableThreadSubscription(false)`. Before init there are
+     * no settings to read, so the default applies there too. The thread-subscription UI
+     * surfaces are gated on this; when false, neither the thread-header control nor the
+     * message action-sheet option renders.
      *
-     * @return True if thread subscription is enabled, false otherwise
+     * @return True if thread subscription is enabled, false only if explicitly disabled
      */
-    fun isThreadSubscriptionEnabled(): Boolean = authenticationSettings?.enableThreadSubscription == true
+    public fun isThreadSubscriptionEnabled(): Boolean = authenticationSettings?.enableThreadSubscription ?: true
 
     /**
      * Whether the Pin Message feature is enabled for this app. Delegates to the SDK feature flag
      * ([CometChat.isPinMessageEnabled]), which treats an absent flag as enabled. The pin/unpin
      * action-sheet options and the Pinned Messages panel are gated on this.
      */
-    fun isPinMessageEnabled(): Boolean = CometChat.isPinMessageEnabled()
+    public fun isPinMessageEnabled(): Boolean = CometChat.isPinMessageEnabled()
 
     /**
      * Whether the Save Message feature is enabled for this app. Delegates to the SDK feature flag
      * ([CometChat.isSaveMessageEnabled]). The save/unsave action-sheet options and the Saved
      * Messages view are gated on this.
      */
-    fun isSaveMessageEnabled(): Boolean = CometChat.isSaveMessageEnabled()
+    public fun isSaveMessageEnabled(): Boolean = CometChat.isSaveMessageEnabled()
 
     /**
      * Whether the Pin Conversation feature is enabled for this app. Delegates to the SDK feature
      * flag ([CometChat.isPinConversationEnabled]). The pin/unpin conversation option is gated on this.
      */
-    fun isPinConversationEnabled(): Boolean = CometChat.isPinConversationEnabled()
+    public fun isPinConversationEnabled(): Boolean = CometChat.isPinConversationEnabled()
 
     /**
      * Gets the custom SessionSettingsBuilder if one was provided during initialization,
@@ -366,7 +408,7 @@ object CometChatUIKit {
      *
      * @return The custom CometChatCalls.SessionSettingsBuilder if provided, null otherwise
      */
-    fun getSessionSettingsBuilder(): CometChatCalls.SessionSettingsBuilder? = storedSessionSettingsBuilder
+    public fun getSessionSettingsBuilder(): CometChatCalls.SessionSettingsBuilder? = storedSessionSettingsBuilder
 
     /**
      * Logs in a user with the specified UID.
@@ -374,7 +416,9 @@ object CometChatUIKit {
      * @param uid The UID of the user to be logged in
      * @param callbackListener The callback listener to handle login success or failure
      */
-    fun login(uid: String, callbackListener: CometChat.CallbackListener<User>?) {
+    @MainThread
+    public fun login(uid: String, callbackListener: CometChat.CallbackListener<User>?) {
+        requireMainThread("login")
         if (!checkAuthSettings(callbackListener)) return
 
         val authKey = authenticationSettings?.authKey ?: ""
@@ -408,7 +452,9 @@ object CometChatUIKit {
      * @param authToken The authentication token for the user
      * @param callbackListener The callback listener to handle the login result
      */
-    fun loginWithAuthToken(authToken: String, callbackListener: CometChat.CallbackListener<User>?) {
+    @MainThread
+    public fun loginWithAuthToken(authToken: String, callbackListener: CometChat.CallbackListener<User>?) {
+        requireMainThread("loginWithAuthToken")
         if (!checkAuthSettings(callbackListener)) return
 
         if (getLoggedInUser() == null) {
@@ -442,11 +488,11 @@ object CometChatUIKit {
         CometChatCalls.login(authToken, object : CometChatCalls.CallbackListener<com.cometchat.calls.model.CallUser>() {
             override fun onSuccess(callUser: com.cometchat.calls.model.CallUser?) {
                 callbackListener?.onSuccess(user)
-                Log.d(TAG, "CometChatCalls login successful")
+                CometChatLogger.d(TAG, "CometChatCalls login successful")
             }
 
             override fun onError(e: com.cometchat.calls.exceptions.CometChatException?) {
-                Log.e(TAG, "CometChatCalls login failed: ${e?.message}")
+                CometChatLogger.e(TAG, "CometChatCalls login failed: ${e?.message}")
                 callbackListener?.onError(CometChatException(e?.code ?: "ERR", e?.message ?: "Unknown error"))
             }
         })
@@ -457,7 +503,9 @@ object CometChatUIKit {
      *
      * @param callbackListener The callback listener to handle the logout result
      */
-    fun logout(callbackListener: CometChat.CallbackListener<String>?) {
+    @MainThread
+    public fun logout(callbackListener: CometChat.CallbackListener<String>?) {
+        requireMainThread("logout")
         CometChat.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(successMessage: String) {
                 // Cleanup the events bridge on logou
@@ -488,7 +536,7 @@ object CometChatUIKit {
      * @param user The user object containing the details of the user to be created
      * @param callbackListener The callback listener to handle the create user result
      */
-    fun createUser(user: User, callbackListener: CometChat.CallbackListener<User>?) {
+    public fun createUser(user: User, callbackListener: CometChat.CallbackListener<User>?) {
         if (!checkAuthSettings(callbackListener)) return
 
         val authKey = authenticationSettings?.authKey ?: ""
@@ -513,7 +561,7 @@ object CometChatUIKit {
      * @param textMessage The text message to be sent
      * @param callbackListener The callback listener to handle the send result
      */
-    fun sendTextMessage(
+    public fun sendTextMessage(
         textMessage: TextMessage,
         callbackListener: CometChat.CallbackListener<TextMessage>?
     ) {
@@ -527,7 +575,6 @@ object CometChatUIKit {
             textMessage.sentAt = System.currentTimeMillis() / 1000
         }
 
-        android.util.Log.d(TAG, "sendTextMessage: text='${textMessage.text}', mentionedUsers=${textMessage.mentionedUsers?.map { it.uid }}")
 
         // Emit IN_PROGRESS event
         CometChatEvents.emitMessageEvent(
@@ -568,11 +615,11 @@ object CometChatUIKit {
      * @param mediaMessage The media message to be sent
      * @param callbackListener The callback listener to handle the send result
      */
-    fun sendMediaMessage(
+    public fun sendMediaMessage(
         mediaMessage: MediaMessage,
         callbackListener: CometChat.CallbackListener<MediaMessage>?
     ) {
-        android.util.Log.d(
+        CometChatLogger.d(
             "CometChatUIKit",
             "sendMediaMessage: file=${mediaMessage.file?.absolutePath}, fileSize=${mediaMessage.file?.length()}, type=${mediaMessage.type}"
         )
@@ -609,7 +656,7 @@ object CometChatUIKit {
                 }
 
                 override fun onError(e: CometChatException?) {
-                    android.util.Log.e("CometChatUIKit", "sendMediaMessage ERROR: code=${e?.code}, message=${e?.message}")
+                    CometChatLogger.e("CometChatUIKit", "sendMediaMessage ERROR: code=${e?.code}, message=${e?.message}")
                     mediaMessage.metadata = placeErrorObjectInMetaData(e)
                     // Emit ERROR event
                     CometChatEvents.emitMessageEvent(
@@ -627,7 +674,7 @@ object CometChatUIKit {
      * @param customMessage The custom message to be sent
      * @param callbackListener The callback listener to handle the send result
      */
-    fun sendCustomMessage(
+    public fun sendCustomMessage(
         customMessage: CustomMessage,
         callbackListener: CometChat.CallbackListener<CustomMessage>?
     ) {
@@ -680,7 +727,7 @@ object CometChatUIKit {
      *
      * @return The ConversationUpdateSettings object
      */
-    fun getConversationUpdateSettings(): ConversationUpdateSettings {
+    public fun getConversationUpdateSettings(): ConversationUpdateSettings {
         return CometChat.getConversationUpdateSettings()
     }
 
@@ -689,7 +736,7 @@ object CometChatUIKit {
      *
      * @return The UIKitSettings object, or null if not initialized
      */
-    fun getAuthSettings(): UIKitSettings? = authenticationSettings
+    public fun getAuthSettings(): UIKitSettings? = authenticationSettings
 
     /**
      * Places error information in the message metadata.

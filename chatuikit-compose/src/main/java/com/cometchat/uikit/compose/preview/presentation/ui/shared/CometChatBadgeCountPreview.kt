@@ -26,7 +26,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "BadgeCount - Various Counts")
 @Composable
-fun PreviewBadgeCountVariousCounts() {
+public fun PreviewBadgeCountVariousCounts() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -48,7 +48,7 @@ fun PreviewBadgeCountVariousCounts() {
  */
 @Preview(showBackground = true, name = "BadgeCount - Labeled")
 @Composable
-fun PreviewBadgeCountLabeled() {
+public fun PreviewBadgeCountLabeled() {
     CometChatTheme {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -77,7 +77,7 @@ fun PreviewBadgeCountLabeled() {
  */
 @Preview(showBackground = true, name = "BadgeCount - Custom Colors")
 @Composable
-fun PreviewBadgeCountCustomColors() {
+public fun PreviewBadgeCountCustomColors() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -115,7 +115,7 @@ fun PreviewBadgeCountCustomColors() {
  */
 @Preview(showBackground = true, name = "BadgeCount - With Border")
 @Composable
-fun PreviewBadgeCountWithBorder() {
+public fun PreviewBadgeCountWithBorder() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),

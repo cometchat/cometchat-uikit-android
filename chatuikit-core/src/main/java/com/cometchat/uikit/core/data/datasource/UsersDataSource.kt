@@ -8,7 +8,7 @@ import com.cometchat.chat.models.User
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface UsersDataSource {
+public interface UsersDataSource {
     
     /**
      * Fetches users from the data source.
@@ -16,5 +16,5 @@ interface UsersDataSource {
      * @return Raw list of User objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchUsers(request: UsersRequest): List<User>
+    suspend public fun fetchUsers(request: UsersRequest): List<User>
 }

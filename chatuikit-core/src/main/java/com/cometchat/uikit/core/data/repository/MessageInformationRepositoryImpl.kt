@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.MessageInformationRepository
  *
  * @param dataSource The data source for fetching receipts from SDK
  */
-class MessageInformationRepositoryImpl(
+public class MessageInformationRepositoryImpl(
     private val dataSource: MessageInformationDataSource
 ) : MessageInformationRepository {
 

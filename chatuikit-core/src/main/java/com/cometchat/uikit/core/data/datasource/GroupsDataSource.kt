@@ -8,7 +8,7 @@ import com.cometchat.chat.core.GroupsRequest
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface GroupsDataSource {
+public interface GroupsDataSource {
     
     /**
      * Fetches groups from the data source.
@@ -16,7 +16,7 @@ interface GroupsDataSource {
      * @return Raw list of Group objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchGroups(request: GroupsRequest): List<Group>
+    suspend public fun fetchGroups(request: GroupsRequest): List<Group>
     
     /**
      * Joins a group.
@@ -26,7 +26,7 @@ interface GroupsDataSource {
      * @return The joined Group
      * @throws Exception if joining fails
      */
-    suspend fun joinGroup(
+    suspend public fun joinGroup(
         groupId: String,
         groupType: String,
         password: String?

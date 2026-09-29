@@ -13,7 +13,7 @@ import com.cometchat.chat.models.Conversation
  * Business logic like request building and state management
  * is handled by the repository layer.
  */
-interface MessageListDataSource {
+public interface MessageListDataSource {
     
     /**
      * Fetches previous (older) messages using the provided request.
@@ -21,7 +21,7 @@ interface MessageListDataSource {
      * @return List of BaseMessage objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchPreviousMessages(request: MessagesRequest): List<BaseMessage>
+    suspend public fun fetchPreviousMessages(request: MessagesRequest): List<BaseMessage>
     
     /**
      * Fetches next (newer) messages using the provided request.
@@ -29,7 +29,7 @@ interface MessageListDataSource {
      * @return List of BaseMessage objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchNextMessages(request: MessagesRequest): List<BaseMessage>
+    suspend public fun fetchNextMessages(request: MessagesRequest): List<BaseMessage>
     
     /**
      * Fetches conversation details.
@@ -38,7 +38,7 @@ interface MessageListDataSource {
      * @return Conversation object
      * @throws Exception if fetching fails
      */
-    suspend fun getConversation(id: String, type: String): Conversation
+    suspend public fun getConversation(id: String, type: String): Conversation
     
     /**
      * Fetches a single message by ID.
@@ -46,7 +46,7 @@ interface MessageListDataSource {
      * @return BaseMessage object
      * @throws Exception if fetching fails
      */
-    suspend fun getMessage(messageId: Long): BaseMessage
+    suspend public fun getMessage(messageId: Long): BaseMessage
     
     /**
      * Deletes a message.
@@ -54,7 +54,7 @@ interface MessageListDataSource {
      * @return The deleted BaseMessage with updated metadata
      * @throws Exception if deletion fails
      */
-    suspend fun deleteMessage(messageId: Long): BaseMessage?
+    suspend public fun deleteMessage(messageId: Long): BaseMessage?
     
     /**
      * Flags/reports a message for moderation.
@@ -63,7 +63,7 @@ interface MessageListDataSource {
      * @param remark Additional remarks
      * @throws Exception if flagging fails
      */
-    suspend fun flagMessage(messageId: Long, reason: String, remark: String)
+    suspend public fun flagMessage(messageId: Long, reason: String, remark: String)
     
     /**
      * Adds a reaction to a message.
@@ -72,7 +72,7 @@ interface MessageListDataSource {
      * @return The updated BaseMessage with the reaction
      * @throws Exception if adding reaction fails
      */
-    suspend fun addReaction(messageId: Long, emoji: String): BaseMessage
+    suspend public fun addReaction(messageId: Long, emoji: String): BaseMessage
     
     /**
      * Removes a reaction from a message.
@@ -81,20 +81,20 @@ interface MessageListDataSource {
      * @return The updated BaseMessage
      * @throws Exception if removing reaction fails
      */
-    suspend fun removeReaction(messageId: Long, emoji: String): BaseMessage
+    suspend public fun removeReaction(messageId: Long, emoji: String): BaseMessage
     
     /**
      * Marks a message as delivered.
      * @param message The message to mark as delivered
      */
-    suspend fun markAsDelivered(message: BaseMessage)
+    suspend public fun markAsDelivered(message: BaseMessage)
     
     /**
      * Marks a message as read.
      * @param message The message to mark as read
      * @throws Exception if marking fails
      */
-    suspend fun markAsRead(message: BaseMessage)
+    suspend public fun markAsRead(message: BaseMessage)
     
     /**
      * Marks a message as unread.
@@ -102,5 +102,5 @@ interface MessageListDataSource {
      * @return Conversation object with updated unread count
      * @throws Exception if marking fails
      */
-    suspend fun markAsUnread(message: BaseMessage): Conversation
+    suspend public fun markAsUnread(message: BaseMessage): Conversation
 }

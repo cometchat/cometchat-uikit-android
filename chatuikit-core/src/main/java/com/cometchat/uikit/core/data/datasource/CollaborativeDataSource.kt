@@ -5,7 +5,7 @@ package com.cometchat.uikit.core.data.datasource
  * Lives in data layer - defines contract for collaborative board creation.
  * Allows for different implementations (remote, local, mock).
  */
-interface CollaborativeDataSource {
+public interface CollaborativeDataSource {
 
     /**
      * Creates a collaborative whiteboard via the CometChat Extensions API.
@@ -15,7 +15,7 @@ interface CollaborativeDataSource {
      * @param quotedMessageId Optional ID of the message being replied to
      * @return Result containing success or error
      */
-    suspend fun createWhiteboard(
+    suspend public fun createWhiteboard(
         receiverId: String,
         receiverType: String,
         quotedMessageId: Long? = null
@@ -29,7 +29,7 @@ interface CollaborativeDataSource {
      * @param quotedMessageId Optional ID of the message being replied to
      * @return Result containing success or error
      */
-    suspend fun createDocument(
+    suspend public fun createDocument(
         receiverId: String,
         receiverType: String,
         quotedMessageId: Long? = null

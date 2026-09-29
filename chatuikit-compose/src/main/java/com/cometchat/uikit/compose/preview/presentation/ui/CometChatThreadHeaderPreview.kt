@@ -39,7 +39,7 @@ private fun createMockParentMessage(
  */
 @Preview(showBackground = true, name = "ThreadHeader - Default")
 @Composable
-fun PreviewThreadHeaderDefault() {
+public fun PreviewThreadHeaderDefault() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage()
@@ -52,7 +52,7 @@ fun PreviewThreadHeaderDefault() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Single Reply")
 @Composable
-fun PreviewThreadHeaderSingleReply() {
+public fun PreviewThreadHeaderSingleReply() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(replyCount = 1)
@@ -65,7 +65,7 @@ fun PreviewThreadHeaderSingleReply() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Many Replies")
 @Composable
-fun PreviewThreadHeaderManyReplies() {
+public fun PreviewThreadHeaderManyReplies() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(replyCount = 150)
@@ -78,7 +78,7 @@ fun PreviewThreadHeaderManyReplies() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - No Replies")
 @Composable
-fun PreviewThreadHeaderNoReplies() {
+public fun PreviewThreadHeaderNoReplies() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(replyCount = 0)
@@ -95,7 +95,7 @@ fun PreviewThreadHeaderNoReplies() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - No Reactions")
 @Composable
-fun PreviewThreadHeaderNoReactions() {
+public fun PreviewThreadHeaderNoReactions() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -109,7 +109,7 @@ fun PreviewThreadHeaderNoReactions() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - No Avatar")
 @Composable
-fun PreviewThreadHeaderNoAvatar() {
+public fun PreviewThreadHeaderNoAvatar() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -123,7 +123,7 @@ fun PreviewThreadHeaderNoAvatar() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - No Receipts")
 @Composable
-fun PreviewThreadHeaderNoReceipts() {
+public fun PreviewThreadHeaderNoReceipts() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -137,7 +137,7 @@ fun PreviewThreadHeaderNoReceipts() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - No Reply Count")
 @Composable
-fun PreviewThreadHeaderNoReplyCount() {
+public fun PreviewThreadHeaderNoReplyCount() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -151,7 +151,7 @@ fun PreviewThreadHeaderNoReplyCount() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - No Reply Count Bar")
 @Composable
-fun PreviewThreadHeaderNoReplyCountBar() {
+public fun PreviewThreadHeaderNoReplyCountBar() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -165,7 +165,7 @@ fun PreviewThreadHeaderNoReplyCountBar() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Visibility - All Hidden")
 @Composable
-fun PreviewThreadHeaderAllHidden() {
+public fun PreviewThreadHeaderAllHidden() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -186,7 +186,7 @@ fun PreviewThreadHeaderAllHidden() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Alignment - Standard")
 @Composable
-fun PreviewThreadHeaderStandardAlignment() {
+public fun PreviewThreadHeaderStandardAlignment() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -200,7 +200,7 @@ fun PreviewThreadHeaderStandardAlignment() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Alignment - Left Aligned")
 @Composable
-fun PreviewThreadHeaderLeftAligned() {
+public fun PreviewThreadHeaderLeftAligned() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -218,7 +218,7 @@ fun PreviewThreadHeaderLeftAligned() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Custom View - Reply Count")
 @Composable
-fun PreviewThreadHeaderCustomReplyCountView() {
+public fun PreviewThreadHeaderCustomReplyCountView() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(replyCount = 12),
@@ -238,7 +238,7 @@ fun PreviewThreadHeaderCustomReplyCountView() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Custom View - Message Bubble")
 @Composable
-fun PreviewThreadHeaderCustomBubbleView() {
+public fun PreviewThreadHeaderCustomBubbleView() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -262,7 +262,7 @@ fun PreviewThreadHeaderCustomBubbleView() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Max Height - 200dp")
 @Composable
-fun PreviewThreadHeaderMaxHeight200() {
+public fun PreviewThreadHeaderMaxHeight200() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -276,7 +276,7 @@ fun PreviewThreadHeaderMaxHeight200() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Max Height - Unspecified")
 @Composable
-fun PreviewThreadHeaderMaxHeightUnspecified() {
+public fun PreviewThreadHeaderMaxHeightUnspecified() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -294,7 +294,7 @@ fun PreviewThreadHeaderMaxHeightUnspecified() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Style - Custom Background")
 @Composable
-fun PreviewThreadHeaderCustomBackground() {
+public fun PreviewThreadHeaderCustomBackground() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),
@@ -314,7 +314,7 @@ fun PreviewThreadHeaderCustomBackground() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Comprehensive - All Features")
 @Composable
-fun PreviewThreadHeaderComprehensive() {
+public fun PreviewThreadHeaderComprehensive() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(replyCount = 25),
@@ -331,7 +331,7 @@ fun PreviewThreadHeaderComprehensive() {
  */
 @Preview(showBackground = true, name = "ThreadHeader - Comprehensive - Minimal")
 @Composable
-fun PreviewThreadHeaderMinimal() {
+public fun PreviewThreadHeaderMinimal() {
     CometChatTheme {
         CometChatThreadHeader(
             parentMessage = createMockParentMessage(),

@@ -3,15 +3,15 @@ package com.cometchat.uikit.compose.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 
-object CometChatTheme {
+public object CometChatTheme {
 
-    val colorScheme: CometChatColorScheme
+    public val colorScheme: CometChatColorScheme
         @Composable @ReadOnlyComposable get() = LocalColorScheme.current
 
-    val typography: CometChatTypography
+    public val typography: CometChatTypography
         @Composable @ReadOnlyComposable get() = LocalTypography.current
 
-    val shapes: Shapes
+    public val shapes: Shapes
         @Composable @ReadOnlyComposable get() = LocalShapes.current
 
 }

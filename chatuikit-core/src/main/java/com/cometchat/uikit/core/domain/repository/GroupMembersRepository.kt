@@ -9,7 +9,7 @@ import com.cometchat.chat.models.GroupMember
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface GroupMembersRepository {
+public interface GroupMembersRepository {
     
     /**
      * Fetches group members based on the provided parameters.
@@ -18,7 +18,7 @@ interface GroupMembersRepository {
      * @param searchKeyword Optional search keyword to filter members
      * @return Result containing list of group members or error
      */
-    suspend fun fetchGroupMembers(
+    suspend public fun fetchGroupMembers(
         guid: String,
         limit: Int,
         searchKeyword: String?
@@ -30,7 +30,7 @@ interface GroupMembersRepository {
      * @param uid The user ID to kick
      * @return Result indicating success or failure
      */
-    suspend fun kickMember(
+    suspend public fun kickMember(
         guid: String,
         uid: String
     ): Result<Unit>
@@ -41,7 +41,7 @@ interface GroupMembersRepository {
      * @param uid The user ID to ban
      * @return Result indicating success or failure
      */
-    suspend fun banMember(
+    suspend public fun banMember(
         guid: String,
         uid: String
     ): Result<Unit>
@@ -53,7 +53,7 @@ interface GroupMembersRepository {
      * @param scope The new scope (admin/moderator/participant)
      * @return Result indicating success or failure
      */
-    suspend fun changeMemberScope(
+    suspend public fun changeMemberScope(
         guid: String,
         uid: String,
         scope: String
@@ -63,11 +63,11 @@ interface GroupMembersRepository {
      * Checks if there are more members to fetch (pagination).
      * @return true if more members are available
      */
-    fun hasMore(): Boolean
+    public fun hasMore(): Boolean
     
     /**
      * Resets the current request so the next fetch builds a fresh one.
      * Call this when the search keyword changes or when refreshing.
      */
-    fun resetRequest()
+    public fun resetRequest()
 }

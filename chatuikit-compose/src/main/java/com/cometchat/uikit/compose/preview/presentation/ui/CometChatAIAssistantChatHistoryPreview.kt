@@ -24,7 +24,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "AIChatHistory - Default")
 @Composable
-fun PreviewAIChatHistoryDefault() {
+public fun PreviewAIChatHistoryDefault() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier
@@ -45,7 +45,7 @@ fun PreviewAIChatHistoryDefault() {
  */
 @Preview(showBackground = true, name = "AIChatHistory - Custom Empty View")
 @Composable
-fun PreviewAIChatHistoryCustomEmptyView() {
+public fun PreviewAIChatHistoryCustomEmptyView() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier
@@ -74,7 +74,7 @@ fun PreviewAIChatHistoryCustomEmptyView() {
  */
 @Preview(showBackground = true, name = "AIChatHistory - Custom Error View")
 @Composable
-fun PreviewAIChatHistoryCustomErrorView() {
+public fun PreviewAIChatHistoryCustomErrorView() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier
@@ -103,7 +103,7 @@ fun PreviewAIChatHistoryCustomErrorView() {
  */
 @Preview(showBackground = true, name = "AIChatHistory - Custom Loading View")
 @Composable
-fun PreviewAIChatHistoryCustomLoadingView() {
+public fun PreviewAIChatHistoryCustomLoadingView() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier
@@ -136,7 +136,7 @@ fun PreviewAIChatHistoryCustomLoadingView() {
  */
 @Preview(showBackground = true, name = "AIChatHistory - All Callbacks")
 @Composable
-fun PreviewAIChatHistoryAllCallbacks() {
+public fun PreviewAIChatHistoryAllCallbacks() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier
@@ -159,7 +159,7 @@ fun PreviewAIChatHistoryAllCallbacks() {
  */
 @Preview(showBackground = true, name = "AIChatHistory - Custom Style")
 @Composable
-fun PreviewAIChatHistoryCustomStyle() {
+public fun PreviewAIChatHistoryCustomStyle() {
     CometChatTheme {
         CometChatAIAssistantChatHistory(
             modifier = Modifier

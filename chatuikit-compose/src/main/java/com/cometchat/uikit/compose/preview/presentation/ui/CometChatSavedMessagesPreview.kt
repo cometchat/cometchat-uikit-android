@@ -68,7 +68,7 @@ private fun defaultSavedMessages(): List<BaseMessage> {
  */
 @Preview(showBackground = true, name = "SavedMessages - Content")
 @Composable
-fun PreviewSavedMessagesContent() {
+public fun PreviewSavedMessagesContent() {
     CometChatTheme {
         CometChatSavedMessages(
             viewModel = previewSavedViewModel(defaultSavedMessages())
@@ -81,7 +81,7 @@ fun PreviewSavedMessagesContent() {
  */
 @Preview(showBackground = true, name = "SavedMessages - Empty")
 @Composable
-fun PreviewSavedMessagesEmpty() {
+public fun PreviewSavedMessagesEmpty() {
     CometChatTheme {
         CometChatSavedMessages(
             viewModel = previewSavedViewModel(emptyList())
@@ -94,7 +94,7 @@ fun PreviewSavedMessagesEmpty() {
  */
 @Preview(showBackground = true, name = "SavedMessages - Single Message")
 @Composable
-fun PreviewSavedMessagesSingle() {
+public fun PreviewSavedMessagesSingle() {
     CometChatTheme {
         CometChatSavedMessages(
             viewModel = previewSavedViewModel(

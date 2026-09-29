@@ -20,12 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messageheader.style.CometChatMessageHeaderStyle
 import com.cometchat.uikit.compose.presentation.messageheader.ui.CometChatMessageHeader
 import com.cometchat.uikit.core.factory.CometChatMessageHeaderViewModelFactory
@@ -66,7 +68,7 @@ private fun rememberPreviewMessageHeaderViewModel(
  */
 @Preview(showBackground = true, name = "MessageHeader - User - Online")
 @Composable
-fun PreviewMessageHeaderUserOnline() {
+public fun PreviewMessageHeaderUserOnline() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -85,7 +87,7 @@ fun PreviewMessageHeaderUserOnline() {
  */
 @Preview(showBackground = true, name = "MessageHeader - User - Offline")
 @Composable
-fun PreviewMessageHeaderUserOffline() {
+public fun PreviewMessageHeaderUserOffline() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Bob Johnson",
@@ -104,7 +106,7 @@ fun PreviewMessageHeaderUserOffline() {
  */
 @Preview(showBackground = true, name = "MessageHeader - User - No Back Button")
 @Composable
-fun PreviewMessageHeaderUserNoBackButton() {
+public fun PreviewMessageHeaderUserNoBackButton() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Charlie Brown")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -125,7 +127,7 @@ fun PreviewMessageHeaderUserNoBackButton() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Group - Public")
 @Composable
-fun PreviewMessageHeaderGroupPublic() {
+public fun PreviewMessageHeaderGroupPublic() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Engineering Team",
@@ -145,7 +147,7 @@ fun PreviewMessageHeaderGroupPublic() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Group - Private")
 @Composable
-fun PreviewMessageHeaderGroupPrivate() {
+public fun PreviewMessageHeaderGroupPrivate() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Project Alpha",
@@ -165,7 +167,7 @@ fun PreviewMessageHeaderGroupPrivate() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Group - Protected")
 @Composable
-fun PreviewMessageHeaderGroupProtected() {
+public fun PreviewMessageHeaderGroupProtected() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "VIP Lounge",
@@ -185,7 +187,7 @@ fun PreviewMessageHeaderGroupProtected() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Group - Large Member Count")
 @Composable
-fun PreviewMessageHeaderGroupLargeMemberCount() {
+public fun PreviewMessageHeaderGroupLargeMemberCount() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Global Community",
@@ -209,7 +211,7 @@ fun PreviewMessageHeaderGroupLargeMemberCount() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Visibility - No User Status")
 @Composable
-fun PreviewMessageHeaderHideUserStatus() {
+public fun PreviewMessageHeaderHideUserStatus() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -229,7 +231,7 @@ fun PreviewMessageHeaderHideUserStatus() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Visibility - No Group Status")
 @Composable
-fun PreviewMessageHeaderHideGroupStatus() {
+public fun PreviewMessageHeaderHideGroupStatus() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Private Team",
@@ -250,7 +252,7 @@ fun PreviewMessageHeaderHideGroupStatus() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Visibility - Call Buttons")
 @Composable
-fun PreviewMessageHeaderCallButtons() {
+public fun PreviewMessageHeaderCallButtons() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -271,7 +273,7 @@ fun PreviewMessageHeaderCallButtons() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Visibility - No Back Button")
 @Composable
-fun PreviewMessageHeaderNoBackButton() {
+public fun PreviewMessageHeaderNoBackButton() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -292,7 +294,7 @@ fun PreviewMessageHeaderNoBackButton() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Custom View - Leading")
 @Composable
-fun PreviewMessageHeaderCustomLeadingView() {
+public fun PreviewMessageHeaderCustomLeadingView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -323,7 +325,7 @@ fun PreviewMessageHeaderCustomLeadingView() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Custom View - Title")
 @Composable
-fun PreviewMessageHeaderCustomTitleView() {
+public fun PreviewMessageHeaderCustomTitleView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -353,7 +355,7 @@ fun PreviewMessageHeaderCustomTitleView() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Custom View - Subtitle")
 @Composable
-fun PreviewMessageHeaderCustomSubtitleView() {
+public fun PreviewMessageHeaderCustomSubtitleView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -379,7 +381,7 @@ fun PreviewMessageHeaderCustomSubtitleView() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Custom View - Trailing")
 @Composable
-fun PreviewMessageHeaderCustomTrailingView() {
+public fun PreviewMessageHeaderCustomTrailingView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -390,7 +392,7 @@ fun PreviewMessageHeaderCustomTrailingView() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_options),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -404,7 +406,7 @@ fun PreviewMessageHeaderCustomTrailingView() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Custom View - All Combined")
 @Composable
-fun PreviewMessageHeaderAllCustomViews() {
+public fun PreviewMessageHeaderAllCustomViews() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -444,7 +446,7 @@ fun PreviewMessageHeaderAllCustomViews() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_options),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -462,7 +464,7 @@ fun PreviewMessageHeaderAllCustomViews() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Style - Custom Background")
 @Composable
-fun PreviewMessageHeaderCustomBackground() {
+public fun PreviewMessageHeaderCustomBackground() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -481,7 +483,7 @@ fun PreviewMessageHeaderCustomBackground() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Style - Custom Title Color")
 @Composable
-fun PreviewMessageHeaderCustomTitleColor() {
+public fun PreviewMessageHeaderCustomTitleColor() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -504,7 +506,7 @@ fun PreviewMessageHeaderCustomTitleColor() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Comprehensive - User Full")
 @Composable
-fun PreviewMessageHeaderUserFull() {
+public fun PreviewMessageHeaderUserFull() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -526,7 +528,7 @@ fun PreviewMessageHeaderUserFull() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Comprehensive - Group Full")
 @Composable
-fun PreviewMessageHeaderGroupFull() {
+public fun PreviewMessageHeaderGroupFull() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Engineering Team",
@@ -549,7 +551,7 @@ fun PreviewMessageHeaderGroupFull() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Comprehensive - Minimal")
 @Composable
-fun PreviewMessageHeaderMinimal() {
+public fun PreviewMessageHeaderMinimal() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewMessageHeaderViewModel(mockUser = user)
@@ -567,7 +569,7 @@ fun PreviewMessageHeaderMinimal() {
  */
 @Preview(showBackground = true, name = "MessageHeader - Comprehensive - User vs Group")
 @Composable
-fun PreviewMessageHeaderUserVsGroup() {
+public fun PreviewMessageHeaderUserVsGroup() {
     CometChatTheme {
         Column {
             // User header

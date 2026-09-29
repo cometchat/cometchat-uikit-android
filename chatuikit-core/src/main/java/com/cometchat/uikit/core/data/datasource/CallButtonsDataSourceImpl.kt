@@ -16,7 +16,7 @@ import kotlin.coroutines.suspendCoroutine
  * Implementation of [CallButtonsDataSource] that integrates with CometChat SDK
  * for call initiation and active call detection.
  */
-class CallButtonsDataSourceImpl : CallButtonsDataSource {
+internal class CallButtonsDataSourceImpl : CallButtonsDataSource {
 
     override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
         return suspendCoroutine { continuation ->

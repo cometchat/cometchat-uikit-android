@@ -15,7 +15,7 @@ package com.cometchat.uikit.core.constants
  * - Presence of search text
  * - UID/GUID configuration (forces MESSAGES mode)
  */
-enum class SearchMode {
+public enum class SearchMode {
     /**
      * Search mode for fetching both conversations and messages.
      * Used when search text is provided without specific filters

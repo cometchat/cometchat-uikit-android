@@ -10,7 +10,7 @@ import kotlin.coroutines.suspendCoroutine
  * Implementation of MessageInformationDataSource that wraps CometChat SDK calls.
  * Handles fetching message receipts from the CometChat server.
  */
-class MessageInformationDataSourceImpl : MessageInformationDataSource {
+internal class MessageInformationDataSourceImpl : MessageInformationDataSource {
 
     /**
      * Fetches message receipts for a specific message from CometChat SDK.

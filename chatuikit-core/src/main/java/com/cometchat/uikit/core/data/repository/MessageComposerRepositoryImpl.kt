@@ -20,7 +20,7 @@ import kotlinx.coroutines.CancellationException
  *
  * @param dataSource The data source to send messages (interface, not concrete)
  */
-class MessageComposerRepositoryImpl(
+public class MessageComposerRepositoryImpl(
     private val dataSource: MessageComposerDataSource
 ) : MessageComposerRepository {
 

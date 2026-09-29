@@ -21,7 +21,7 @@ import androidx.annotation.StyleRes
  * )
  * ```
  */
-data class CometChatMessageComposerAction(
+public data class CometChatMessageComposerAction(
     val id: String = "",
     val title: String = "",
     val titleFont: String? = null,
@@ -34,19 +34,19 @@ data class CometChatMessageComposerAction(
     val cornerRadius: Int = -1,
     val onClick: OnClick? = null
 ) {
-    companion object {
+    public companion object {
         /**
          * Predefined IDs for built-in attachment options.
          * These match the IDs used in UIKitConstants.ComposerAction.
          */
-        const val ID_CAMERA = "camera"
-        const val ID_IMAGE = "image"
-        const val ID_VIDEO = "video"
-        const val ID_AUDIO = "audio"
-        const val ID_DOCUMENT = "document"
-        const val ID_POLL = "extension_poll"
-        const val ID_COLLABORATIVE_DOCUMENT = "extension_document"
-        const val ID_COLLABORATIVE_WHITEBOARD = "extension_whiteboard"
+        public const val ID_CAMERA: String = "camera"
+        public const val ID_IMAGE: String = "image"
+        public const val ID_VIDEO: String = "video"
+        public const val ID_AUDIO: String = "audio"
+        public const val ID_DOCUMENT: String = "document"
+        public const val ID_POLL: String = "extension_poll"
+        public const val ID_COLLABORATIVE_DOCUMENT: String = "extension_document"
+        public const val ID_COLLABORATIVE_WHITEBOARD: String = "extension_whiteboard"
     }
 }
 
@@ -54,6 +54,6 @@ data class CometChatMessageComposerAction(
  * Callback interface for attachment option clicks.
  * This is a functional interface that can be implemented using a lambda.
  */
-fun interface OnClick {
-    fun onClick()
+public fun interface OnClick {
+    public fun onClick()
 }

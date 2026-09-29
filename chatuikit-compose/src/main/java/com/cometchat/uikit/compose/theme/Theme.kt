@@ -10,7 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 
 @Composable
-fun CometChatTheme(
+public fun CometChatTheme(
     colorScheme: CometChatColorScheme = CometChatTheme.colorScheme,
     shapes: Shapes = CometChatTheme.shapes,
     typography: CometChatTypography = CometChatTheme.typography,

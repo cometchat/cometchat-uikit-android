@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  * 
  * @param dataSource The data source to fetch/save data (interface, not concrete)
  */
-class GroupMembersRepositoryImpl(
+public class GroupMembersRepositoryImpl(
     private val dataSource: GroupMembersDataSource
 ) : GroupMembersRepository {
     
@@ -113,5 +113,5 @@ class GroupMembersRepositoryImpl(
     /**
      * Resets the current request so the next fetch builds a fresh one.
      */
-    override fun resetRequest() = dataSource.resetRequest()
+    override fun resetRequest(): Unit = dataSource.resetRequest()
 }

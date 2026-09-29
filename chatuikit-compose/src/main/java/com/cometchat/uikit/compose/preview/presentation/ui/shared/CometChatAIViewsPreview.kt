@@ -21,7 +21,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 
 @Preview(showBackground = true, name = "AISmartReplies - Idle")
 @Composable
-fun PreviewAISmartRepliesIdle() {
+public fun PreviewAISmartRepliesIdle() {
     CometChatTheme {
         CometChatAISmartRepliesView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -32,7 +32,7 @@ fun PreviewAISmartRepliesIdle() {
 
 @Preview(showBackground = true, name = "AISmartReplies - Loading")
 @Composable
-fun PreviewAISmartRepliesLoading() {
+public fun PreviewAISmartRepliesLoading() {
     CometChatTheme {
         CometChatAISmartRepliesView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -43,7 +43,7 @@ fun PreviewAISmartRepliesLoading() {
 
 @Preview(showBackground = true, name = "AISmartReplies - Loaded")
 @Composable
-fun PreviewAISmartRepliesLoaded() {
+public fun PreviewAISmartRepliesLoaded() {
     CometChatTheme {
         CometChatAISmartRepliesView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -58,7 +58,7 @@ fun PreviewAISmartRepliesLoaded() {
 
 @Preview(showBackground = true, name = "AISmartReplies - Error")
 @Composable
-fun PreviewAISmartRepliesError() {
+public fun PreviewAISmartRepliesError() {
     CometChatTheme {
         CometChatAISmartRepliesView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -75,7 +75,7 @@ fun PreviewAISmartRepliesError() {
 
 @Preview(showBackground = true, name = "AIConversationStarter - Idle")
 @Composable
-fun PreviewAIConversationStarterIdle() {
+public fun PreviewAIConversationStarterIdle() {
     CometChatTheme {
         CometChatAIConversationStarterView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -86,7 +86,7 @@ fun PreviewAIConversationStarterIdle() {
 
 @Preview(showBackground = true, name = "AIConversationStarter - Loading")
 @Composable
-fun PreviewAIConversationStarterLoading() {
+public fun PreviewAIConversationStarterLoading() {
     CometChatTheme {
         CometChatAIConversationStarterView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -97,7 +97,7 @@ fun PreviewAIConversationStarterLoading() {
 
 @Preview(showBackground = true, name = "AIConversationStarter - Loaded")
 @Composable
-fun PreviewAIConversationStarterLoaded() {
+public fun PreviewAIConversationStarterLoaded() {
     CometChatTheme {
         CometChatAIConversationStarterView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -111,7 +111,7 @@ fun PreviewAIConversationStarterLoaded() {
 
 @Preview(showBackground = true, name = "AIConversationStarter - Error")
 @Composable
-fun PreviewAIConversationStarterError() {
+public fun PreviewAIConversationStarterError() {
     CometChatTheme {
         CometChatAIConversationStarterView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -128,7 +128,7 @@ fun PreviewAIConversationStarterError() {
 
 @Preview(showBackground = true, name = "AIConversationSummary - Idle")
 @Composable
-fun PreviewAIConversationSummaryIdle() {
+public fun PreviewAIConversationSummaryIdle() {
     CometChatTheme {
         CometChatAIConversationSummaryView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -139,7 +139,7 @@ fun PreviewAIConversationSummaryIdle() {
 
 @Preview(showBackground = true, name = "AIConversationSummary - Loading")
 @Composable
-fun PreviewAIConversationSummaryLoading() {
+public fun PreviewAIConversationSummaryLoading() {
     CometChatTheme {
         CometChatAIConversationSummaryView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -150,7 +150,7 @@ fun PreviewAIConversationSummaryLoading() {
 
 @Preview(showBackground = true, name = "AIConversationSummary - Loaded")
 @Composable
-fun PreviewAIConversationSummaryLoaded() {
+public fun PreviewAIConversationSummaryLoaded() {
     CometChatTheme {
         CometChatAIConversationSummaryView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -164,7 +164,7 @@ fun PreviewAIConversationSummaryLoaded() {
 
 @Preview(showBackground = true, name = "AIConversationSummary - Error")
 @Composable
-fun PreviewAIConversationSummaryError() {
+public fun PreviewAIConversationSummaryError() {
     CometChatTheme {
         CometChatAIConversationSummaryView(
             modifier = Modifier.fillMaxWidth().padding(16.dp),

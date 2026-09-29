@@ -7,12 +7,12 @@ import com.cometchat.uikit.core.domain.model.StickerSet
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface StickerDataSource {
+public interface StickerDataSource {
 
     /**
      * Fetches stickers from the data source.
      *
      * @return Result containing list of StickerSet objects or error
      */
-    suspend fun fetchStickers(): Result<List<StickerSet>>
+    suspend public fun fetchStickers(): Result<List<StickerSet>>
 }

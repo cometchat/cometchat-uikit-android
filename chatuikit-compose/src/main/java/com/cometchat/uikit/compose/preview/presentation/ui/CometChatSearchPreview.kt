@@ -112,7 +112,7 @@ private fun SimulatedFilterChips(
 
 @Preview(showBackground = true, name = "Search - Default (Initial State)")
 @Composable
-fun PreviewSearchDefault() {
+public fun PreviewSearchDefault() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -141,7 +141,7 @@ fun PreviewSearchDefault() {
 
 @Preview(showBackground = true, name = "Search - With Results")
 @Composable
-fun PreviewSearchWithResults() {
+public fun PreviewSearchWithResults() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -187,7 +187,7 @@ fun PreviewSearchWithResults() {
 
 @Preview(showBackground = true, name = "Search - Loading")
 @Composable
-fun PreviewSearchLoading() {
+public fun PreviewSearchLoading() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -207,7 +207,7 @@ fun PreviewSearchLoading() {
 
 @Preview(showBackground = true, name = "Search - Empty Results")
 @Composable
-fun PreviewSearchEmptyResults() {
+public fun PreviewSearchEmptyResults() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -230,7 +230,7 @@ fun PreviewSearchEmptyResults() {
 
 @Preview(showBackground = true, name = "Search - Error")
 @Composable
-fun PreviewSearchError() {
+public fun PreviewSearchError() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -258,7 +258,7 @@ fun PreviewSearchError() {
 
 @Preview(showBackground = true, name = "Search - Filter Selected")
 @Composable
-fun PreviewSearchFilterSelected() {
+public fun PreviewSearchFilterSelected() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -281,7 +281,7 @@ fun PreviewSearchFilterSelected() {
 
 @Preview(showBackground = true, name = "Search - No Filter Chips")
 @Composable
-fun PreviewSearchNoFilterChips() {
+public fun PreviewSearchNoFilterChips() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -306,7 +306,7 @@ fun PreviewSearchNoFilterChips() {
 
 @Preview(showBackground = true, name = "Search - No Search Bar")
 @Composable
-fun PreviewSearchNoSearchBar() {
+public fun PreviewSearchNoSearchBar() {
     CometChatTheme {
         Column(
             modifier = Modifier

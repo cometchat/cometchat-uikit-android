@@ -7,7 +7,7 @@ import org.json.JSONArray
  * Lives in data layer - defines contract for poll creation.
  * Allows for different implementations (remote, local, mock).
  */
-interface PollDataSource {
+public interface PollDataSource {
 
     /**
      * Creates a poll via the CometChat Extensions API.
@@ -19,7 +19,7 @@ interface PollDataSource {
      * @param quotedMessageId Optional ID of the message being replied to
      * @return Result containing success or error
      */
-    suspend fun createPoll(
+    suspend public fun createPoll(
         question: String,
         options: JSONArray,
         receiverId: String,

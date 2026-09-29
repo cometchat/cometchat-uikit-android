@@ -11,12 +11,12 @@ import com.cometchat.uikit.core.viewmodel.CometChatGroupsViewModel
  * Factory object for creating preview-specific Groups ViewModels.
  * These ViewModels are designed for Compose previews and testing different UI states.
  */
-object PreviewGroupsViewModelFactory {
+public object PreviewGroupsViewModelFactory {
 
     /**
      * Creates a ViewModel with default sample groups.
      */
-    fun createDefaultViewModel(): CometChatGroupsViewModel {
+    public fun createDefaultViewModel(): CometChatGroupsViewModel {
         val repository = PreviewGroupsRepository()
         return CometChatGroupsViewModel(
             fetchGroupsUseCase = FetchGroupsUseCase(repository),
@@ -28,7 +28,7 @@ object PreviewGroupsViewModelFactory {
     /**
      * Creates a ViewModel that shows the empty state.
      */
-    fun createEmptyStateViewModel(): CometChatGroupsViewModel {
+    public fun createEmptyStateViewModel(): CometChatGroupsViewModel {
         val repository = PreviewGroupsRepository(simulateEmpty = true)
         return CometChatGroupsViewModel(
             fetchGroupsUseCase = FetchGroupsUseCase(repository),
@@ -40,7 +40,7 @@ object PreviewGroupsViewModelFactory {
     /**
      * Creates a ViewModel that shows the error state.
      */
-    fun createErrorStateViewModel(): CometChatGroupsViewModel {
+    public fun createErrorStateViewModel(): CometChatGroupsViewModel {
         val repository = PreviewGroupsRepository(simulateError = true)
         return CometChatGroupsViewModel(
             fetchGroupsUseCase = FetchGroupsUseCase(repository),
@@ -52,7 +52,7 @@ object PreviewGroupsViewModelFactory {
     /**
      * Creates a ViewModel with custom groups.
      */
-    fun createCustomGroupsViewModel(groups: List<Group>): CometChatGroupsViewModel {
+    public fun createCustomGroupsViewModel(groups: List<Group>): CometChatGroupsViewModel {
         val repository = PreviewGroupsRepository(initialGroups = groups)
         return CometChatGroupsViewModel(
             fetchGroupsUseCase = FetchGroupsUseCase(repository),
@@ -64,28 +64,28 @@ object PreviewGroupsViewModelFactory {
     /**
      * Creates a ViewModel with only public groups.
      */
-    fun createPublicGroupsViewModel(): CometChatGroupsViewModel {
+    public fun createPublicGroupsViewModel(): CometChatGroupsViewModel {
         return createCustomGroupsViewModel(PreviewMockData.createPublicGroups())
     }
 
     /**
      * Creates a ViewModel with only private groups.
      */
-    fun createPrivateGroupsViewModel(): CometChatGroupsViewModel {
+    public fun createPrivateGroupsViewModel(): CometChatGroupsViewModel {
         return createCustomGroupsViewModel(PreviewMockData.createPrivateGroups())
     }
 
     /**
      * Creates a ViewModel with only password-protected groups.
      */
-    fun createPasswordGroupsViewModel(): CometChatGroupsViewModel {
+    public fun createPasswordGroupsViewModel(): CometChatGroupsViewModel {
         return createCustomGroupsViewModel(PreviewMockData.createPasswordGroups())
     }
 
     /**
      * Creates a ViewModel with a large list for scroll testing.
      */
-    fun createLargeListViewModel(count: Int = 30): CometChatGroupsViewModel {
+    public fun createLargeListViewModel(count: Int = 30): CometChatGroupsViewModel {
         return createCustomGroupsViewModel(PreviewMockData.createLargeGroupList(count))
     }
 }

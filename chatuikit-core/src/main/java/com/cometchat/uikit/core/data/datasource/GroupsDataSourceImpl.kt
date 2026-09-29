@@ -13,7 +13,7 @@ import kotlin.coroutines.resumeWithException
  * Contains NO business logic - just raw data fetching/saving.
  * This is the default implementation used for remote data operations.
  */
-class GroupsDataSourceImpl : GroupsDataSource {
+public class GroupsDataSourceImpl : GroupsDataSource {
     
     /**
      * Fetches groups from CometChat SDK.

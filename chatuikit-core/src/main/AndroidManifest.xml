@@ -24,7 +24,6 @@
 
     <application
         android:hardwareAccelerated="true"
-        android:requestLegacyExternalStorage="true"
         tools:node="merge"
         tools:targetApi="m">
 

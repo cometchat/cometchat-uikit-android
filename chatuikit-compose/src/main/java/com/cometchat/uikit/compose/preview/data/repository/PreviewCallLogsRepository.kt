@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.domain.repository.CallLogsRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list (default behavior).
  */
-class PreviewCallLogsRepository(
+public class PreviewCallLogsRepository(
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = true
 ) : CallLogsRepository {

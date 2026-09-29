@@ -9,7 +9,7 @@ import com.cometchat.chat.core.ConversationsRequest
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface ConversationListDataSource {
+public interface ConversationListDataSource {
     
     /**
      * Fetches conversations from the data source.
@@ -17,7 +17,7 @@ interface ConversationListDataSource {
      * @return Raw list of Conversation objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchConversations(
+    suspend public fun fetchConversations(
         request: ConversationsRequest
     ): List<Conversation>
     
@@ -28,7 +28,7 @@ interface ConversationListDataSource {
      * @return Success message
      * @throws Exception if deletion fails
      */
-    suspend fun deleteConversation(
+    suspend public fun deleteConversation(
         conversationWith: String,
         conversationType: String
     ): String
@@ -38,5 +38,5 @@ interface ConversationListDataSource {
      * @param message The message to mark as delivered
      * @throws Exception if marking fails
      */
-    suspend fun markAsDelivered(message: BaseMessage)
+    suspend public fun markAsDelivered(message: BaseMessage)
 }

@@ -20,7 +20,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "EmojiKeyboard - Default")
 @Composable
-fun PreviewEmojiKeyboardDefault() {
+public fun PreviewEmojiKeyboardDefault() {
     CometChatTheme {
         CometChatEmojiKeyboard(
             modifier = Modifier
@@ -36,7 +36,7 @@ fun PreviewEmojiKeyboardDefault() {
  */
 @Preview(showBackground = true, name = "EmojiKeyboard - With Long Click")
 @Composable
-fun PreviewEmojiKeyboardWithLongClick() {
+public fun PreviewEmojiKeyboardWithLongClick() {
     CometChatTheme {
         CometChatEmojiKeyboard(
             modifier = Modifier
@@ -57,7 +57,7 @@ fun PreviewEmojiKeyboardWithLongClick() {
  */
 @Preview(showBackground = true, name = "EmojiKeyboard - Custom Background")
 @Composable
-fun PreviewEmojiKeyboardCustomBackground() {
+public fun PreviewEmojiKeyboardCustomBackground() {
     CometChatTheme {
         CometChatEmojiKeyboard(
             modifier = Modifier

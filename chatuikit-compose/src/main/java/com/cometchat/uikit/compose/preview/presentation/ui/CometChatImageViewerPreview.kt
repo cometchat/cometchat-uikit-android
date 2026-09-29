@@ -18,7 +18,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "ImageViewer - Default")
 @Composable
-fun PreviewImageViewerDefault() {
+public fun PreviewImageViewerDefault() {
     CometChatTheme {
         CometChatImageViewerScreen(
             imageUrl = "https://example.com/sample-image.jpg",
@@ -35,7 +35,7 @@ fun PreviewImageViewerDefault() {
  */
 @Preview(showBackground = true, name = "ImageViewer - PNG File")
 @Composable
-fun PreviewImageViewerPng() {
+public fun PreviewImageViewerPng() {
     CometChatTheme {
         CometChatImageViewerScreen(
             imageUrl = "https://example.com/screenshot.png",
@@ -56,7 +56,7 @@ fun PreviewImageViewerPng() {
  */
 @Preview(showBackground = true, name = "ImageViewer - Custom Background")
 @Composable
-fun PreviewImageViewerCustomBackground() {
+public fun PreviewImageViewerCustomBackground() {
     CometChatTheme {
         CometChatImageViewerScreen(
             imageUrl = "https://example.com/sample-image.jpg",

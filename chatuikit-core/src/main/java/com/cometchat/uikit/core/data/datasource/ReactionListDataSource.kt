@@ -9,14 +9,14 @@ import com.cometchat.chat.models.Reaction
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface ReactionListDataSource {
+public interface ReactionListDataSource {
 
     /**
      * Fetches reactions from the data source.
      * @param request The configured ReactionsRequest
      * @return Result containing list of Reaction objects or error
      */
-    suspend fun fetchReactions(request: ReactionsRequest): Result<List<Reaction>>
+    suspend public fun fetchReactions(request: ReactionsRequest): Result<List<Reaction>>
 
     /**
      * Removes a reaction from a message.
@@ -24,5 +24,5 @@ interface ReactionListDataSource {
      * @param emoji The emoji reaction to remove
      * @return Result containing the updated BaseMessage or error
      */
-    suspend fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
+    suspend public fun removeReaction(messageId: Long, emoji: String): Result<BaseMessage>
 }

@@ -23,10 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.chat.models.Group
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.groups.style.CometChatGroupsStyle
 import com.cometchat.uikit.compose.presentation.groups.ui.CometChatGroups
 import com.cometchat.uikit.compose.presentation.shared.defaultstates.CometChatLoadingState
@@ -71,7 +73,7 @@ private fun rememberPreviewGroupsViewModel(
  */
 @Preview(showBackground = true, name = "Groups - State - Loading")
 @Composable
-fun PreviewGroupsLoading() {
+public fun PreviewGroupsLoading() {
     CometChatTheme {
         val style = CometChatGroupsStyle.default()
         Column(
@@ -98,7 +100,7 @@ fun PreviewGroupsLoading() {
  */
 @Preview(showBackground = true, name = "Groups - State - Empty")
 @Composable
-fun PreviewGroupsEmpty() {
+public fun PreviewGroupsEmpty() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(simulateEmpty = true)
         CometChatGroups(
@@ -114,7 +116,7 @@ fun PreviewGroupsEmpty() {
  */
 @Preview(showBackground = true, name = "Groups - State - Error")
 @Composable
-fun PreviewGroupsError() {
+public fun PreviewGroupsError() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(simulateError = true)
         CometChatGroups(
@@ -130,7 +132,7 @@ fun PreviewGroupsError() {
  */
 @Preview(showBackground = true, name = "Groups - State - Content")
 @Composable
-fun PreviewGroupsContent() {
+public fun PreviewGroupsContent() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel()
         CometChatGroups(
@@ -150,7 +152,7 @@ fun PreviewGroupsContent() {
  */
 @Preview(showBackground = true, name = "Groups - Type - Public Only")
 @Composable
-fun PreviewGroupsPublicOnly() {
+public fun PreviewGroupsPublicOnly() {
     CometChatTheme {
         val viewModel = remember { PreviewGroupsViewModelFactory.createPublicGroupsViewModel() }
         CometChatGroups(
@@ -166,7 +168,7 @@ fun PreviewGroupsPublicOnly() {
  */
 @Preview(showBackground = true, name = "Groups - Type - Private Only")
 @Composable
-fun PreviewGroupsPrivateOnly() {
+public fun PreviewGroupsPrivateOnly() {
     CometChatTheme {
         val viewModel = remember { PreviewGroupsViewModelFactory.createPrivateGroupsViewModel() }
         CometChatGroups(
@@ -182,7 +184,7 @@ fun PreviewGroupsPrivateOnly() {
  */
 @Preview(showBackground = true, name = "Groups - Type - Password Only")
 @Composable
-fun PreviewGroupsPasswordOnly() {
+public fun PreviewGroupsPasswordOnly() {
     CometChatTheme {
         val viewModel = remember { PreviewGroupsViewModelFactory.createPasswordGroupsViewModel() }
         CometChatGroups(
@@ -202,7 +204,7 @@ fun PreviewGroupsPasswordOnly() {
  */
 @Preview(showBackground = true, name = "Groups - Selection - Single")
 @Composable
-fun PreviewGroupsSingleSelection() {
+public fun PreviewGroupsSingleSelection() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(4)
@@ -221,7 +223,7 @@ fun PreviewGroupsSingleSelection() {
  */
 @Preview(showBackground = true, name = "Groups - Selection - Multiple")
 @Composable
-fun PreviewGroupsMultipleSelection() {
+public fun PreviewGroupsMultipleSelection() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(4)
@@ -244,7 +246,7 @@ fun PreviewGroupsMultipleSelection() {
  */
 @Preview(showBackground = true, name = "Groups - Visibility - No Toolbar")
 @Composable
-fun PreviewGroupsNoToolbar() {
+public fun PreviewGroupsNoToolbar() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -261,7 +263,7 @@ fun PreviewGroupsNoToolbar() {
  */
 @Preview(showBackground = true, name = "Groups - Visibility - No Search Box")
 @Composable
-fun PreviewGroupsNoSearchBox() {
+public fun PreviewGroupsNoSearchBox() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -280,7 +282,7 @@ fun PreviewGroupsNoSearchBox() {
  */
 @Preview(showBackground = true, name = "Groups - Visibility - No Group Type")
 @Composable
-fun PreviewGroupsNoGroupType() {
+public fun PreviewGroupsNoGroupType() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel()
         CometChatGroups(
@@ -297,7 +299,7 @@ fun PreviewGroupsNoGroupType() {
  */
 @Preview(showBackground = true, name = "Groups - Visibility - No Separators")
 @Composable
-fun PreviewGroupsNoSeparators() {
+public fun PreviewGroupsNoSeparators() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(4)
@@ -316,7 +318,7 @@ fun PreviewGroupsNoSeparators() {
  */
 @Preview(showBackground = true, name = "Groups - Visibility - With Back Button")
 @Composable
-fun PreviewGroupsWithBackButton() {
+public fun PreviewGroupsWithBackButton() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -339,7 +341,7 @@ fun PreviewGroupsWithBackButton() {
  */
 @Preview(showBackground = true, name = "Groups - Custom View - Empty")
 @Composable
-fun PreviewGroupsCustomEmptyView() {
+public fun PreviewGroupsCustomEmptyView() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(simulateEmpty = true)
         CometChatGroups(
@@ -380,7 +382,7 @@ fun PreviewGroupsCustomEmptyView() {
  */
 @Preview(showBackground = true, name = "Groups - Custom View - Leading")
 @Composable
-fun PreviewGroupsCustomLeadingView() {
+public fun PreviewGroupsCustomLeadingView() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -413,7 +415,7 @@ fun PreviewGroupsCustomLeadingView() {
  */
 @Preview(showBackground = true, name = "Groups - Custom View - Title")
 @Composable
-fun PreviewGroupsCustomTitleView() {
+public fun PreviewGroupsCustomTitleView() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -447,7 +449,7 @@ fun PreviewGroupsCustomTitleView() {
  */
 @Preview(showBackground = true, name = "Groups - Custom View - Subtitle")
 @Composable
-fun PreviewGroupsCustomSubtitleView() {
+public fun PreviewGroupsCustomSubtitleView() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -472,7 +474,7 @@ fun PreviewGroupsCustomSubtitleView() {
  */
 @Preview(showBackground = true, name = "Groups - Custom View - Trailing")
 @Composable
-fun PreviewGroupsCustomTrailingView() {
+public fun PreviewGroupsCustomTrailingView() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -508,7 +510,7 @@ fun PreviewGroupsCustomTrailingView() {
  */
 @Preview(showBackground = true, name = "Groups - Toolbar - Custom Title")
 @Composable
-fun PreviewGroupsCustomTitle() {
+public fun PreviewGroupsCustomTitle() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(2)
@@ -526,7 +528,7 @@ fun PreviewGroupsCustomTitle() {
  */
 @Preview(showBackground = true, name = "Groups - Toolbar - Overflow Menu")
 @Composable
-fun PreviewGroupsOverflowMenu() {
+public fun PreviewGroupsOverflowMenu() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(2)
@@ -539,7 +541,7 @@ fun PreviewGroupsOverflowMenu() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more_options),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -553,7 +555,7 @@ fun PreviewGroupsOverflowMenu() {
  */
 @Preview(showBackground = true, name = "Groups - Toolbar - Custom Search Placeholder")
 @Composable
-fun PreviewGroupsCustomSearchPlaceholder() {
+public fun PreviewGroupsCustomSearchPlaceholder() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(2)
@@ -576,7 +578,7 @@ fun PreviewGroupsCustomSearchPlaceholder() {
  */
 @Preview(showBackground = true, name = "Groups - Style - Custom Background")
 @Composable
-fun PreviewGroupsCustomBackground() {
+public fun PreviewGroupsCustomBackground() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -597,7 +599,7 @@ fun PreviewGroupsCustomBackground() {
  */
 @Preview(showBackground = true, name = "Groups - Style - Custom Title Color")
 @Composable
-fun PreviewGroupsCustomTitleColor() {
+public fun PreviewGroupsCustomTitleColor() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -622,7 +624,7 @@ fun PreviewGroupsCustomTitleColor() {
  */
 @Preview(showBackground = true, name = "Groups - Comprehensive - All Features")
 @Composable
-fun PreviewGroupsComprehensive() {
+public fun PreviewGroupsComprehensive() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel()
         CometChatGroups(
@@ -634,7 +636,7 @@ fun PreviewGroupsComprehensive() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -650,7 +652,7 @@ fun PreviewGroupsComprehensive() {
  */
 @Preview(showBackground = true, name = "Groups - Comprehensive - Minimal")
 @Composable
-fun PreviewGroupsMinimal() {
+public fun PreviewGroupsMinimal() {
     CometChatTheme {
         val viewModel = rememberPreviewGroupsViewModel(
             groups = PreviewMockData.createSampleGroups().take(3)
@@ -669,7 +671,7 @@ fun PreviewGroupsMinimal() {
  */
 @Preview(showBackground = true, name = "Groups - Comprehensive - Large List")
 @Composable
-fun PreviewGroupsLargeList() {
+public fun PreviewGroupsLargeList() {
     CometChatTheme {
         val viewModel = remember { PreviewGroupsViewModelFactory.createLargeListViewModel(20) }
         CometChatGroups(

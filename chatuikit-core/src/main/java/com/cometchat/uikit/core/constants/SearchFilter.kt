@@ -9,7 +9,7 @@ package com.cometchat.uikit.core.constants
  * - DOCUMENT: Documents, Audio
  * - LINK: Links (standalone)
  */
-enum class FilterGroup {
+public enum class FilterGroup {
     CONVERSATION,
     MEDIA,
     DOCUMENT,
@@ -32,7 +32,7 @@ enum class FilterGroup {
  * Use [isMessageFilter] and [isConversationFilter] helper methods to determine
  * the filter category. Use [group] property to get the filter's visibility group.
  */
-enum class SearchFilter(val value: String, val group: FilterGroup) {
+public enum class SearchFilter(public val value: String, public val group: FilterGroup) {
     /**
      * Filter for image messages.
      */
@@ -75,7 +75,7 @@ enum class SearchFilter(val value: String, val group: FilterGroup) {
      *
      * @return true if this filter applies to messages, false otherwise
      */
-    fun isMessageFilter(): Boolean = this in listOf(PHOTOS, VIDEOS, DOCUMENTS, LINKS, AUDIO)
+    public fun isMessageFilter(): Boolean = this in listOf(PHOTOS, VIDEOS, DOCUMENTS, LINKS, AUDIO)
 
     /**
      * Checks if this filter is a conversation filter.
@@ -84,16 +84,16 @@ enum class SearchFilter(val value: String, val group: FilterGroup) {
      *
      * @return true if this filter applies to conversations, false otherwise
      */
-    fun isConversationFilter(): Boolean = this in listOf(GROUPS, UNREAD)
+    public fun isConversationFilter(): Boolean = this in listOf(GROUPS, UNREAD)
 
-    companion object {
+    public companion object {
         /**
          * Returns all filters belonging to the specified group.
          *
          * @param group The filter group to get filters for
          * @return List of SearchFilter values in the specified group
          */
-        fun getFiltersInGroup(group: FilterGroup): List<SearchFilter> {
+        public fun getFiltersInGroup(group: FilterGroup): List<SearchFilter> {
             return entries.filter { it.group == group }
         }
     }

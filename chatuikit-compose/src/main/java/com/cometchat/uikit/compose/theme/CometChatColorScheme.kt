@@ -6,90 +6,90 @@ import androidx.compose.ui.graphics.toArgb
 import kotlin.math.roundToInt
 
 @Immutable
-class CometChatColorScheme(
+public class CometChatColorScheme(
 
     // Primary Colors
-    val primary: Color,
+    public val primary: Color,
 
     // Extended Primary Colors
-    val extendedPrimaryColor50: Color,
-    val extendedPrimaryColor100: Color,
-    val extendedPrimaryColor200: Color,
-    val extendedPrimaryColor300: Color,
-    val extendedPrimaryColor400: Color,
-    val extendedPrimaryColor500: Color,
-    val extendedPrimaryColor600: Color,
-    val extendedPrimaryColor700: Color,
-    val extendedPrimaryColor800: Color,
-    val extendedPrimaryColor900: Color,
+    public val extendedPrimaryColor50: Color,
+    public val extendedPrimaryColor100: Color,
+    public val extendedPrimaryColor200: Color,
+    public val extendedPrimaryColor300: Color,
+    public val extendedPrimaryColor400: Color,
+    public val extendedPrimaryColor500: Color,
+    public val extendedPrimaryColor600: Color,
+    public val extendedPrimaryColor700: Color,
+    public val extendedPrimaryColor800: Color,
+    public val extendedPrimaryColor900: Color,
 
     // Neutral Colors
-    val neutralColor50: Color,
-    val neutralColor100: Color,
-    val neutralColor200: Color,
-    val neutralColor300: Color,
-    val neutralColor400: Color,
-    val neutralColor500: Color,
-    val neutralColor600: Color,
-    val neutralColor700: Color,
-    val neutralColor800: Color,
-    val neutralColor900: Color,
+    public val neutralColor50: Color,
+    public val neutralColor100: Color,
+    public val neutralColor200: Color,
+    public val neutralColor300: Color,
+    public val neutralColor400: Color,
+    public val neutralColor500: Color,
+    public val neutralColor600: Color,
+    public val neutralColor700: Color,
+    public val neutralColor800: Color,
+    public val neutralColor900: Color,
 
     // Alert Colors
-    val infoColor: Color,
-    val successColor: Color,
-    val warningColor: Color,
-    val errorColor: Color,
-    val messageReadColor: Color,
+    public val infoColor: Color,
+    public val successColor: Color,
+    public val warningColor: Color,
+    public val errorColor: Color,
+    public val messageReadColor: Color,
 
     // Background Colors
-    val backgroundColor1: Color,
-    val backgroundColor2: Color,
-    val backgroundColor3: Color,
-    val backgroundColor4: Color,
+    public val backgroundColor1: Color,
+    public val backgroundColor2: Color,
+    public val backgroundColor3: Color,
+    public val backgroundColor4: Color,
 
     // Border Colors
-    val strokeColorDefault: Color,
-    val strokeColorLight: Color,
-    val strokeColorDark: Color,
-    val strokeColorHighlight: Color,
+    public val strokeColorDefault: Color,
+    public val strokeColorLight: Color,
+    public val strokeColorDark: Color,
+    public val strokeColorHighlight: Color,
 
     // Text Colors
-    val textColorPrimary: Color,
-    val textColorSecondary: Color,
-    val textColorTertiary: Color,
-    val textColorDisabled: Color,
-    val textColorWhite: Color,
-    val textColorHighlight: Color,
+    public val textColorPrimary: Color,
+    public val textColorSecondary: Color,
+    public val textColorTertiary: Color,
+    public val textColorDisabled: Color,
+    public val textColorWhite: Color,
+    public val textColorHighlight: Color,
 
     // Icon Colors
-    val iconTintPrimary: Color,
-    val iconTintSecondary: Color,
-    val iconTintTertiary: Color,
-    val iconTintWhite: Color,
-    val iconTintHighlight: Color,
+    public val iconTintPrimary: Color,
+    public val iconTintSecondary: Color,
+    public val iconTintTertiary: Color,
+    public val iconTintWhite: Color,
+    public val iconTintHighlight: Color,
 
     // Button Colors
-    val primaryButtonBackgroundColor: Color,
-    val primaryButtonIconTint: Color,
-    val primaryButtonTextColor: Color,
-    val secondaryButtonBackgroundColor: Color,
-    val secondaryButtonIconTint: Color,
-    val secondaryButtonTextColor: Color,
-    val linkButtonColor: Color,
-    val fabButtonBackgroundColor: Color,
-    val fabButtonIconTint: Color,
-    val whiteButtonPressed: Color,
+    public val primaryButtonBackgroundColor: Color,
+    public val primaryButtonIconTint: Color,
+    public val primaryButtonTextColor: Color,
+    public val secondaryButtonBackgroundColor: Color,
+    public val secondaryButtonIconTint: Color,
+    public val secondaryButtonTextColor: Color,
+    public val linkButtonColor: Color,
+    public val fabButtonBackgroundColor: Color,
+    public val fabButtonIconTint: Color,
+    public val whiteButtonPressed: Color,
 
     // Static Colors
-    val colorWhite: Color,
-    val colorBlack: Color
+    public val colorWhite: Color,
+    public val colorBlack: Color
 ) {
     // Aliases for border colors (for naming consistency with other components)
-    val borderColorLight: Color get() = strokeColorLight
-    val borderColorDefault: Color get() = strokeColorDefault
-    val borderColorDark: Color get() = strokeColorDark
-    val borderColorHighlight: Color get() = strokeColorHighlight
+    public val borderColorLight: Color get() = strokeColorLight
+    public val borderColorDefault: Color get() = strokeColorDefault
+    public val borderColorDark: Color get() = strokeColorDark
+    public val borderColorHighlight: Color get() = strokeColorHighlight
 
     override fun toString(): String {
         return "CometChatColorScheme(" +
@@ -163,7 +163,7 @@ class CometChatColorScheme(
  * @param isNightMode Whether the current theme is in dark mode
  * @return The blended extended primary color
  */
-fun getExtendedPrimaryColor(
+public fun getExtendedPrimaryColor(
     baseColor: Color,
     dayPercentage: Double,
     nightPercentage: Double,
@@ -175,7 +175,7 @@ fun getExtendedPrimaryColor(
 }
 
 // Function to blend two colors based on a percentage
-fun blendColors(baseColor: Color, blendColor: Color, percentage: Double): Color {
+public fun blendColors(baseColor: Color, blendColor: Color, percentage: Double): Color {
     val baseColorInt = baseColor.toArgb()
     val blendColorInt = blendColor.toArgb()
     val r = (android.graphics.Color.red(baseColorInt) * (1 - percentage) +
@@ -187,7 +187,7 @@ fun blendColors(baseColor: Color, blendColor: Color, percentage: Double): Color 
     return Color(android.graphics.Color.rgb(r, g, b))
 }
 
-fun lightColorScheme(
+public fun lightColorScheme(
     primary: Color = primaryColorLight,
     extendedPrimaryColor50: Color = getExtendedPrimaryColor(primary, 0.96, 0.80, false),
     extendedPrimaryColor100: Color = getExtendedPrimaryColor(primary, 0.88, 0.72, false),
@@ -322,7 +322,7 @@ fun lightColorScheme(
     colorBlack = colorBlack
 )
 
-fun darkColorScheme(
+public fun darkColorScheme(
     primary: Color = primaryColorDark,
     extendedPrimaryColor50: Color = getExtendedPrimaryColor(primary, 0.96, 0.80, true),
     extendedPrimaryColor100: Color = getExtendedPrimaryColor(primary, 0.88, 0.72, true),
@@ -457,4 +457,4 @@ fun darkColorScheme(
     colorBlack = colorBlack
 )
 
-val LocalColorScheme = staticCompositionLocalOf { lightColorScheme() }
+public val LocalColorScheme: androidx.compose.runtime.ProvidableCompositionLocal<CometChatColorScheme> = staticCompositionLocalOf { lightColorScheme() }

@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.ConversationListRepository
  * 
  * @param dataSource The data source to fetch/save data (interface, not concrete)
  */
-class ConversationListRepositoryImpl(
+public class ConversationListRepositoryImpl(
     private val dataSource: ConversationListDataSource
 ) : ConversationListRepository {
     

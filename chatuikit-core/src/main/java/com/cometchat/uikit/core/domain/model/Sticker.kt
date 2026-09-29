@@ -26,7 +26,7 @@ package com.cometchat.uikit.core.domain.model
  * @property url The URL to the sticker image (can be static image or GIF)
  * @property setName The name of the sticker set this sticker belongs to
  */
-data class Sticker(
+public data class Sticker(
     /** The name/identifier of the sticker */
     val name: String,
     /** The URL to the sticker image */
@@ -39,5 +39,5 @@ data class Sticker(
      *
      * @return true if the sticker URL ends with ".gif" (case-insensitive), false otherwise
      */
-    fun isGif(): Boolean = url.lowercase().endsWith(".gif")
+    public fun isGif(): Boolean = url.lowercase().endsWith(".gif")
 }

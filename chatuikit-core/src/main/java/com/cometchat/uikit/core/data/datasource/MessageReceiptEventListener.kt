@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.callbackFlow
  * Per design doc: Wraps CometChatMessageEvents.addListener() and removeListener()
  * for onMessagesDelivered and onMessagesRead events.
  */
-class MessageReceiptEventListener {
+public class MessageReceiptEventListener {
 
     /**
      * Creates a Flow that emits MessageReceipt events for both delivered and read receipts.
@@ -21,7 +21,7 @@ class MessageReceiptEventListener {
      * 
      * @return Flow emitting MessageReceipt for delivered and read events
      */
-    fun receiptEvents(): Flow<MessageReceipt> = callbackFlow {
+    public fun receiptEvents(): Flow<MessageReceipt> = callbackFlow {
         val listenerTag = "MessageInformation_${System.currentTimeMillis()}"
         
         CometChat.addMessageListener(listenerTag, object : CometChat.MessageListener() {
@@ -44,7 +44,7 @@ class MessageReceiptEventListener {
      * 
      * @return Flow emitting MessageReceipt for delivered events only
      */
-    fun deliveredEvents(): Flow<MessageReceipt> = callbackFlow {
+    public fun deliveredEvents(): Flow<MessageReceipt> = callbackFlow {
         val listenerTag = "MessageInformation_Delivered_${System.currentTimeMillis()}"
         
         CometChat.addMessageListener(listenerTag, object : CometChat.MessageListener() {
@@ -63,7 +63,7 @@ class MessageReceiptEventListener {
      * 
      * @return Flow emitting MessageReceipt for read events only
      */
-    fun readEvents(): Flow<MessageReceipt> = callbackFlow {
+    public fun readEvents(): Flow<MessageReceipt> = callbackFlow {
         val listenerTag = "MessageInformation_Read_${System.currentTimeMillis()}"
         
         CometChat.addMessageListener(listenerTag, object : CometChat.MessageListener() {

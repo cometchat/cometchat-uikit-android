@@ -16,7 +16,7 @@ import com.cometchat.uikit.core.domain.repository.ConversationListRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list instead of conversations.
  */
-class PreviewConversationListRepository(
+public class PreviewConversationListRepository(
     private val initialConversations: List<Conversation> = PreviewMockData.createSampleConversations(),
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = false

@@ -256,6 +256,297 @@
     <string name="cometchat_notify_everyone_in_this_group">Уведомить всех в этой группе</string>
     <string name="cometchat_notify_all" translatable="true">все</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_action_message" translatable="true">Служебное сообщение: %1$s</string>
+    <string name="cometchat_a11y_add_reaction" translatable="true">Добавить реакцию</string>
+    <string name="cometchat_a11y_ai_assistant" translatable="true">ИИ-ассистент</string>
+    <string name="cometchat_a11y_ai_conversation_starters" translatable="true">ИИ-начала беседы</string>
+    <string name="cometchat_a11y_ai_conversation_summary" translatable="true">ИИ-сводка беседы</string>
+    <string name="cometchat_a11y_ai_smart_replies" translatable="true">Умные ответы ИИ</string>
+    <string name="cometchat_a11y_audio" translatable="true">Аудио</string>
+    <string name="cometchat_a11y_audio_message" translatable="true">Аудиосообщение</string>
+    <string name="cometchat_a11y_audio_visualizer_showing_recording_amplitude" translatable="true">Аудиовизуализатор, показывающий амплитуду записи</string>
+    <string name="cometchat_a11y_audio_waveform" translatable="true">Форма звуковой волны</string>
+    <string name="cometchat_a11y_avatar_for" translatable="true">Аватар для %1$s</string>
+    <string name="cometchat_a11y_avatar_of" translatable="true">Аватар %1$s</string>
+    <string name="cometchat_a11y_back" translatable="true">Назад</string>
+    <string name="cometchat_a11y_blockquote" translatable="true">Цитата</string>
+    <string name="cometchat_a11y_bold" translatable="true">Жирный</string>
+    <string name="cometchat_a11y_bullet_list" translatable="true">Маркированный список</string>
+    <string name="cometchat_a11y_call" translatable="true">Вызов: %1$s</string>
+    <string name="cometchat_a11y_caller" translatable="true">Звонящий: %1$s</string>
+    <string name="cometchat_a11y_calling" translatable="true">Вызов %1$s</string>
+    <string name="cometchat_a11y_change_scope" translatable="true">Изменить роль</string>
+    <string name="cometchat_a11y_chat_history" translatable="true">История чата</string>
+    <string name="cometchat_a11y_clear_search" translatable="true">Очистить поиск</string>
+    <string name="cometchat_a11y_close" translatable="true">Закрыть</string>
+    <string name="cometchat_a11y_close_conversation_summary" translatable="true">Закрыть сводку беседы</string>
+    <string name="cometchat_a11y_close_edit_preview" translatable="true">Закрыть предпросмотр редактирования</string>
+    <string name="cometchat_a11y_close_formatting_toolbar" translatable="true">Закрыть панель форматирования</string>
+    <string name="cometchat_a11y_close_preview" translatable="true">Закрыть предпросмотр</string>
+    <string name="cometchat_a11y_close_reply_preview" translatable="true">Закрыть предпросмотр ответа</string>
+    <string name="cometchat_a11y_close_smart_replies" translatable="true">Закрыть умные ответы</string>
+    <string name="cometchat_a11y_code_block" translatable="true">Блок кода</string>
+    <string name="cometchat_a11y_collaborative" translatable="true">Совместный %1$s: %2$s</string>
+    <string name="cometchat_a11y_composer_action_buttons" translatable="true">Кнопки действий поля ввода</string>
+    <string name="cometchat_a11y_connecting_to_call" translatable="true">Подключение к вызову</string>
+    <string name="cometchat_a11y_conversation_starter" translatable="true">Начало беседы: %1$s</string>
+    <string name="cometchat_a11y_copy" translatable="true">Копировать</string>
+    <string name="cometchat_a11y_delete" translatable="true">Удалить</string>
+    <string name="cometchat_a11y_delete_icon" translatable="true">Значок удаления</string>
+    <string name="cometchat_a11y_delete_recording" translatable="true">Удалить запись</string>
+    <string name="cometchat_a11y_deleted_message" translatable="true">Удалённое сообщение</string>
+    <string name="cometchat_a11y_document" translatable="true">Документ</string>
+    <string name="cometchat_a11y_download" translatable="true">Скачать</string>
+    <string name="cometchat_a11y_download_attachment" translatable="true">Скачать вложение</string>
+    <string name="cometchat_a11y_download_audio" translatable="true">Скачать аудио</string>
+    <string name="cometchat_a11y_download_file" translatable="true">Скачать файл</string>
+    <string name="cometchat_a11y_drag_handle_for_option" translatable="true">Маркер перетаскивания для варианта %1$s</string>
+    <string name="cometchat_a11y_duration" translatable="true">Длительность: %1$s</string>
+    <string name="cometchat_a11y_edit_preview" translatable="true">Предпросмотр редактирования</string>
+    <string name="cometchat_a11y_end_call" translatable="true">Завершить вызов</string>
+    <string name="cometchat_a11y_error" translatable="true">Ошибка: %1$s</string>
+    <string name="cometchat_a11y_error_2" translatable="true">Ошибка: %1$s. %2$s</string>
+    <string name="cometchat_a11y_file_message_with_file_s" translatable="true">Сообщение с файлами: %1$s</string>
+    <string name="cometchat_a11y_file_type" translatable="true">Тип файла: %1$s</string>
+    <string name="cometchat_a11y_filter" translatable="true">Фильтр %1$s%2$s</string>
+    <string name="cometchat_a11y_flag_message_dialog" translatable="true">Диалог жалобы на сообщение</string>
+    <string name="cometchat_a11y_format_text" translatable="true">Форматировать текст</string>
+    <string name="cometchat_a11y_go_back_from_create_poll" translatable="true">Выйти из создания опроса</string>
+    <string name="cometchat_a11y_image" translatable="true">Изображение</string>
+    <string name="cometchat_a11y_image_2" translatable="true">Изображение %1$s</string>
+    <string name="cometchat_a11y_image_message_with_image_s" translatable="true">Сообщение с изображениями: %1$s</string>
+    <string name="cometchat_a11y_image_preview" translatable="true">Предпросмотр изображения</string>
+    <string name="cometchat_a11y_incoming_call_from" translatable="true">Входящий вызов от %1$s</string>
+    <string name="cometchat_a11y_inline_code" translatable="true">Встроенный код</string>
+    <string name="cometchat_a11y_italic" translatable="true">Курсив</string>
+    <string name="cometchat_a11y_link" translatable="true">Ссылка</string>
+    <string name="cometchat_a11y_link_edit_dialog" translatable="true">Диалог редактирования ссылки</string>
+    <string name="cometchat_a11y_link_popup_dialog" translatable="true">Всплывающий диалог ссылки</string>
+    <string name="cometchat_a11y_link_preview_image" translatable="true">Изображение предпросмотра ссылки</string>
+    <string name="cometchat_a11y_loading" translatable="true">Загрузка %1$s</string>
+    <string name="cometchat_a11y_loading_group_member" translatable="true">Загрузка участника группы</string>
+    <string name="cometchat_a11y_loading_list_item" translatable="true">Загрузка элемента списка</string>
+    <string name="cometchat_a11y_loading_messages" translatable="true">Загрузка сообщений</string>
+    <string name="cometchat_a11y_loading_notifications" translatable="true">Загрузка уведомлений</string>
+    <string name="cometchat_a11y_loading_please_wait" translatable="true">Загрузка, подождите</string>
+    <string name="cometchat_a11y_loading_reaction" translatable="true">Загрузка реакции</string>
+    <string name="cometchat_a11y_loading_reactions_please_wait" translatable="true">Загрузка реакций, подождите</string>
+    <string name="cometchat_a11y_loading_stickers_please_wait" translatable="true">Загрузка стикеров, подождите</string>
+    <string name="cometchat_a11y_media_message_with_items" translatable="true">Сообщение (%1$s) с элементами: %2$s</string>
+    <string name="cometchat_a11y_menu" translatable="true">Меню</string>
+    <string name="cometchat_a11y_message_composer" translatable="true">Поле ввода сообщения</string>
+    <string name="cometchat_a11y_message_list" translatable="true">Список сообщений</string>
+    <string name="cometchat_a11y_message_preview" translatable="true">Предпросмотр сообщения: %1$s — %2$s</string>
+    <string name="cometchat_a11y_microphone_disabled" translatable="true">Микрофон (отключён)</string>
+    <string name="cometchat_a11y_moderation_warning" translatable="true">Предупреждение модерации</string>
+    <string name="cometchat_a11y_more" translatable="true">Ещё</string>
+    <string name="cometchat_a11y_more_options" translatable="true">Дополнительные параметры</string>
+    <string name="cometchat_a11y_new_chat" translatable="true">Новый чат</string>
+    <string name="cometchat_a11y_notification_from" translatable="true">Уведомление от %1$s</string>
+    <string name="cometchat_a11y_numbered_list" translatable="true">Нумерованный список</string>
+    <string name="cometchat_a11y_ongoing_call" translatable="true">Текущий вызов</string>
+    <string name="cometchat_a11y_open_ai_options" translatable="true">Открыть параметры ИИ</string>
+    <string name="cometchat_a11y_options" translatable="true">Параметры</string>
+    <string name="cometchat_a11y_outgoing_call_to" translatable="true">Исходящий вызов %1$s</string>
+    <string name="cometchat_a11y_pause" translatable="true">Пауза</string>
+    <string name="cometchat_a11y_pause_playback" translatable="true">Приостановить воспроизведение</string>
+    <string name="cometchat_a11y_pause_recording" translatable="true">Приостановить запись</string>
+    <string name="cometchat_a11y_play" translatable="true">Воспроизвести</string>
+    <string name="cometchat_a11y_play_recording" translatable="true">Воспроизвести запись</string>
+    <string name="cometchat_a11y_play_video" translatable="true">Воспроизвести видео</string>
+    <string name="cometchat_a11y_poll" translatable="true">Опрос: %1$s</string>
+    <string name="cometchat_a11y_poll_option" translatable="true">Вариант опроса %1$s</string>
+    <string name="cometchat_a11y_poll_question_input" translatable="true">Поле вопроса опроса</string>
+    <string name="cometchat_a11y_reactions" translatable="true">%1$s, реакций: %2$s</string>
+    <string name="cometchat_a11y_record_voice_message" translatable="true">Записать голосовое сообщение</string>
+    <string name="cometchat_a11y_recording_duration" translatable="true">Длительность записи: %1$s</string>
+    <string name="cometchat_a11y_recording_icon" translatable="true">Значок записи</string>
+    <string name="cometchat_a11y_recording_in_progress" translatable="true">Идёт запись</string>
+    <string name="cometchat_a11y_recording_time" translatable="true">Время записи: %1$s</string>
+    <string name="cometchat_a11y_reply_preview" translatable="true">Предпросмотр ответа</string>
+    <string name="cometchat_a11y_restart" translatable="true">Начать заново</string>
+    <string name="cometchat_a11y_restart_recording" translatable="true">Начать запись заново</string>
+    <string name="cometchat_a11y_resume_recording" translatable="true">Возобновить запись</string>
+    <string name="cometchat_a11y_retry" translatable="true">Повторить</string>
+    <string name="cometchat_a11y_rich_text_toolbar" translatable="true">Панель форматированного текста</string>
+    <string name="cometchat_a11y_search" translatable="true">Поиск</string>
+    <string name="cometchat_a11y_search_conversations" translatable="true">Поиск бесед</string>
+    <string name="cometchat_a11y_search_conversations_tap_to_open_search" translatable="true">Поиск бесед, нажмите, чтобы открыть поиск</string>
+    <string name="cometchat_a11y_search_results_conversations_messages" translatable="true">Результаты: бесед — %1$s, сообщений — %2$s</string>
+    <string name="cometchat_a11y_selected_suffix" translatable="true">, выбрано</string>
+    <string name="cometchat_a11y_send" translatable="true">Отправить</string>
+    <string name="cometchat_a11y_send_recording" translatable="true">Отправить запись</string>
+    <string name="cometchat_a11y_share" translatable="true">Поделиться</string>
+    <string name="cometchat_a11y_show_formatting_options" translatable="true">Показать параметры форматирования</string>
+    <string name="cometchat_a11y_site_favicon" translatable="true">Значок сайта</string>
+    <string name="cometchat_a11y_smart_reply" translatable="true">Умный ответ: %1$s</string>
+    <string name="cometchat_a11y_start_recording" translatable="true">Начать запись</string>
+    <string name="cometchat_a11y_sticker_set" translatable="true">Набор стикеров %1$s</string>
+    <string name="cometchat_a11y_stickers" translatable="true">Стикеры</string>
+    <string name="cometchat_a11y_stop" translatable="true">Остановить</string>
+    <string name="cometchat_a11y_stop_recording" translatable="true">Остановить запись</string>
+    <string name="cometchat_a11y_strikethrough" translatable="true">Зачёркнутый</string>
+    <string name="cometchat_a11y_submit_recording" translatable="true">Отправить запись</string>
+    <string name="cometchat_a11y_submit_recording_disabled" translatable="true">Отправить запись (отключено)</string>
+    <string name="cometchat_a11y_submit_selection_of_conversations" translatable="true">Подтвердить выбор бесед: %1$s</string>
+    <string name="cometchat_a11y_submit_selection_of_members" translatable="true">Подтвердить выбор участников: %1$s</string>
+    <string name="cometchat_a11y_submit_selection_of_users" translatable="true">Подтвердить выбор пользователей: %1$s</string>
+    <string name="cometchat_a11y_suggestion" translatable="true">Предложение: %1$s</string>
+    <string name="cometchat_a11y_suggestion_list" translatable="true">Список предложений</string>
+    <string name="cometchat_a11y_summary" translatable="true">Сводка: %1$s</string>
+    <string name="cometchat_a11y_text" translatable="true">%1$s. %2$s</string>
+    <string name="cometchat_a11y_text_message" translatable="true">Текстовое сообщение: %1$s</string>
+    <string name="cometchat_a11y_thread" translatable="true">Тред</string>
+    <string name="cometchat_a11y_thread_replies" translatable="true">Ответы в треде</string>
+    <string name="cometchat_a11y_underline" translatable="true">Подчёркнутый</string>
+    <string name="cometchat_a11y_user_avatar" translatable="true">Аватар пользователя</string>
+    <string name="cometchat_a11y_video" translatable="true">Видео %1$s</string>
+    <string name="cometchat_a11y_video_2" translatable="true">Видео</string>
+    <string name="cometchat_a11y_video_call" translatable="true">Видеозвонок</string>
+    <string name="cometchat_a11y_video_label" translatable="true">Видео</string>
+    <string name="cometchat_a11y_video_message_with_video_s" translatable="true">Сообщение с видео: %1$s</string>
+    <string name="cometchat_a11y_video_thumbnail" translatable="true">Миниатюра видео</string>
+    <string name="cometchat_a11y_video_unavailable" translatable="true">Видео недоступно</string>
+    <string name="cometchat_a11y_voice_call" translatable="true">Голосовой вызов</string>
+    <string name="cometchat_a11y_voice_recording" translatable="true">Голосовая запись</string>
+    <string name="cometchat_add_link" translatable="true">Добавить ссылку</string>
+    <string name="cometchat_ai_agent_message" translatable="true">Сообщение ИИ-агента</string>
+    <string name="cometchat_ai_assistant" translatable="true">ИИ-ассистент</string>
+    <string name="cometchat_answer_n" translatable="true">Ответ %1$d</string>
+    <string name="cometchat_apply" translatable="true">Применить</string>
+    <string name="cometchat_are_typing" translatable="true">%1$d человек печатают…</string>
+    <string name="cometchat_attachment_cancel" translatable="true">Отмена</string>
+    <string name="cometchat_attachment_count" translatable="true">Вложений: %1$d</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">Можно прикрепить до %1$d файлов</string>
+    <string name="cometchat_attachment_overflow" translatable="true">+%1$d</string>
+    <string name="cometchat_attachment_pause" translatable="true">Пауза</string>
+    <string name="cometchat_attachment_play" translatable="true">Воспроизвести</string>
+    <string name="cometchat_attachment_progress" translatable="true">%1$s / %2$s</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">Можно выбрать ещё %1$d файлов</string>
+    <string name="cometchat_attachment_remove" translatable="true">Убрать</string>
+    <string name="cometchat_attachment_retry" translatable="true">Повторить</string>
+    <string name="cometchat_attachment_size_exceeded" translatable="true">%1$s слишком большой (макс. %2$s)</string>
+    <string name="cometchat_attachment_size_unknown" translatable="true">Не удалось прочитать %1$s — попробуйте другой файл</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">Нажмите, чтобы повторить</string>
+    <string name="cometchat_attachment_tile_description" translatable="true">%1$s, %2$s</string>
+    <string name="cometchat_attachment_total_size_exceeded" translatable="true">Эти файлы превышают лимит %1$s на одно сообщение</string>
+    <string name="cometchat_attachment_type_not_allowed" translatable="true">%1$s — недопустимый тип файла</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">Ошибка загрузки</string>
+    <string name="cometchat_attachment_upload_unavailable" translatable="true">Загрузки недоступны в вашем тарифе</string>
+    <string name="cometchat_attachment_uploading" translatable="true">Загрузка…</string>
+    <string name="cometchat_ban_member" translatable="true">Заблокировать участника</string>
+    <string name="cometchat_change_scope" translatable="true">Изменить роль</string>
+    <string name="cometchat_close" translatable="true">Закрыть</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">Вы действительно хотите заблокировать %1$s?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">Вы действительно хотите исключить %1$s?</string>
+    <string name="cometchat_conversation_list_description" translatable="true">Список бесед: %1$d</string>
+    <string name="cometchat_create_poll" translatable="true">Создать опрос</string>
+    <string name="cometchat_discard_selection" translatable="true">Отменить выбор</string>
+    <string name="cometchat_download" translatable="true">Скачать</string>
+    <string name="cometchat_drag_to_reorder" translatable="true">Перетащите, чтобы изменить порядок</string>
+    <string name="cometchat_edit_link" translatable="true">Изменить ссылку</string>
+    <string name="cometchat_edit_message" translatable="true">Изменить сообщение</string>
+    <string name="cometchat_error_loading_members" translatable="true">Не удалось загрузить участников. Попробуйте ещё раз.</string>
+    <string name="cometchat_file" translatable="true">Файл</string>
+    <string name="cometchat_gallery" translatable="true">Галерея</string>
+    <string name="cometchat_go_back" translatable="true">Вернуться назад</string>
+    <string name="cometchat_group_members" translatable="true">Участники</string>
+    <string name="cometchat_groups_list_description" translatable="true">Список групп: %1$d</string>
+    <string name="cometchat_insert_link" translatable="true">Вставить ссылку</string>
+    <string name="cometchat_kick_member" translatable="true">Исключить участника</string>
+    <string name="cometchat_link" translatable="true">Ссылка</string>
+    <string name="cometchat_link_text" translatable="true">Текст ссылки</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_meeting" translatable="true">Встреча</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d аудио</string>
+    <string name="cometchat_n_files" translatable="true">%1$d файлов</string>
+    <string name="cometchat_n_images" translatable="true">%1$d изображений</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d ещё</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d видео</string>
+    <string name="cometchat_new" translatable="true">Новое</string>
+    <string name="cometchat_new_message_count_plural" translatable="true">Новых сообщений: %1$d</string>
+    <string name="cometchat_new_message_count_singular" translatable="true">%1$d новое сообщение</string>
+    <string name="cometchat_no_members_found" translatable="true">Участники не найдены</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">Добавьте участников в группу, чтобы видеть их здесь.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">Сообщений пока нет</string>
+    <string name="cometchat_no_preview_available" translatable="true">Предпросмотр недоступен</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">Этот тип файла не поддерживает предпросмотр.</string>
+    <string name="cometchat_no_reactions" translatable="true">Нет реакций</string>
+    <string name="cometchat_not_selected" translatable="true">Не выбрано</string>
+    <string name="cometchat_preview" translatable="true">Предпросмотр:</string>
+    <string name="cometchat_remove_group_description" translatable="true">Убрать %1$s из выбора</string>
+    <string name="cometchat_reply_to_message" translatable="true">Ответить</string>
+    <string name="cometchat_replying_to" translatable="true">Ответ для %s</string>
+    <string name="cometchat_say_hi_to" translatable="true">Поздоровайтесь с %1$s 👋</string>
+    <string name="cometchat_search_empty_subtitle" translatable="true">Совпадений не найдено. Попробуйте другое ключевое слово.</string>
+    <string name="cometchat_search_empty_title" translatable="true">Нет результатов</string>
+    <string name="cometchat_search_in" translatable="true">Искать в</string>
+    <string name="cometchat_search_initial_subtitle" translatable="true">Ищите беседы или сообщения, введя ключевое слово выше.</string>
+    <string name="cometchat_search_initial_title" translatable="true">Начните поиск</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">Выберите новую роль для %1$s</string>
+    <string name="cometchat_selected" translatable="true">Выбрано</string>
+    <string name="cometchat_selected_count" translatable="true">Выбрано: %1$d</string>
+    <string name="cometchat_selected_group_item_description" translatable="true">Выбранная группа: %1$s</string>
+    <string name="cometchat_selected_groups_list_description" translatable="true">Список выбранных групп: %1$d</string>
+    <string name="cometchat_selection_count" translatable="true">Выбрано: %d</string>
+    <string name="cometchat_set_the_answers" translatable="true">Задайте ответы</string>
+    <string name="cometchat_show_less" translatable="true">Показать меньше</string>
+    <string name="cometchat_show_n_more" translatable="true">Показать ещё +%1$d</string>
+    <string name="cometchat_smart_replies" translatable="true">Умные ответы</string>
+    <string name="cometchat_start_conversation" translatable="true">Начать беседу</string>
+    <string name="cometchat_submit_selection" translatable="true">Подтвердить выбор</string>
+    <string name="cometchat_submit_selection_description" translatable="true">Подтвердить выбор элементов: %1$d</string>
+    <string name="cometchat_text" translatable="true">Текст</string>
+    <string name="cometchat_try_again_later" translatable="true">Повторите попытку позже.</string>
+    <string name="cometchat_unable_to_load_poll" translatable="true">Не удалось загрузить опрос</string>
+    <string name="cometchat_unread_messages" translatable="true">Непрочитанных сообщений: %1$d</string>
+    <string name="cometchat_video" translatable="true">Видео</string>
+    <string name="cometchat_whiteboard" translatable="true">Доска</string>
+    <plurals name="cometchat_members_count">
+        <item quantity="one">%d участник</item>
+        <item quantity="other">%d участников</item>
+    </plurals>
+    <!-- ENG-38656 (X4 round 2): conditional a11y -->
+    <string name="cometchat_a11y_item_with_state" translatable="true">%1$s, %2$s</string>
+    <string name="cometchat_a11y_creating_poll" translatable="true">Создание опроса, подождите</string>
+    <string name="cometchat_a11y_send_poll" translatable="true">Отправить опрос</string>
+    <string name="cometchat_a11y_send_poll_disabled" translatable="true">Кнопка отправки опроса отключена</string>
+    <string name="cometchat_a11y_media_recorder_idle" translatable="true">Рекордер готов к записи</string>
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">Идёт запись, прошло %1$s</string>
+    <string name="cometchat_a11y_recording_ready" translatable="true">Запись завершена, готова к воспроизведению или отправке</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">Запись приостановлена на %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">Запись завершена, длительность %1$s</string>
+    <string name="cometchat_a11y_playing_recording_time" translatable="true">Воспроизведение записи, %1$s</string>
+    <string name="cometchat_a11y_recording_error_msg" translatable="true">Ошибка записи: %1$s</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">Аудиорекордер</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">Форма звуковой волны, показывающая амплитуду записи</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">Форма звуковой волны, показывающая ход воспроизведения</string>
+    <string name="cometchat_a11y_sticker" translatable="true">Стикер</string>
+    <string name="cometchat_a11y_downloading" translatable="true">Загрузка</string>
+    <string name="cometchat_a11y_loading_short" translatable="true">Загрузка</string>
+    <string name="cometchat_a11y_close_attachments" translatable="true">Закрыть вложения</string>
+    <string name="cometchat_a11y_open_attachments" translatable="true">Открыть вложения</string>
+    <string name="cometchat_a11y_poll_option_text" translatable="true">Вариант: %1$s</string>
+    <string name="cometchat_a11y_poll_option_stats" translatable="true">, %1$s процентов, голосов: %2$s</string>
+    <string name="cometchat_a11y_poll_your_vote" translatable="true">, ваш голос</string>
+    <!-- ENG-38656 (X4 round 3) -->
+    <string name="cometchat_a11y_message_in_progress" translatable="true">Сообщение отправляется</string>
+    <string name="cometchat_a11y_message_sent" translatable="true">Сообщение отправлено</string>
+    <string name="cometchat_a11y_message_delivered" translatable="true">Сообщение доставлено</string>
+    <string name="cometchat_a11y_message_read" translatable="true">Сообщение прочитано</string>
+    <string name="cometchat_a11y_message_error" translatable="true">Ошибка сообщения</string>
+    <string name="cometchat_a11y_unsupported_attachment" translatable="true">Неподдерживаемое вложение</string>
+    <string name="cometchat_a11y_private_group" translatable="true">Частная группа</string>
+    <string name="cometchat_a11y_protected_group" translatable="true">Защищённая группа</string>
+    <string name="cometchat_a11y_start_recording_full" translatable="true">Начать запись</string>
+    <string name="cometchat_a11y_pause_recording_full" translatable="true">Приостановить запись</string>
+    <string name="cometchat_a11y_resume_recording_full" translatable="true">Возобновить запись</string>
+    <string name="cometchat_a11y_send_recording_full" translatable="true">Отправить запись</string>
+    <string name="cometchat_a11y_hide_formatting_options" translatable="true">Скрыть параметры форматирования</string>
+    <string name="cometchat_a11y_close_stickers" translatable="true">Закрыть стикеры</string>
+    <string name="cometchat_a11y_open_stickers" translatable="true">Открыть стикеры</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization  -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">Подписаться на тему</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Отписаться от темы</string>
@@ -285,7 +576,9 @@
     <string name="cometchat_unpin_conversation_confirm_body">Открепить эту беседу?</string>
     <string name="cometchat_pin_conversation_limit_reached">Можно закрепить не более %1$d чатов. Открепите один, чтобы закрепить другой.</string>
     <string name="cometchat_pin_limit_reached">Можно закрепить не более %1$d сообщений. Открепите одно, чтобы закрепить другое.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">Достигнут лимит закреплённых сообщений. Открепите одно, чтобы закрепить другое.</string>
     <string name="cometchat_save_limit_reached">Можно сохранить не более %1$d сообщений.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">Достигнут лимит сохранённых сообщений. Уберите одно из сохранённого, чтобы сохранить другое.</string>
     <string name="cometchat_pin_save_generic_error">Что-то пошло не так. Повторите попытку.</string>
     <string name="cometchat_message_pinned">Сообщение закреплено</string>
     <string name="cometchat_message_unpinned">Сообщение откреплено</string>

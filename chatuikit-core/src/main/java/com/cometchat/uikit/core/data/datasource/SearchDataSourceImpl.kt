@@ -15,7 +15,7 @@ import kotlin.coroutines.resumeWithException
  * Contains NO business logic - just raw data fetching.
  * This is the default implementation used for remote data operations.
  */
-class SearchDataSourceImpl : SearchDataSource {
+internal class SearchDataSourceImpl : SearchDataSource {
 
     /**
      * Fetches conversations from CometChat SDK.

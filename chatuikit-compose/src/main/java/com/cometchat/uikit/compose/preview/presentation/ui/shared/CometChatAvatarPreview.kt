@@ -29,7 +29,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "Avatar - Initials")
 @Composable
-fun PreviewAvatarInitials() {
+public fun PreviewAvatarInitials() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -56,7 +56,7 @@ fun PreviewAvatarInitials() {
  */
 @Preview(showBackground = true, name = "Avatar - With URL")
 @Composable
-fun PreviewAvatarWithUrl() {
+public fun PreviewAvatarWithUrl() {
     CometChatTheme {
         CometChatAvatar(
             name = "Alice Smith",
@@ -77,7 +77,7 @@ fun PreviewAvatarWithUrl() {
  */
 @Preview(showBackground = true, name = "Avatar - User Object")
 @Composable
-fun PreviewAvatarUser() {
+public fun PreviewAvatarUser() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -100,7 +100,7 @@ fun PreviewAvatarUser() {
  */
 @Preview(showBackground = true, name = "Avatar - Group Object")
 @Composable
-fun PreviewAvatarGroup() {
+public fun PreviewAvatarGroup() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -127,7 +127,7 @@ fun PreviewAvatarGroup() {
  */
 @Preview(showBackground = true, name = "Avatar - Sizes")
 @Composable
-fun PreviewAvatarSizes() {
+public fun PreviewAvatarSizes() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -152,7 +152,7 @@ fun PreviewAvatarSizes() {
  */
 @Preview(showBackground = true, name = "Avatar - Custom Colors")
 @Composable
-fun PreviewAvatarCustomColors() {
+public fun PreviewAvatarCustomColors() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -188,7 +188,7 @@ fun PreviewAvatarCustomColors() {
  */
 @Preview(showBackground = true, name = "Avatar - Corner Radius")
 @Composable
-fun PreviewAvatarCornerRadius() {
+public fun PreviewAvatarCornerRadius() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -221,7 +221,7 @@ fun PreviewAvatarCornerRadius() {
  */
 @Preview(showBackground = true, name = "Avatar - With Border")
 @Composable
-fun PreviewAvatarWithBorder() {
+public fun PreviewAvatarWithBorder() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),

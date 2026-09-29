@@ -25,7 +25,7 @@ import kotlin.coroutines.resumeWithException
  * 
  * @see MessageComposerDataSource for the interface definition
  */
-class MessageComposerDataSourceImpl : MessageComposerDataSource {
+internal class MessageComposerDataSourceImpl : MessageComposerDataSource {
     
     /**
      * Sends a text message using CometChatUIKit.

@@ -8,7 +8,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 
 @Preview(showBackground = true, name = "Dialog - Confirmation")
 @Composable
-fun PreviewDialogConfirmation() {
+public fun PreviewDialogConfirmation() {
     CometChatTheme {
         CometChatDialog(
             title = "Delete Message",
@@ -23,7 +23,7 @@ fun PreviewDialogConfirmation() {
 
 @Preview(showBackground = true, name = "Dialog - Alert (No Negative)")
 @Composable
-fun PreviewDialogAlert() {
+public fun PreviewDialogAlert() {
     CometChatTheme {
         CometChatDialog(
             title = "Error",
@@ -38,7 +38,7 @@ fun PreviewDialogAlert() {
 
 @Preview(showBackground = true, name = "Dialog - No Title")
 @Composable
-fun PreviewDialogNoTitle() {
+public fun PreviewDialogNoTitle() {
     CometChatTheme {
         CometChatDialog(
             title = "",
@@ -54,7 +54,7 @@ fun PreviewDialogNoTitle() {
 
 @Preview(showBackground = true, name = "Dialog - No Message")
 @Composable
-fun PreviewDialogNoMessage() {
+public fun PreviewDialogNoMessage() {
     CometChatTheme {
         CometChatDialog(
             title = "Leave Group",
@@ -70,7 +70,7 @@ fun PreviewDialogNoMessage() {
 
 @Preview(showBackground = true, name = "Dialog - With Progress")
 @Composable
-fun PreviewDialogWithProgress() {
+public fun PreviewDialogWithProgress() {
     CometChatTheme {
         CometChatDialog(
             title = "Deleting...",

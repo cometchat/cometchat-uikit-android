@@ -19,7 +19,7 @@ import com.cometchat.uikit.core.domain.repository.MessageListRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list instead of messages.
  */
-class PreviewMessageListRepository(
+public class PreviewMessageListRepository(
     private val initialMessages: List<BaseMessage> = createSampleMessages(),
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = false
@@ -134,8 +134,8 @@ class PreviewMessageListRepository(
         latestMessageId = messageId
     }
 
-    companion object {
-        fun createSampleMessages(): List<BaseMessage> {
+    public companion object {
+        public fun createSampleMessages(): List<BaseMessage> {
             val alice = PreviewMockData.createMockUser(uid = "u1", name = "Alice Smith")
             val bob = PreviewMockData.createMockUser(uid = "u2", name = "Bob Johnson")
             val me = PreviewMockData.createMockUser(uid = "me", name = "Me")

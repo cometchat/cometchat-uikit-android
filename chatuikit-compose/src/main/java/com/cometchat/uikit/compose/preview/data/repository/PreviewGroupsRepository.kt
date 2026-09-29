@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.GroupsRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list instead of groups.
  */
-class PreviewGroupsRepository(
+public class PreviewGroupsRepository(
     private val initialGroups: List<Group> = PreviewMockData.createSampleGroups(),
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = false

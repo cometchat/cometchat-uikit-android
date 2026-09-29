@@ -3,13 +3,13 @@ package com.cometchat.uikit.core.domain.model
 import com.cometchat.chat.models.AIAssistantMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 
-class StreamMessage(
+public class StreamMessage(
     receiverUid: String,
     receiverType: String,
     text: String
 ) : AIAssistantMessage(receiverUid, receiverType, text) {
 
-    var isStreamingInterrupted: Boolean = false
+    public var isStreamingInterrupted: Boolean = false
 
     init {
         type = UIKitConstants.MessageType.STREAM

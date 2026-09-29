@@ -8,7 +8,7 @@ import com.cometchat.chat.models.User
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface MessageHeaderDataSource {
+public interface MessageHeaderDataSource {
     
     /**
      * Fetches a user by their UID from the data source.
@@ -16,7 +16,7 @@ interface MessageHeaderDataSource {
      * @return The User object
      * @throws Exception if fetching fails
      */
-    suspend fun getUser(uid: String): User
+    suspend public fun getUser(uid: String): User
     
     /**
      * Fetches a group by their GUID from the data source.
@@ -24,5 +24,5 @@ interface MessageHeaderDataSource {
      * @return The Group object
      * @throws Exception if fetching fails
      */
-    suspend fun getGroup(guid: String): Group
+    suspend public fun getGroup(guid: String): Group
 }

@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.GroupsRepository
  * 
  * @param dataSource The data source to fetch/save data (interface, not concrete)
  */
-class GroupsRepositoryImpl(
+public class GroupsRepositoryImpl(
     private val dataSource: GroupsDataSource
 ) : GroupsRepository {
     

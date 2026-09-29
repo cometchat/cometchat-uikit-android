@@ -24,7 +24,7 @@ private fun createSampleSuggestions(): List<SuggestionItem> = listOf(
 
 @Preview(showBackground = true, name = "SuggestionList - Default")
 @Composable
-fun PreviewSuggestionListDefault() {
+public fun PreviewSuggestionListDefault() {
     CometChatTheme {
         CometChatSuggestionList(
             modifier = Modifier
@@ -39,7 +39,7 @@ fun PreviewSuggestionListDefault() {
 
 @Preview(showBackground = true, name = "SuggestionList - Empty")
 @Composable
-fun PreviewSuggestionListEmpty() {
+public fun PreviewSuggestionListEmpty() {
     CometChatTheme {
         CometChatSuggestionList(
             modifier = Modifier
@@ -53,7 +53,7 @@ fun PreviewSuggestionListEmpty() {
 
 @Preview(showBackground = true, name = "SuggestionList - Single Item")
 @Composable
-fun PreviewSuggestionListSingleItem() {
+public fun PreviewSuggestionListSingleItem() {
     CometChatTheme {
         CometChatSuggestionList(
             modifier = Modifier
@@ -69,7 +69,7 @@ fun PreviewSuggestionListSingleItem() {
 
 @Preview(showBackground = true, name = "SuggestionList - Loading")
 @Composable
-fun PreviewSuggestionListLoading() {
+public fun PreviewSuggestionListLoading() {
     CometChatTheme {
         CometChatSuggestionList(
             modifier = Modifier
@@ -85,7 +85,7 @@ fun PreviewSuggestionListLoading() {
 
 @Preview(showBackground = true, name = "SuggestionList - No Avatar")
 @Composable
-fun PreviewSuggestionListNoAvatar() {
+public fun PreviewSuggestionListNoAvatar() {
     CometChatTheme {
         CometChatSuggestionList(
             modifier = Modifier

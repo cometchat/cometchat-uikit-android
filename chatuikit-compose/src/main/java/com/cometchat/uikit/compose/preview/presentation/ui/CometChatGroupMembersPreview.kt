@@ -53,7 +53,7 @@ private val previewGroup = PreviewMockData.createMockGroup(name = "Team Chat", m
 
 @Preview(showBackground = true, name = "GroupMembers - Default")
 @Composable
-fun PreviewGroupMembersDefault() {
+public fun PreviewGroupMembersDefault() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm)
@@ -62,7 +62,7 @@ fun PreviewGroupMembersDefault() {
 
 @Preview(showBackground = true, name = "GroupMembers - Selection - Single")
 @Composable
-fun PreviewGroupMembersSingleSelection() {
+public fun PreviewGroupMembersSingleSelection() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, selectionMode = UIKitConstants.SelectionMode.SINGLE)
@@ -71,7 +71,7 @@ fun PreviewGroupMembersSingleSelection() {
 
 @Preview(showBackground = true, name = "GroupMembers - Selection - Multiple")
 @Composable
-fun PreviewGroupMembersMultipleSelection() {
+public fun PreviewGroupMembersMultipleSelection() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, selectionMode = UIKitConstants.SelectionMode.MULTIPLE)
@@ -80,7 +80,7 @@ fun PreviewGroupMembersMultipleSelection() {
 
 @Preview(showBackground = true, name = "GroupMembers - No Toolbar")
 @Composable
-fun PreviewGroupMembersNoToolbar() {
+public fun PreviewGroupMembersNoToolbar() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideToolbar = true)
@@ -89,7 +89,7 @@ fun PreviewGroupMembersNoToolbar() {
 
 @Preview(showBackground = true, name = "GroupMembers - No Search")
 @Composable
-fun PreviewGroupMembersNoSearch() {
+public fun PreviewGroupMembersNoSearch() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideSearch = true)
@@ -98,7 +98,7 @@ fun PreviewGroupMembersNoSearch() {
 
 @Preview(showBackground = true, name = "GroupMembers - No User Status")
 @Composable
-fun PreviewGroupMembersNoUserStatus() {
+public fun PreviewGroupMembersNoUserStatus() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideUserStatus = true)
@@ -107,7 +107,7 @@ fun PreviewGroupMembersNoUserStatus() {
 
 @Preview(showBackground = true, name = "GroupMembers - With Back Button")
 @Composable
-fun PreviewGroupMembersWithBackButton() {
+public fun PreviewGroupMembersWithBackButton() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideBackButton = false, onBackPress = { })
@@ -116,7 +116,7 @@ fun PreviewGroupMembersWithBackButton() {
 
 @Preview(showBackground = true, name = "GroupMembers - With Separators")
 @Composable
-fun PreviewGroupMembersWithSeparators() {
+public fun PreviewGroupMembersWithSeparators() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideSeparator = false)
@@ -125,7 +125,7 @@ fun PreviewGroupMembersWithSeparators() {
 
 @Preview(showBackground = true, name = "GroupMembers - Kick Disabled")
 @Composable
-fun PreviewGroupMembersKickDisabled() {
+public fun PreviewGroupMembersKickDisabled() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, disableKick = true)
@@ -134,7 +134,7 @@ fun PreviewGroupMembersKickDisabled() {
 
 @Preview(showBackground = true, name = "GroupMembers - All Permissions Disabled")
 @Composable
-fun PreviewGroupMembersAllPermissionsDisabled() {
+public fun PreviewGroupMembersAllPermissionsDisabled() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, disableKick = true, disableBan = true, disableChangeScope = true)
@@ -143,7 +143,7 @@ fun PreviewGroupMembersAllPermissionsDisabled() {
 
 @Preview(showBackground = true, name = "GroupMembers - Custom Title")
 @Composable
-fun PreviewGroupMembersCustomTitle() {
+public fun PreviewGroupMembersCustomTitle() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, title = "Team Members")
@@ -152,7 +152,7 @@ fun PreviewGroupMembersCustomTitle() {
 
 @Preview(showBackground = true, name = "GroupMembers - Custom Search Placeholder")
 @Composable
-fun PreviewGroupMembersCustomSearchPlaceholder() {
+public fun PreviewGroupMembersCustomSearchPlaceholder() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, searchPlaceholderText = "Find members...")
@@ -161,7 +161,7 @@ fun PreviewGroupMembersCustomSearchPlaceholder() {
 
 @Preview(showBackground = true, name = "GroupMembers - Custom Background")
 @Composable
-fun PreviewGroupMembersCustomBackground() {
+public fun PreviewGroupMembersCustomBackground() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(
@@ -174,7 +174,7 @@ fun PreviewGroupMembersCustomBackground() {
 
 @Preview(showBackground = true, name = "GroupMembers - Comprehensive")
 @Composable
-fun PreviewGroupMembersComprehensive() {
+public fun PreviewGroupMembersComprehensive() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(
@@ -194,7 +194,7 @@ fun PreviewGroupMembersComprehensive() {
 
 @Preview(showBackground = true, name = "GroupMembers - Minimal")
 @Composable
-fun PreviewGroupMembersMinimal() {
+public fun PreviewGroupMembersMinimal() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, hideToolbar = true, hideSearch = true, hideSeparator = true)
@@ -203,7 +203,7 @@ fun PreviewGroupMembersMinimal() {
 
 @Preview(showBackground = true, name = "GroupMembers - Exclude Owner")
 @Composable
-fun PreviewGroupMembersExcludeOwner() {
+public fun PreviewGroupMembersExcludeOwner() {
     CometChatTheme {
         val vm = rememberPreviewGroupMembersViewModel()
         CometChatGroupMembers(group = previewGroup, viewModel = vm, excludeOwner = true)

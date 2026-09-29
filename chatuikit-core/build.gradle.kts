@@ -2,6 +2,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    // no version: the root project loads the Dokka plugins on the classpath
+    id("org.jetbrains.dokka")
+    id("org.jetbrains.dokka-javadoc")
 }
 
 // Get version information from properties or environment
@@ -60,6 +63,7 @@ android {
 
 
 dependencies {
+    lintChecks(project(":lint-checks"))
     // CometChat SDKs – exposed to consumers
     api(libs.chat.sdk.android)
     compileOnly(libs.calls.sdk.android)
@@ -99,4 +103,17 @@ dependencies {
     androidTestImplementation(libs.mockito.core)
     androidTestImplementation(libs.mockito.kotlin)
     androidTestImplementation("org.mockito:mockito-android:5.21.0")
+}
+
+// ENG-38655 (X2): every declaration must state its visibility explicitly
+kotlin {
+    explicitApi()
+}
+
+// ENG-38658 (X6): package the Dokka javadoc output as a -javadoc.jar for
+// publishing (wired into the publication by Track 2 / A2).
+val dokkaJavadocJar: TaskProvider<Jar> = tasks.register("dokkaJavadocJar", Jar::class) {
+    dependsOn(tasks.named("dokkaGeneratePublicationJavadoc"))
+    from(tasks.named("dokkaGeneratePublicationJavadoc").map { it.outputs })
+    archiveClassifier.set("javadoc")
 }

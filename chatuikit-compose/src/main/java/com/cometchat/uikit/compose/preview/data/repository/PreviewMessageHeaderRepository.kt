@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.MessageHeaderRepository
  * @param mockGroup The group to return from getGroup(). Defaults to a sample public group.
  * @param simulateError If true, all operations will return failure results.
  */
-class PreviewMessageHeaderRepository(
+public class PreviewMessageHeaderRepository(
     private val mockUser: User = PreviewMockData.createMockUser(
         name = "Alice Smith"
     ),

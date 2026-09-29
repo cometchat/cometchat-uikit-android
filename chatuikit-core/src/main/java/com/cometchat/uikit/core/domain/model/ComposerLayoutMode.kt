@@ -13,7 +13,7 @@ package com.cometchat.uikit.core.domain.model
  * This enum is shared between `chatuikit-compose` and `chatuikit-kotlin` modules
  * to ensure consistent behavior across both UI frameworks.
  */
-enum class ComposerLayoutMode {
+public enum class ComposerLayoutMode {
     /**
      * Default single-row layout.
      * Text input and action buttons share the same row.

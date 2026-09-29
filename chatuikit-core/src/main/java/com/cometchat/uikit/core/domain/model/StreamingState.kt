@@ -9,17 +9,17 @@ import com.cometchat.chat.exceptions.CometChatException
  * Each active Run ID transitions through these states as AI assistant
  * streaming events are received and processed.
  */
-sealed class StreamingState {
+sealed public class StreamingState {
 
     /** No active streaming session for this Run ID. */
-    object Idle : StreamingState()
+    public object Idle : StreamingState()
 
     /** Events are actively being received and dispatched for this Run ID. */
-    object Streaming : StreamingState()
+    public object Streaming : StreamingState()
 
     /** All events for this Run ID have been dispatched and the run finished successfully. */
-    object Completed : StreamingState()
+    public object Completed : StreamingState()
 
     /** The streaming session was interrupted due to an error (e.g., disconnection). */
-    data class Interrupted(val error: CometChatException) : StreamingState()
+    public data class Interrupted(val error: CometChatException) : StreamingState()
 }

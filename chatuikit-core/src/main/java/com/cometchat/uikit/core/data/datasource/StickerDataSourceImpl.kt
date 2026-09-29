@@ -13,7 +13,7 @@ import kotlin.coroutines.resume
  * Contains NO business logic - just raw data fetching and parsing.
  * This is the default implementation used for remote data operations.
  */
-class StickerDataSourceImpl : StickerDataSource {
+internal class StickerDataSourceImpl : StickerDataSource {
 
     companion object {
         private const val EXTENSION_STICKERS = "stickers"

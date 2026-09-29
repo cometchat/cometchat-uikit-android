@@ -23,7 +23,7 @@ package com.cometchat.uikit.core.domain.model
  * @property stickers The list of stickers in this set
  * @property iconUrl The URL to use as the tab icon (derived from first sticker's URL)
  */
-data class StickerSet(
+public data class StickerSet(
     /** The name/identifier of the sticker set */
     val name: String,
     /** The list of stickers in this set */
@@ -31,7 +31,7 @@ data class StickerSet(
     /** The URL to use as the tab icon (derived from first sticker's URL) */
     val iconUrl: String
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a StickerSet from a map entry.
          *
@@ -41,7 +41,7 @@ data class StickerSet(
          * @param entry A map entry where key is the set name and value is the list of stickers
          * @return A new StickerSet with iconUrl derived from the first sticker's URL
          */
-        fun fromMapEntry(entry: Map.Entry<String, List<Sticker>>): StickerSet {
+        public fun fromMapEntry(entry: Map.Entry<String, List<Sticker>>): StickerSet {
             return StickerSet(
                 name = entry.key,
                 stickers = entry.value,

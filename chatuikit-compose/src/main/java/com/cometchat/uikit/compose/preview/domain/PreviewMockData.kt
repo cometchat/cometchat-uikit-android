@@ -16,7 +16,7 @@ import com.cometchat.chat.models.User
  * Note: These mocks are only for preview purposes and should not be used
  * in production code.
  */
-object PreviewMockData {
+public object PreviewMockData {
 
     // Avatar URL pattern
     private const val AVATAR_BASE_URL = "https://data-us.cometchat.io/assets/images/avatars/"
@@ -33,7 +33,7 @@ object PreviewMockData {
      * Creates a mock User for preview purposes.
      * Uses the SDK's User class with setter methods.
      */
-    fun createMockUser(
+    public fun createMockUser(
         uid: String = "user_1",
         name: String = "Iron Man",
         avatar: String? = "${AVATAR_BASE_URL}ironman.png",
@@ -50,7 +50,7 @@ object PreviewMockData {
     /**
      * Creates a mock Group for preview purposes.
      */
-    fun createMockGroup(
+    public fun createMockGroup(
         guid: String = "group_1",
         name: String = "The Avengers",
         icon: String? = "${AVATAR_BASE_URL}avengers.png",
@@ -70,7 +70,7 @@ object PreviewMockData {
     /**
      * Creates a mock TextMessage for preview purposes.
      */
-    fun createMockTextMessage(
+    public fun createMockTextMessage(
         id: Long = 1L,
         text: String = "Hello! How are you?",
         sentAt: Long = FIVE_MINUTES_AGO,
@@ -92,7 +92,7 @@ object PreviewMockData {
     /**
      * Creates a mock Conversation with a User.
      */
-    fun createUserConversation(
+    public fun createUserConversation(
         user: User = createMockUser(),
         lastMessage: TextMessage? = createMockTextMessage(),
         unreadCount: Int = 0
@@ -109,7 +109,7 @@ object PreviewMockData {
     /**
      * Creates a mock Conversation with a Group.
      */
-    fun createGroupConversation(
+    public fun createGroupConversation(
         group: Group = createMockGroup(),
         lastMessage: TextMessage? = createMockTextMessage(),
         unreadCount: Int = 0
@@ -127,7 +127,7 @@ object PreviewMockData {
      * Creates a list of sample conversations for preview.
      * Uses superhero-themed names, realistic messages, varied timestamps, and receipt states.
      */
-    fun createSampleConversations(): List<Conversation> = listOf(
+    public fun createSampleConversations(): List<Conversation> = listOf(
         createUserConversation(
             user = createMockUser(
                 uid = "1",
@@ -210,7 +210,7 @@ object PreviewMockData {
      * Creates a large list of conversations for pagination testing.
      * Uses superhero-themed names and realistic data.
      */
-    fun createLargeConversationList(count: Int = 50): List<Conversation> {
+    public fun createLargeConversationList(count: Int = 50): List<Conversation> {
         val names = listOf(
             "Iron Man", "Captain America", "Spiderman", "Black Widow", "Thor", "Hulk",
             "Hawkeye", "Black Panther", "Doctor Strange", "Ant-Man", "Scarlet Witch",
@@ -289,7 +289,7 @@ object PreviewMockData {
      * Creates conversations with high unread counts for badge testing.
      * Uses realistic superhero-themed names.
      */
-    fun createHighUnreadConversations(): List<Conversation> = listOf(
+    public fun createHighUnreadConversations(): List<Conversation> = listOf(
         createUserConversation(
             user = createMockUser(
                 uid = "1",
@@ -360,7 +360,7 @@ object PreviewMockData {
     /**
      * Creates conversations with various group types for testing.
      */
-    fun createGroupTypeConversations(): List<Conversation> = listOf(
+    public fun createGroupTypeConversations(): List<Conversation> = listOf(
         createGroupConversation(
             group = createMockGroup(
                 guid = "public_1",
@@ -393,7 +393,7 @@ object PreviewMockData {
     /**
      * Creates conversations with various user statuses.
      */
-    fun createUserStatusConversations(): List<Conversation> = listOf(
+    public fun createUserStatusConversations(): List<Conversation> = listOf(
         createUserConversation(
             user = createMockUser(
                 uid = "online_1",
@@ -420,7 +420,7 @@ object PreviewMockData {
      * - Delivered (deliveredAt > 0, readAt=0)
      * - Read (deliveredAt > 0, readAt > 0)
      */
-    fun createConversationsWithReceipts(): List<Conversation> = listOf(
+    public fun createConversationsWithReceipts(): List<Conversation> = listOf(
         // Sent only - message sent but not yet delivered
         createUserConversation(
             user = createMockUser(
@@ -504,7 +504,7 @@ object PreviewMockData {
     /**
      * Creates conversations with @mention text in messages.
      */
-    fun createConversationsWithMentions(): List<Conversation> = listOf(
+    public fun createConversationsWithMentions(): List<Conversation> = listOf(
         createGroupConversation(
             group = createMockGroup(
                 guid = "mention_1",
@@ -565,7 +565,7 @@ object PreviewMockData {
      * Creates a sample list of users for the Users component preview.
      * Includes a mix of online/offline users with superhero-themed names.
      */
-    fun createSampleUsers(): List<User> = listOf(
+    public fun createSampleUsers(): List<User> = listOf(
         createMockUser(uid = "u1", name = "Iron Man", avatar = "${AVATAR_BASE_URL}ironman.png", status = CometChatConstants.USER_STATUS_ONLINE),
         createMockUser(uid = "u2", name = "Captain America", avatar = "${AVATAR_BASE_URL}captainamerica.png", status = CometChatConstants.USER_STATUS_OFFLINE),
         createMockUser(uid = "u3", name = "Spiderman", avatar = "${AVATAR_BASE_URL}spiderman.png", status = CometChatConstants.USER_STATUS_ONLINE),
@@ -579,7 +579,7 @@ object PreviewMockData {
     /**
      * Creates a large list of users for pagination/scroll testing.
      */
-    fun createLargeUserList(count: Int = 30): List<User> {
+    public fun createLargeUserList(count: Int = 30): List<User> {
         val names = listOf(
             "Iron Man", "Captain America", "Spiderman", "Black Widow", "Thor", "Hulk",
             "Hawkeye", "Black Panther", "Doctor Strange", "Ant-Man", "Scarlet Witch",
@@ -609,7 +609,7 @@ object PreviewMockData {
     /**
      * Creates users with only online status for testing.
      */
-    fun createOnlineUsers(): List<User> = listOf(
+    public fun createOnlineUsers(): List<User> = listOf(
         createMockUser(uid = "on1", name = "Iron Man", avatar = "${AVATAR_BASE_URL}ironman.png", status = CometChatConstants.USER_STATUS_ONLINE),
         createMockUser(uid = "on2", name = "Thor", avatar = "${AVATAR_BASE_URL}thor.png", status = CometChatConstants.USER_STATUS_ONLINE),
         createMockUser(uid = "on3", name = "Spiderman", avatar = "${AVATAR_BASE_URL}spiderman.png", status = CometChatConstants.USER_STATUS_ONLINE)
@@ -618,7 +618,7 @@ object PreviewMockData {
     /**
      * Creates users with only offline status for testing.
      */
-    fun createOfflineUsers(): List<User> = listOf(
+    public fun createOfflineUsers(): List<User> = listOf(
         createMockUser(uid = "off1", name = "Captain America", avatar = "${AVATAR_BASE_URL}captainamerica.png", status = CometChatConstants.USER_STATUS_OFFLINE),
         createMockUser(uid = "off2", name = "Black Widow", avatar = "${AVATAR_BASE_URL}blackwidow.png", status = CometChatConstants.USER_STATUS_OFFLINE),
         createMockUser(uid = "off3", name = "Hulk", avatar = "${AVATAR_BASE_URL}hulk.png", status = CometChatConstants.USER_STATUS_OFFLINE)
@@ -633,7 +633,7 @@ object PreviewMockData {
      * Creates a sample list of groups for the Groups component preview.
      * Includes a mix of public, private, and password-protected groups.
      */
-    fun createSampleGroups(): List<Group> = listOf(
+    public fun createSampleGroups(): List<Group> = listOf(
         createMockGroup(guid = "g1", name = "The Avengers", icon = "${AVATAR_BASE_URL}avengers.png", groupType = CometChatConstants.GROUP_TYPE_PUBLIC, membersCount = 12),
         createMockGroup(guid = "g2", name = "Design Team", icon = "${AVATAR_BASE_URL}designteam.png", groupType = CometChatConstants.GROUP_TYPE_PRIVATE, membersCount = 6),
         createMockGroup(guid = "g3", name = "Developers Hub", icon = "${AVATAR_BASE_URL}developershub.png", groupType = CometChatConstants.GROUP_TYPE_PASSWORD, membersCount = 3),
@@ -646,7 +646,7 @@ object PreviewMockData {
     /**
      * Creates a large list of groups for pagination/scroll testing.
      */
-    fun createLargeGroupList(count: Int = 30): List<Group> {
+    public fun createLargeGroupList(count: Int = 30): List<Group> {
         val groupNames = listOf(
             "The Avengers", "Justice League", "Design Team", "Developers Hub",
             "S.H.I.E.L.D.", "X-Men", "Guardians", "Fantastic Four",
@@ -679,19 +679,19 @@ object PreviewMockData {
     /**
      * Creates groups of only one type for testing group type indicators.
      */
-    fun createPublicGroups(): List<Group> = listOf(
+    public fun createPublicGroups(): List<Group> = listOf(
         createMockGroup(guid = "pub1", name = "The Avengers", icon = "${AVATAR_BASE_URL}avengers.png", groupType = CometChatConstants.GROUP_TYPE_PUBLIC, membersCount = 100),
         createMockGroup(guid = "pub2", name = "X-Men", icon = "${AVATAR_BASE_URL}xmen.png", groupType = CometChatConstants.GROUP_TYPE_PUBLIC, membersCount = 45),
         createMockGroup(guid = "pub3", name = "Justice League", icon = "${AVATAR_BASE_URL}justiceleague.png", groupType = CometChatConstants.GROUP_TYPE_PUBLIC, membersCount = 200)
     )
 
-    fun createPrivateGroups(): List<Group> = listOf(
+    public fun createPrivateGroups(): List<Group> = listOf(
         createMockGroup(guid = "priv1", name = "S.H.I.E.L.D.", icon = "${AVATAR_BASE_URL}shield.png", groupType = CometChatConstants.GROUP_TYPE_PRIVATE, membersCount = 8),
         createMockGroup(guid = "priv2", name = "Design Team", icon = "${AVATAR_BASE_URL}designteam.png", groupType = CometChatConstants.GROUP_TYPE_PRIVATE, membersCount = 5),
         createMockGroup(guid = "priv3", name = "Wakanda Tech", icon = "${AVATAR_BASE_URL}wakandatech.png", groupType = CometChatConstants.GROUP_TYPE_PRIVATE, membersCount = 3)
     )
 
-    fun createPasswordGroups(): List<Group> = listOf(
+    public fun createPasswordGroups(): List<Group> = listOf(
         createMockGroup(guid = "pwd1", name = "Stark Industries", icon = "${AVATAR_BASE_URL}starkindustries.png", groupType = CometChatConstants.GROUP_TYPE_PASSWORD, membersCount = 4),
         createMockGroup(guid = "pwd2", name = "Developers Hub", icon = "${AVATAR_BASE_URL}developershub.png", groupType = CometChatConstants.GROUP_TYPE_PASSWORD, membersCount = 10),
         createMockGroup(guid = "pwd3", name = "Thunderbolts", icon = "${AVATAR_BASE_URL}thunderbolts.png", groupType = CometChatConstants.GROUP_TYPE_PASSWORD, membersCount = 15)

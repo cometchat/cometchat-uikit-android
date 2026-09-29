@@ -15,7 +15,7 @@ import kotlin.coroutines.resumeWithException
  * 
  * @param groupMembersRequestBuilder Builder for creating group members requests
  */
-class GroupMembersDataSourceImpl(
+public class GroupMembersDataSourceImpl(
     private var groupMembersRequestBuilder: GroupMembersRequest.GroupMembersRequestBuilder
 ) : GroupMembersDataSource {
     
@@ -166,7 +166,7 @@ class GroupMembersDataSourceImpl(
      * Resets the request builder for a new search or refresh.
      * @param builder New request builder
      */
-    fun resetRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
+    public fun resetRequestBuilder(builder: GroupMembersRequest.GroupMembersRequestBuilder) {
         this.groupMembersRequestBuilder = builder
         this.groupMembersRequest = null
         this.hasMore = true

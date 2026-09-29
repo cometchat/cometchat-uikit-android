@@ -20,7 +20,7 @@ import com.cometchat.uikit.core.domain.repository.MessageListRepository
  *
  * @param dataSource The data source for SDK operations. Defaults to [MessageListDataSourceImpl].
  */
-class MessageListRepositoryImpl(
+public class MessageListRepositoryImpl(
     private val dataSource: MessageListDataSource = MessageListDataSourceImpl()
 ) : MessageListRepository {
     

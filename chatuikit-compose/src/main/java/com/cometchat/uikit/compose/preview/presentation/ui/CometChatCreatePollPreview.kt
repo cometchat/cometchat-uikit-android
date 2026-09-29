@@ -16,7 +16,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "CreatePoll - Default")
 @Composable
-fun PreviewCreatePollDefault() {
+public fun PreviewCreatePollDefault() {
     CometChatTheme {
         CometChatCreatePoll(
             onSubmitClick = { _, _ -> },
@@ -30,7 +30,7 @@ fun PreviewCreatePollDefault() {
  */
 @Preview(showBackground = true, name = "CreatePoll - Custom Title")
 @Composable
-fun PreviewCreatePollCustomTitle() {
+public fun PreviewCreatePollCustomTitle() {
     CometChatTheme {
         CometChatCreatePoll(
             title = "New Survey",
@@ -49,7 +49,7 @@ fun PreviewCreatePollCustomTitle() {
  */
 @Preview(showBackground = true, name = "CreatePoll - Submitting")
 @Composable
-fun PreviewCreatePollSubmitting() {
+public fun PreviewCreatePollSubmitting() {
     CometChatTheme {
         CometChatCreatePoll(
             isSubmitting = true,
@@ -64,7 +64,7 @@ fun PreviewCreatePollSubmitting() {
  */
 @Preview(showBackground = true, name = "CreatePoll - Error")
 @Composable
-fun PreviewCreatePollError() {
+public fun PreviewCreatePollError() {
     CometChatTheme {
         CometChatCreatePoll(
             errorMessage = "Failed to create poll. Please try again.",
@@ -83,7 +83,7 @@ fun PreviewCreatePollError() {
  */
 @Preview(showBackground = true, name = "CreatePoll - No Toolbar")
 @Composable
-fun PreviewCreatePollNoToolbar() {
+public fun PreviewCreatePollNoToolbar() {
     CometChatTheme {
         CometChatCreatePoll(
             hideToolbar = true,
@@ -102,7 +102,7 @@ fun PreviewCreatePollNoToolbar() {
  */
 @Preview(showBackground = true, name = "CreatePoll - Custom Background")
 @Composable
-fun PreviewCreatePollCustomBackground() {
+public fun PreviewCreatePollCustomBackground() {
     CometChatTheme {
         CometChatCreatePoll(
             style = CometChatCreatePollStyle.default(

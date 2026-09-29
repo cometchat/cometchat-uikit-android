@@ -47,7 +47,7 @@ private fun createMockCall(
  */
 @Preview(showBackground = true, name = "IncomingCall - Audio Call")
 @Composable
-fun PreviewIncomingCallAudio() {
+public fun PreviewIncomingCallAudio() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(callType = CometChatConstants.CALL_TYPE_AUDIO),
@@ -63,7 +63,7 @@ fun PreviewIncomingCallAudio() {
  */
 @Preview(showBackground = true, name = "IncomingCall - Video Call")
 @Composable
-fun PreviewIncomingCallVideo() {
+public fun PreviewIncomingCallVideo() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(callType = CometChatConstants.CALL_TYPE_VIDEO),
@@ -83,7 +83,7 @@ fun PreviewIncomingCallVideo() {
  */
 @Preview(showBackground = true, name = "IncomingCall - Custom Title View")
 @Composable
-fun PreviewIncomingCallCustomTitleView() {
+public fun PreviewIncomingCallCustomTitleView() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(),
@@ -107,7 +107,7 @@ fun PreviewIncomingCallCustomTitleView() {
  */
 @Preview(showBackground = true, name = "IncomingCall - Custom Subtitle View")
 @Composable
-fun PreviewIncomingCallCustomSubtitleView() {
+public fun PreviewIncomingCallCustomSubtitleView() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(),
@@ -135,7 +135,7 @@ fun PreviewIncomingCallCustomSubtitleView() {
  */
 @Preview(showBackground = true, name = "IncomingCall - Custom Style")
 @Composable
-fun PreviewIncomingCallCustomStyle() {
+public fun PreviewIncomingCallCustomStyle() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(),
@@ -156,7 +156,7 @@ fun PreviewIncomingCallCustomStyle() {
  */
 @Preview(showBackground = true, name = "IncomingCall - Sound Disabled")
 @Composable
-fun PreviewIncomingCallSoundDisabled() {
+public fun PreviewIncomingCallSoundDisabled() {
     CometChatTheme {
         CometChatIncomingCall(
             call = createMockCall(),

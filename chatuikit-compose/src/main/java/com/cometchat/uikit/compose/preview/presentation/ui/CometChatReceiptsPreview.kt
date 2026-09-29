@@ -28,7 +28,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "Receipt - In Progress")
 @Composable
-fun PreviewReceiptInProgress() {
+public fun PreviewReceiptInProgress() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -47,7 +47,7 @@ fun PreviewReceiptInProgress() {
  */
 @Preview(showBackground = true, name = "Receipt - Sent")
 @Composable
-fun PreviewReceiptSent() {
+public fun PreviewReceiptSent() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -65,7 +65,7 @@ fun PreviewReceiptSent() {
  */
 @Preview(showBackground = true, name = "Receipt - Delivered")
 @Composable
-fun PreviewReceiptDelivered() {
+public fun PreviewReceiptDelivered() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -83,7 +83,7 @@ fun PreviewReceiptDelivered() {
  */
 @Preview(showBackground = true, name = "Receipt - Read")
 @Composable
-fun PreviewReceiptRead() {
+public fun PreviewReceiptRead() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -101,7 +101,7 @@ fun PreviewReceiptRead() {
  */
 @Preview(showBackground = true, name = "Receipt - Error")
 @Composable
-fun PreviewReceiptError() {
+public fun PreviewReceiptError() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -123,7 +123,7 @@ fun PreviewReceiptError() {
  */
 @Preview(showBackground = true, name = "Receipt - All States")
 @Composable
-fun PreviewReceiptAllStates() {
+public fun PreviewReceiptAllStates() {
     CometChatTheme {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -155,7 +155,7 @@ fun PreviewReceiptAllStates() {
  */
 @Preview(showBackground = true, name = "Receipt - All States Row")
 @Composable
-fun PreviewReceiptAllStatesRow() {
+public fun PreviewReceiptAllStatesRow() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -178,7 +178,7 @@ fun PreviewReceiptAllStatesRow() {
  */
 @Preview(showBackground = true, name = "Receipt - Message Context")
 @Composable
-fun PreviewReceiptMessageContext() {
+public fun PreviewReceiptMessageContext() {
     CometChatTheme {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -246,7 +246,7 @@ fun PreviewReceiptMessageContext() {
  */
 @Preview(showBackground = true, name = "Receipt - Custom Style")
 @Composable
-fun PreviewReceiptCustomStyle() {
+public fun PreviewReceiptCustomStyle() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -282,7 +282,7 @@ fun PreviewReceiptCustomStyle() {
  */
 @Preview(showBackground = true, name = "Receipt - Custom Tints")
 @Composable
-fun PreviewReceiptCustomTints() {
+public fun PreviewReceiptCustomTints() {
     CometChatTheme {
         Column(
             modifier = Modifier.padding(16.dp),

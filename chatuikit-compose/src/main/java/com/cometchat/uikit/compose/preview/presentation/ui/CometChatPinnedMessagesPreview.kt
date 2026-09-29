@@ -55,7 +55,7 @@ private fun defaultPinnedMessages(): List<BaseMessage> = listOf(
  */
 @Preview(showBackground = true, name = "PinnedMessages - Content")
 @Composable
-fun PreviewPinnedMessagesContent() {
+public fun PreviewPinnedMessagesContent() {
     CometChatTheme {
         CometChatPinnedMessages(
             viewModel = previewPinnedViewModel(defaultPinnedMessages())
@@ -68,7 +68,7 @@ fun PreviewPinnedMessagesContent() {
  */
 @Preview(showBackground = true, name = "PinnedMessages - Empty")
 @Composable
-fun PreviewPinnedMessagesEmpty() {
+public fun PreviewPinnedMessagesEmpty() {
     CometChatTheme {
         CometChatPinnedMessages(
             viewModel = previewPinnedViewModel(emptyList())
@@ -81,7 +81,7 @@ fun PreviewPinnedMessagesEmpty() {
  */
 @Preview(showBackground = true, name = "PinnedMessages - Single Message")
 @Composable
-fun PreviewPinnedMessagesSingle() {
+public fun PreviewPinnedMessagesSingle() {
     CometChatTheme {
         CometChatPinnedMessages(
             viewModel = previewPinnedViewModel(

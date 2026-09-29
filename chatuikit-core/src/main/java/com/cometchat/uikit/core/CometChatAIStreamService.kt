@@ -1,6 +1,5 @@
 package com.cometchat.uikit.core
 
-import android.util.Log
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.AIAssistantBaseEvent
@@ -13,6 +12,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.model.ConnectionState
 import com.cometchat.uikit.core.domain.model.QueueCompletionResult
 import com.cometchat.uikit.core.domain.model.StreamingState
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @param scope The [CoroutineScope] used for lifecycle management and
  *              structured concurrency. Typically `viewModelScope`.
  */
-class CometChatAIStreamService(
+public class CometChatAIStreamService(
     private val scope: CoroutineScope
 ) {
 
@@ -46,32 +46,32 @@ class CometChatAIStreamService(
     /**
      * Listener for AI assistant streaming events dispatched per Run ID.
      */
-    fun interface AIStreamListener {
-        fun onAIAssistantEventReceived(event: AIAssistantBaseEvent)
-        fun onError(exception: CometChatException) {}
+    public fun interface AIStreamListener {
+        public fun onAIAssistantEventReceived(event: AIAssistantBaseEvent)
+        public fun onError(exception: CometChatException) {}
     }
 
     /**
      * Callback invoked once when all events for a Run ID have been
      * dispatched and all final messages are available.
      */
-    fun interface QueueCompletionCallback {
-        fun onQueueCompleted(result: QueueCompletionResult)
+    public fun interface QueueCompletionCallback {
+        public fun onQueueCompleted(result: QueueCompletionResult)
     }
 
     /**
      * Callback for stream lifecycle events at the instance level.
      */
-    interface OnStreamCallback {
-        fun onStreamCompleted()
-        fun onStreamInterrupted()
+    public interface OnStreamCallback {
+        public fun onStreamCompleted()
+        public fun onStreamInterrupted()
     }
 
     /**
      * Listener for AI assistant tool invocations by name.
      */
-    fun interface ToolCallListener {
-        fun call(args: String)
+    public fun interface ToolCallListener {
+        public fun call(args: String)
     }
 
     // ── Internal State (per-instance, no static/companion) ──────────────
@@ -116,16 +116,16 @@ class CometChatAIStreamService(
     private val _streamingStates = MutableStateFlow<Map<Long, StreamingState>>(emptyMap())
 
     /** Current WebSocket connection state. */
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    public val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     /** Per-Run ID streaming lifecycle states. */
-    val streamingStates: StateFlow<Map<Long, StreamingState>> = _streamingStates.asStateFlow()
+    public val streamingStates: StateFlow<Map<Long, StreamingState>> = _streamingStates.asStateFlow()
 
     /**
      * Returns a [StateFlow] of accumulated text content for the given [runId].
      * Creates a new flow with an empty string if one does not yet exist.
      */
-    fun accumulatedText(runId: Long): StateFlow<String> {
+    public fun accumulatedText(runId: Long): StateFlow<String> {
         return accumulatedTexts.getOrPut(runId) { MutableStateFlow("") }.asStateFlow()
     }
 
@@ -143,7 +143,7 @@ class CometChatAIStreamService(
      * Sets the delay between sequential event dispatches.
      * @param delayMillis Delay in milliseconds. Default is 30.
      */
-    fun setStreamDelay(delayMillis: Long) {
+    public fun setStreamDelay(delayMillis: Long) {
         streamDelayMillis = delayMillis
     }
 
@@ -152,7 +152,7 @@ class CometChatAIStreamService(
      * When exceeded, the oldest event is dropped.
      * @param maxSize Maximum queue size. Default is 1000.
      */
-    fun setMaxQueueSize(maxSize: Int) {
+    public fun setMaxQueueSize(maxSize: Int) {
         this.maxQueueSize = maxSize
     }
 
@@ -161,37 +161,37 @@ class CometChatAIStreamService(
      * New Run IDs are rejected when this limit is reached.
      * @param maxQueues Maximum concurrent queues. Default is 10.
      */
-    fun setMaxConcurrentQueues(maxQueues: Int) {
+    public fun setMaxConcurrentQueues(maxQueues: Int) {
         this.maxConcurrentQueues = if (maxQueues > 0) maxQueues else 10
     }
 
     /**
      * Registers an instance-level callback for stream lifecycle events.
      */
-    fun setOnStreamCallback(callback: OnStreamCallback?) {
+    public fun setOnStreamCallback(callback: OnStreamCallback?) {
         this.onStreamCallback = callback
     }
 
     /**
      * Registers tool call handlers by name for AI assistant tool invocations.
      */
-    fun setAiAssistantTools(tools: Map<String, ToolCallListener>) {
+    public fun setAiAssistantTools(tools: Map<String, ToolCallListener>) {
         this.toolCallListeners = tools
     }
 
     // ── Query Methods ───────────────────────────────────────────────────
 
     /** Returns `true` if the connection state is [ConnectionState.CONNECTED]. */
-    fun isConnected(): Boolean = _connectionState.value == ConnectionState.CONNECTED
+    public fun isConnected(): Boolean = _connectionState.value == ConnectionState.CONNECTED
 
     /** Returns `true` if the event queue for [runId] is empty or absent. */
-    fun isQueueEmpty(runId: Long): Boolean {
+    public fun isQueueEmpty(runId: Long): Boolean {
         val queue = eventQueues[runId]
         return queue == null || queue.isEmpty()
     }
 
     /** Returns the number of active event queues. */
-    fun getCurrentQueueCount(): Int = eventQueues.size
+    public fun getCurrentQueueCount(): Int = eventQueues.size
 
     // ── Method Stubs (implemented in subsequent tasks) ──────────────────
 
@@ -199,7 +199,7 @@ class CometChatAIStreamService(
     internal fun handleIncomingEvent(event: AIAssistantBaseEvent) {
         val runId = event.id
 
-        Log.d(TAG, "handleIncomingEvent: runId=$runId type=${event.type} class=${event.javaClass.simpleName} connected=${_connectionState.value} disconnected=${disconnectedRunIds.contains(runId)}")
+        CometChatLogger.d(TAG, "handleIncomingEvent: runId=$runId type=${event.type} class=${event.javaClass.simpleName} connected=${_connectionState.value} disconnected=${disconnectedRunIds.contains(runId)}")
 
         // 1. If not connected, discard
         if (_connectionState.value != ConnectionState.CONNECTED) return
@@ -209,7 +209,7 @@ class CometChatAIStreamService(
 
         // 3. If runId is new and we've hit maxConcurrentQueues, reject
         if (!eventQueues.containsKey(runId) && eventQueues.size >= maxConcurrentQueues) {
-            Log.w(TAG, "handleIncomingEvent: REJECTED runId=$runId — maxConcurrentQueues=$maxConcurrentQueues reached")
+            CometChatLogger.w(TAG, "handleIncomingEvent: REJECTED runId=$runId — maxConcurrentQueues=$maxConcurrentQueues reached")
             return
         }
 
@@ -245,7 +245,7 @@ class CometChatAIStreamService(
         val hasListeners = runIdListeners[runId]?.isNotEmpty() == true
         val jobActive = processingJobs[runId]?.isActive == true
         if (hasListeners && !jobActive) {
-            Log.d(TAG, "handleIncomingEvent: auto-starting processQueue for runId=$runId (listeners registered, no active job)")
+            CometChatLogger.d(TAG, "handleIncomingEvent: auto-starting processQueue for runId=$runId (listeners registered, no active job)")
             processQueueSequentially(runId)
         }
     }
@@ -257,7 +257,7 @@ class CometChatAIStreamService(
 
         processingJobs[runId] = scope.launch(Dispatchers.Main) {
             val queue = eventQueues[runId] ?: return@launch
-            Log.d(TAG, "processQueueSequentially: START runId=$runId queueSize=${queue.size}")
+            CometChatLogger.d(TAG, "processQueueSequentially: START runId=$runId queueSize=${queue.size}")
 
             // Keep draining until the queue is truly empty — new events may arrive
             // while we're processing, so we re-check after each drain pass.
@@ -268,14 +268,14 @@ class CometChatAIStreamService(
                     // Give a small window for late-arriving events
                     delay(streamDelayMillis)
                     if (queue.isEmpty()) {
-                        Log.d(TAG, "processQueueSequentially: DRAINED runId=$runId — queue empty after recheck")
+                        CometChatLogger.d(TAG, "processQueueSequentially: DRAINED runId=$runId — queue empty after recheck")
                         break
                     }
                     // New events arrived during the delay, continue processing
                     continue
                 }
 
-                Log.d(TAG, "processQueueSequentially: DISPATCH runId=$runId type=${event.type} listenersCount=${runIdListeners[runId]?.size ?: 0}")
+                CometChatLogger.d(TAG, "processQueueSequentially: DISPATCH runId=$runId type=${event.type} listenersCount=${runIdListeners[runId]?.size ?: 0}")
 
                 // Dispatch event to all registered listeners for this runId
                 val listeners = runIdListeners[runId]
@@ -306,14 +306,14 @@ class CometChatAIStreamService(
                 delay(streamDelayMillis)
             }
 
-            Log.d(TAG, "processQueueSequentially: COMPLETE runId=$runId — calling checkAndTriggerQueueCompletion")
+            CometChatLogger.d(TAG, "processQueueSequentially: COMPLETE runId=$runId — calling checkAndTriggerQueueCompletion")
             checkAndTriggerQueueCompletion(runId)
         }
     }
 
     /** Registers a listener and begins streaming for [runId]. */
-    fun startStreamingForRunId(runId: Long, listener: AIStreamListener) {
-        Log.d(TAG, "startStreamingForRunId: runId=$runId disconnected=${disconnectedRunIds.contains(runId)} state=${_streamingStates.value[runId]?.javaClass?.simpleName}")
+    public fun startStreamingForRunId(runId: Long, listener: AIStreamListener) {
+        CometChatLogger.d(TAG, "startStreamingForRunId: runId=$runId disconnected=${disconnectedRunIds.contains(runId)} state=${_streamingStates.value[runId]?.javaClass?.simpleName}")
 
         // 1. If runId is marked as disconnected, notify error and return
         if (disconnectedRunIds.contains(runId)) {
@@ -344,19 +344,19 @@ class CometChatAIStreamService(
         val queue = eventQueues[runId]
         val hasQueuedEvents = queue != null && queue.isNotEmpty()
         val jobActive = processingJobs[runId]?.isActive == true
-        Log.d(TAG, "startStreamingForRunId: runId=$runId hasQueuedEvents=$hasQueuedEvents jobActive=$jobActive queueSize=${queue?.size ?: 0}")
+        CometChatLogger.d(TAG, "startStreamingForRunId: runId=$runId hasQueuedEvents=$hasQueuedEvents jobActive=$jobActive queueSize=${queue?.size ?: 0}")
         if (hasQueuedEvents && !jobActive) {
             processQueueSequentially(runId)
         }
     }
 
     /** Removes a single listener for [runId]. Remaining listeners continue receiving events. */
-    fun stopStreamingForRunId(runId: Long, listener: AIStreamListener) {
+    public fun stopStreamingForRunId(runId: Long, listener: AIStreamListener) {
         runIdListeners[runId]?.remove(listener)
     }
 
     /** Stops all listeners and processing for [runId]. */
-    fun stopStreamingForRunId(runId: Long) {
+    public fun stopStreamingForRunId(runId: Long) {
         // Cancel the processing job
         processingJobs[runId]?.cancel()
         processingJobs.remove(runId)
@@ -365,13 +365,13 @@ class CometChatAIStreamService(
     }
 
     /** Registers a completion callback for [runId] and initializes the at-most-once guard. */
-    fun setQueueCompletionCallback(runId: Long, callback: QueueCompletionCallback) {
+    public fun setQueueCompletionCallback(runId: Long, callback: QueueCompletionCallback) {
         queueCompletionCallbacks[runId] = callback
         completionGuards[runId] = AtomicBoolean(false)
     }
 
     /** Removes the completion callback and guard for [runId]. */
-    fun removeQueueCompletionCallback(runId: Long) {
+    public fun removeQueueCompletionCallback(runId: Long) {
         queueCompletionCallbacks.remove(runId)
         completionGuards.remove(runId)
     }
@@ -388,25 +388,25 @@ class CometChatAIStreamService(
         // 1. Queue must be empty (or absent) to proceed
         val queue = eventQueues[runId]
         if (queue != null && queue.isNotEmpty()) {
-            Log.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — queue NOT empty (${queue.size}), skipping")
+            CometChatLogger.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — queue NOT empty (${queue.size}), skipping")
             return
         }
 
         // 1b. RUN_FINISHED must have been received — without it, the queue may
         //     simply be temporarily empty while more events are in transit.
         if (!runFinishedReceived.contains(runId)) {
-            Log.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — RUN_FINISHED not yet received, skipping premature completion")
+            CometChatLogger.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — RUN_FINISHED not yet received, skipping premature completion")
             return
         }
 
         // 2. Acquire the at-most-once guard — if already triggered, bail out
         val guard = completionGuards.getOrPut(runId) { AtomicBoolean(false) }
         if (!guard.compareAndSet(false, true)) {
-            Log.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — guard already triggered, skipping")
+            CometChatLogger.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — guard already triggered, skipping")
             return
         }
 
-        Log.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — FIRING completion. storedAssistant=${storedAssistantMessages.containsKey(runId)}")
+        CometChatLogger.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — FIRING completion. storedAssistant=${storedAssistantMessages.containsKey(runId)}")
 
         // 3. Get the callback — if none registered, nothing to invoke
         val callback = queueCompletionCallbacks[runId]
@@ -431,22 +431,22 @@ class CometChatAIStreamService(
         // 7. Notify instance-level stream callback
         onStreamCallback?.onStreamCompleted()
 
-        Log.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — DONE. Completed state emitted, awaiting ViewModel cleanup.")
+        CometChatLogger.d(TAG, "checkAndTriggerQueueCompletion: runId=$runId — DONE. Completed state emitted, awaiting ViewModel cleanup.")
     }
 
     /** Registers SDK listeners for AI events, messages, and connection state. */
-    fun attachListener(listenerId: String) {
+    public fun attachListener(listenerId: String) {
         val tag = listenerId + TAG
-        Log.d(TAG, "attachListener: tag=$tag")
+        CometChatLogger.d(TAG, "attachListener: tag=$tag")
 
         // 1. AI Assistant listener — receives streaming events
         CometChat.addAIAssistantListener(tag, object : CometChat.AIAssistantListener() {
             override fun onAIAssistantEventReceived(event: AIAssistantBaseEvent) {
-                Log.d(TAG, "SDK AIAssistantListener: runId=${event.id} type=${event.type}")
+                CometChatLogger.d(TAG, "SDK AIAssistantListener: runId=${event.id} type=${event.type}")
                 handleIncomingEvent(event)
                 if (UIKitConstants.AIAssistantEventType.RUN_FINISHED.equals(event.type, ignoreCase = true)) {
                     val queue = eventQueues[event.id]
-                    Log.d(TAG, "SDK AIAssistantListener: RUN_FINISHED runId=${event.id} queueSize=${queue?.size ?: 0}")
+                    CometChatLogger.d(TAG, "SDK AIAssistantListener: RUN_FINISHED runId=${event.id} queueSize=${queue?.size ?: 0}")
                     if (queue == null || queue.isEmpty()) {
                         checkAndTriggerQueueCompletion(event.id)
                     }
@@ -458,7 +458,7 @@ class CometChatAIStreamService(
         CometChat.addMessageListener(tag, object : CometChat.MessageListener() {
             override fun onAIAssistantMessageReceived(msg: AIAssistantMessage) {
                 val runId = msg.runId
-                Log.d(TAG, "SDK MessageListener: onAIAssistantMessageReceived runId=$runId msgId=${msg.id} disconnected=${disconnectedRunIds.contains(runId)}")
+                CometChatLogger.d(TAG, "SDK MessageListener: onAIAssistantMessageReceived runId=$runId msgId=${msg.id} disconnected=${disconnectedRunIds.contains(runId)}")
                 if (disconnectedRunIds.contains(runId)) return
                 storedAssistantMessages[runId] = msg
                 checkAndTriggerQueueCompletion(runId)
@@ -466,14 +466,14 @@ class CometChatAIStreamService(
 
             override fun onAIToolResultReceived(msg: AIToolResultMessage) {
                 val runId = msg.runId
-                Log.d(TAG, "SDK MessageListener: onAIToolResultReceived runId=$runId")
+                CometChatLogger.d(TAG, "SDK MessageListener: onAIToolResultReceived runId=$runId")
                 storedToolResultMessages[runId] = msg
                 checkAndTriggerQueueCompletion(runId)
             }
 
             override fun onAIToolArgumentsReceived(msg: AIToolArgumentMessage) {
                 val runId = msg.runId
-                Log.d(TAG, "SDK MessageListener: onAIToolArgumentsReceived runId=$runId")
+                CometChatLogger.d(TAG, "SDK MessageListener: onAIToolArgumentsReceived runId=$runId")
                 storedToolArgumentMessages[runId] = msg
                 checkAndTriggerQueueCompletion(runId)
             }
@@ -498,7 +498,7 @@ class CometChatAIStreamService(
     }
 
     /** Removes all SDK listeners and clears all internal state. */
-    fun detachListener(listenerId: String) {
+    public fun detachListener(listenerId: String) {
         val tag = listenerId + TAG
 
         // 1. Remove all SDK listeners
@@ -559,8 +559,8 @@ class CometChatAIStreamService(
     }
 
     /** Removes all state associated with [runId]. */
-    fun cleanupRunId(runId: Long) {
-        Log.d(TAG, "cleanupRunId: runId=$runId")
+    public fun cleanupRunId(runId: Long) {
+        CometChatLogger.d(TAG, "cleanupRunId: runId=$runId")
         // 1. Cancel and remove processing job
         processingJobs.remove(runId)?.cancel()
         // 2. Remove event queue
@@ -586,11 +586,11 @@ class CometChatAIStreamService(
     }
 
     /** Delegates to [cleanupRunId]. */
-    fun clearQueueForRunId(runId: Long) {
+    public fun clearQueueForRunId(runId: Long) {
         cleanupRunId(runId)
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "CometChatAIStreamService"
 
         private var sharedInstance: CometChatAIStreamService? = null
@@ -599,7 +599,7 @@ class CometChatAIStreamService(
          * Returns the current singleton instance, or `null` if no instance
          * has been set (e.g., before ViewModel initialization or after cleanup).
          */
-        fun getInstance(): CometChatAIStreamService? = sharedInstance
+        public fun getInstance(): CometChatAIStreamService? = sharedInstance
 
         /**
          * Sets (or clears) the singleton instance. Called by the ViewModel
@@ -615,7 +615,7 @@ class CometChatAIStreamService(
          * Registers a [listener] and begins streaming for [runId] on the
          * current singleton instance. No-op if no instance is set.
          */
-        fun startStreamingForRunId(runId: Long, listener: AIStreamListener) {
+        public fun startStreamingForRunId(runId: Long, listener: AIStreamListener) {
             getInstance()?.startStreamingForRunId(runId, listener)
         }
 
@@ -623,7 +623,7 @@ class CometChatAIStreamService(
          * Stops all listeners and processing for [runId] on the current
          * singleton instance. No-op if no instance is set.
          */
-        fun stopStreamingForRunId(runId: Long) {
+        public fun stopStreamingForRunId(runId: Long) {
             getInstance()?.stopStreamingForRunId(runId)
         }
 
@@ -631,7 +631,7 @@ class CometChatAIStreamService(
          * Returns a [StateFlow] of accumulated text content for the given
          * [runId]. If no instance is set, returns an empty [StateFlow].
          */
-        fun accumulatedText(runId: Long): StateFlow<String> {
+        public fun accumulatedText(runId: Long): StateFlow<String> {
             return getInstance()?.accumulatedText(runId)
                 ?: MutableStateFlow("").asStateFlow()
         }

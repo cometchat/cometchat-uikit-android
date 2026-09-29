@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list instead of members.
  */
-class PreviewGroupMembersRepository(
+public class PreviewGroupMembersRepository(
     private val initialMembers: List<GroupMember> = createSampleGroupMembers(),
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = false
@@ -57,8 +57,8 @@ class PreviewGroupMembersRepository(
 
     override fun resetRequest() { /* no-op */ }
 
-    companion object {
-        fun createSampleGroupMembers(): List<GroupMember> {
+    public companion object {
+        public fun createSampleGroupMembers(): List<GroupMember> {
             val names = listOf(
                 "Alice Smith" to CometChatConstants.SCOPE_ADMIN,
                 "Bob Johnson" to CometChatConstants.SCOPE_MODERATOR,

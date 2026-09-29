@@ -276,7 +276,9 @@
     <string name="cometchat_unpin_conversation_confirm_body">هل تريد إلغاء تثبيت هذه المحادثة؟</string>
     <string name="cometchat_pin_conversation_limit_reached">يمكنك تثبيت %1$d محادثات فقط. ألغِ تثبيت واحدة لتثبيت أخرى.</string>
     <string name="cometchat_pin_limit_reached">يمكنك تثبيت %1$d رسائل فقط. ألغِ تثبيت واحدة لتثبيت أخرى.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">تم بلوغ حد الرسائل المثبتة. ألغِ تثبيت واحدة لتثبيت أخرى.</string>
     <string name="cometchat_save_limit_reached">يمكنك حفظ ما يصل إلى %1$d رسالة.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">تم بلوغ حد الرسائل المحفوظة. ألغِ حفظ واحدة لحفظ أخرى.</string>
     <string name="cometchat_pin_save_generic_error">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
     <string name="cometchat_message_pinned">تم تثبيت الرسالة</string>
     <string name="cometchat_message_unpinned">تم إلغاء تثبيت الرسالة</string>
@@ -292,4 +294,295 @@
     <string name="cometchat_message_option_more">المزيد</string>
     <string name="cometchat_message_option_back">رجوع</string>
     <string name="cometchat_message_type_icon">أيقونة نوع الرسالة</string>
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_action_message" translatable="true">رسالة إجراء: %1$s</string>
+    <string name="cometchat_a11y_add_reaction" translatable="true">إضافة تفاعل</string>
+    <string name="cometchat_a11y_ai_assistant" translatable="true">مساعد الذكاء الاصطناعي</string>
+    <string name="cometchat_a11y_ai_conversation_starters" translatable="true">بادئات محادثة الذكاء الاصطناعي</string>
+    <string name="cometchat_a11y_ai_conversation_summary" translatable="true">ملخص المحادثة بالذكاء الاصطناعي</string>
+    <string name="cometchat_a11y_ai_smart_replies" translatable="true">الردود الذكية بالذكاء الاصطناعي</string>
+    <string name="cometchat_a11y_audio" translatable="true">صوت</string>
+    <string name="cometchat_a11y_audio_message" translatable="true">رسالة صوتية</string>
+    <string name="cometchat_a11y_audio_visualizer_showing_recording_amplitude" translatable="true">مُصوِّر صوتي يعرض سعة التسجيل</string>
+    <string name="cometchat_a11y_audio_waveform" translatable="true">شكل الموجة الصوتية</string>
+    <string name="cometchat_a11y_avatar_for" translatable="true">صورة %1$s</string>
+    <string name="cometchat_a11y_avatar_of" translatable="true">صورة %1$s</string>
+    <string name="cometchat_a11y_back" translatable="true">رجوع</string>
+    <string name="cometchat_a11y_blockquote" translatable="true">اقتباس</string>
+    <string name="cometchat_a11y_bold" translatable="true">غامق</string>
+    <string name="cometchat_a11y_bullet_list" translatable="true">قائمة نقطية</string>
+    <string name="cometchat_a11y_call" translatable="true">مكالمة: %1$s</string>
+    <string name="cometchat_a11y_caller" translatable="true">المتصل: %1$s</string>
+    <string name="cometchat_a11y_calling" translatable="true">جارٍ الاتصال بـ %1$s</string>
+    <string name="cometchat_a11y_change_scope" translatable="true">تغيير الدور</string>
+    <string name="cometchat_a11y_chat_history" translatable="true">سجل الدردشة</string>
+    <string name="cometchat_a11y_clear_search" translatable="true">مسح البحث</string>
+    <string name="cometchat_a11y_close" translatable="true">إغلاق</string>
+    <string name="cometchat_a11y_close_conversation_summary" translatable="true">إغلاق ملخص المحادثة</string>
+    <string name="cometchat_a11y_close_edit_preview" translatable="true">إغلاق معاينة التعديل</string>
+    <string name="cometchat_a11y_close_formatting_toolbar" translatable="true">إغلاق شريط التنسيق</string>
+    <string name="cometchat_a11y_close_preview" translatable="true">إغلاق المعاينة</string>
+    <string name="cometchat_a11y_close_reply_preview" translatable="true">إغلاق معاينة الرد</string>
+    <string name="cometchat_a11y_close_smart_replies" translatable="true">إغلاق الردود الذكية</string>
+    <string name="cometchat_a11y_code_block" translatable="true">كتلة شيفرة</string>
+    <string name="cometchat_a11y_collaborative" translatable="true">%1$s تعاوني: %2$s</string>
+    <string name="cometchat_a11y_composer_action_buttons" translatable="true">أزرار إجراءات محرر الرسائل</string>
+    <string name="cometchat_a11y_connecting_to_call" translatable="true">جارٍ الاتصال بالمكالمة</string>
+    <string name="cometchat_a11y_conversation_starter" translatable="true">بادئة محادثة: %1$s</string>
+    <string name="cometchat_a11y_copy" translatable="true">نسخ</string>
+    <string name="cometchat_a11y_delete" translatable="true">حذف</string>
+    <string name="cometchat_a11y_delete_icon" translatable="true">أيقونة الحذف</string>
+    <string name="cometchat_a11y_delete_recording" translatable="true">حذف التسجيل</string>
+    <string name="cometchat_a11y_deleted_message" translatable="true">رسالة محذوفة</string>
+    <string name="cometchat_a11y_document" translatable="true">مستند</string>
+    <string name="cometchat_a11y_download" translatable="true">تنزيل</string>
+    <string name="cometchat_a11y_download_attachment" translatable="true">تنزيل المرفق</string>
+    <string name="cometchat_a11y_download_audio" translatable="true">تنزيل الصوت</string>
+    <string name="cometchat_a11y_download_file" translatable="true">تنزيل الملف</string>
+    <string name="cometchat_a11y_drag_handle_for_option" translatable="true">مقبض سحب الخيار %1$s</string>
+    <string name="cometchat_a11y_duration" translatable="true">المدة: %1$s</string>
+    <string name="cometchat_a11y_edit_preview" translatable="true">معاينة التعديل</string>
+    <string name="cometchat_a11y_end_call" translatable="true">إنهاء المكالمة</string>
+    <string name="cometchat_a11y_error" translatable="true">خطأ: %1$s</string>
+    <string name="cometchat_a11y_error_2" translatable="true">خطأ: %1$s. %2$s</string>
+    <string name="cometchat_a11y_file_message_with_file_s" translatable="true">رسالة تحتوي على %1$s ملفات</string>
+    <string name="cometchat_a11y_file_type" translatable="true">نوع الملف: %1$s</string>
+    <string name="cometchat_a11y_filter" translatable="true">مرشح %1$s%2$s</string>
+    <string name="cometchat_a11y_flag_message_dialog" translatable="true">نافذة الإبلاغ عن الرسالة</string>
+    <string name="cometchat_a11y_format_text" translatable="true">تنسيق النص</string>
+    <string name="cometchat_a11y_go_back_from_create_poll" translatable="true">الخروج من إنشاء الاستطلاع</string>
+    <string name="cometchat_a11y_image" translatable="true">صورة</string>
+    <string name="cometchat_a11y_image_2" translatable="true">الصورة %1$s</string>
+    <string name="cometchat_a11y_image_message_with_image_s" translatable="true">رسالة تحتوي على %1$s صور</string>
+    <string name="cometchat_a11y_image_preview" translatable="true">معاينة الصورة</string>
+    <string name="cometchat_a11y_incoming_call_from" translatable="true">مكالمة واردة من %1$s</string>
+    <string name="cometchat_a11y_inline_code" translatable="true">شيفرة ضمن السطر</string>
+    <string name="cometchat_a11y_italic" translatable="true">مائل</string>
+    <string name="cometchat_a11y_link" translatable="true">رابط</string>
+    <string name="cometchat_a11y_link_edit_dialog" translatable="true">نافذة تعديل الرابط</string>
+    <string name="cometchat_a11y_link_popup_dialog" translatable="true">نافذة الرابط المنبثقة</string>
+    <string name="cometchat_a11y_link_preview_image" translatable="true">صورة معاينة الرابط</string>
+    <string name="cometchat_a11y_loading" translatable="true">جارٍ تحميل %1$s</string>
+    <string name="cometchat_a11y_loading_group_member" translatable="true">جارٍ تحميل عضو المجموعة</string>
+    <string name="cometchat_a11y_loading_list_item" translatable="true">جارٍ تحميل عنصر القائمة</string>
+    <string name="cometchat_a11y_loading_messages" translatable="true">جارٍ تحميل الرسائل</string>
+    <string name="cometchat_a11y_loading_notifications" translatable="true">جارٍ تحميل الإشعارات</string>
+    <string name="cometchat_a11y_loading_please_wait" translatable="true">جارٍ التحميل، يرجى الانتظار</string>
+    <string name="cometchat_a11y_loading_reaction" translatable="true">جارٍ تحميل التفاعل</string>
+    <string name="cometchat_a11y_loading_reactions_please_wait" translatable="true">جارٍ تحميل التفاعلات، يرجى الانتظار</string>
+    <string name="cometchat_a11y_loading_stickers_please_wait" translatable="true">جارٍ تحميل الملصقات، يرجى الانتظار</string>
+    <string name="cometchat_a11y_media_message_with_items" translatable="true">رسالة %1$s تحتوي على %2$s عناصر</string>
+    <string name="cometchat_a11y_menu" translatable="true">القائمة</string>
+    <string name="cometchat_a11y_message_composer" translatable="true">محرر الرسائل</string>
+    <string name="cometchat_a11y_message_list" translatable="true">قائمة الرسائل</string>
+    <string name="cometchat_a11y_message_preview" translatable="true">معاينة الرسالة: %1$s – %2$s</string>
+    <string name="cometchat_a11y_microphone_disabled" translatable="true">الميكروفون (معطّل)</string>
+    <string name="cometchat_a11y_moderation_warning" translatable="true">تحذير الإشراف</string>
+    <string name="cometchat_a11y_more" translatable="true">المزيد</string>
+    <string name="cometchat_a11y_more_options" translatable="true">خيارات إضافية</string>
+    <string name="cometchat_a11y_new_chat" translatable="true">دردشة جديدة</string>
+    <string name="cometchat_a11y_notification_from" translatable="true">إشعار من %1$s</string>
+    <string name="cometchat_a11y_numbered_list" translatable="true">قائمة مرقمة</string>
+    <string name="cometchat_a11y_ongoing_call" translatable="true">مكالمة جارية</string>
+    <string name="cometchat_a11y_open_ai_options" translatable="true">فتح خيارات الذكاء الاصطناعي</string>
+    <string name="cometchat_a11y_options" translatable="true">الخيارات</string>
+    <string name="cometchat_a11y_outgoing_call_to" translatable="true">مكالمة صادرة إلى %1$s</string>
+    <string name="cometchat_a11y_pause" translatable="true">إيقاف مؤقت</string>
+    <string name="cometchat_a11y_pause_playback" translatable="true">إيقاف التشغيل مؤقتاً</string>
+    <string name="cometchat_a11y_pause_recording" translatable="true">إيقاف التسجيل مؤقتاً</string>
+    <string name="cometchat_a11y_play" translatable="true">تشغيل</string>
+    <string name="cometchat_a11y_play_recording" translatable="true">تشغيل التسجيل</string>
+    <string name="cometchat_a11y_play_video" translatable="true">تشغيل الفيديو</string>
+    <string name="cometchat_a11y_poll" translatable="true">استطلاع: %1$s</string>
+    <string name="cometchat_a11y_poll_option" translatable="true">خيار الاستطلاع %1$s</string>
+    <string name="cometchat_a11y_poll_question_input" translatable="true">حقل سؤال الاستطلاع</string>
+    <string name="cometchat_a11y_reactions" translatable="true">%1$s، %2$s تفاعلات</string>
+    <string name="cometchat_a11y_record_voice_message" translatable="true">تسجيل رسالة صوتية</string>
+    <string name="cometchat_a11y_recording_duration" translatable="true">مدة التسجيل: %1$s</string>
+    <string name="cometchat_a11y_recording_icon" translatable="true">أيقونة التسجيل</string>
+    <string name="cometchat_a11y_recording_in_progress" translatable="true">التسجيل جارٍ</string>
+    <string name="cometchat_a11y_recording_time" translatable="true">وقت التسجيل: %1$s</string>
+    <string name="cometchat_a11y_reply_preview" translatable="true">معاينة الرد</string>
+    <string name="cometchat_a11y_restart" translatable="true">إعادة البدء</string>
+    <string name="cometchat_a11y_restart_recording" translatable="true">إعادة بدء التسجيل</string>
+    <string name="cometchat_a11y_resume_recording" translatable="true">استئناف التسجيل</string>
+    <string name="cometchat_a11y_retry" translatable="true">إعادة المحاولة</string>
+    <string name="cometchat_a11y_rich_text_toolbar" translatable="true">شريط النص المنسق</string>
+    <string name="cometchat_a11y_search" translatable="true">بحث</string>
+    <string name="cometchat_a11y_search_conversations" translatable="true">البحث في المحادثات</string>
+    <string name="cometchat_a11y_search_conversations_tap_to_open_search" translatable="true">البحث في المحادثات، انقر لفتح البحث</string>
+    <string name="cometchat_a11y_search_results_conversations_messages" translatable="true">نتائج البحث: %1$s محادثات، %2$s رسائل</string>
+    <string name="cometchat_a11y_selected_suffix" translatable="true">، محدد</string>
+    <string name="cometchat_a11y_send" translatable="true">إرسال</string>
+    <string name="cometchat_a11y_send_recording" translatable="true">إرسال التسجيل</string>
+    <string name="cometchat_a11y_share" translatable="true">مشاركة</string>
+    <string name="cometchat_a11y_show_formatting_options" translatable="true">عرض خيارات التنسيق</string>
+    <string name="cometchat_a11y_site_favicon" translatable="true">أيقونة الموقع</string>
+    <string name="cometchat_a11y_smart_reply" translatable="true">رد ذكي: %1$s</string>
+    <string name="cometchat_a11y_start_recording" translatable="true">بدء التسجيل</string>
+    <string name="cometchat_a11y_sticker_set" translatable="true">مجموعة ملصقات %1$s</string>
+    <string name="cometchat_a11y_stickers" translatable="true">الملصقات</string>
+    <string name="cometchat_a11y_stop" translatable="true">إيقاف</string>
+    <string name="cometchat_a11y_stop_recording" translatable="true">إيقاف التسجيل</string>
+    <string name="cometchat_a11y_strikethrough" translatable="true">يتوسطه خط</string>
+    <string name="cometchat_a11y_submit_recording" translatable="true">إرسال التسجيل</string>
+    <string name="cometchat_a11y_submit_recording_disabled" translatable="true">إرسال التسجيل (معطّل)</string>
+    <string name="cometchat_a11y_submit_selection_of_conversations" translatable="true">تأكيد تحديد %1$s محادثات</string>
+    <string name="cometchat_a11y_submit_selection_of_members" translatable="true">تأكيد تحديد %1$s أعضاء</string>
+    <string name="cometchat_a11y_submit_selection_of_users" translatable="true">تأكيد تحديد %1$s مستخدمين</string>
+    <string name="cometchat_a11y_suggestion" translatable="true">اقتراح: %1$s</string>
+    <string name="cometchat_a11y_suggestion_list" translatable="true">قائمة الاقتراحات</string>
+    <string name="cometchat_a11y_summary" translatable="true">الملخص: %1$s</string>
+    <string name="cometchat_a11y_text" translatable="true">%1$s. %2$s</string>
+    <string name="cometchat_a11y_text_message" translatable="true">رسالة نصية: %1$s</string>
+    <string name="cometchat_a11y_thread" translatable="true">سلسلة</string>
+    <string name="cometchat_a11y_thread_replies" translatable="true">ردود السلسلة</string>
+    <string name="cometchat_a11y_underline" translatable="true">مسطَّر</string>
+    <string name="cometchat_a11y_user_avatar" translatable="true">صورة المستخدم</string>
+    <string name="cometchat_a11y_video" translatable="true">الفيديو %1$s</string>
+    <string name="cometchat_a11y_video_2" translatable="true">فيديو</string>
+    <string name="cometchat_a11y_video_call" translatable="true">مكالمة فيديو</string>
+    <string name="cometchat_a11y_video_label" translatable="true">فيديو</string>
+    <string name="cometchat_a11y_video_message_with_video_s" translatable="true">رسالة تحتوي على %1$s فيديوهات</string>
+    <string name="cometchat_a11y_video_thumbnail" translatable="true">صورة الفيديو المصغرة</string>
+    <string name="cometchat_a11y_video_unavailable" translatable="true">الفيديو غير متاح</string>
+    <string name="cometchat_a11y_voice_call" translatable="true">مكالمة صوتية</string>
+    <string name="cometchat_a11y_voice_recording" translatable="true">تسجيل صوتي</string>
+    <string name="cometchat_add_link" translatable="true">إضافة رابط</string>
+    <string name="cometchat_ai_agent_message" translatable="true">رسالة وكيل الذكاء الاصطناعي</string>
+    <string name="cometchat_ai_assistant" translatable="true">مساعد الذكاء الاصطناعي</string>
+    <string name="cometchat_answer_n" translatable="true">الإجابة %1$d</string>
+    <string name="cometchat_apply" translatable="true">تطبيق</string>
+    <string name="cometchat_are_typing" translatable="true">%1$d أشخاص يكتبون…</string>
+    <string name="cometchat_attachment_cancel" translatable="true">إلغاء</string>
+    <string name="cometchat_attachment_count" translatable="true">%1$d مرفقات</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">يمكنك إرفاق ما يصل إلى %1$d ملفات</string>
+    <string name="cometchat_attachment_overflow" translatable="true">+%1$d</string>
+    <string name="cometchat_attachment_pause" translatable="true">إيقاف مؤقت</string>
+    <string name="cometchat_attachment_play" translatable="true">تشغيل</string>
+    <string name="cometchat_attachment_progress" translatable="true">%1$s / %2$s</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">يمكنك اختيار %1$d ملفات إضافية</string>
+    <string name="cometchat_attachment_remove" translatable="true">إزالة</string>
+    <string name="cometchat_attachment_retry" translatable="true">إعادة المحاولة</string>
+    <string name="cometchat_attachment_size_exceeded" translatable="true">%1$s كبير جداً (الحد الأقصى %2$s)</string>
+    <string name="cometchat_attachment_size_unknown" translatable="true">تعذرت قراءة %1$s — جرّب ملفاً آخر</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">انقر لإعادة المحاولة</string>
+    <string name="cometchat_attachment_tile_description" translatable="true">%1$s، %2$s</string>
+    <string name="cometchat_attachment_total_size_exceeded" translatable="true">تتجاوز هذه الملفات حد %1$s للرسالة الواحدة</string>
+    <string name="cometchat_attachment_type_not_allowed" translatable="true">%1$s ليس نوع ملف مسموحاً به</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">فشل الرفع</string>
+    <string name="cometchat_attachment_upload_unavailable" translatable="true">الرفع غير متاح في خطتك</string>
+    <string name="cometchat_attachment_uploading" translatable="true">جارٍ الرفع…</string>
+    <string name="cometchat_ban_member" translatable="true">حظر العضو</string>
+    <string name="cometchat_change_scope" translatable="true">تغيير الدور</string>
+    <string name="cometchat_close" translatable="true">إغلاق</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">هل أنت متأكد من حظر %1$s؟</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">هل أنت متأكد من إخراج %1$s؟</string>
+    <string name="cometchat_conversation_list_description" translatable="true">قائمة محادثات تضم %1$d محادثات</string>
+    <string name="cometchat_create_poll" translatable="true">إنشاء استطلاع</string>
+    <string name="cometchat_discard_selection" translatable="true">تجاهل التحديد</string>
+    <string name="cometchat_download" translatable="true">تنزيل</string>
+    <string name="cometchat_drag_to_reorder" translatable="true">اسحب لإعادة الترتيب</string>
+    <string name="cometchat_edit_link" translatable="true">تعديل الرابط</string>
+    <string name="cometchat_edit_message" translatable="true">تعديل الرسالة</string>
+    <string name="cometchat_error_loading_members" translatable="true">تعذر تحميل الأعضاء. يرجى المحاولة مرة أخرى.</string>
+    <string name="cometchat_file" translatable="true">ملف</string>
+    <string name="cometchat_gallery" translatable="true">المعرض</string>
+    <string name="cometchat_go_back" translatable="true">الرجوع</string>
+    <string name="cometchat_group_members" translatable="true">الأعضاء</string>
+    <string name="cometchat_groups_list_description" translatable="true">قائمة مجموعات تضم %1$d مجموعات</string>
+    <string name="cometchat_insert_link" translatable="true">إدراج رابط</string>
+    <string name="cometchat_kick_member" translatable="true">إخراج العضو</string>
+    <string name="cometchat_link" translatable="true">رابط</string>
+    <string name="cometchat_link_text" translatable="true">نص الرابط</string>
+    <string name="cometchat_link_url" translatable="true">الرابط</string>
+    <string name="cometchat_meeting" translatable="true">اجتماع</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d صوتيات</string>
+    <string name="cometchat_n_files" translatable="true">%1$d ملفات</string>
+    <string name="cometchat_n_images" translatable="true">%1$d صور</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d أخرى</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d فيديوهات</string>
+    <string name="cometchat_new" translatable="true">جديد</string>
+    <string name="cometchat_new_message_count_plural" translatable="true">%1$d رسائل جديدة</string>
+    <string name="cometchat_new_message_count_singular" translatable="true">%1$d رسالة جديدة</string>
+    <string name="cometchat_no_members_found" translatable="true">لم يتم العثور على أعضاء</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">أضف أعضاء إلى المجموعة لتراهم هنا.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">لا توجد رسائل بعد</string>
+    <string name="cometchat_no_preview_available" translatable="true">لا تتوفر معاينة</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">هذا النوع من الملفات لا يدعم المعاينة.</string>
+    <string name="cometchat_no_reactions" translatable="true">لا توجد تفاعلات</string>
+    <string name="cometchat_not_selected" translatable="true">غير محدد</string>
+    <string name="cometchat_preview" translatable="true">معاينة:</string>
+    <string name="cometchat_remove_group_description" translatable="true">إزالة %1$s من التحديد</string>
+    <string name="cometchat_reply_to_message" translatable="true">رد</string>
+    <string name="cometchat_replying_to" translatable="true">الرد على %s</string>
+    <string name="cometchat_say_hi_to" translatable="true">رحّب بـ %1$s 👋</string>
+    <string name="cometchat_search_empty_subtitle" translatable="true">لم يتم العثور على نتائج مطابقة. جرّب كلمة مفتاحية أخرى.</string>
+    <string name="cometchat_search_empty_title" translatable="true">لا توجد نتائج</string>
+    <string name="cometchat_search_in" translatable="true">البحث في</string>
+    <string name="cometchat_search_initial_subtitle" translatable="true">ابحث عن محادثات أو رسائل بكتابة كلمة مفتاحية أعلاه.</string>
+    <string name="cometchat_search_initial_title" translatable="true">ابدأ البحث</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">اختر دوراً جديداً لـ %1$s</string>
+    <string name="cometchat_selected" translatable="true">محدد</string>
+    <string name="cometchat_selected_count" translatable="true">تم تحديد %1$d</string>
+    <string name="cometchat_selected_group_item_description" translatable="true">المجموعة المحددة: %1$s</string>
+    <string name="cometchat_selected_groups_list_description" translatable="true">قائمة المجموعات المحددة: %1$d مجموعات</string>
+    <string name="cometchat_selection_count" translatable="true">تم تحديد %d</string>
+    <string name="cometchat_set_the_answers" translatable="true">حدد الإجابات</string>
+    <string name="cometchat_show_less" translatable="true">عرض أقل</string>
+    <string name="cometchat_show_n_more" translatable="true">عرض +%1$d أخرى</string>
+    <string name="cometchat_smart_replies" translatable="true">الردود الذكية</string>
+    <string name="cometchat_start_conversation" translatable="true">بدء محادثة</string>
+    <string name="cometchat_submit_selection" translatable="true">تأكيد التحديد</string>
+    <string name="cometchat_submit_selection_description" translatable="true">تأكيد تحديد %1$d عناصر</string>
+    <string name="cometchat_text" translatable="true">نص</string>
+    <string name="cometchat_try_again_later" translatable="true">يرجى المحاولة لاحقاً.</string>
+    <string name="cometchat_unable_to_load_poll" translatable="true">تعذر تحميل الاستطلاع</string>
+    <string name="cometchat_unread_messages" translatable="true">%1$d رسائل غير مقروءة</string>
+    <string name="cometchat_video" translatable="true">فيديو</string>
+    <string name="cometchat_whiteboard" translatable="true">سبورة</string>
+    <plurals name="cometchat_members_count">
+        <item quantity="one">%d عضو</item>
+        <item quantity="other">%d أعضاء</item>
+    </plurals>
+    <!-- ENG-38656 (X4 round 2): conditional a11y -->
+    <string name="cometchat_a11y_item_with_state" translatable="true">%1$s، %2$s</string>
+    <string name="cometchat_a11y_creating_poll" translatable="true">جارٍ إنشاء الاستطلاع، يرجى الانتظار</string>
+    <string name="cometchat_a11y_send_poll" translatable="true">إرسال الاستطلاع</string>
+    <string name="cometchat_a11y_send_poll_disabled" translatable="true">زر إرسال الاستطلاع معطّل</string>
+    <string name="cometchat_a11y_media_recorder_idle" translatable="true">المسجل جاهز للتسجيل</string>
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">التسجيل جارٍ، انقضى %1$s</string>
+    <string name="cometchat_a11y_recording_ready" translatable="true">اكتمل التسجيل، جاهز للتشغيل أو الإرسال</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">التسجيل متوقف مؤقتاً عند %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">اكتمل التسجيل، المدة %1$s</string>
+    <string name="cometchat_a11y_playing_recording_time" translatable="true">جارٍ تشغيل التسجيل، %1$s</string>
+    <string name="cometchat_a11y_recording_error_msg" translatable="true">خطأ في التسجيل: %1$s</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">مسجل صوتي</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">شكل الموجة الصوتية يعرض سعة التسجيل</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">شكل الموجة الصوتية يعرض تقدم التشغيل</string>
+    <string name="cometchat_a11y_sticker" translatable="true">ملصق</string>
+    <string name="cometchat_a11y_downloading" translatable="true">جارٍ التنزيل</string>
+    <string name="cometchat_a11y_loading_short" translatable="true">جارٍ التحميل</string>
+    <string name="cometchat_a11y_close_attachments" translatable="true">إغلاق المرفقات</string>
+    <string name="cometchat_a11y_open_attachments" translatable="true">فتح المرفقات</string>
+    <string name="cometchat_a11y_poll_option_text" translatable="true">خيار: %1$s</string>
+    <string name="cometchat_a11y_poll_option_stats" translatable="true">، %1$s بالمئة، %2$s أصوات</string>
+    <string name="cometchat_a11y_poll_your_vote" translatable="true">، صوتك</string>
+    <!-- ENG-38656 (X4 round 3) -->
+    <string name="cometchat_a11y_message_in_progress" translatable="true">جارٍ إرسال الرسالة</string>
+    <string name="cometchat_a11y_message_sent" translatable="true">تم إرسال الرسالة</string>
+    <string name="cometchat_a11y_message_delivered" translatable="true">تم تسليم الرسالة</string>
+    <string name="cometchat_a11y_message_read" translatable="true">تمت قراءة الرسالة</string>
+    <string name="cometchat_a11y_message_error" translatable="true">خطأ في الرسالة</string>
+    <string name="cometchat_a11y_unsupported_attachment" translatable="true">مرفق غير مدعوم</string>
+    <string name="cometchat_a11y_private_group" translatable="true">مجموعة خاصة</string>
+    <string name="cometchat_a11y_protected_group" translatable="true">مجموعة محمية</string>
+    <string name="cometchat_a11y_start_recording_full" translatable="true">بدء التسجيل</string>
+    <string name="cometchat_a11y_pause_recording_full" translatable="true">إيقاف التسجيل مؤقتاً</string>
+    <string name="cometchat_a11y_resume_recording_full" translatable="true">استئناف التسجيل</string>
+    <string name="cometchat_a11y_send_recording_full" translatable="true">إرسال التسجيل</string>
+    <string name="cometchat_a11y_hide_formatting_options" translatable="true">إخفاء خيارات التنسيق</string>
+    <string name="cometchat_a11y_close_stickers" translatable="true">إغلاق الملصقات</string>
+    <string name="cometchat_a11y_open_stickers" translatable="true">فتح الملصقات</string>
 </resources>

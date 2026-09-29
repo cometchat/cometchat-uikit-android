@@ -11,7 +11,7 @@ import com.cometchat.uikit.core.domain.repository.CallLogsRepository
  * 
  * @param dataSource The data source for fetching call logs from SDK
  */
-class CallLogsRepositoryImpl(
+public class CallLogsRepositoryImpl(
     private val dataSource: CallLogsDataSource
 ) : CallLogsRepository {
     

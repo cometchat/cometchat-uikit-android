@@ -15,7 +15,7 @@ import com.cometchat.chat.models.AIToolResultMessage
  * All fields are nullable because any combination of final messages may be
  * present depending on the AI assistant's response.
  */
-data class QueueCompletionResult(
+public data class QueueCompletionResult(
     val aiAssistantMessage: AIAssistantMessage? = null,
     val aiToolResultMessage: AIToolResultMessage? = null,
     val aiToolArgumentMessage: AIToolArgumentMessage? = null

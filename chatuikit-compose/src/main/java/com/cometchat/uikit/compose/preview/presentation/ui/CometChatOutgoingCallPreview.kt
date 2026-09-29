@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,7 +97,7 @@ private fun SimulatedOutgoingCallUI(
         ) {
             Icon(
                 painter = painterResource(R.drawable.cometchat_ic_end_call),
-                contentDescription = "End Call",
+                contentDescription = stringResource(R.string.cometchat_a11y_end_call),
                 tint = Color.White,
                 modifier = Modifier.size(28.dp)
             )
@@ -110,7 +111,7 @@ private fun SimulatedOutgoingCallUI(
 
 @Preview(showBackground = true, name = "OutgoingCall - Audio Call")
 @Composable
-fun PreviewOutgoingCallAudio() {
+public fun PreviewOutgoingCallAudio() {
     CometChatTheme {
         SimulatedOutgoingCallUI(
             recipientName = "Alice Smith",
@@ -122,7 +123,7 @@ fun PreviewOutgoingCallAudio() {
 
 @Preview(showBackground = true, name = "OutgoingCall - Video Call")
 @Composable
-fun PreviewOutgoingCallVideo() {
+public fun PreviewOutgoingCallVideo() {
     CometChatTheme {
         SimulatedOutgoingCallUI(
             recipientName = "Bob Johnson",
@@ -134,7 +135,7 @@ fun PreviewOutgoingCallVideo() {
 
 @Preview(showBackground = true, name = "OutgoingCall - Group Call")
 @Composable
-fun PreviewOutgoingCallGroup() {
+public fun PreviewOutgoingCallGroup() {
     CometChatTheme {
         SimulatedOutgoingCallUI(
             recipientName = "Engineering Team",
@@ -151,7 +152,7 @@ fun PreviewOutgoingCallGroup() {
 
 @Preview(showBackground = true, name = "OutgoingCall - Custom Title")
 @Composable
-fun PreviewOutgoingCallCustomTitle() {
+public fun PreviewOutgoingCallCustomTitle() {
     CometChatTheme {
         SimulatedOutgoingCallUI(
             recipientName = "★ Alice Smith",
@@ -163,7 +164,7 @@ fun PreviewOutgoingCallCustomTitle() {
 
 @Preview(showBackground = true, name = "OutgoingCall - Long Name")
 @Composable
-fun PreviewOutgoingCallLongName() {
+public fun PreviewOutgoingCallLongName() {
     CometChatTheme {
         SimulatedOutgoingCallUI(
             recipientName = "Alexander Hamilton Washington III",

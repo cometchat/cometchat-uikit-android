@@ -7,12 +7,12 @@ import com.cometchat.chat.models.MessageReceipt
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface MessageInformationDataSource {
+public interface MessageInformationDataSource {
 
     /**
      * Fetches message receipts for a specific message.
      * @param messageId The ID of the message to fetch receipts for
      * @return Result containing list of MessageReceipt objects or error
      */
-    suspend fun getMessageReceipts(messageId: Long): Result<List<MessageReceipt>>
+    suspend public fun getMessageReceipts(messageId: Long): Result<List<MessageReceipt>>
 }

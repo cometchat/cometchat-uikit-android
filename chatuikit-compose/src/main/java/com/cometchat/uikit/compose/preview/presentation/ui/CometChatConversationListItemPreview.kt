@@ -29,7 +29,7 @@ import com.cometchat.uikit.compose.theme.darkColorScheme
  */
 @Preview(showBackground = true, name = "User Conversation")
 @Composable
-fun PreviewUserConversation() {
+public fun PreviewUserConversation() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(
@@ -54,7 +54,7 @@ fun PreviewUserConversation() {
  */
 @Preview(showBackground = true, name = "User Conversation - Offline")
 @Composable
-fun PreviewUserConversationOffline() {
+public fun PreviewUserConversationOffline() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(
@@ -82,7 +82,7 @@ fun PreviewUserConversationOffline() {
  */
 @Preview(showBackground = true, name = "Group Conversation - Public")
 @Composable
-fun PreviewGroupConversationPublic() {
+public fun PreviewGroupConversationPublic() {
     CometChatTheme {
         val conversation = PreviewMockData.createGroupConversation(
             group = PreviewMockData.createMockGroup(
@@ -106,7 +106,7 @@ fun PreviewGroupConversationPublic() {
  */
 @Preview(showBackground = true, name = "Group Conversation - Private")
 @Composable
-fun PreviewGroupConversationPrivate() {
+public fun PreviewGroupConversationPrivate() {
     CometChatTheme {
         val conversation = PreviewMockData.createGroupConversation(
             group = PreviewMockData.createMockGroup(
@@ -130,7 +130,7 @@ fun PreviewGroupConversationPrivate() {
  */
 @Preview(showBackground = true, name = "Group Conversation - Protected")
 @Composable
-fun PreviewGroupConversationProtected() {
+public fun PreviewGroupConversationProtected() {
     CometChatTheme {
         val conversation = PreviewMockData.createGroupConversation(
             group = PreviewMockData.createMockGroup(
@@ -158,7 +158,7 @@ fun PreviewGroupConversationProtected() {
  */
 @Preview(showBackground = true, name = "Selection Mode - Single Unselected")
 @Composable
-fun PreviewSelectionModeSingleUnselected() {
+public fun PreviewSelectionModeSingleUnselected() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Charlie Brown")
@@ -178,7 +178,7 @@ fun PreviewSelectionModeSingleUnselected() {
  */
 @Preview(showBackground = true, name = "Selection Mode - Single Selected")
 @Composable
-fun PreviewSelectionModeSingleSelected() {
+public fun PreviewSelectionModeSingleSelected() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Charlie Brown")
@@ -198,7 +198,7 @@ fun PreviewSelectionModeSingleSelected() {
  */
 @Preview(showBackground = true, name = "Selection Mode - Multiple")
 @Composable
-fun PreviewSelectionModeMultiple() {
+public fun PreviewSelectionModeMultiple() {
     CometChatTheme {
         Column {
             val conversation1 = PreviewMockData.createUserConversation(
@@ -245,7 +245,7 @@ fun PreviewSelectionModeMultiple() {
  */
 @Preview(showBackground = true, name = "Custom Title View")
 @Composable
-fun PreviewCustomTitleView() {
+public fun PreviewCustomTitleView() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Custom Title User")
@@ -270,7 +270,7 @@ fun PreviewCustomTitleView() {
  */
 @Preview(showBackground = true, name = "Custom Subtitle View")
 @Composable
-fun PreviewCustomSubtitleView() {
+public fun PreviewCustomSubtitleView() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Custom Subtitle User")
@@ -294,7 +294,7 @@ fun PreviewCustomSubtitleView() {
  */
 @Preview(showBackground = true, name = "Custom Trailing View")
 @Composable
-fun PreviewCustomTrailingView() {
+public fun PreviewCustomTrailingView() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Custom Trailing User")
@@ -319,7 +319,7 @@ fun PreviewCustomTrailingView() {
  */
 @Preview(showBackground = true, name = "All Custom Views")
 @Composable
-fun PreviewAllCustomViews() {
+public fun PreviewAllCustomViews() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Fully Customized")
@@ -371,7 +371,7 @@ fun PreviewAllCustomViews() {
  */
 @Preview(showBackground = true, name = "Unread Messages - Single")
 @Composable
-fun PreviewUnreadMessagesSingle() {
+public fun PreviewUnreadMessagesSingle() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "New Message User"),
@@ -393,7 +393,7 @@ fun PreviewUnreadMessagesSingle() {
  */
 @Preview(showBackground = true, name = "Unread Messages - Multiple")
 @Composable
-fun PreviewUnreadMessagesMultiple() {
+public fun PreviewUnreadMessagesMultiple() {
     CometChatTheme {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(name = "Busy Chat User"),
@@ -415,7 +415,7 @@ fun PreviewUnreadMessagesMultiple() {
  */
 @Preview(showBackground = true, name = "Unread Messages - High Count")
 @Composable
-fun PreviewUnreadMessagesHighCount() {
+public fun PreviewUnreadMessagesHighCount() {
     CometChatTheme {
         val conversation = PreviewMockData.createGroupConversation(
             group = PreviewMockData.createMockGroup(name = "Very Active Group"),
@@ -437,7 +437,7 @@ fun PreviewUnreadMessagesHighCount() {
  */
 @Preview(showBackground = true, name = "Unread Messages - List")
 @Composable
-fun PreviewUnreadMessagesList() {
+public fun PreviewUnreadMessagesList() {
     CometChatTheme {
         Column {
             listOf(0, 1, 5, 99).forEachIndexed { index, count ->
@@ -470,7 +470,7 @@ fun PreviewUnreadMessagesList() {
  */
 @Preview(showBackground = true, name = "Typing Indicator - Single User")
 @Composable
-fun PreviewTypingIndicatorSingleUser() {
+public fun PreviewTypingIndicatorSingleUser() {
     CometChatTheme {
         val typingUser = PreviewMockData.createMockUser(name = "Alice")
         val conversation = PreviewMockData.createUserConversation(
@@ -493,7 +493,7 @@ fun PreviewTypingIndicatorSingleUser() {
  */
 @Preview(showBackground = true, name = "Typing Indicator - Multiple Users")
 @Composable
-fun PreviewTypingIndicatorMultipleUsers() {
+public fun PreviewTypingIndicatorMultipleUsers() {
     CometChatTheme {
         val conversation = PreviewMockData.createGroupConversation(
             group = PreviewMockData.createMockGroup(name = "Team Discussion")
@@ -523,7 +523,7 @@ fun PreviewTypingIndicatorMultipleUsers() {
  */
 @Preview(showBackground = true, name = "Comprehensive List")
 @Composable
-fun PreviewComprehensiveList() {
+public fun PreviewComprehensiveList() {
     CometChatTheme {
         Column(
             modifier = Modifier.background(CometChatTheme.colorScheme.backgroundColor1)
@@ -594,7 +594,7 @@ fun PreviewComprehensiveList() {
  */
 @Preview(showBackground = true, name = "Dark Theme")
 @Composable
-fun PreviewDarkTheme() {
+public fun PreviewDarkTheme() {
     CometChatTheme(colorScheme = darkColorScheme()) {
         val conversation = PreviewMockData.createUserConversation(
             user = PreviewMockData.createMockUser(

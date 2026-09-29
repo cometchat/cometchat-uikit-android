@@ -10,7 +10,7 @@ import com.cometchat.uikit.core.domain.repository.StickerRepository
  *
  * @param dataSource The data source to use for fetching stickers
  */
-class StickerRepositoryImpl(
+public class StickerRepositoryImpl(
     private val dataSource: StickerDataSource
 ) : StickerRepository {
 

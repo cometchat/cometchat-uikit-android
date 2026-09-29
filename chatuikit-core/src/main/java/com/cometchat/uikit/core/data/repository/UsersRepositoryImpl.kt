@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.UsersRepository
  * 
  * @param dataSource The data source to fetch data (interface, not concrete)
  */
-class UsersRepositoryImpl(
+public class UsersRepositoryImpl(
     private val dataSource: UsersDataSource
 ) : UsersRepository {
     

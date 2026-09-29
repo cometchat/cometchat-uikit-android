@@ -18,7 +18,7 @@ import androidx.annotation.StyleRes
  * )
  * ```
  */
-data class CometChatMessageOption(
+public data class CometChatMessageOption(
     val id: String,
     val title: String,
     @ColorInt val titleColor: Int = 0,

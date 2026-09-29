@@ -23,7 +23,7 @@ import kotlin.math.abs
  * @property underlyingText The text stored for processing (e.g., "<@uid:user123>")
  * @property range The character range of the mention in the text
  */
-data class SelectedMention(
+public data class SelectedMention(
     val id: String,
     val name: String,
     val promptText: String,
@@ -42,18 +42,18 @@ data class SelectedMention(
  *
  * Based on the View-based CometChatEditText behavior from the design document.
  */
-class MentionTextFieldState {
+public class MentionTextFieldState {
 
     /**
      * The current text field value.
      */
-    var textFieldValue by mutableStateOf(TextFieldValue())
+    public var textFieldValue: TextFieldValue by mutableStateOf(TextFieldValue())
         private set
 
     /**
      * List of currently selected mentions in the text.
      */
-    var selectedMentions by mutableStateOf<List<SelectedMention>>(emptyList())
+    public var selectedMentions: List<SelectedMention> by mutableStateOf<List<SelectedMention>>(emptyList())
         private set
 
     /**
@@ -81,7 +81,7 @@ class MentionTextFieldState {
      * @param onMentionDeleted Optional callback when a mention is deleted via backspace
      * @return The validated text field value (may have adjusted cursor position)
      */
-    fun onValueChange(
+    public fun onValueChange(
         newValue: TextFieldValue,
         onMentionDeleted: ((SelectedMention) -> Unit)? = null
     ): TextFieldValue {
@@ -224,7 +224,7 @@ class MentionTextFieldState {
      * @param triggerIndex The index of the tracking character
      * @param mentionStyle Optional style for the mention
      */
-    fun insertMention(
+    public fun insertMention(
         suggestionItem: SuggestionItem,
         triggerIndex: Int,
         mentionStyle: SpanStyle? = null
@@ -345,7 +345,7 @@ class MentionTextFieldState {
      * @param defaultMentionStyle The default style for mentions
      * @return AnnotatedString with styled mentions
      */
-    fun buildAnnotatedString(defaultMentionStyle: SpanStyle): AnnotatedString {
+    public fun buildAnnotatedString(defaultMentionStyle: SpanStyle): AnnotatedString {
         val text = textFieldValue.text
         if (selectedMentions.isEmpty()) {
             return AnnotatedString(text)
@@ -398,7 +398,7 @@ class MentionTextFieldState {
      *
      * @return The text with mentions replaced by their underlying format
      */
-    fun getProcessedText(): String {
+    public fun getProcessedText(): String {
         var result = textFieldValue.text
         // Sort by position descending to replace from end to start (preserves indices)
         val sortedMentions = selectedMentions.sortedByDescending { it.range.first }
@@ -420,21 +420,21 @@ class MentionTextFieldState {
     /**
      * Gets the map of prompt text to underlying text for all mentions.
      */
-    fun getPromptToUnderlyingMap(): Map<String, String> {
+    public fun getPromptToUnderlyingMap(): Map<String, String> {
         return selectedMentions.associate { it.promptText to it.underlyingText }
     }
 
     /**
      * Checks if a position is within a mention span.
      */
-    fun isPositionInMention(position: Int): Boolean {
+    public fun isPositionInMention(position: Int): Boolean {
         return selectedMentions.any { position in it.range }
     }
 
     /**
      * Gets the mention at a specific position.
      */
-    fun getMentionAt(position: Int): SelectedMention? {
+    public fun getMentionAt(position: Int): SelectedMention? {
         return selectedMentions.find { position in it.range }
     }
 
@@ -442,7 +442,7 @@ class MentionTextFieldState {
      * Updates the text field value directly (for initialization or external updates).
      * This bypasses the normal validation and should be used carefully.
      */
-    fun updateTextFieldValue(value: TextFieldValue) {
+    public fun updateTextFieldValue(value: TextFieldValue) {
         textFieldValue = value
         previousTextLength = value.text.length
         previousCursorPosition = value.selection.start
@@ -452,7 +452,7 @@ class MentionTextFieldState {
     /**
      * Clears all state.
      */
-    fun clear() {
+    public fun clear() {
         textFieldValue = TextFieldValue()
         selectedMentions = emptyList()
         mentionStyles.clear()
@@ -463,20 +463,20 @@ class MentionTextFieldState {
     /**
      * Sets the style for a specific mention.
      */
-    fun setMentionStyle(mentionId: String, style: SpanStyle) {
+    public fun setMentionStyle(mentionId: String, style: SpanStyle) {
         mentionStyles[mentionId] = style
     }
 
     /**
      * Gets the count of selected mentions.
      */
-    fun getMentionCount(): Int = selectedMentions.size
+    public fun getMentionCount(): Int = selectedMentions.size
 
-    companion object {
+    public companion object {
         /**
          * Annotation tag used for mention annotations in AnnotatedString.
          */
-        const val MENTION_ANNOTATION_TAG = "MENTION"
+        public const val MENTION_ANNOTATION_TAG: String = "MENTION"
     }
 }
 
@@ -484,6 +484,6 @@ class MentionTextFieldState {
  * Remembers a MentionTextFieldState instance.
  */
 @Composable
-fun rememberMentionTextFieldState(): MentionTextFieldState {
+public fun rememberMentionTextFieldState(): MentionTextFieldState {
     return remember { MentionTextFieldState() }
 }

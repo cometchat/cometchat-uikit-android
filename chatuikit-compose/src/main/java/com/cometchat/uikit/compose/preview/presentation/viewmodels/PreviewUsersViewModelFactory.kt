@@ -11,12 +11,12 @@ import com.cometchat.uikit.core.viewmodel.CometChatUsersViewModel
  * Factory object for creating preview-specific Users ViewModels.
  * These ViewModels are designed for Compose previews and testing different UI states.
  */
-object PreviewUsersViewModelFactory {
+public object PreviewUsersViewModelFactory {
 
     /**
      * Creates a ViewModel with default sample users.
      */
-    fun createDefaultViewModel(): CometChatUsersViewModel {
+    public fun createDefaultViewModel(): CometChatUsersViewModel {
         val repository = PreviewUsersRepository()
         return CometChatUsersViewModel(
             fetchUsersUseCase = FetchUsersUseCase(repository),
@@ -28,7 +28,7 @@ object PreviewUsersViewModelFactory {
     /**
      * Creates a ViewModel that shows the empty state.
      */
-    fun createEmptyStateViewModel(): CometChatUsersViewModel {
+    public fun createEmptyStateViewModel(): CometChatUsersViewModel {
         val repository = PreviewUsersRepository(simulateEmpty = true)
         return CometChatUsersViewModel(
             fetchUsersUseCase = FetchUsersUseCase(repository),
@@ -40,7 +40,7 @@ object PreviewUsersViewModelFactory {
     /**
      * Creates a ViewModel that shows the error state.
      */
-    fun createErrorStateViewModel(): CometChatUsersViewModel {
+    public fun createErrorStateViewModel(): CometChatUsersViewModel {
         val repository = PreviewUsersRepository(simulateError = true)
         return CometChatUsersViewModel(
             fetchUsersUseCase = FetchUsersUseCase(repository),
@@ -52,7 +52,7 @@ object PreviewUsersViewModelFactory {
     /**
      * Creates a ViewModel with custom users.
      */
-    fun createCustomUsersViewModel(users: List<User>): CometChatUsersViewModel {
+    public fun createCustomUsersViewModel(users: List<User>): CometChatUsersViewModel {
         val repository = PreviewUsersRepository(initialUsers = users)
         return CometChatUsersViewModel(
             fetchUsersUseCase = FetchUsersUseCase(repository),
@@ -64,21 +64,21 @@ object PreviewUsersViewModelFactory {
     /**
      * Creates a ViewModel with only online users.
      */
-    fun createOnlineUsersViewModel(): CometChatUsersViewModel {
+    public fun createOnlineUsersViewModel(): CometChatUsersViewModel {
         return createCustomUsersViewModel(PreviewMockData.createOnlineUsers())
     }
 
     /**
      * Creates a ViewModel with only offline users.
      */
-    fun createOfflineUsersViewModel(): CometChatUsersViewModel {
+    public fun createOfflineUsersViewModel(): CometChatUsersViewModel {
         return createCustomUsersViewModel(PreviewMockData.createOfflineUsers())
     }
 
     /**
      * Creates a ViewModel with a large list for scroll testing.
      */
-    fun createLargeListViewModel(count: Int = 30): CometChatUsersViewModel {
+    public fun createLargeListViewModel(count: Int = 30): CometChatUsersViewModel {
         return createCustomUsersViewModel(PreviewMockData.createLargeUserList(count))
     }
 }

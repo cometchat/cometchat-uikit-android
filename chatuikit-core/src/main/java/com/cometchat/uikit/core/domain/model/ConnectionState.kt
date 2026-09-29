@@ -6,7 +6,7 @@ package com.cometchat.uikit.core.domain.model
  * Used to track and observe connection state changes so that active streams
  * can be properly interrupted and listeners notified on disconnection.
  */
-enum class ConnectionState {
+public enum class ConnectionState {
     /** WebSocket connection is active and operational. */
     CONNECTED,
 

@@ -10,7 +10,7 @@ package com.cometchat.uikit.core.constants
  * When both scopes are configured, the search component will search
  * both messages and conversations simultaneously.
  */
-enum class SearchScope {
+public enum class SearchScope {
     /**
      * Search scope for messages.
      * When selected, the search will include message results.

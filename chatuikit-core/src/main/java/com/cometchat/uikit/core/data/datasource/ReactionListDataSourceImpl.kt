@@ -13,7 +13,7 @@ import kotlin.coroutines.resume
  * Contains NO business logic - just raw data fetching.
  * This is the default implementation used for remote data operations.
  */
-class ReactionListDataSourceImpl : ReactionListDataSource {
+internal class ReactionListDataSourceImpl : ReactionListDataSource {
 
     /**
      * Fetches reactions from CometChat SDK.

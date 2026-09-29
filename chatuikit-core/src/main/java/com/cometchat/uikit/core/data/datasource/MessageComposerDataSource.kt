@@ -18,7 +18,7 @@ import com.cometchat.chat.models.TextMessage
  * 
  * @see MessageComposerDataSourceImpl for the default implementation using CometChatUIKit
  */
-interface MessageComposerDataSource {
+public interface MessageComposerDataSource {
     
     /**
      * Sends a text message to the configured receiver.
@@ -27,7 +27,7 @@ interface MessageComposerDataSource {
      * @return The sent TextMessage with updated metadata (id, sentAt, etc.)
      * @throws com.cometchat.chat.exceptions.CometChatException if sending fails
      */
-    suspend fun sendTextMessage(message: TextMessage): TextMessage
+    suspend public fun sendTextMessage(message: TextMessage): TextMessage
     
     /**
      * Sends a media message (image, video, audio, file) to the configured receiver.
@@ -36,7 +36,7 @@ interface MessageComposerDataSource {
      * @return The sent MediaMessage with updated metadata (id, sentAt, attachment URL, etc.)
      * @throws com.cometchat.chat.exceptions.CometChatException if sending fails
      */
-    suspend fun sendMediaMessage(message: MediaMessage): MediaMessage
+    suspend public fun sendMediaMessage(message: MediaMessage): MediaMessage
     
     /**
      * Sends a custom message with custom data payload to the configured receiver.
@@ -45,7 +45,7 @@ interface MessageComposerDataSource {
      * @return The sent CustomMessage with updated metadata (id, sentAt, etc.)
      * @throws com.cometchat.chat.exceptions.CometChatException if sending fails
      */
-    suspend fun sendCustomMessage(message: CustomMessage): CustomMessage
+    suspend public fun sendCustomMessage(message: CustomMessage): CustomMessage
     
     /**
      * Edits an existing message.
@@ -55,5 +55,5 @@ interface MessageComposerDataSource {
      * @return The edited BaseMessage with updated metadata
      * @throws com.cometchat.chat.exceptions.CometChatException if editing fails
      */
-    suspend fun editMessage(message: BaseMessage): BaseMessage
+    suspend public fun editMessage(message: BaseMessage): BaseMessage
 }

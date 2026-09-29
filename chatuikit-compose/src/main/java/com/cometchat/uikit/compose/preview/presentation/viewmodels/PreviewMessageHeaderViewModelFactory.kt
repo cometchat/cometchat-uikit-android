@@ -12,12 +12,12 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
  * Factory object for creating preview-specific MessageHeader ViewModels.
  * These ViewModels are designed for Compose previews and testing different UI states.
  */
-object PreviewMessageHeaderViewModelFactory {
+public object PreviewMessageHeaderViewModelFactory {
 
     /**
      * Creates a ViewModel for a user conversation header.
      */
-    fun createUserHeaderViewModel(
+    public fun createUserHeaderViewModel(
         user: User = PreviewMockData.createMockUser(name = "Alice Smith")
     ): CometChatMessageHeaderViewModel {
         val repository = PreviewMessageHeaderRepository(mockUser = user)
@@ -31,7 +31,7 @@ object PreviewMessageHeaderViewModelFactory {
     /**
      * Creates a ViewModel for a group conversation header.
      */
-    fun createGroupHeaderViewModel(
+    public fun createGroupHeaderViewModel(
         group: Group = PreviewMockData.createMockGroup(
             name = "Engineering Team",
             membersCount = 12
@@ -48,7 +48,7 @@ object PreviewMessageHeaderViewModelFactory {
     /**
      * Creates a ViewModel that simulates an error state.
      */
-    fun createErrorViewModel(): CometChatMessageHeaderViewModel {
+    public fun createErrorViewModel(): CometChatMessageHeaderViewModel {
         val repository = PreviewMessageHeaderRepository(simulateError = true)
         return CometChatMessageHeaderViewModel(
             getUserUseCase = GetUserUseCase(repository),

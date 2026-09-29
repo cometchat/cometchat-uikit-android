@@ -34,7 +34,7 @@ import java.util.Locale
  * Layer 1 (Component). Runs on Robolectric in `src/test`, so it executes in the JVM unit-test
  * job rather than the instrumented suite.
  *
- * Run: ./gradlew :chatuikit-compose:testDebugUnitTest --tests "*MessageBubbleTimestampRenderingTest"
+ * Run: ./gradlew :chatuikit-compose:testDebugUnitTest --tests "*MessageBubbleTimestampViewModelTest"
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])

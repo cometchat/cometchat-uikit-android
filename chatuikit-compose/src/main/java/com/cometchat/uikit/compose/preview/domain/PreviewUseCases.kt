@@ -21,7 +21,7 @@ import com.cometchat.uikit.core.domain.usecase.RefreshConversationListUseCase
  * A custom GetConversationListUseCase that returns predefined conversations.
  * Useful for testing specific conversation scenarios.
  */
-class PreviewGetConversationListUseCase(
+public class PreviewGetConversationListUseCase(
     private val conversations: List<Conversation> = PreviewMockData.createSampleConversations(),
     private val simulateError: Boolean = false,
     private val simulateDelay: Boolean = false
@@ -56,7 +56,7 @@ class PreviewGetConversationListUseCase(
  * GetConversationListUseCase that always returns an empty list.
  * Useful for testing empty state.
  */
-class PreviewEmptyConversationListUseCase : GetConversationListUseCase(PreviewNoOpRepository()) {
+public class PreviewEmptyConversationListUseCase : GetConversationListUseCase(PreviewNoOpRepository()) {
     override suspend operator fun invoke(request: ConversationsRequest): Result<List<Conversation>> {
         return Result.success(emptyList())
     }
@@ -68,7 +68,7 @@ class PreviewEmptyConversationListUseCase : GetConversationListUseCase(PreviewNo
  * GetConversationListUseCase that always returns an error.
  * Useful for testing error state.
  */
-class PreviewErrorConversationListUseCase(
+public class PreviewErrorConversationListUseCase(
     private val errorCode: String = "NETWORK_ERROR",
     private val errorMessage: String = "Failed to load conversations. Please check your connection."
 ) : GetConversationListUseCase(PreviewNoOpRepository()) {
@@ -82,7 +82,7 @@ class PreviewErrorConversationListUseCase(
 /**
  * GetConversationListUseCase that supports pagination simulation.
  */
-class PreviewPaginatedConversationListUseCase(
+public class PreviewPaginatedConversationListUseCase(
     private val allConversations: List<Conversation> = PreviewMockData.createLargeConversationList(),
     private val pageSize: Int = 10
 ) : GetConversationListUseCase(PreviewNoOpRepository()) {
@@ -103,7 +103,7 @@ class PreviewPaginatedConversationListUseCase(
     
     override fun hasMore(): Boolean = currentPage * pageSize < allConversations.size
     
-    fun reset() {
+    public fun reset() {
         currentPage = 0
     }
 }
@@ -115,7 +115,7 @@ class PreviewPaginatedConversationListUseCase(
 /**
  * DeleteConversationUseCase that always succeeds.
  */
-class PreviewSuccessDeleteUseCase : DeleteConversationUseCase(PreviewNoOpRepository()) {
+public class PreviewSuccessDeleteUseCase : DeleteConversationUseCase(PreviewNoOpRepository()) {
     override suspend operator fun invoke(conversation: Conversation): Result<Unit> {
         return Result.success(Unit)
     }
@@ -124,7 +124,7 @@ class PreviewSuccessDeleteUseCase : DeleteConversationUseCase(PreviewNoOpReposit
 /**
  * DeleteConversationUseCase that always fails.
  */
-class PreviewFailDeleteUseCase(
+public class PreviewFailDeleteUseCase(
     private val errorMessage: String = "Failed to delete conversation"
 ) : DeleteConversationUseCase(PreviewNoOpRepository()) {
     override suspend operator fun invoke(conversation: Conversation): Result<Unit> {
@@ -135,7 +135,7 @@ class PreviewFailDeleteUseCase(
 /**
  * DeleteConversationUseCase with configurable delay.
  */
-class PreviewDelayedDeleteUseCase(
+public class PreviewDelayedDeleteUseCase(
     private val delayMs: Long = 1500,
     private val shouldSucceed: Boolean = true
 ) : DeleteConversationUseCase(PreviewNoOpRepository()) {
@@ -156,7 +156,7 @@ class PreviewDelayedDeleteUseCase(
 /**
  * RefreshConversationListUseCase that returns fresh data.
  */
-class PreviewRefreshUseCase(
+public class PreviewRefreshUseCase(
     private val conversations: List<Conversation> = PreviewMockData.createSampleConversations()
 ) : RefreshConversationListUseCase(PreviewNoOpRepository()) {
     override suspend operator fun invoke(
@@ -169,7 +169,7 @@ class PreviewRefreshUseCase(
 /**
  * RefreshConversationListUseCase that simulates refresh with new data.
  */
-class PreviewRefreshWithNewDataUseCase : RefreshConversationListUseCase(PreviewNoOpRepository()) {
+public class PreviewRefreshWithNewDataUseCase : RefreshConversationListUseCase(PreviewNoOpRepository()) {
     private var refreshCount = 0
 
     override suspend operator fun invoke(

@@ -5,7 +5,7 @@ import com.cometchat.chat.models.User
 /**
  * Utility functions for the CometChatUsers component.
  */
-object UsersUtils {
+public object UsersUtils {
     
     /**
      * Groups users by the first letter of their name.
@@ -14,7 +14,7 @@ object UsersUtils {
      * @param users The list of users to group
      * @return A map of first letter to list of users, sorted alphabetically
      */
-    fun groupUsersByFirstLetter(users: List<User>): Map<Char, List<User>> {
+    public fun groupUsersByFirstLetter(users: List<User>): Map<Char, List<User>> {
         return users
             .groupBy { user ->
                 val firstChar = user.name?.firstOrNull()?.uppercaseChar() ?: '#'
@@ -34,7 +34,7 @@ object UsersUtils {
      * @param user The user to get initials from
      * @return The initials string (single character)
      */
-    fun getInitials(user: User): String {
+    public fun getInitials(user: User): String {
         val name = user.name
         if (name.isNullOrBlank()) {
             return "?"
@@ -50,7 +50,7 @@ object UsersUtils {
      * @param name The name to get initials from
      * @return The initials string (single character)
      */
-    fun getInitialsFromName(name: String?): String {
+    public fun getInitialsFromName(name: String?): String {
         if (name.isNullOrBlank()) {
             return "?"
         }
@@ -65,7 +65,7 @@ object UsersUtils {
      * @param query The search query
      * @return The filtered list of users
      */
-    fun filterUsers(users: List<User>, query: String): List<User> {
+    public fun filterUsers(users: List<User>, query: String): List<User> {
         if (query.isBlank()) {
             return users
         }
@@ -83,7 +83,7 @@ object UsersUtils {
      * @param user The user to get the header letter from
      * @return The header letter character
      */
-    fun getHeaderLetter(user: User): Char {
+    public fun getHeaderLetter(user: User): Char {
         val firstChar = user.name?.firstOrNull()?.uppercaseChar() ?: '#'
         return if (firstChar.isLetter()) firstChar else '#'
     }
@@ -99,7 +99,7 @@ object UsersUtils {
      * @param users The list of users to group (order is preserved)
      * @return A list of pairs where each pair contains a header letter and the users in that group
      */
-    fun groupUsersByFirstLetterPreservingOrder(users: List<User>): List<Pair<Char, List<User>>> {
+    public fun groupUsersByFirstLetterPreservingOrder(users: List<User>): List<Pair<Char, List<User>>> {
         if (users.isEmpty()) return emptyList()
         
         val result = mutableListOf<Pair<Char, List<User>>>()
@@ -135,7 +135,7 @@ object UsersUtils {
      * @param query The search query
      * @return True if the user matches the query
      */
-    fun matchesQuery(user: User, query: String): Boolean {
+    public fun matchesQuery(user: User, query: String): Boolean {
         if (query.isBlank()) {
             return true
         }

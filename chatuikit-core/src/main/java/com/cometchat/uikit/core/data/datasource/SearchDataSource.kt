@@ -10,7 +10,7 @@ import com.cometchat.chat.models.Conversation
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface SearchDataSource {
+public interface SearchDataSource {
 
     /**
      * Fetches conversations from the data source based on search criteria.
@@ -18,7 +18,7 @@ interface SearchDataSource {
      * @return Raw list of Conversation objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchConversations(request: ConversationsRequest): List<Conversation>
+    suspend public fun fetchConversations(request: ConversationsRequest): List<Conversation>
 
     /**
      * Fetches messages from the data source based on search criteria.
@@ -26,5 +26,5 @@ interface SearchDataSource {
      * @return Raw list of BaseMessage objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchMessages(request: MessagesRequest): List<BaseMessage>
+    suspend public fun fetchMessages(request: MessagesRequest): List<BaseMessage>
 }

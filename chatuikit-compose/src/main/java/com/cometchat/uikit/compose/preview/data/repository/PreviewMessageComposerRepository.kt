@@ -12,7 +12,7 @@ import com.cometchat.uikit.core.domain.repository.MessageComposerRepository
  *
  * @param simulateError If true, all operations will return failure results.
  */
-class PreviewMessageComposerRepository(
+public class PreviewMessageComposerRepository(
     private val simulateError: Boolean = false
 ) : MessageComposerRepository {
 

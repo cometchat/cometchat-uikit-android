@@ -69,6 +69,7 @@ class ConversationListDuplicateKeyTest {
                     hideGroupType = true,
                     hideReceipts = true,
                     hideSeparator = true,
+                    hidePinOption = true,
                     hideDeleteOption = true,
                     dateTimeFormatter = null,
                     textFormatters = emptyList(),

@@ -6,35 +6,35 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 
 @Immutable
-class CometChatTypography(
-    val titleBold: TextStyle = CometChatTextAppearanceTitleBold,
-    val titleMedium: TextStyle = CometChatTextAppearanceTitleMedium,
-    val titleRegular: TextStyle = CometChatTextAppearanceTitleRegular,
-    val heading1Bold: TextStyle = CometChatTextAppearanceHeading1Bold,
-    val heading1Medium: TextStyle = CometChatTextAppearanceHeading1Medium,
-    val heading1Regular: TextStyle = CometChatTextAppearanceHeading1,
-    val heading2Bold: TextStyle = CometChatTextAppearanceHeading2Bold,
-    val heading2Medium: TextStyle = CometChatTextAppearanceHeading2Medium,
-    val heading2Regular: TextStyle = CometChatTextAppearanceHeading2,
-    val heading3Bold: TextStyle = CometChatTextAppearanceHeading3Bold,
-    val heading3Medium: TextStyle = CometChatTextAppearanceHeading3Medium,
-    val heading3Regular: TextStyle = CometChatTextAppearanceHeading3,
-    val heading4Bold: TextStyle = CometChatTextAppearanceHeading4Bold,
-    val heading4Medium: TextStyle = CometChatTextAppearanceHeading4Medium,
-    val heading4Regular: TextStyle = CometChatTextAppearanceHeading4,
-    val bodyBold: TextStyle = CometChatTextAppearanceBodyBold,
-    val bodyMedium: TextStyle = CometChatTextAppearanceBodyMedium,
-    val bodyRegular: TextStyle = CometChatTextAppearanceBody,
-    val caption1Bold: TextStyle = CometChatTextAppearanceCaption1Bold,
-    val caption1Medium: TextStyle = CometChatTextAppearanceCaption1Medium,
-    val caption1Regular: TextStyle = CometChatTextAppearanceCaption1,
-    val caption2Bold: TextStyle = CometChatTextAppearanceCaption2Bold,
-    val caption2Medium: TextStyle = CometChatTextAppearanceCaption2Medium,
-    val caption2Regular: TextStyle = CometChatTextAppearanceCaption2,
-    val buttonBold: TextStyle = CometChatTextAppearanceButtonBold,
-    val buttonMedium: TextStyle = CometChatTextAppearanceButtonMedium,
-    val buttonRegular: TextStyle = CometChatTextAppearanceButton,
-    val linkRegular: TextStyle = CometChatTextAppearanceLink,
+public class CometChatTypography(
+    public val titleBold: TextStyle = CometChatTextAppearanceTitleBold,
+    public val titleMedium: TextStyle = CometChatTextAppearanceTitleMedium,
+    public val titleRegular: TextStyle = CometChatTextAppearanceTitleRegular,
+    public val heading1Bold: TextStyle = CometChatTextAppearanceHeading1Bold,
+    public val heading1Medium: TextStyle = CometChatTextAppearanceHeading1Medium,
+    public val heading1Regular: TextStyle = CometChatTextAppearanceHeading1,
+    public val heading2Bold: TextStyle = CometChatTextAppearanceHeading2Bold,
+    public val heading2Medium: TextStyle = CometChatTextAppearanceHeading2Medium,
+    public val heading2Regular: TextStyle = CometChatTextAppearanceHeading2,
+    public val heading3Bold: TextStyle = CometChatTextAppearanceHeading3Bold,
+    public val heading3Medium: TextStyle = CometChatTextAppearanceHeading3Medium,
+    public val heading3Regular: TextStyle = CometChatTextAppearanceHeading3,
+    public val heading4Bold: TextStyle = CometChatTextAppearanceHeading4Bold,
+    public val heading4Medium: TextStyle = CometChatTextAppearanceHeading4Medium,
+    public val heading4Regular: TextStyle = CometChatTextAppearanceHeading4,
+    public val bodyBold: TextStyle = CometChatTextAppearanceBodyBold,
+    public val bodyMedium: TextStyle = CometChatTextAppearanceBodyMedium,
+    public val bodyRegular: TextStyle = CometChatTextAppearanceBody,
+    public val caption1Bold: TextStyle = CometChatTextAppearanceCaption1Bold,
+    public val caption1Medium: TextStyle = CometChatTextAppearanceCaption1Medium,
+    public val caption1Regular: TextStyle = CometChatTextAppearanceCaption1,
+    public val caption2Bold: TextStyle = CometChatTextAppearanceCaption2Bold,
+    public val caption2Medium: TextStyle = CometChatTextAppearanceCaption2Medium,
+    public val caption2Regular: TextStyle = CometChatTextAppearanceCaption2,
+    public val buttonBold: TextStyle = CometChatTextAppearanceButtonBold,
+    public val buttonMedium: TextStyle = CometChatTextAppearanceButtonMedium,
+    public val buttonRegular: TextStyle = CometChatTextAppearanceButton,
+    public val linkRegular: TextStyle = CometChatTextAppearanceLink,
 ) {
 
     override fun toString(): String {
@@ -71,4 +71,4 @@ class CometChatTypography(
     }
 }
 
-val LocalTypography = staticCompositionLocalOf { CometChatTypography() }
+public val LocalTypography: androidx.compose.runtime.ProvidableCompositionLocal<CometChatTypography> = staticCompositionLocalOf { CometChatTypography() }

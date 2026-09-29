@@ -21,7 +21,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "CallButtons - User")
 @Composable
-fun PreviewCallButtonsUser() {
+public fun PreviewCallButtonsUser() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),
@@ -37,7 +37,7 @@ fun PreviewCallButtonsUser() {
  */
 @Preview(showBackground = true, name = "CallButtons - Group")
 @Composable
-fun PreviewCallButtonsGroup() {
+public fun PreviewCallButtonsGroup() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),
@@ -57,7 +57,7 @@ fun PreviewCallButtonsGroup() {
  */
 @Preview(showBackground = true, name = "CallButtons - Voice Only")
 @Composable
-fun PreviewCallButtonsVoiceOnly() {
+public fun PreviewCallButtonsVoiceOnly() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),
@@ -75,7 +75,7 @@ fun PreviewCallButtonsVoiceOnly() {
  */
 @Preview(showBackground = true, name = "CallButtons - Video Only")
 @Composable
-fun PreviewCallButtonsVideoOnly() {
+public fun PreviewCallButtonsVideoOnly() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),
@@ -93,7 +93,7 @@ fun PreviewCallButtonsVideoOnly() {
  */
 @Preview(showBackground = true, name = "CallButtons - With Text")
 @Composable
-fun PreviewCallButtonsWithText() {
+public fun PreviewCallButtonsWithText() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),
@@ -112,7 +112,7 @@ fun PreviewCallButtonsWithText() {
  */
 @Preview(showBackground = true, name = "CallButtons - Text Only No Icons")
 @Composable
-fun PreviewCallButtonsTextOnlyNoIcons() {
+public fun PreviewCallButtonsTextOnlyNoIcons() {
     CometChatTheme {
         CometChatCallButtons(
             modifier = Modifier.padding(16.dp),

@@ -18,7 +18,7 @@ import kotlinx.coroutines.CancellationException
  *
  * @param dataSource The data source to fetch user/group data (interface, not concrete)
  */
-class MessageHeaderRepositoryImpl(
+public class MessageHeaderRepositoryImpl(
     private val dataSource: MessageHeaderDataSource
 ) : MessageHeaderRepository {
 

@@ -23,12 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messagecomposer.style.CometChatMessageComposerStyle
 import com.cometchat.uikit.compose.presentation.messagecomposer.ui.CometChatMessageComposer
 import com.cometchat.uikit.core.domain.model.ComposerLayoutMode
@@ -67,7 +69,7 @@ private fun rememberPreviewComposerViewModel(
  */
 @Preview(showBackground = true, name = "Composer - Default - User")
 @Composable
-fun PreviewComposerDefaultUser() {
+public fun PreviewComposerDefaultUser() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -86,7 +88,7 @@ fun PreviewComposerDefaultUser() {
  */
 @Preview(showBackground = true, name = "Composer - Default - Group")
 @Composable
-fun PreviewComposerDefaultGroup() {
+public fun PreviewComposerDefaultGroup() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Engineering Team",
@@ -106,7 +108,7 @@ fun PreviewComposerDefaultGroup() {
  */
 @Preview(showBackground = true, name = "Composer - Custom Placeholder")
 @Composable
-fun PreviewComposerCustomPlaceholder() {
+public fun PreviewComposerCustomPlaceholder() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -127,7 +129,7 @@ fun PreviewComposerCustomPlaceholder() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - No Attachment")
 @Composable
-fun PreviewComposerNoAttachment() {
+public fun PreviewComposerNoAttachment() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -144,7 +146,7 @@ fun PreviewComposerNoAttachment() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - No Voice Recording")
 @Composable
-fun PreviewComposerNoVoiceRecording() {
+public fun PreviewComposerNoVoiceRecording() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -161,7 +163,7 @@ fun PreviewComposerNoVoiceRecording() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - No Send Button")
 @Composable
-fun PreviewComposerNoSendButton() {
+public fun PreviewComposerNoSendButton() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -178,7 +180,7 @@ fun PreviewComposerNoSendButton() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - No Auxiliary")
 @Composable
-fun PreviewComposerNoAuxiliary() {
+public fun PreviewComposerNoAuxiliary() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -195,7 +197,7 @@ fun PreviewComposerNoAuxiliary() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - Minimal")
 @Composable
-fun PreviewComposerMinimal() {
+public fun PreviewComposerMinimal() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -215,7 +217,7 @@ fun PreviewComposerMinimal() {
  */
 @Preview(showBackground = true, name = "Composer - Visibility - No Stickers")
 @Composable
-fun PreviewComposerNoStickers() {
+public fun PreviewComposerNoStickers() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -236,7 +238,7 @@ fun PreviewComposerNoStickers() {
  */
 @Preview(showBackground = true, name = "Composer - Layout - Single Line")
 @Composable
-fun PreviewComposerSingleLineLayout() {
+public fun PreviewComposerSingleLineLayout() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -253,7 +255,7 @@ fun PreviewComposerSingleLineLayout() {
  */
 @Preview(showBackground = true, name = "Composer - Layout - Multi Line")
 @Composable
-fun PreviewComposerMultiLineLayout() {
+public fun PreviewComposerMultiLineLayout() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -274,7 +276,7 @@ fun PreviewComposerMultiLineLayout() {
  */
 @Preview(showBackground = true, name = "Composer - Rich Text - Enabled")
 @Composable
-fun PreviewComposerRichTextEnabled() {
+public fun PreviewComposerRichTextEnabled() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -291,7 +293,7 @@ fun PreviewComposerRichTextEnabled() {
  */
 @Preview(showBackground = true, name = "Composer - Rich Text - Disabled")
 @Composable
-fun PreviewComposerRichTextDisabled() {
+public fun PreviewComposerRichTextDisabled() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -312,7 +314,7 @@ fun PreviewComposerRichTextDisabled() {
  */
 @Preview(showBackground = true, name = "Composer - Custom View - Header")
 @Composable
-fun PreviewComposerCustomHeaderView() {
+public fun PreviewComposerCustomHeaderView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -344,7 +346,7 @@ fun PreviewComposerCustomHeaderView() {
  */
 @Preview(showBackground = true, name = "Composer - Custom View - Footer")
 @Composable
-fun PreviewComposerCustomFooterView() {
+public fun PreviewComposerCustomFooterView() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -373,7 +375,7 @@ fun PreviewComposerCustomFooterView() {
  */
 @Preview(showBackground = true, name = "Composer - Custom View - Send Button")
 @Composable
-fun PreviewComposerCustomSendButton() {
+public fun PreviewComposerCustomSendButton() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -397,7 +399,7 @@ fun PreviewComposerCustomSendButton() {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Send,
-                            contentDescription = "Send",
+                            contentDescription = stringResource(R.string.cometchat_a11y_send),
                             tint = if (isActive) Color.White
                                    else CometChatTheme.colorScheme.iconTintSecondary,
                             modifier = Modifier.size(18.dp)
@@ -414,7 +416,7 @@ fun PreviewComposerCustomSendButton() {
  */
 @Preview(showBackground = true, name = "Composer - Custom View - Header + Footer")
 @Composable
-fun PreviewComposerHeaderAndFooter() {
+public fun PreviewComposerHeaderAndFooter() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -463,7 +465,7 @@ fun PreviewComposerHeaderAndFooter() {
  */
 @Preview(showBackground = true, name = "Composer - Attachment - No Camera")
 @Composable
-fun PreviewComposerNoCameraOption() {
+public fun PreviewComposerNoCameraOption() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -480,7 +482,7 @@ fun PreviewComposerNoCameraOption() {
  */
 @Preview(showBackground = true, name = "Composer - Attachment - Image + Document Only")
 @Composable
-fun PreviewComposerImageDocumentOnly() {
+public fun PreviewComposerImageDocumentOnly() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -503,7 +505,7 @@ fun PreviewComposerImageDocumentOnly() {
  */
 @Preview(showBackground = true, name = "Composer - Style - Custom Background")
 @Composable
-fun PreviewComposerCustomBackground() {
+public fun PreviewComposerCustomBackground() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -522,7 +524,7 @@ fun PreviewComposerCustomBackground() {
  */
 @Preview(showBackground = true, name = "Composer - Style - Custom Compose Box")
 @Composable
-fun PreviewComposerCustomComposeBox() {
+public fun PreviewComposerCustomComposeBox() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -547,7 +549,7 @@ fun PreviewComposerCustomComposeBox() {
  */
 @Preview(showBackground = true, name = "Composer - Comprehensive - User Full")
 @Composable
-fun PreviewComposerUserFull() {
+public fun PreviewComposerUserFull() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",
@@ -568,7 +570,7 @@ fun PreviewComposerUserFull() {
  */
 @Preview(showBackground = true, name = "Composer - Comprehensive - Group Full")
 @Composable
-fun PreviewComposerGroupFull() {
+public fun PreviewComposerGroupFull() {
     CometChatTheme {
         val group = PreviewMockData.createMockGroup(
             name = "Engineering Team",
@@ -590,7 +592,7 @@ fun PreviewComposerGroupFull() {
  */
 @Preview(showBackground = true, name = "Composer - Comprehensive - Ultra Minimal")
 @Composable
-fun PreviewComposerUltraMinimal() {
+public fun PreviewComposerUltraMinimal() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(name = "Alice Smith")
         val viewModel = rememberPreviewComposerViewModel()
@@ -611,7 +613,7 @@ fun PreviewComposerUltraMinimal() {
  */
 @Preview(showBackground = true, name = "Composer - Comprehensive - Chat Context")
 @Composable
-fun PreviewComposerChatContext() {
+public fun PreviewComposerChatContext() {
     CometChatTheme {
         val user = PreviewMockData.createMockUser(
             name = "Alice Smith",

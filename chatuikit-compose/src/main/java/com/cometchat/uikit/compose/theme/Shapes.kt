@@ -13,16 +13,16 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
 @Immutable
-class Shapes(
+public class Shapes(
     // Shapes None and Full are omitted as None is a RectangleShape and Full is a CircleShape.
-    val extraSmall: CornerBasedShape = ShapeDefaults.ExtraSmall,
-    val small: CornerBasedShape = ShapeDefaults.Small,
-    val medium: CornerBasedShape = ShapeDefaults.Medium,
-    val large: CornerBasedShape = ShapeDefaults.Large,
-    val extraLarge: CornerBasedShape = ShapeDefaults.ExtraLarge,
+    public val extraSmall: CornerBasedShape = ShapeDefaults.ExtraSmall,
+    public val small: CornerBasedShape = ShapeDefaults.Small,
+    public val medium: CornerBasedShape = ShapeDefaults.Medium,
+    public val large: CornerBasedShape = ShapeDefaults.Large,
+    public val extraLarge: CornerBasedShape = ShapeDefaults.ExtraLarge,
 ) {
     /** Returns a copy of this Shapes, optionally overriding some of the values. */
-    fun copy(
+    public fun copy(
         extraSmall: CornerBasedShape = this.extraSmall,
         small: CornerBasedShape = this.small,
         medium: CornerBasedShape = this.medium,
@@ -68,21 +68,21 @@ class Shapes(
 }
 
 /** Contains the default values used by [Shapes] */
-object ShapeDefaults {
+public object ShapeDefaults {
     /** Extra small sized corner shape */
-    val ExtraSmall: CornerBasedShape = ShapeTokens.CornerExtraSmall
+    public val ExtraSmall: CornerBasedShape = ShapeTokens.CornerExtraSmall
 
     /** Small sized corner shape */
-    val Small: CornerBasedShape = ShapeTokens.CornerSmall
+    public val Small: CornerBasedShape = ShapeTokens.CornerSmall
 
     /** Medium sized corner shape */
-    val Medium: CornerBasedShape = ShapeTokens.CornerMedium
+    public val Medium: CornerBasedShape = ShapeTokens.CornerMedium
 
     /** Large sized corner shape */
-    val Large: CornerBasedShape = ShapeTokens.CornerLarge
+    public val Large: CornerBasedShape = ShapeTokens.CornerLarge
 
     /** Extra large sized corner shape */
-    val ExtraLarge: CornerBasedShape = ShapeTokens.CornerExtraLarge
+    public val ExtraLarge: CornerBasedShape = ShapeTokens.CornerExtraLarge
 }
 
 internal object ShapeTokens {
@@ -187,4 +187,4 @@ internal fun Shapes.fromToken(value: ShapeKeyTokens): Shape {
 internal val ShapeKeyTokens.value: Shape @Composable @ReadOnlyComposable get() = CometChatTheme.shapes.fromToken(this)
 
 /** CompositionLocal used to specify the default shapes for the surfaces. */
-val LocalShapes = staticCompositionLocalOf { Shapes() }
+public val LocalShapes: androidx.compose.runtime.ProvidableCompositionLocal<Shapes> = staticCompositionLocalOf { Shapes() }

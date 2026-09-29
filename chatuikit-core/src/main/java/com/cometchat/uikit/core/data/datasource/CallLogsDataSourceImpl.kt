@@ -11,7 +11,7 @@ import kotlin.coroutines.suspendCoroutine
  * Implementation of [CallLogsDataSource] that uses the CometChatCalls SDK.
  * Converts callback-based SDK calls to suspend functions using coroutines.
  */
-class CallLogsDataSourceImpl : CallLogsDataSource {
+public class CallLogsDataSourceImpl : CallLogsDataSource {
     
     /**
      * Fetches call logs from the CometChatCalls SDK.

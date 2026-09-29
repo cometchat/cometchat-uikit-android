@@ -13,7 +13,7 @@ import kotlin.coroutines.resumeWithException
  * Contains NO business logic - just raw data fetching.
  * This is the default implementation used for remote data operations.
  */
-class MessageHeaderDataSourceImpl : MessageHeaderDataSource {
+internal class MessageHeaderDataSourceImpl : MessageHeaderDataSource {
     
     /**
      * Fetches a user by their UID from CometChat SDK.

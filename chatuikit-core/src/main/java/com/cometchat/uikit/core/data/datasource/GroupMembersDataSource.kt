@@ -8,7 +8,7 @@ import com.cometchat.chat.models.GroupMember
  * Lives in data layer - defines contract for data fetching.
  * Allows for different implementations (remote, local, mock).
  */
-interface GroupMembersDataSource {
+public interface GroupMembersDataSource {
     
     /**
      * Fetches group members from the data source.
@@ -18,7 +18,7 @@ interface GroupMembersDataSource {
      * @return Raw list of GroupMember objects
      * @throws Exception if fetching fails
      */
-    suspend fun fetchGroupMembers(
+    suspend public fun fetchGroupMembers(
         guid: String,
         limit: Int,
         searchKeyword: String?
@@ -31,7 +31,7 @@ interface GroupMembersDataSource {
      * @return Success message
      * @throws Exception if kick fails
      */
-    suspend fun kickGroupMember(
+    suspend public fun kickGroupMember(
         guid: String,
         uid: String
     ): String
@@ -43,7 +43,7 @@ interface GroupMembersDataSource {
      * @return Success message
      * @throws Exception if ban fails
      */
-    suspend fun banGroupMember(
+    suspend public fun banGroupMember(
         guid: String,
         uid: String
     ): String
@@ -56,7 +56,7 @@ interface GroupMembersDataSource {
      * @return Success message
      * @throws Exception if scope change fails
      */
-    suspend fun changeMemberScope(
+    suspend public fun changeMemberScope(
         guid: String,
         uid: String,
         scope: String
@@ -66,11 +66,11 @@ interface GroupMembersDataSource {
      * Checks if there are more members available for pagination.
      * @return true if more members can be fetched
      */
-    fun hasMoreMembers(): Boolean
+    public fun hasMoreMembers(): Boolean
     
     /**
      * Resets the current request so the next fetch builds a fresh one.
      * Call this when the search keyword changes or when refreshing.
      */
-    fun resetRequest()
+    public fun resetRequest()
 }

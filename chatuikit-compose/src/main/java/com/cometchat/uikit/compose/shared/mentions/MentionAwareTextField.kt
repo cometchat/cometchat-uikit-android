@@ -63,7 +63,7 @@ import androidx.compose.ui.text.input.VisualTransformation
  * @param onMentionDeleted Optional callback when a mention is deleted
  */
 @Composable
-fun MentionAwareTextField(
+public fun MentionAwareTextField(
     mentionState: MentionTextFieldState,
     onMentionDetected: (query: String, triggerIndex: Int) -> Unit,
     onMentionContextLost: () -> Unit,

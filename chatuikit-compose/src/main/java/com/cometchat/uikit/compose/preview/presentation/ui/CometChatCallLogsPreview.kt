@@ -15,9 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.calllogs.style.CometChatCallLogsStyle
 import com.cometchat.uikit.compose.presentation.calllogs.ui.CometChatCallLogs
 import com.cometchat.uikit.compose.presentation.shared.defaultstates.CometChatLoadingState
@@ -57,7 +59,7 @@ private fun rememberPreviewCallLogsViewModel(
  */
 @Preview(showBackground = true, name = "CallLogs - State - Loading")
 @Composable
-fun PreviewCallLogsLoading() {
+public fun PreviewCallLogsLoading() {
     CometChatTheme {
         val style = CometChatCallLogsStyle.default()
         Column(
@@ -86,7 +88,7 @@ fun PreviewCallLogsLoading() {
  */
 @Preview(showBackground = true, name = "CallLogs - Default (Empty)")
 @Composable
-fun PreviewCallLogsDefault() {
+public fun PreviewCallLogsDefault() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -102,7 +104,7 @@ fun PreviewCallLogsDefault() {
  */
 @Preview(showBackground = true, name = "CallLogs - State - Error")
 @Composable
-fun PreviewCallLogsError() {
+public fun PreviewCallLogsError() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel(simulateError = true)
         CometChatCallLogs(
@@ -122,7 +124,7 @@ fun PreviewCallLogsError() {
  */
 @Preview(showBackground = true, name = "CallLogs - Visibility - No Toolbar")
 @Composable
-fun PreviewCallLogsNoToolbar() {
+public fun PreviewCallLogsNoToolbar() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -137,7 +139,7 @@ fun PreviewCallLogsNoToolbar() {
  */
 @Preview(showBackground = true, name = "CallLogs - Visibility - With Back Button")
 @Composable
-fun PreviewCallLogsWithBackButton() {
+public fun PreviewCallLogsWithBackButton() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -154,7 +156,7 @@ fun PreviewCallLogsWithBackButton() {
  */
 @Preview(showBackground = true, name = "CallLogs - Visibility - No Title")
 @Composable
-fun PreviewCallLogsNoTitle() {
+public fun PreviewCallLogsNoTitle() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -170,7 +172,7 @@ fun PreviewCallLogsNoTitle() {
  */
 @Preview(showBackground = true, name = "CallLogs - Visibility - No Separators")
 @Composable
-fun PreviewCallLogsNoSeparators() {
+public fun PreviewCallLogsNoSeparators() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -191,7 +193,7 @@ fun PreviewCallLogsNoSeparators() {
  */
 @Preview(showBackground = true, name = "CallLogs - Custom View - Empty")
 @Composable
-fun PreviewCallLogsCustomEmptyView() {
+public fun PreviewCallLogsCustomEmptyView() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -236,7 +238,7 @@ fun PreviewCallLogsCustomEmptyView() {
  */
 @Preview(showBackground = true, name = "CallLogs - Toolbar - Custom Title")
 @Composable
-fun PreviewCallLogsCustomTitle() {
+public fun PreviewCallLogsCustomTitle() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -252,7 +254,7 @@ fun PreviewCallLogsCustomTitle() {
  */
 @Preview(showBackground = true, name = "CallLogs - Toolbar - Overflow Menu")
 @Composable
-fun PreviewCallLogsOverflowMenu() {
+public fun PreviewCallLogsOverflowMenu() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -263,7 +265,7 @@ fun PreviewCallLogsOverflowMenu() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more_options),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -281,7 +283,7 @@ fun PreviewCallLogsOverflowMenu() {
  */
 @Preview(showBackground = true, name = "CallLogs - Style - Custom Background")
 @Composable
-fun PreviewCallLogsCustomBackground() {
+public fun PreviewCallLogsCustomBackground() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -300,7 +302,7 @@ fun PreviewCallLogsCustomBackground() {
  */
 @Preview(showBackground = true, name = "CallLogs - Style - Custom Title Color")
 @Composable
-fun PreviewCallLogsCustomTitleColor() {
+public fun PreviewCallLogsCustomTitleColor() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -323,7 +325,7 @@ fun PreviewCallLogsCustomTitleColor() {
  */
 @Preview(showBackground = true, name = "CallLogs - Comprehensive - All Features")
 @Composable
-fun PreviewCallLogsComprehensive() {
+public fun PreviewCallLogsComprehensive() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(
@@ -334,7 +336,7 @@ fun PreviewCallLogsComprehensive() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -350,7 +352,7 @@ fun PreviewCallLogsComprehensive() {
  */
 @Preview(showBackground = true, name = "CallLogs - Comprehensive - Minimal")
 @Composable
-fun PreviewCallLogsMinimal() {
+public fun PreviewCallLogsMinimal() {
     CometChatTheme {
         val vm = rememberPreviewCallLogsViewModel()
         CometChatCallLogs(

@@ -24,7 +24,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "StickerKeyboard - Default")
 @Composable
-fun PreviewStickerKeyboardDefault() {
+public fun PreviewStickerKeyboardDefault() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -44,7 +44,7 @@ fun PreviewStickerKeyboardDefault() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - No Loading State")
 @Composable
-fun PreviewStickerKeyboardNoLoadingState() {
+public fun PreviewStickerKeyboardNoLoadingState() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -61,7 +61,7 @@ fun PreviewStickerKeyboardNoLoadingState() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - No Empty State")
 @Composable
-fun PreviewStickerKeyboardNoEmptyState() {
+public fun PreviewStickerKeyboardNoEmptyState() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -78,7 +78,7 @@ fun PreviewStickerKeyboardNoEmptyState() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - No Error State")
 @Composable
-fun PreviewStickerKeyboardNoErrorState() {
+public fun PreviewStickerKeyboardNoErrorState() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -99,7 +99,7 @@ fun PreviewStickerKeyboardNoErrorState() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - Custom Empty View")
 @Composable
-fun PreviewStickerKeyboardCustomEmptyView() {
+public fun PreviewStickerKeyboardCustomEmptyView() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -127,7 +127,7 @@ fun PreviewStickerKeyboardCustomEmptyView() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - Custom Error View")
 @Composable
-fun PreviewStickerKeyboardCustomErrorView() {
+public fun PreviewStickerKeyboardCustomErrorView() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier
@@ -159,7 +159,7 @@ fun PreviewStickerKeyboardCustomErrorView() {
  */
 @Preview(showBackground = true, name = "StickerKeyboard - Custom Background")
 @Composable
-fun PreviewStickerKeyboardCustomBackground() {
+public fun PreviewStickerKeyboardCustomBackground() {
     CometChatTheme {
         CometChatStickerKeyboard(
             modifier = Modifier

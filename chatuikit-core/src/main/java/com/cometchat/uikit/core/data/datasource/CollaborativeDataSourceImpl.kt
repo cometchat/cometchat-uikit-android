@@ -11,7 +11,7 @@ import kotlin.coroutines.resume
  * Contains NO business logic - just raw API calls.
  * This is the default implementation used for remote data operations.
  */
-class CollaborativeDataSourceImpl : CollaborativeDataSource {
+internal class CollaborativeDataSourceImpl : CollaborativeDataSource {
 
     companion object {
         private const val EXTENSION_WHITEBOARD = "whiteboard"

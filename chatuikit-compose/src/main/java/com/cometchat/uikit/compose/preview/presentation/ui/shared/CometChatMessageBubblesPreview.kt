@@ -36,7 +36,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "TextBubble - Incoming")
 @Composable
-fun PreviewTextBubbleIncoming() {
+public fun PreviewTextBubbleIncoming() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatTextBubble(
@@ -55,7 +55,7 @@ fun PreviewTextBubbleIncoming() {
  */
 @Preview(showBackground = true, name = "TextBubble - Outgoing")
 @Composable
-fun PreviewTextBubbleOutgoing() {
+public fun PreviewTextBubbleOutgoing() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatTextBubble(
@@ -74,7 +74,7 @@ fun PreviewTextBubbleOutgoing() {
  */
 @Preview(showBackground = true, name = "TextBubble - Long Text")
 @Composable
-fun PreviewTextBubbleLongText() {
+public fun PreviewTextBubbleLongText() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatTextBubble(
@@ -93,7 +93,7 @@ fun PreviewTextBubbleLongText() {
  */
 @Preview(showBackground = true, name = "TextBubble - Short Text")
 @Composable
-fun PreviewTextBubbleShortText() {
+public fun PreviewTextBubbleShortText() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatTextBubble(
@@ -112,7 +112,7 @@ fun PreviewTextBubbleShortText() {
  */
 @Preview(showBackground = true, name = "TextBubble - Conversation")
 @Composable
-fun PreviewTextBubbleConversation() {
+public fun PreviewTextBubbleConversation() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -158,7 +158,7 @@ fun PreviewTextBubbleConversation() {
  */
 @Preview(showBackground = true, name = "ActionBubble - Group Events")
 @Composable
-fun PreviewActionBubbleGroupEvents() {
+public fun PreviewActionBubbleGroupEvents() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -183,7 +183,7 @@ fun PreviewActionBubbleGroupEvents() {
  */
 @Preview(showBackground = true, name = "DeleteBubble - Incoming")
 @Composable
-fun PreviewDeleteBubbleIncoming() {
+public fun PreviewDeleteBubbleIncoming() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatDeleteBubble(
@@ -198,7 +198,7 @@ fun PreviewDeleteBubbleIncoming() {
  */
 @Preview(showBackground = true, name = "DeleteBubble - Outgoing")
 @Composable
-fun PreviewDeleteBubbleOutgoing() {
+public fun PreviewDeleteBubbleOutgoing() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatDeleteBubble(
@@ -213,7 +213,7 @@ fun PreviewDeleteBubbleOutgoing() {
  */
 @Preview(showBackground = true, name = "DeleteBubble - Both Alignments")
 @Composable
-fun PreviewDeleteBubbleBothAlignments() {
+public fun PreviewDeleteBubbleBothAlignments() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -236,7 +236,7 @@ fun PreviewDeleteBubbleBothAlignments() {
  */
 @Preview(showBackground = true, name = "CallActionBubble - All Types")
 @Composable
-fun PreviewCallActionBubbleAllTypes() {
+public fun PreviewCallActionBubbleAllTypes() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -273,7 +273,7 @@ fun PreviewCallActionBubbleAllTypes() {
  */
 @Preview(showBackground = true, name = "CallActionBubble - Missed Calls")
 @Composable
-fun PreviewCallActionBubbleMissedCalls() {
+public fun PreviewCallActionBubbleMissedCalls() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -304,7 +304,7 @@ fun PreviewCallActionBubbleMissedCalls() {
  */
 @Preview(showBackground = true, name = "CollaborativeBubble - Document")
 @Composable
-fun PreviewCollaborativeBubbleDocument() {
+public fun PreviewCollaborativeBubbleDocument() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatCollaborativeBubble(
@@ -323,7 +323,7 @@ fun PreviewCollaborativeBubbleDocument() {
  */
 @Preview(showBackground = true, name = "CollaborativeBubble - Whiteboard")
 @Composable
-fun PreviewCollaborativeBubbleWhiteboard() {
+public fun PreviewCollaborativeBubbleWhiteboard() {
     CometChatTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             CometChatCollaborativeBubble(
@@ -346,7 +346,7 @@ fun PreviewCollaborativeBubbleWhiteboard() {
  */
 @Preview(showBackground = true, name = "MeetCallBubble - All Types")
 @Composable
-fun PreviewMeetCallBubbleAllTypes() {
+public fun PreviewMeetCallBubbleAllTypes() {
     CometChatTheme {
         Column(
             modifier = Modifier
@@ -395,7 +395,7 @@ fun PreviewMeetCallBubbleAllTypes() {
  */
 @Preview(showBackground = true, name = "MessageBubbles - All Types Showcase")
 @Composable
-fun PreviewMessageBubblesShowcase() {
+public fun PreviewMessageBubblesShowcase() {
     CometChatTheme {
         Column(
             modifier = Modifier

@@ -13,7 +13,7 @@ import com.cometchat.uikit.core.domain.repository.UsersRepository
  * @param simulateError If true, all operations will return failure results.
  * @param simulateEmpty If true, returns an empty list instead of users.
  */
-class PreviewUsersRepository(
+public class PreviewUsersRepository(
     private val initialUsers: List<User> = PreviewMockData.createSampleUsers(),
     private val simulateError: Boolean = false,
     private val simulateEmpty: Boolean = false

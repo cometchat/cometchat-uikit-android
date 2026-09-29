@@ -12,7 +12,7 @@ import kotlin.coroutines.resume
  * Contains NO business logic - just raw API calls.
  * This is the default implementation used for remote data operations.
  */
-class PollDataSourceImpl : PollDataSource {
+internal class PollDataSourceImpl : PollDataSource {
 
     companion object {
         private const val EXTENSION_POLLS = "polls"

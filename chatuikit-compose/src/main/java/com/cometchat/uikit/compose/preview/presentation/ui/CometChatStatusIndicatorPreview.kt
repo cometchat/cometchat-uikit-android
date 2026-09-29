@@ -31,7 +31,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "StatusIndicator - Online")
 @Composable
-fun PreviewStatusIndicatorOnline() {
+public fun PreviewStatusIndicatorOnline() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -50,7 +50,7 @@ fun PreviewStatusIndicatorOnline() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - Offline (Hidden)")
 @Composable
-fun PreviewStatusIndicatorOffline() {
+public fun PreviewStatusIndicatorOffline() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -74,7 +74,7 @@ fun PreviewStatusIndicatorOffline() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - Public Group (Hidden)")
 @Composable
-fun PreviewStatusIndicatorPublicGroup() {
+public fun PreviewStatusIndicatorPublicGroup() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -98,7 +98,7 @@ fun PreviewStatusIndicatorPublicGroup() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - Private Group")
 @Composable
-fun PreviewStatusIndicatorPrivateGroup() {
+public fun PreviewStatusIndicatorPrivateGroup() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -116,7 +116,7 @@ fun PreviewStatusIndicatorPrivateGroup() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - Protected Group")
 @Composable
-fun PreviewStatusIndicatorProtectedGroup() {
+public fun PreviewStatusIndicatorProtectedGroup() {
     CometChatTheme {
         Box(
             modifier = Modifier.padding(16.dp),
@@ -138,7 +138,7 @@ fun PreviewStatusIndicatorProtectedGroup() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - All States")
 @Composable
-fun PreviewStatusIndicatorAllStates() {
+public fun PreviewStatusIndicatorAllStates() {
     CometChatTheme {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -174,7 +174,7 @@ fun PreviewStatusIndicatorAllStates() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - On Avatar")
 @Composable
-fun PreviewStatusIndicatorOnAvatar() {
+public fun PreviewStatusIndicatorOnAvatar() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -285,7 +285,7 @@ fun PreviewStatusIndicatorOnAvatar() {
  */
 @Preview(showBackground = true, name = "StatusIndicator - Custom Style")
 @Composable
-fun PreviewStatusIndicatorCustomStyle() {
+public fun PreviewStatusIndicatorCustomStyle() {
     CometChatTheme {
         Row(
             modifier = Modifier.padding(16.dp),

@@ -17,8 +17,11 @@ import org.junit.Assert.*
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
-        // Context of the app under test.
+        // A library module has no separate app under test, so the instrumentation
+        // targets its own test APK: the target context carries the `.test` suffix,
+        // not the library's namespace. The assertion AGP generates assumes an
+        // application module and has always been wrong here.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.cometchat.uikit.core", appContext.packageName)
+        assertEquals("com.cometchat.uikit.core.test", appContext.packageName)
     }
 }

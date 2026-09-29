@@ -31,7 +31,7 @@ private fun createMockMessageForInfo(): BaseMessage {
  */
 @Preview(showBackground = true, name = "MessageInfo - Default")
 @Composable
-fun PreviewMessageInformationDefault() {
+public fun PreviewMessageInformationDefault() {
     CometChatTheme {
         CometChatMessageInformation(
             message = createMockMessageForInfo(),
@@ -49,7 +49,7 @@ fun PreviewMessageInformationDefault() {
  */
 @Preview(showBackground = true, name = "MessageInfo - No Toolbar")
 @Composable
-fun PreviewMessageInformationNoToolbar() {
+public fun PreviewMessageInformationNoToolbar() {
     CometChatTheme {
         CometChatMessageInformation(
             message = createMockMessageForInfo(),
@@ -68,7 +68,7 @@ fun PreviewMessageInformationNoToolbar() {
  */
 @Preview(showBackground = true, name = "MessageInfo - Custom Title")
 @Composable
-fun PreviewMessageInformationCustomTitle() {
+public fun PreviewMessageInformationCustomTitle() {
     CometChatTheme {
         CometChatMessageInformation(
             message = createMockMessageForInfo(),
@@ -87,7 +87,7 @@ fun PreviewMessageInformationCustomTitle() {
  */
 @Preview(showBackground = true, name = "MessageInfo - Custom Bubble View")
 @Composable
-fun PreviewMessageInformationCustomBubbleView() {
+public fun PreviewMessageInformationCustomBubbleView() {
     CometChatTheme {
         CometChatMessageInformation(
             message = createMockMessageForInfo(),
@@ -112,7 +112,7 @@ fun PreviewMessageInformationCustomBubbleView() {
  */
 @Preview(showBackground = true, name = "MessageInfo - Custom Style")
 @Composable
-fun PreviewMessageInformationCustomStyle() {
+public fun PreviewMessageInformationCustomStyle() {
     CometChatTheme {
         CometChatMessageInformation(
             message = createMockMessageForInfo(),

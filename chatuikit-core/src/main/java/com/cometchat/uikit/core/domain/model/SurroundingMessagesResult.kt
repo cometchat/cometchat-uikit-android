@@ -32,7 +32,7 @@ import com.cometchat.chat.models.BaseMessage
  *
  * @see com.cometchat.uikit.core.domain.repository.MessageListRepository.fetchSurroundingMessages
  */
-data class SurroundingMessagesResult(
+public data class SurroundingMessagesResult(
     /** Messages older than the target message */
     val olderMessages: List<BaseMessage>,
     /** The target message itself */

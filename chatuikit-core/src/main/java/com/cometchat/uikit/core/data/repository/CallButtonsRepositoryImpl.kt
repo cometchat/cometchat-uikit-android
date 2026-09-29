@@ -9,7 +9,7 @@ import com.cometchat.uikit.core.domain.repository.CallButtonsRepository
  * Implementation of [CallButtonsRepository] that delegates to [CallButtonsDataSource].
  * Provides call initiation and active call detection functionality.
  */
-class CallButtonsRepositoryImpl(
+public class CallButtonsRepositoryImpl(
     private val dataSource: CallButtonsDataSource
 ) : CallButtonsRepository {
 

@@ -160,7 +160,7 @@ private fun SimulatedReactionListUI(
 
 @Preview(showBackground = true, name = "ReactionList - Default")
 @Composable
-fun PreviewReactionListDefault() {
+public fun PreviewReactionListDefault() {
     CometChatTheme {
         SimulatedReactionListUI()
     }
@@ -168,7 +168,7 @@ fun PreviewReactionListDefault() {
 
 @Preview(showBackground = true, name = "ReactionList - Single Reaction")
 @Composable
-fun PreviewReactionListSingleReaction() {
+public fun PreviewReactionListSingleReaction() {
     CometChatTheme {
         SimulatedReactionListUI(
             tabs = listOf(
@@ -186,7 +186,7 @@ fun PreviewReactionListSingleReaction() {
 
 @Preview(showBackground = true, name = "ReactionList - Many Reactions")
 @Composable
-fun PreviewReactionListManyReactions() {
+public fun PreviewReactionListManyReactions() {
     CometChatTheme {
         SimulatedReactionListUI(
             tabs = listOf(
@@ -207,7 +207,7 @@ fun PreviewReactionListManyReactions() {
 
 @Preview(showBackground = true, name = "ReactionList - Thumbs Up Tab Selected")
 @Composable
-fun PreviewReactionListThumbsUpTab() {
+public fun PreviewReactionListThumbsUpTab() {
     CometChatTheme {
         SimulatedReactionListUI(
             selectedTabIndex = 1,
@@ -223,7 +223,7 @@ fun PreviewReactionListThumbsUpTab() {
 
 @Preview(showBackground = true, name = "ReactionList - Heart Tab Selected")
 @Composable
-fun PreviewReactionListHeartTab() {
+public fun PreviewReactionListHeartTab() {
     CometChatTheme {
         SimulatedReactionListUI(
             selectedTabIndex = 2,
@@ -241,7 +241,7 @@ fun PreviewReactionListHeartTab() {
 
 @Preview(showBackground = true, name = "ReactionList - Current User Reaction")
 @Composable
-fun PreviewReactionListCurrentUser() {
+public fun PreviewReactionListCurrentUser() {
     CometChatTheme {
         SimulatedReactionListUI(
             tabs = listOf(

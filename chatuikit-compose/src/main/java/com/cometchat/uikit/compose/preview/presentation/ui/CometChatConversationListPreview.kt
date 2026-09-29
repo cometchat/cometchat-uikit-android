@@ -25,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.chat.models.Conversation
+import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.conversations.style.CometChatConversationsStyle
 import com.cometchat.uikit.compose.presentation.conversations.ui.CometChatConversations
 import com.cometchat.uikit.core.constants.UIKitConstants
@@ -76,7 +78,7 @@ private fun rememberPreviewViewModel(
  */
 @Preview(showBackground = true, name = "State - Loading")
 @Composable
-fun PreviewConversationListLoading() {
+public fun PreviewConversationListLoading() {
     CometChatTheme {
         val style = CometChatConversationsStyle.default()
         Column(
@@ -103,7 +105,7 @@ fun PreviewConversationListLoading() {
  */
 @Preview(showBackground = true, name = "State - Empty")
 @Composable
-fun PreviewConversationListEmpty() {
+public fun PreviewConversationListEmpty() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(simulateEmpty = true)
         CometChatConversations(
@@ -119,7 +121,7 @@ fun PreviewConversationListEmpty() {
  */
 @Preview(showBackground = true, name = "State - Error")
 @Composable
-fun PreviewConversationListError() {
+public fun PreviewConversationListError() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(simulateError = true)
         CometChatConversations(
@@ -135,7 +137,7 @@ fun PreviewConversationListError() {
  */
 @Preview(showBackground = true, name = "State - Content")
 @Composable
-fun PreviewConversationListContent() {
+public fun PreviewConversationListContent() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel()
         CometChatConversations(
@@ -155,7 +157,7 @@ fun PreviewConversationListContent() {
  */
 @Preview(showBackground = true, name = "ViewModel - Default Factory")
 @Composable
-fun PreviewWithDefaultFactoryViewModel() {
+public fun PreviewWithDefaultFactoryViewModel() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createDefaultViewModel() }
         CometChatConversations(
@@ -171,7 +173,7 @@ fun PreviewWithDefaultFactoryViewModel() {
  */
 @Preview(showBackground = true, name = "ViewModel - High Unread")
 @Composable
-fun PreviewWithHighUnreadViewModel() {
+public fun PreviewWithHighUnreadViewModel() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createHighUnreadViewModel() }
         CometChatConversations(
@@ -187,7 +189,7 @@ fun PreviewWithHighUnreadViewModel() {
  */
 @Preview(showBackground = true, name = "ViewModel - Groups Only")
 @Composable
-fun PreviewWithGroupsOnlyViewModel() {
+public fun PreviewWithGroupsOnlyViewModel() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createGroupsOnlyViewModel() }
         CometChatConversations(
@@ -203,7 +205,7 @@ fun PreviewWithGroupsOnlyViewModel() {
  */
 @Preview(showBackground = true, name = "ViewModel - Users Only")
 @Composable
-fun PreviewWithUsersOnlyViewModel() {
+public fun PreviewWithUsersOnlyViewModel() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createUsersOnlyViewModel() }
         CometChatConversations(
@@ -219,7 +221,7 @@ fun PreviewWithUsersOnlyViewModel() {
  */
 @Preview(showBackground = true, name = "ViewModel - Empty State")
 @Composable
-fun PreviewWithEmptyStateViewModel() {
+public fun PreviewWithEmptyStateViewModel() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createEmptyStateViewModel() }
         CometChatConversations(
@@ -235,7 +237,7 @@ fun PreviewWithEmptyStateViewModel() {
  */
 @Preview(showBackground = true, name = "ViewModel - Error State")
 @Composable
-fun PreviewWithErrorStateViewModel() {
+public fun PreviewWithErrorStateViewModel() {
     CometChatTheme {
         val viewModel = remember { 
             PreviewViewModelFactory.createErrorStateViewModel("Network connection failed") 
@@ -257,7 +259,7 @@ fun PreviewWithErrorStateViewModel() {
  */
 @Preview(showBackground = true, name = "Selection - Single")
 @Composable
-fun PreviewSingleSelection() {
+public fun PreviewSingleSelection() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(4)
@@ -276,7 +278,7 @@ fun PreviewSingleSelection() {
  */
 @Preview(showBackground = true, name = "Selection - Multiple")
 @Composable
-fun PreviewMultipleSelection() {
+public fun PreviewMultipleSelection() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(4)
@@ -299,7 +301,7 @@ fun PreviewMultipleSelection() {
  */
 @Preview(showBackground = true, name = "Visibility - No Toolbar")
 @Composable
-fun PreviewNoToolbar() {
+public fun PreviewNoToolbar() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -316,7 +318,7 @@ fun PreviewNoToolbar() {
  */
 @Preview(showBackground = true, name = "Visibility - No Search Box")
 @Composable
-fun PreviewNoSearchBox() {
+public fun PreviewNoSearchBox() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -335,7 +337,7 @@ fun PreviewNoSearchBox() {
  */
 @Preview(showBackground = true, name = "Visibility - No Separators")
 @Composable
-fun PreviewNoSeparators() {
+public fun PreviewNoSeparators() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(4)
@@ -354,7 +356,7 @@ fun PreviewNoSeparators() {
  */
 @Preview(showBackground = true, name = "Visibility - No User Status")
 @Composable
-fun PreviewHideUserStatus() {
+public fun PreviewHideUserStatus() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createUserStatusConversations()
@@ -373,7 +375,7 @@ fun PreviewHideUserStatus() {
  */
 @Preview(showBackground = true, name = "Visibility - No Group Type")
 @Composable
-fun PreviewHideGroupType() {
+public fun PreviewHideGroupType() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createGroupTypeConversations()
@@ -392,7 +394,7 @@ fun PreviewHideGroupType() {
  */
 @Preview(showBackground = true, name = "Visibility - No Receipts")
 @Composable
-fun PreviewHideReceipts() {
+public fun PreviewHideReceipts() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel()
         CometChatConversations(
@@ -409,7 +411,7 @@ fun PreviewHideReceipts() {
  */
 @Preview(showBackground = true, name = "Visibility - With Back Button")
 @Composable
-fun PreviewWithBackButton() {
+public fun PreviewWithBackButton() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -433,7 +435,7 @@ fun PreviewWithBackButton() {
  */
 @Preview(showBackground = true, name = "Custom View - Loading")
 @Composable
-fun PreviewCustomLoadingView() {
+public fun PreviewCustomLoadingView() {
     CometChatTheme {
         val style = CometChatConversationsStyle.default()
         Column(
@@ -476,7 +478,7 @@ fun PreviewCustomLoadingView() {
  */
 @Preview(showBackground = true, name = "Custom View - Empty")
 @Composable
-fun PreviewCustomEmptyView() {
+public fun PreviewCustomEmptyView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(simulateEmpty = true)
         CometChatConversations(
@@ -527,7 +529,7 @@ fun PreviewCustomEmptyView() {
  */
 @Preview(showBackground = true, name = "Custom View - Error")
 @Composable
-fun PreviewCustomErrorView() {
+public fun PreviewCustomErrorView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(simulateError = true)
         CometChatConversations(
@@ -574,7 +576,7 @@ fun PreviewCustomErrorView() {
  */
 @Preview(showBackground = true, name = "Custom View - Item")
 @Composable
-fun PreviewCustomItemView() {
+public fun PreviewCustomItemView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -614,7 +616,7 @@ fun PreviewCustomItemView() {
  */
 @Preview(showBackground = true, name = "Custom View - Leading")
 @Composable
-fun PreviewCustomLeadingView() {
+public fun PreviewCustomLeadingView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -648,7 +650,7 @@ fun PreviewCustomLeadingView() {
  */
 @Preview(showBackground = true, name = "Custom View - Title")
 @Composable
-fun PreviewListCustomTitleView() {
+public fun PreviewListCustomTitleView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -682,7 +684,7 @@ fun PreviewListCustomTitleView() {
  */
 @Preview(showBackground = true, name = "Custom View - Subtitle")
 @Composable
-fun PreviewListCustomSubtitleView() {
+public fun PreviewListCustomSubtitleView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -710,7 +712,7 @@ fun PreviewListCustomSubtitleView() {
  */
 @Preview(showBackground = true, name = "Custom View - Trailing")
 @Composable
-fun PreviewListCustomTrailingView() {
+public fun PreviewListCustomTrailingView() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -758,7 +760,7 @@ fun PreviewListCustomTrailingView() {
  */
 @Preview(showBackground = true, name = "Toolbar - Custom Title")
 @Composable
-fun PreviewCustomTitle() {
+public fun PreviewCustomTitle() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(2)
@@ -776,7 +778,7 @@ fun PreviewCustomTitle() {
  */
 @Preview(showBackground = true, name = "Toolbar - Custom Overflow Menu")
 @Composable
-fun PreviewCustomOverflowMenu() {
+public fun PreviewCustomOverflowMenu() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(2)
@@ -789,7 +791,7 @@ fun PreviewCustomOverflowMenu() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more_options),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -803,7 +805,7 @@ fun PreviewCustomOverflowMenu() {
  */
 @Preview(showBackground = true, name = "Toolbar - Custom Search Placeholder")
 @Composable
-fun PreviewCustomSearchPlaceholder() {
+public fun PreviewCustomSearchPlaceholder() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(2)
@@ -826,7 +828,7 @@ fun PreviewCustomSearchPlaceholder() {
  */
 @Preview(showBackground = true, name = "Style - Custom Background")
 @Composable
-fun PreviewCustomBackgroundStyle() {
+public fun PreviewCustomBackgroundStyle() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -847,7 +849,7 @@ fun PreviewCustomBackgroundStyle() {
  */
 @Preview(showBackground = true, name = "Style - Custom Title Color")
 @Composable
-fun PreviewCustomTitleColorStyle() {
+public fun PreviewCustomTitleColorStyle() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -868,7 +870,7 @@ fun PreviewCustomTitleColorStyle() {
  */
 @Preview(showBackground = true, name = "Style - Dark Theme")
 @Composable
-fun PreviewDarkThemeStyle() {
+public fun PreviewDarkThemeStyle() {
     CometChatTheme(colorScheme = darkColorScheme()) {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -890,7 +892,7 @@ fun PreviewDarkThemeStyle() {
  */
 @Preview(showBackground = true, name = "Options - Replace")
 @Composable
-fun PreviewOptionsReplace() {
+public fun PreviewOptionsReplace() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -915,7 +917,7 @@ fun PreviewOptionsReplace() {
  */
 @Preview(showBackground = true, name = "Options - Append")
 @Composable
-fun PreviewOptionsAppend() {
+public fun PreviewOptionsAppend() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -943,7 +945,7 @@ fun PreviewOptionsAppend() {
  */
 @Preview(showBackground = true, name = "Comprehensive - All Features")
 @Composable
-fun PreviewComprehensive() {
+public fun PreviewComprehensive() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel()
         CometChatConversations(
@@ -955,7 +957,7 @@ fun PreviewComprehensive() {
                 IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More",
+                        contentDescription = stringResource(R.string.cometchat_a11y_more),
                         tint = CometChatTheme.colorScheme.iconTintPrimary
                     )
                 }
@@ -972,7 +974,7 @@ fun PreviewComprehensive() {
  */
 @Preview(showBackground = true, name = "Comprehensive - Minimal")
 @Composable
-fun PreviewMinimal() {
+public fun PreviewMinimal() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)
@@ -991,7 +993,7 @@ fun PreviewMinimal() {
  */
 @Preview(showBackground = true, name = "Comprehensive - Large List")
 @Composable
-fun PreviewLargeList() {
+public fun PreviewLargeList() {
     CometChatTheme {
         val viewModel = remember { PreviewViewModelFactory.createLargeListViewModel(20) }
         CometChatConversations(
@@ -1007,7 +1009,7 @@ fun PreviewLargeList() {
  */
 @Preview(showBackground = true, name = "Comprehensive - All Custom Views")
 @Composable
-fun PreviewListAllCustomViews() {
+public fun PreviewListAllCustomViews() {
     CometChatTheme {
         val viewModel = rememberPreviewViewModel(
             conversations = PreviewMockData.createSampleConversations().take(3)

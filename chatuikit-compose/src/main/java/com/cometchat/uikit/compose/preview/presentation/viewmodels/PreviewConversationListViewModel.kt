@@ -17,13 +17,13 @@ import com.cometchat.uikit.core.domain.usecase.RefreshConversationListUseCase
  * Factory object for creating preview-specific ViewModels with various configurations.
  * These ViewModels are designed for Compose previews and testing different UI states.
  */
-object PreviewViewModelFactory {
+public object PreviewViewModelFactory {
     
     /**
      * Creates a ViewModel with default sample conversations.
      * Shows the normal content state with a mix of user and group conversations.
      */
-    fun createDefaultViewModel(): CometChatConversationsViewModel {
+    public fun createDefaultViewModel(): CometChatConversationsViewModel {
         return CometChatConversationsViewModel(
             getConversationListUseCase = PreviewGetConversationListUseCase(
                 conversations = PreviewMockData.createSampleConversations()
@@ -37,7 +37,7 @@ object PreviewViewModelFactory {
     /**
      * Creates a ViewModel that shows the empty state.
      */
-    fun createEmptyStateViewModel(): CometChatConversationsViewModel {
+    public fun createEmptyStateViewModel(): CometChatConversationsViewModel {
         return CometChatConversationsViewModel(
             getConversationListUseCase = PreviewEmptyConversationListUseCase(),
             deleteConversationUseCase = PreviewSuccessDeleteUseCase(),
@@ -49,7 +49,7 @@ object PreviewViewModelFactory {
     /**
      * Creates a ViewModel that shows the error state.
      */
-    fun createErrorStateViewModel(
+    public fun createErrorStateViewModel(
         errorMessage: String = "Failed to load conversations. Please try again."
     ): CometChatConversationsViewModel {
         return CometChatConversationsViewModel(
@@ -65,7 +65,7 @@ object PreviewViewModelFactory {
     /**
      * Creates a ViewModel with custom conversations.
      */
-    fun createCustomConversationsViewModel(
+    public fun createCustomConversationsViewModel(
         conversations: List<Conversation>
     ): CometChatConversationsViewModel {
         return CometChatConversationsViewModel(
@@ -82,7 +82,7 @@ object PreviewViewModelFactory {
      * Creates a ViewModel with high unread count conversations.
      * Useful for testing badge display with large numbers.
      */
-    fun createHighUnreadViewModel(): CometChatConversationsViewModel {
+    public fun createHighUnreadViewModel(): CometChatConversationsViewModel {
         return createCustomConversationsViewModel(
             PreviewMockData.createHighUnreadConversations()
         )
@@ -92,7 +92,7 @@ object PreviewViewModelFactory {
      * Creates a ViewModel with only group conversations.
      * Useful for testing group type indicators.
      */
-    fun createGroupsOnlyViewModel(): CometChatConversationsViewModel {
+    public fun createGroupsOnlyViewModel(): CometChatConversationsViewModel {
         return createCustomConversationsViewModel(
             PreviewMockData.createGroupTypeConversations()
         )
@@ -102,7 +102,7 @@ object PreviewViewModelFactory {
      * Creates a ViewModel with only user conversations.
      * Useful for testing user status indicators.
      */
-    fun createUsersOnlyViewModel(): CometChatConversationsViewModel {
+    public fun createUsersOnlyViewModel(): CometChatConversationsViewModel {
         return createCustomConversationsViewModel(
             PreviewMockData.createUserStatusConversations()
         )
@@ -111,7 +111,7 @@ object PreviewViewModelFactory {
     /**
      * Creates a ViewModel with a large list for pagination testing.
      */
-    fun createLargeListViewModel(count: Int = 50): CometChatConversationsViewModel {
+    public fun createLargeListViewModel(count: Int = 50): CometChatConversationsViewModel {
         return createCustomConversationsViewModel(
             PreviewMockData.createLargeConversationList(count)
         )
@@ -120,7 +120,7 @@ object PreviewViewModelFactory {
     /**
      * Creates a ViewModel with custom use cases for advanced testing.
      */
-    fun createWithCustomUseCases(
+    public fun createWithCustomUseCases(
         getConversationListUseCase: GetConversationListUseCase,
         deleteConversationUseCase: DeleteConversationUseCase,
         refreshConversationListUseCase: RefreshConversationListUseCase
@@ -137,12 +137,12 @@ object PreviewViewModelFactory {
 /**
  * Extension functions for creating typing indicators in previews.
  */
-object PreviewTypingIndicatorFactory {
+public object PreviewTypingIndicatorFactory {
     
     /**
      * Creates a typing indicator for a user conversation.
      */
-    fun createUserTypingIndicator(
+    public fun createUserTypingIndicator(
         userId: String = "user_1",
         userName: String = "Alice"
     ): TypingIndicator {
@@ -156,7 +156,7 @@ object PreviewTypingIndicatorFactory {
     /**
      * Creates a typing indicator for a group conversation.
      */
-    fun createGroupTypingIndicator(
+    public fun createGroupTypingIndicator(
         groupId: String = "group_1",
         userId: String = "user_1",
         userName: String = "Alice"
@@ -171,7 +171,7 @@ object PreviewTypingIndicatorFactory {
     /**
      * Creates multiple typing indicators for a group (multiple users typing).
      */
-    fun createMultipleUsersTypingIndicator(
+    public fun createMultipleUsersTypingIndicator(
         userNames: List<String> = listOf("Alice", "Bob", "Charlie")
     ): TypingIndicator {
         val users = userNames.mapIndexed { index, name ->

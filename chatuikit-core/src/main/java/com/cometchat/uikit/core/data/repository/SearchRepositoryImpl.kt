@@ -15,7 +15,7 @@ import com.cometchat.uikit.core.domain.repository.SearchRepository
  * 
  * @param dataSource The data source to fetch data (interface, not concrete)
  */
-class SearchRepositoryImpl(
+public class SearchRepositoryImpl(
     private val dataSource: SearchDataSource
 ) : SearchRepository {
     

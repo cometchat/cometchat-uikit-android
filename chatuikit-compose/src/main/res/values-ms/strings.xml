@@ -248,6 +248,297 @@
     <string name="cometchat_notify_everyone_in_this_group">Beritahu semua orang dalam kumpulan ini</string>
     <string name="cometchat_notify_all" translatable="true">semua</string>
 
+
+    <!-- ENG-38656 (X3): backfilled translations -->
+    <string name="cometchat_a11y_action_message" translatable="true">Mesej tindakan: %1$s</string>
+    <string name="cometchat_a11y_add_reaction" translatable="true">Tambah reaksi</string>
+    <string name="cometchat_a11y_ai_assistant" translatable="true">Pembantu AI</string>
+    <string name="cometchat_a11y_ai_conversation_starters" translatable="true">Pemula Perbualan AI</string>
+    <string name="cometchat_a11y_ai_conversation_summary" translatable="true">Ringkasan Perbualan AI</string>
+    <string name="cometchat_a11y_ai_smart_replies" translatable="true">Balasan Pintar AI</string>
+    <string name="cometchat_a11y_audio" translatable="true">Audio</string>
+    <string name="cometchat_a11y_audio_message" translatable="true">Mesej audio</string>
+    <string name="cometchat_a11y_audio_visualizer_showing_recording_amplitude" translatable="true">Penvisual audio menunjukkan amplitud rakaman</string>
+    <string name="cometchat_a11y_audio_waveform" translatable="true">Bentuk gelombang audio</string>
+    <string name="cometchat_a11y_avatar_for" translatable="true">Avatar untuk %1$s</string>
+    <string name="cometchat_a11y_avatar_of" translatable="true">Avatar %1$s</string>
+    <string name="cometchat_a11y_back" translatable="true">Kembali</string>
+    <string name="cometchat_a11y_blockquote" translatable="true">Petikan</string>
+    <string name="cometchat_a11y_bold" translatable="true">Tebal</string>
+    <string name="cometchat_a11y_bullet_list" translatable="true">Senarai Bulet</string>
+    <string name="cometchat_a11y_call" translatable="true">Panggilan: %1$s</string>
+    <string name="cometchat_a11y_caller" translatable="true">Pemanggil: %1$s</string>
+    <string name="cometchat_a11y_calling" translatable="true">Memanggil %1$s</string>
+    <string name="cometchat_a11y_change_scope" translatable="true">Tukar Peranan</string>
+    <string name="cometchat_a11y_chat_history" translatable="true">Sejarah sembang</string>
+    <string name="cometchat_a11y_clear_search" translatable="true">Kosongkan carian</string>
+    <string name="cometchat_a11y_close" translatable="true">Tutup</string>
+    <string name="cometchat_a11y_close_conversation_summary" translatable="true">Tutup ringkasan perbualan</string>
+    <string name="cometchat_a11y_close_edit_preview" translatable="true">Tutup pratonton suntingan</string>
+    <string name="cometchat_a11y_close_formatting_toolbar" translatable="true">Tutup bar format</string>
+    <string name="cometchat_a11y_close_preview" translatable="true">Tutup pratonton</string>
+    <string name="cometchat_a11y_close_reply_preview" translatable="true">Tutup pratonton balasan</string>
+    <string name="cometchat_a11y_close_smart_replies" translatable="true">Tutup balasan pintar</string>
+    <string name="cometchat_a11y_code_block" translatable="true">Blok Kod</string>
+    <string name="cometchat_a11y_collaborative" translatable="true">%1$s kolaboratif: %2$s</string>
+    <string name="cometchat_a11y_composer_action_buttons" translatable="true">Butang tindakan penulis mesej</string>
+    <string name="cometchat_a11y_connecting_to_call" translatable="true">Menyambung ke panggilan</string>
+    <string name="cometchat_a11y_conversation_starter" translatable="true">Pemula perbualan: %1$s</string>
+    <string name="cometchat_a11y_copy" translatable="true">Salin</string>
+    <string name="cometchat_a11y_delete" translatable="true">Padam</string>
+    <string name="cometchat_a11y_delete_icon" translatable="true">Ikon padam</string>
+    <string name="cometchat_a11y_delete_recording" translatable="true">Padam rakaman</string>
+    <string name="cometchat_a11y_deleted_message" translatable="true">Mesej dipadamkan</string>
+    <string name="cometchat_a11y_document" translatable="true">Dokumen</string>
+    <string name="cometchat_a11y_download" translatable="true">Muat turun</string>
+    <string name="cometchat_a11y_download_attachment" translatable="true">Muat turun lampiran</string>
+    <string name="cometchat_a11y_download_audio" translatable="true">Muat turun audio</string>
+    <string name="cometchat_a11y_download_file" translatable="true">Muat turun fail</string>
+    <string name="cometchat_a11y_drag_handle_for_option" translatable="true">Pemegang seret untuk pilihan %1$s</string>
+    <string name="cometchat_a11y_duration" translatable="true">Tempoh: %1$s</string>
+    <string name="cometchat_a11y_edit_preview" translatable="true">Pratonton Suntingan</string>
+    <string name="cometchat_a11y_end_call" translatable="true">Tamatkan Panggilan</string>
+    <string name="cometchat_a11y_error" translatable="true">Ralat: %1$s</string>
+    <string name="cometchat_a11y_error_2" translatable="true">Ralat: %1$s. %2$s</string>
+    <string name="cometchat_a11y_file_message_with_file_s" translatable="true">Mesej dengan %1$s fail</string>
+    <string name="cometchat_a11y_file_type" translatable="true">Jenis fail: %1$s</string>
+    <string name="cometchat_a11y_filter" translatable="true">Penapis %1$s%2$s</string>
+    <string name="cometchat_a11y_flag_message_dialog" translatable="true">Dialog Laporan Mesej</string>
+    <string name="cometchat_a11y_format_text" translatable="true">Format Teks</string>
+    <string name="cometchat_a11y_go_back_from_create_poll" translatable="true">Keluar daripada cipta undian</string>
+    <string name="cometchat_a11y_image" translatable="true">Imej</string>
+    <string name="cometchat_a11y_image_2" translatable="true">Imej %1$s</string>
+    <string name="cometchat_a11y_image_message_with_image_s" translatable="true">Mesej dengan %1$s imej</string>
+    <string name="cometchat_a11y_image_preview" translatable="true">Pratonton imej</string>
+    <string name="cometchat_a11y_incoming_call_from" translatable="true">Panggilan masuk daripada %1$s</string>
+    <string name="cometchat_a11y_inline_code" translatable="true">Kod Sebaris</string>
+    <string name="cometchat_a11y_italic" translatable="true">Condong</string>
+    <string name="cometchat_a11y_link" translatable="true">Pautan</string>
+    <string name="cometchat_a11y_link_edit_dialog" translatable="true">Dialog Suntingan Pautan</string>
+    <string name="cometchat_a11y_link_popup_dialog" translatable="true">Dialog Timbul Pautan</string>
+    <string name="cometchat_a11y_link_preview_image" translatable="true">Imej pratonton pautan</string>
+    <string name="cometchat_a11y_loading" translatable="true">%1$s sedang dimuatkan</string>
+    <string name="cometchat_a11y_loading_group_member" translatable="true">Memuatkan ahli kumpulan</string>
+    <string name="cometchat_a11y_loading_list_item" translatable="true">Memuatkan item senarai</string>
+    <string name="cometchat_a11y_loading_messages" translatable="true">Memuatkan mesej</string>
+    <string name="cometchat_a11y_loading_notifications" translatable="true">Memuatkan pemberitahuan</string>
+    <string name="cometchat_a11y_loading_please_wait" translatable="true">Memuatkan, sila tunggu</string>
+    <string name="cometchat_a11y_loading_reaction" translatable="true">Memuatkan reaksi</string>
+    <string name="cometchat_a11y_loading_reactions_please_wait" translatable="true">Memuatkan reaksi, sila tunggu</string>
+    <string name="cometchat_a11y_loading_stickers_please_wait" translatable="true">Memuatkan pelekat, sila tunggu</string>
+    <string name="cometchat_a11y_media_message_with_items" translatable="true">Mesej %1$s dengan %2$s item</string>
+    <string name="cometchat_a11y_menu" translatable="true">Menu</string>
+    <string name="cometchat_a11y_message_composer" translatable="true">Penulis Mesej</string>
+    <string name="cometchat_a11y_message_list" translatable="true">Senarai mesej</string>
+    <string name="cometchat_a11y_message_preview" translatable="true">Pratonton mesej: %1$s – %2$s</string>
+    <string name="cometchat_a11y_microphone_disabled" translatable="true">Mikrofon (dilumpuhkan)</string>
+    <string name="cometchat_a11y_moderation_warning" translatable="true">Amaran penyederhanaan</string>
+    <string name="cometchat_a11y_more" translatable="true">Lagi</string>
+    <string name="cometchat_a11y_more_options" translatable="true">Lebih banyak pilihan</string>
+    <string name="cometchat_a11y_new_chat" translatable="true">Sembang baharu</string>
+    <string name="cometchat_a11y_notification_from" translatable="true">Pemberitahuan daripada %1$s</string>
+    <string name="cometchat_a11y_numbered_list" translatable="true">Senarai Bernombor</string>
+    <string name="cometchat_a11y_ongoing_call" translatable="true">Panggilan sedang berlangsung</string>
+    <string name="cometchat_a11y_open_ai_options" translatable="true">Buka pilihan AI</string>
+    <string name="cometchat_a11y_options" translatable="true">Pilihan</string>
+    <string name="cometchat_a11y_outgoing_call_to" translatable="true">Panggilan keluar kepada %1$s</string>
+    <string name="cometchat_a11y_pause" translatable="true">Jeda</string>
+    <string name="cometchat_a11y_pause_playback" translatable="true">Jeda main semula</string>
+    <string name="cometchat_a11y_pause_recording" translatable="true">Jeda rakaman</string>
+    <string name="cometchat_a11y_play" translatable="true">Main</string>
+    <string name="cometchat_a11y_play_recording" translatable="true">Mainkan rakaman</string>
+    <string name="cometchat_a11y_play_video" translatable="true">Mainkan video</string>
+    <string name="cometchat_a11y_poll" translatable="true">Undian: %1$s</string>
+    <string name="cometchat_a11y_poll_option" translatable="true">Pilihan undian %1$s</string>
+    <string name="cometchat_a11y_poll_question_input" translatable="true">Medan soalan undian</string>
+    <string name="cometchat_a11y_reactions" translatable="true">%1$s, %2$s reaksi</string>
+    <string name="cometchat_a11y_record_voice_message" translatable="true">Rakam mesej suara</string>
+    <string name="cometchat_a11y_recording_duration" translatable="true">Tempoh rakaman: %1$s</string>
+    <string name="cometchat_a11y_recording_icon" translatable="true">Ikon Rakaman</string>
+    <string name="cometchat_a11y_recording_in_progress" translatable="true">Rakaman sedang berjalan</string>
+    <string name="cometchat_a11y_recording_time" translatable="true">Masa rakaman: %1$s</string>
+    <string name="cometchat_a11y_reply_preview" translatable="true">Pratonton Balasan</string>
+    <string name="cometchat_a11y_restart" translatable="true">Mula semula</string>
+    <string name="cometchat_a11y_restart_recording" translatable="true">Mulakan semula rakaman</string>
+    <string name="cometchat_a11y_resume_recording" translatable="true">Sambung rakaman</string>
+    <string name="cometchat_a11y_retry" translatable="true">Cuba lagi</string>
+    <string name="cometchat_a11y_rich_text_toolbar" translatable="true">Bar Teks Kaya</string>
+    <string name="cometchat_a11y_search" translatable="true">Cari</string>
+    <string name="cometchat_a11y_search_conversations" translatable="true">Cari perbualan</string>
+    <string name="cometchat_a11y_search_conversations_tap_to_open_search" translatable="true">Cari perbualan, ketik untuk membuka carian</string>
+    <string name="cometchat_a11y_search_results_conversations_messages" translatable="true">Hasil carian: %1$s perbualan, %2$s mesej</string>
+    <string name="cometchat_a11y_selected_suffix" translatable="true">, dipilih</string>
+    <string name="cometchat_a11y_send" translatable="true">Hantar</string>
+    <string name="cometchat_a11y_send_recording" translatable="true">Hantar rakaman</string>
+    <string name="cometchat_a11y_share" translatable="true">Kongsi</string>
+    <string name="cometchat_a11y_show_formatting_options" translatable="true">Tunjukkan pilihan format</string>
+    <string name="cometchat_a11y_site_favicon" translatable="true">Favicon tapak</string>
+    <string name="cometchat_a11y_smart_reply" translatable="true">Balasan pintar: %1$s</string>
+    <string name="cometchat_a11y_start_recording" translatable="true">Mulakan rakaman</string>
+    <string name="cometchat_a11y_sticker_set" translatable="true">Set pelekat %1$s</string>
+    <string name="cometchat_a11y_stickers" translatable="true">Pelekat</string>
+    <string name="cometchat_a11y_stop" translatable="true">Berhenti</string>
+    <string name="cometchat_a11y_stop_recording" translatable="true">Hentikan rakaman</string>
+    <string name="cometchat_a11y_strikethrough" translatable="true">Garis Lorek</string>
+    <string name="cometchat_a11y_submit_recording" translatable="true">Hantar rakaman</string>
+    <string name="cometchat_a11y_submit_recording_disabled" translatable="true">Hantar rakaman (dilumpuhkan)</string>
+    <string name="cometchat_a11y_submit_selection_of_conversations" translatable="true">Sahkan pilihan %1$s perbualan</string>
+    <string name="cometchat_a11y_submit_selection_of_members" translatable="true">Sahkan pilihan %1$s ahli</string>
+    <string name="cometchat_a11y_submit_selection_of_users" translatable="true">Sahkan pilihan %1$s pengguna</string>
+    <string name="cometchat_a11y_suggestion" translatable="true">Cadangan: %1$s</string>
+    <string name="cometchat_a11y_suggestion_list" translatable="true">Senarai Cadangan</string>
+    <string name="cometchat_a11y_summary" translatable="true">Ringkasan: %1$s</string>
+    <string name="cometchat_a11y_text" translatable="true">%1$s. %2$s</string>
+    <string name="cometchat_a11y_text_message" translatable="true">Mesej teks: %1$s</string>
+    <string name="cometchat_a11y_thread" translatable="true">Bebenang</string>
+    <string name="cometchat_a11y_thread_replies" translatable="true">Balasan bebenang</string>
+    <string name="cometchat_a11y_underline" translatable="true">Garis Bawah</string>
+    <string name="cometchat_a11y_user_avatar" translatable="true">Avatar pengguna</string>
+    <string name="cometchat_a11y_video" translatable="true">Video %1$s</string>
+    <string name="cometchat_a11y_video_2" translatable="true">Video</string>
+    <string name="cometchat_a11y_video_call" translatable="true">Panggilan Video</string>
+    <string name="cometchat_a11y_video_label" translatable="true">Video</string>
+    <string name="cometchat_a11y_video_message_with_video_s" translatable="true">Mesej dengan %1$s video</string>
+    <string name="cometchat_a11y_video_thumbnail" translatable="true">Imej kecil video</string>
+    <string name="cometchat_a11y_video_unavailable" translatable="true">Video tidak tersedia</string>
+    <string name="cometchat_a11y_voice_call" translatable="true">Panggilan Suara</string>
+    <string name="cometchat_a11y_voice_recording" translatable="true">Rakaman Suara</string>
+    <string name="cometchat_add_link" translatable="true">Tambah pautan</string>
+    <string name="cometchat_ai_agent_message" translatable="true">Mesej ejen AI</string>
+    <string name="cometchat_ai_assistant" translatable="true">Pembantu AI</string>
+    <string name="cometchat_answer_n" translatable="true">Jawapan %1$d</string>
+    <string name="cometchat_apply" translatable="true">Guna</string>
+    <string name="cometchat_are_typing" translatable="true">%1$d orang sedang menaip…</string>
+    <string name="cometchat_attachment_cancel" translatable="true">Batal</string>
+    <string name="cometchat_attachment_count" translatable="true">%1$d lampiran</string>
+    <string name="cometchat_attachment_count_exceeded" translatable="true">Anda boleh melampirkan sehingga %1$d fail</string>
+    <string name="cometchat_attachment_overflow" translatable="true">+%1$d</string>
+    <string name="cometchat_attachment_pause" translatable="true">Jeda</string>
+    <string name="cometchat_attachment_play" translatable="true">Main</string>
+    <string name="cometchat_attachment_progress" translatable="true">%1$s / %2$s</string>
+    <string name="cometchat_attachment_remaining_slots" translatable="true">Anda boleh memilih %1$d fail lagi</string>
+    <string name="cometchat_attachment_remove" translatable="true">Alih keluar</string>
+    <string name="cometchat_attachment_retry" translatable="true">Cuba lagi</string>
+    <string name="cometchat_attachment_size_exceeded" translatable="true">%1$s terlalu besar (maksimum %2$s)</string>
+    <string name="cometchat_attachment_size_unknown" translatable="true">Tidak dapat membaca %1$s — cuba fail lain</string>
+    <string name="cometchat_attachment_tap_to_retry" translatable="true">Ketik untuk cuba lagi</string>
+    <string name="cometchat_attachment_tile_description" translatable="true">%1$s, %2$s</string>
+    <string name="cometchat_attachment_total_size_exceeded" translatable="true">Fail ini melebihi had %1$s untuk satu mesej</string>
+    <string name="cometchat_attachment_type_not_allowed" translatable="true">%1$s bukan jenis fail yang dibenarkan</string>
+    <string name="cometchat_attachment_upload_failed" translatable="true">Muat naik gagal</string>
+    <string name="cometchat_attachment_upload_unavailable" translatable="true">Muat naik tidak tersedia dalam pelan anda</string>
+    <string name="cometchat_attachment_uploading" translatable="true">Memuat naik…</string>
+    <string name="cometchat_ban_member" translatable="true">Haramkan Ahli</string>
+    <string name="cometchat_change_scope" translatable="true">Tukar Peranan</string>
+    <string name="cometchat_close" translatable="true">Tutup</string>
+    <string name="cometchat_confirm_ban_message" translatable="true">Adakah anda pasti mahu mengharamkan %1$s?</string>
+    <string name="cometchat_confirm_kick_message" translatable="true">Adakah anda pasti mahu mengeluarkan %1$s?</string>
+    <string name="cometchat_conversation_list_description" translatable="true">Senarai perbualan dengan %1$d perbualan</string>
+    <string name="cometchat_create_poll" translatable="true">Cipta Undian</string>
+    <string name="cometchat_discard_selection" translatable="true">Buang pilihan</string>
+    <string name="cometchat_download" translatable="true">Muat turun</string>
+    <string name="cometchat_drag_to_reorder" translatable="true">Seret untuk menyusun semula</string>
+    <string name="cometchat_edit_link" translatable="true">Sunting Pautan</string>
+    <string name="cometchat_edit_message" translatable="true">Sunting Mesej</string>
+    <string name="cometchat_error_loading_members" translatable="true">Tidak dapat memuatkan ahli. Sila cuba lagi.</string>
+    <string name="cometchat_file" translatable="true">Fail</string>
+    <string name="cometchat_gallery" translatable="true">Galeri</string>
+    <string name="cometchat_go_back" translatable="true">Kembali</string>
+    <string name="cometchat_group_members" translatable="true">Ahli</string>
+    <string name="cometchat_groups_list_description" translatable="true">Senarai kumpulan dengan %1$d kumpulan</string>
+    <string name="cometchat_insert_link" translatable="true">Sisipkan Pautan</string>
+    <string name="cometchat_kick_member" translatable="true">Keluarkan Ahli</string>
+    <string name="cometchat_link" translatable="true">Pautan</string>
+    <string name="cometchat_link_text" translatable="true">Teks Pautan</string>
+    <string name="cometchat_link_url" translatable="true">URL</string>
+    <string name="cometchat_meeting" translatable="true">Mesyuarat</string>
+    <string name="cometchat_n_audio" translatable="true">%1$d Audio</string>
+    <string name="cometchat_n_files" translatable="true">%1$d Fail</string>
+    <string name="cometchat_n_images" translatable="true">%1$d Imej</string>
+    <string name="cometchat_n_more" translatable="true">+%1$d lagi</string>
+    <string name="cometchat_n_videos" translatable="true">%1$d Video</string>
+    <string name="cometchat_new" translatable="true">Baharu</string>
+    <string name="cometchat_new_message_count_plural" translatable="true">%1$d mesej baharu</string>
+    <string name="cometchat_new_message_count_singular" translatable="true">%1$d mesej baharu</string>
+    <string name="cometchat_no_members_found" translatable="true">Tiada Ahli Ditemui</string>
+    <string name="cometchat_no_members_found_subtitle" translatable="true">Tambahkan ahli ke dalam kumpulan untuk melihat mereka di sini.</string>
+    <string name="cometchat_no_messages_yet" translatable="true">Belum Ada Mesej</string>
+    <string name="cometchat_no_preview_available" translatable="true">Tiada pratonton tersedia</string>
+    <string name="cometchat_no_preview_subtitle" translatable="true">Jenis fail ini tidak menyokong pratonton.</string>
+    <string name="cometchat_no_reactions" translatable="true">Tiada reaksi</string>
+    <string name="cometchat_not_selected" translatable="true">Tidak dipilih</string>
+    <string name="cometchat_preview" translatable="true">Pratonton:</string>
+    <string name="cometchat_remove_group_description" translatable="true">Alih keluar %1$s daripada pilihan</string>
+    <string name="cometchat_reply_to_message" translatable="true">Balas</string>
+    <string name="cometchat_replying_to" translatable="true">Membalas %s</string>
+    <string name="cometchat_say_hi_to" translatable="true">Ucapkan hai kepada %1$s 👋</string>
+    <string name="cometchat_search_empty_subtitle" translatable="true">Tiada padanan ditemui. Sila cuba kata kunci lain.</string>
+    <string name="cometchat_search_empty_title" translatable="true">Tiada Hasil</string>
+    <string name="cometchat_search_in" translatable="true">Cari dalam</string>
+    <string name="cometchat_search_initial_subtitle" translatable="true">Cari perbualan atau mesej dengan menaip kata kunci di atas.</string>
+    <string name="cometchat_search_initial_title" translatable="true">Mulakan Carian Anda</string>
+    <string name="cometchat_select_new_scope_for" translatable="true">Pilih peranan baharu untuk %1$s</string>
+    <string name="cometchat_selected" translatable="true">Dipilih</string>
+    <string name="cometchat_selected_count" translatable="true">%1$d dipilih</string>
+    <string name="cometchat_selected_group_item_description" translatable="true">Kumpulan dipilih: %1$s</string>
+    <string name="cometchat_selected_groups_list_description" translatable="true">Senarai kumpulan dipilih: %1$d kumpulan</string>
+    <string name="cometchat_selection_count" translatable="true">%d dipilih</string>
+    <string name="cometchat_set_the_answers" translatable="true">Tetapkan jawapan</string>
+    <string name="cometchat_show_less" translatable="true">Tunjukkan kurang</string>
+    <string name="cometchat_show_n_more" translatable="true">Tunjukkan +%1$d lagi</string>
+    <string name="cometchat_smart_replies" translatable="true">Balasan Pintar</string>
+    <string name="cometchat_start_conversation" translatable="true">Mulakan perbualan</string>
+    <string name="cometchat_submit_selection" translatable="true">Sahkan pilihan</string>
+    <string name="cometchat_submit_selection_description" translatable="true">Sahkan pilihan %1$d item</string>
+    <string name="cometchat_text" translatable="true">Teks</string>
+    <string name="cometchat_try_again_later" translatable="true">Sila cuba lagi kemudian.</string>
+    <string name="cometchat_unable_to_load_poll" translatable="true">Tidak dapat memuatkan undian</string>
+    <string name="cometchat_unread_messages" translatable="true">%1$d mesej belum dibaca</string>
+    <string name="cometchat_video" translatable="true">Video</string>
+    <string name="cometchat_whiteboard" translatable="true">Papan Putih</string>
+    <plurals name="cometchat_members_count">
+        <item quantity="one">%d ahli</item>
+        <item quantity="other">%d ahli</item>
+    </plurals>
+    <!-- ENG-38656 (X4 round 2): conditional a11y -->
+    <string name="cometchat_a11y_item_with_state" translatable="true">%1$s, %2$s</string>
+    <string name="cometchat_a11y_creating_poll" translatable="true">Mencipta undian, sila tunggu</string>
+    <string name="cometchat_a11y_send_poll" translatable="true">Hantar undian</string>
+    <string name="cometchat_a11y_send_poll_disabled" translatable="true">Butang hantar undian dilumpuhkan</string>
+    <string name="cometchat_a11y_media_recorder_idle" translatable="true">Perakam media sedia untuk merakam</string>
+    <string name="cometchat_a11y_recording_in_progress_elapsed" translatable="true">Rakaman sedang berjalan, %1$s berlalu</string>
+    <string name="cometchat_a11y_recording_ready" translatable="true">Rakaman selesai, sedia untuk dimainkan atau dihantar</string>
+    <string name="cometchat_a11y_recording_paused_at" translatable="true">Rakaman dijeda pada %1$s</string>
+    <string name="cometchat_a11y_recording_complete_duration" translatable="true">Rakaman selesai, tempoh %1$s</string>
+    <string name="cometchat_a11y_playing_recording_time" translatable="true">Memainkan rakaman, %1$s</string>
+    <string name="cometchat_a11y_recording_error_msg" translatable="true">Ralat rakaman: %1$s</string>
+    <string name="cometchat_a11y_audio_recorder" translatable="true">Perakam audio</string>
+    <string name="cometchat_a11y_waveform_recording_amplitude" translatable="true">Bentuk gelombang audio menunjukkan amplitud rakaman</string>
+    <string name="cometchat_a11y_waveform_playback_progress" translatable="true">Bentuk gelombang audio menunjukkan kemajuan main semula</string>
+    <string name="cometchat_a11y_sticker" translatable="true">Pelekat</string>
+    <string name="cometchat_a11y_downloading" translatable="true">Memuat turun</string>
+    <string name="cometchat_a11y_loading_short" translatable="true">Memuatkan</string>
+    <string name="cometchat_a11y_close_attachments" translatable="true">Tutup lampiran</string>
+    <string name="cometchat_a11y_open_attachments" translatable="true">Buka lampiran</string>
+    <string name="cometchat_a11y_poll_option_text" translatable="true">Pilihan: %1$s</string>
+    <string name="cometchat_a11y_poll_option_stats" translatable="true">, %1$s peratus, %2$s undian</string>
+    <string name="cometchat_a11y_poll_your_vote" translatable="true">, undian anda</string>
+    <!-- ENG-38656 (X4 round 3) -->
+    <string name="cometchat_a11y_message_in_progress" translatable="true">Mesej sedang dihantar</string>
+    <string name="cometchat_a11y_message_sent" translatable="true">Mesej dihantar</string>
+    <string name="cometchat_a11y_message_delivered" translatable="true">Mesej disampaikan</string>
+    <string name="cometchat_a11y_message_read" translatable="true">Mesej dibaca</string>
+    <string name="cometchat_a11y_message_error" translatable="true">Ralat mesej</string>
+    <string name="cometchat_a11y_unsupported_attachment" translatable="true">Lampiran tidak disokong</string>
+    <string name="cometchat_a11y_private_group" translatable="true">Kumpulan peribadi</string>
+    <string name="cometchat_a11y_protected_group" translatable="true">Kumpulan dilindungi</string>
+    <string name="cometchat_a11y_start_recording_full" translatable="true">Mulakan rakaman</string>
+    <string name="cometchat_a11y_pause_recording_full" translatable="true">Jeda rakaman</string>
+    <string name="cometchat_a11y_resume_recording_full" translatable="true">Sambung rakaman</string>
+    <string name="cometchat_a11y_send_recording_full" translatable="true">Hantar rakaman</string>
+    <string name="cometchat_a11y_hide_formatting_options" translatable="true">Sembunyikan pilihan format</string>
+    <string name="cometchat_a11y_close_stickers" translatable="true">Tutup pelekat</string>
+    <string name="cometchat_a11y_open_stickers" translatable="true">Buka pelekat</string>
     <!-- Thread subscription (follow/unfollow) — P5 localization  -->
     <string name="cometchat_thread_subscription_subscribe" translatable="true">Langgan bebenang</string>
     <string name="cometchat_thread_subscription_unsubscribe" translatable="true">Nyahlanggan bebenang</string>
@@ -277,7 +568,9 @@
     <string name="cometchat_unpin_conversation_confirm_body">Adakah anda mahu menyahsemat perbualan ini?</string>
     <string name="cometchat_pin_conversation_limit_reached">Anda hanya boleh menyemat %1$d sembang. Nyahsemat satu untuk menyemat yang lain.</string>
     <string name="cometchat_pin_limit_reached">Anda hanya boleh menyemat %1$d mesej. Nyahsemat satu untuk menyemat yang lain.</string>
+    <string name="cometchat_pin_limit_reached_unknown" translatable="true">Had mesej yang disemat telah dicapai. Nyahsemat satu untuk menyemat yang lain.</string>
     <string name="cometchat_save_limit_reached">Anda boleh menyimpan sehingga %1$d mesej.</string>
+    <string name="cometchat_save_limit_reached_unknown" translatable="true">Had mesej yang disimpan telah dicapai. Nyahsimpan satu untuk menyimpan yang lain.</string>
     <string name="cometchat_pin_save_generic_error">Sesuatu telah berlaku. Sila cuba lagi.</string>
     <string name="cometchat_message_pinned">Mesej disemat</string>
     <string name="cometchat_message_unpinned">Mesej dinyahsemat</string>

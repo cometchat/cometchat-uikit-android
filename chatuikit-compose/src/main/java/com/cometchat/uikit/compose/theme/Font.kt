@@ -4,14 +4,14 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.cometchat.uikit.compose.R
 
-val cometchatFontBold = FontFamily(
+public val cometchatFontBold: FontFamily = FontFamily(
     Font(R.font.roboto_bold) // Replace with actual font resource
 )
 
-val cometchatFontMedium = FontFamily(
+public val cometchatFontMedium: FontFamily = FontFamily(
     Font(R.font.roboto_medium) // Replace with actual font resource
 )
 
-val cometchatFontRegular = FontFamily(
+public val cometchatFontRegular: FontFamily = FontFamily(
     Font(R.font.roboto_regular) // Replace with actual font resource
 )

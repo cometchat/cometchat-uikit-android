@@ -76,8 +76,18 @@ class CometChatThreadHeaderScreenshotTest {
 
     private lateinit var cometChatMock: MockedStatic<com.cometchat.chat.core.CometChat>
 
+    /**
+     * these captures let the component format `sentAt` itself, and the
+     * JVM default zone is not pinned anywhere in the build. A baseline recorded in
+     * one zone and compared in another (CI runs UTC) differs by the glyphs and
+     * width of the time label. Pinned to GMT so the capture is host-independent.
+     */
+    private lateinit var originalZone: java.util.TimeZone
+
     @Before
     fun setup() {
+        originalZone = java.util.TimeZone.getDefault()
+        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("GMT"))
         val context = RuntimeEnvironment.getApplication()
         val interceptor = object : Interceptor {
             override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
@@ -105,6 +115,7 @@ class CometChatThreadHeaderScreenshotTest {
 
     @After
     fun tearDown() {
+        java.util.TimeZone.setDefault(originalZone)
         cometChatMock.close()
     }
 

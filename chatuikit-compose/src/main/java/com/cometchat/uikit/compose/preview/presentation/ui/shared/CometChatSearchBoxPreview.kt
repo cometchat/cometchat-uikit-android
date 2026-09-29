@@ -12,7 +12,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 
 @Preview(showBackground = true, name = "SearchBox - Default")
 @Composable
-fun PreviewSearchBoxDefault() {
+public fun PreviewSearchBoxDefault() {
     CometChatTheme {
         CometChatSearchBox(
             modifier = Modifier.padding(16.dp),
@@ -23,7 +23,7 @@ fun PreviewSearchBoxDefault() {
 
 @Preview(showBackground = true, name = "SearchBox - Custom Placeholder")
 @Composable
-fun PreviewSearchBoxCustomPlaceholder() {
+public fun PreviewSearchBoxCustomPlaceholder() {
     CometChatTheme {
         CometChatSearchBox(
             modifier = Modifier.padding(16.dp),
@@ -35,7 +35,7 @@ fun PreviewSearchBoxCustomPlaceholder() {
 
 @Preview(showBackground = true, name = "SearchBox - With Text")
 @Composable
-fun PreviewSearchBoxWithText() {
+public fun PreviewSearchBoxWithText() {
     CometChatTheme {
         CometChatSearchBox(
             modifier = Modifier.padding(16.dp),
@@ -48,7 +48,7 @@ fun PreviewSearchBoxWithText() {
 
 @Preview(showBackground = true, name = "SearchBox - Disabled (Navigation Mode)")
 @Composable
-fun PreviewSearchBoxDisabled() {
+public fun PreviewSearchBoxDisabled() {
     CometChatTheme {
         CometChatSearchBox(
             modifier = Modifier.padding(16.dp),
@@ -60,7 +60,7 @@ fun PreviewSearchBoxDisabled() {
 
 @Preview(showBackground = true, name = "SearchBox - Custom Background")
 @Composable
-fun PreviewSearchBoxCustomBackground() {
+public fun PreviewSearchBoxCustomBackground() {
     CometChatTheme {
         CometChatSearchBox(
             modifier = Modifier.padding(16.dp),

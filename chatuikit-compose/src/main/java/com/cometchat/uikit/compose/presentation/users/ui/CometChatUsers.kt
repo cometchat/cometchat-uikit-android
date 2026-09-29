@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -93,10 +94,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * @param onLoad Callback when users are loaded
  * @param onEmpty Callback when list is empty
  * @param onBackPress Callback for back navigation
- * @param onSelection Callback for selection completion
+ * @param onSelection Callback for selection completion (fires when the selection is submitted)
+ * @param onSelectionChange Callback fired on every selection toggle, before submission. Parity
+ *   with chatuikit-kotlin's setOnSelectionChange, which is distinct from setOnSelection.
  */
 @Composable
-fun CometChatUsers(
+public fun CometChatUsers(
     modifier: Modifier = Modifier,
     usersViewModel: CometChatUsersViewModel? = null,
     // Request builder customization
@@ -141,7 +144,8 @@ fun CometChatUsers(
     onLoad: ((List<User>) -> Unit)? = null,
     onEmpty: (() -> Unit)? = null,
     onBackPress: (() -> Unit)? = null,
-    onSelection: ((List<User>) -> Unit)? = null
+    onSelection: ((List<User>) -> Unit)? = null,
+    onSelectionChange: ((List<User>) -> Unit)? = null
 ) {
     val context = LocalContext.current
     
@@ -313,6 +317,8 @@ fun CometChatUsers(
                         onItemClick = { user ->
                             if (selectionMode != UIKitConstants.SelectionMode.NONE) {
                                 viewModel.selectUser(user, selectionMode)
+                                // Fires on every toggle, unlike onSelection which fires on submit.
+                                onSelectionChange?.invoke(viewModel.getSelectedUsers())
                             } else {
                                 onItemClick?.invoke(user)
                             }
@@ -406,13 +412,14 @@ private fun UsersToolbar(
             actions = {
                 // Submit selection button
                 style.submitSelectionIcon?.let { icon ->
+                    val cdHoist1 = stringResource(R.string.cometchat_a11y_submit_selection_of_users, selectedCount)
                     Box(
                         modifier = Modifier
                             .size(48.dp)
                             .focusable()
                             .clickable { onSubmitSelection() }
                             .semantics { 
-                                contentDescription = "Submit selection of $selectedCount users"
+                                contentDescription = cdHoist1
                                 role = Role.Button
                             }
                     ) {

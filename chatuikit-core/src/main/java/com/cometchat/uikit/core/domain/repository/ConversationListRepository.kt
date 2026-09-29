@@ -10,14 +10,14 @@ import com.cometchat.chat.core.ConversationsRequest
  * This interface allows for custom implementations to be injected,
  * enabling flexibility in data fetching strategies (remote, local, cached).
  */
-interface ConversationListRepository {
+public interface ConversationListRepository {
     
     /**
      * Fetches conversations based on the provided request configuration.
      * @param request The configured ConversationsRequest with pagination and filters
      * @return Result containing list of conversations or error
      */
-    suspend fun getConversations(
+    suspend public fun getConversations(
         request: ConversationsRequest
     ): Result<List<Conversation>>
     
@@ -27,7 +27,7 @@ interface ConversationListRepository {
      * @param conversationType The type of conversation (user/group)
      * @return Result indicating success or failure
      */
-    suspend fun deleteConversation(
+    suspend public fun deleteConversation(
         conversationWith: String,
         conversationType: String
     ): Result<Unit>
@@ -37,7 +37,7 @@ interface ConversationListRepository {
      * @param conversation The conversation to mark as delivered
      * @return Result indicating success or failure
      */
-    suspend fun markAsDelivered(
+    suspend public fun markAsDelivered(
         conversation: Conversation
     ): Result<Unit>
     
@@ -45,5 +45,5 @@ interface ConversationListRepository {
      * Checks if there are more conversations to fetch (pagination).
      * @return true if more conversations are available
      */
-    fun hasMoreConversations(): Boolean
+    public fun hasMoreConversations(): Boolean
 }

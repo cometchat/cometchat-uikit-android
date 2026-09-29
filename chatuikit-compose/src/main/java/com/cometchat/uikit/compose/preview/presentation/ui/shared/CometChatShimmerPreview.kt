@@ -19,7 +19,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 
 @Preview(showBackground = true, name = "Shimmer - List Item")
 @Composable
-fun PreviewShimmerListItem() {
+public fun PreviewShimmerListItem() {
     CometChatTheme {
         ProvideShimmerAnimation {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -33,7 +33,7 @@ fun PreviewShimmerListItem() {
 
 @Preview(showBackground = true, name = "Shimmer - Message List")
 @Composable
-fun PreviewShimmerMessageList() {
+public fun PreviewShimmerMessageList() {
     CometChatTheme {
         ProvideShimmerAnimation {
             CometChatMessageListShimmer(
@@ -45,7 +45,7 @@ fun PreviewShimmerMessageList() {
 
 @Preview(showBackground = true, name = "Shimmer - Group Member")
 @Composable
-fun PreviewShimmerGroupMember() {
+public fun PreviewShimmerGroupMember() {
     CometChatTheme {
         ProvideShimmerAnimation {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -59,7 +59,7 @@ fun PreviewShimmerGroupMember() {
 
 @Preview(showBackground = true, name = "Shimmer - Reaction List")
 @Composable
-fun PreviewShimmerReactionList() {
+public fun PreviewShimmerReactionList() {
     CometChatTheme {
         ProvideShimmerAnimation {
             CometChatReactionListShimmer(
@@ -73,7 +73,7 @@ fun PreviewShimmerReactionList() {
 
 @Preview(showBackground = true, name = "Shimmer - Box")
 @Composable
-fun PreviewShimmerBox() {
+public fun PreviewShimmerBox() {
     CometChatTheme {
         ProvideShimmerAnimation {
             CometChatShimmerBox(

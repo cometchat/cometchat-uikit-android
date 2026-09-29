@@ -22,7 +22,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  */
 @Preview(showBackground = true, name = "DefaultStates - Loading - Default")
 @Composable
-fun PreviewLoadingStateDefault() {
+public fun PreviewLoadingStateDefault() {
     CometChatTheme {
         CometChatLoadingState(modifier = Modifier.fillMaxSize())
     }
@@ -33,7 +33,7 @@ fun PreviewLoadingStateDefault() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Loading - 3 Items")
 @Composable
-fun PreviewLoadingState3Items() {
+public fun PreviewLoadingState3Items() {
     CometChatTheme {
         CometChatLoadingState(
             modifier = Modifier.fillMaxSize(),
@@ -47,7 +47,7 @@ fun PreviewLoadingState3Items() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Loading - Custom Background")
 @Composable
-fun PreviewLoadingStateCustomBackground() {
+public fun PreviewLoadingStateCustomBackground() {
     CometChatTheme {
         CometChatLoadingState(
             modifier = Modifier.fillMaxSize(),
@@ -67,7 +67,7 @@ fun PreviewLoadingStateCustomBackground() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Empty - Default")
 @Composable
-fun PreviewEmptyStateDefault() {
+public fun PreviewEmptyStateDefault() {
     CometChatTheme {
         CometChatEmptyState(modifier = Modifier.fillMaxSize())
     }
@@ -78,7 +78,7 @@ fun PreviewEmptyStateDefault() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Empty - Custom Text")
 @Composable
-fun PreviewEmptyStateCustomText() {
+public fun PreviewEmptyStateCustomText() {
     CometChatTheme {
         CometChatEmptyState(
             modifier = Modifier.fillMaxSize(),
@@ -93,7 +93,7 @@ fun PreviewEmptyStateCustomText() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Empty - Custom Background")
 @Composable
-fun PreviewEmptyStateCustomBackground() {
+public fun PreviewEmptyStateCustomBackground() {
     CometChatTheme {
         CometChatEmptyState(
             modifier = Modifier.fillMaxSize(),
@@ -113,7 +113,7 @@ fun PreviewEmptyStateCustomBackground() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Error - Default")
 @Composable
-fun PreviewErrorStateDefault() {
+public fun PreviewErrorStateDefault() {
     CometChatTheme {
         CometChatErrorState(
             modifier = Modifier.fillMaxSize(),
@@ -127,7 +127,7 @@ fun PreviewErrorStateDefault() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Error - Custom Text")
 @Composable
-fun PreviewErrorStateCustomText() {
+public fun PreviewErrorStateCustomText() {
     CometChatTheme {
         CometChatErrorState(
             modifier = Modifier.fillMaxSize(),
@@ -143,7 +143,7 @@ fun PreviewErrorStateCustomText() {
  */
 @Preview(showBackground = true, name = "DefaultStates - Error - Custom Background")
 @Composable
-fun PreviewErrorStateCustomBackground() {
+public fun PreviewErrorStateCustomBackground() {
     CometChatTheme {
         CometChatErrorState(
             modifier = Modifier.fillMaxSize(),

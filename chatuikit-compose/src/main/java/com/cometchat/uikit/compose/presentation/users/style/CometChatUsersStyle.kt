@@ -20,7 +20,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * Contains all visual styling properties for the users list component.
  */
 @Immutable
-data class CometChatUsersStyle(
+public data class CometChatUsersStyle(
     // Container styling
     val backgroundColor: Color,
     val strokeColor: Color,
@@ -92,13 +92,13 @@ data class CometChatUsersStyle(
     val errorStateStyle: CometChatErrorStateStyle,
     val loadingStateStyle: CometChatLoadingStateStyle
 ) {
-    companion object {
+    public companion object {
         /**
          * Creates a default style configuration sourcing values from CometChatTheme.
          * Does NOT use Material Theme colors directly.
          */
         @Composable
-        fun default(
+        public fun default(
             // Container styling
             backgroundColor: Color = CometChatTheme.colorScheme.backgroundColor1,
             strokeColor: Color = Color.Transparent,

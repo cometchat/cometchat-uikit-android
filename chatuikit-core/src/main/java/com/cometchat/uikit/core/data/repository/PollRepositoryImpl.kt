@@ -10,7 +10,7 @@ import org.json.JSONArray
  *
  * @param dataSource The data source to use for poll operations
  */
-class PollRepositoryImpl(
+public class PollRepositoryImpl(
     private val dataSource: PollDataSource
 ) : PollRepository {
 
