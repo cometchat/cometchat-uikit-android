@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.Target
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatAvatarBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
@@ -51,7 +52,7 @@ public class CometChatAvatar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAvatarStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatAvatar::class.java.simpleName
@@ -77,7 +78,7 @@ public class CometChatAvatar @JvmOverloads constructor(
      * Inflates and initializes the view.
      */
     private fun inflateAndInitializeView(attrs: AttributeSet?, defStyleAttr: Int) {
-        binding = CometchatAvatarBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = CometchatAvatarBinding.inflate(LayoutInflater.from(getContext()), this, true)
         Utils.initMaterialCard(this)
         applyStyleAttributes(attrs, defStyleAttr)
     }

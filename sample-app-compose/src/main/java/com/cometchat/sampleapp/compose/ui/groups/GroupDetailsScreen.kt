@@ -410,12 +410,21 @@ fun GroupDetailsScreen(
                     color = colorScheme.strokeColorLight
                 )
 
-                // Leave Group action (if member and not owner)
-                if (isMember && !isOwner) {
+                // Leave Group (ENG-39700) — shown to every member, including the owner when the
+                // group has other members; the owner is routed through the transfer flow (which
+                // leaves after the transfer). Matches master-app-compose view-for-view.
+                val leaveMembersCount = group?.membersCount ?: 0
+                if (isMember && (!isOwner || leaveMembersCount > 1)) {
                     ActionButtonWithIcon(
                         text = "Leave",
                         icon = R.drawable.ic_leave_group,
-                        onClick = { showLeaveDialog = true }
+                        onClick = {
+                            if (isOwner) {
+                                showTransferOwnershipDialog = true
+                            } else {
+                                showLeaveDialog = true
+                            }
+                        }
                     )
                 }
 

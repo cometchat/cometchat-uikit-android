@@ -9,6 +9,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
 
@@ -25,7 +26,7 @@ public class CometChatBadgeCount @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatBadgeStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatBadgeCount::class.java.simpleName

@@ -22,6 +22,7 @@ import com.cometchat.uikit.core.factory.CometChatReactionListViewModelFactory
 import com.cometchat.uikit.core.state.ReactionListUIState
 import com.cometchat.uikit.core.viewmodel.CometChatReactionListViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatReactionListBinding
 import com.cometchat.uikit.kotlin.presentation.reactionlist.adapter.ReactedUsersAdapter
 import com.cometchat.uikit.kotlin.presentation.reactionlist.adapter.ReactionsHeaderAdapter
@@ -74,7 +75,7 @@ public class CometChatReactionList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatReactionListStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatReactionList::class.java.simpleName
@@ -126,7 +127,7 @@ public class CometChatReactionList @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatReactionListBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

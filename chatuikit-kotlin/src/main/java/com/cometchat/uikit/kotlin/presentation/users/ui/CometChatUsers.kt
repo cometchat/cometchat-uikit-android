@@ -17,6 +17,7 @@ import com.cometchat.uikit.core.factory.CometChatUsersViewModelFactory
 import com.cometchat.uikit.core.state.UsersUIState
 import com.cometchat.uikit.core.viewmodel.CometChatUsersViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatUsersListViewBinding
 import com.cometchat.uikit.kotlin.presentation.users.style.CometChatUsersListItemStyle
 import com.cometchat.uikit.kotlin.presentation.users.style.CometChatUsersStyle
@@ -48,7 +49,7 @@ public class CometChatUsers @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatUsersStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatUsers::class.java.simpleName
@@ -125,7 +126,7 @@ public class CometChatUsers @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatUsersListViewBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

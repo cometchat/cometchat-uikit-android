@@ -128,8 +128,13 @@ class SampleApplication : Application() {
                 currentActivityInstance = activity
                 currentActivity = activity
 
-                // Connect to WebSocket when app comes to foreground
-                if (isConnectedToWebSockets.compareAndSet(false, true)) {
+                // Connect to WebSocket when app comes to foreground.
+                // ENG-39442: guard on CometChat.isInitialized(): before credentials are entered the SDK is
+                // not initialized, and calling connect() then crashes with the SDK's
+                // "Please call the CometChat.init() method..." error (getLoggedInUser hits an
+                // uninitialized SQLiteManager). Skipping here lets the app route to the credentials
+                // screen; connect still runs after init + login and on subsequent foregrounds.
+                if (CometChat.isInitialized() && isConnectedToWebSockets.compareAndSet(false, true)) {
                     CometChat.connect(object : CometChat.CallbackListener<String?>() {
                         override fun onSuccess(s: String?) {
                             isConnectedToWebSockets.set(true)
@@ -164,14 +169,17 @@ class SampleApplication : Application() {
                     isAppInForeground = false
                     Log.d(TAG, "App is now in BACKGROUND")
 
-                    // Disconnect WebSocket when app goes to background
-                    CometChat.disconnect(object : CometChat.CallbackListener<String?>() {
-                        override fun onSuccess(s: String?) {
-                            isConnectedToWebSockets.set(false)
-                        }
+                    // Disconnect WebSocket when app goes to background (only if the SDK was
+                    // initialized — otherwise disconnect hits the same uninitialized-SDK crash). ENG-39442.
+                    if (CometChat.isInitialized()) {
+                        CometChat.disconnect(object : CometChat.CallbackListener<String?>() {
+                            override fun onSuccess(s: String?) {
+                                isConnectedToWebSockets.set(false)
+                            }
 
-                        override fun onError(e: CometChatException) {}
-                    })
+                            override fun onError(e: CometChatException) {}
+                        })
+                    }
                 }
             }
 

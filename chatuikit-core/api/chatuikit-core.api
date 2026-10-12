@@ -4655,7 +4655,7 @@ public final class com/cometchat/uikit/core/utils/GroupMembersPermissionUtils {
 	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/GroupMembersPermissionUtils;
 	public static final field SCOPE_OWNER Ljava/lang/String;
 	public final fun canBanMember (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun canChangeMemberScope (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun canChangeMemberScope (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
 	public final fun canKickMember (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
 	public final fun compareScopes (Ljava/lang/String;Ljava/lang/String;)I
 	public final fun getAssignableScopes ()Ljava/util/List;
@@ -5143,6 +5143,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageComposerViewMode
 	public static final field Companion Lcom/cometchat/uikit/core/viewmodel/CometChatMessageComposerViewModel$Companion;
 	public static final field DEFAULT_MAX_ATTACHMENT_COUNT I
 	public static final field ERROR_MAX_ATTACHMENTS_EXCEEDED Ljava/lang/String;
+	public static final field ERROR_NO_RECEIVER Ljava/lang/String;
 	public fun <init> (Lcom/cometchat/uikit/core/domain/usecase/SendTextMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/SendMediaMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/SendCustomMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/EditMessageUseCase;Z)V
 	public synthetic fun <init> (Lcom/cometchat/uikit/core/domain/usecase/SendTextMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/SendMediaMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/SendCustomMessageUseCase;Lcom/cometchat/uikit/core/domain/usecase/EditMessageUseCase;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addAttachmentOption (Lcom/cometchat/uikit/core/domain/model/CometChatMessageComposerAction;)V
@@ -5356,6 +5357,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public final fun initSoundManager (Landroid/content/Context;)V
 	public final fun isAgentChat ()Z
 	public final fun isInProgress ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun isThreaded ()Z
 	public final fun markAsDelivered (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun markConversationRead ()V
 	public final fun markLastMessageAsRead (Lcom/cometchat/chat/models/BaseMessage;)V
@@ -5394,6 +5396,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public final fun setSmartRepliesDelay (I)V
 	public final fun setSmartReplyKeywords (Ljava/util/List;)V
 	public final fun setStartFromUnreadMessages (Z)V
+	public final fun setThreaded (Z)V
 	public final fun setUIStateEmpty ()V
 	public final fun setUnreadThreshold (I)V
 	public final fun setUser (Lcom/cometchat/chat/models/User;JJLcom/cometchat/chat/core/MessagesRequest$MessagesRequestBuilder;)V

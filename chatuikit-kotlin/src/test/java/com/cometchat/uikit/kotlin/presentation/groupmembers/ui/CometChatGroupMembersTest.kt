@@ -742,12 +742,14 @@ class CometChatGroupMembersTest {
      *
      * Validates: Requirements 6.1, 6.3
      *
-     * Verifies that only the owner can change member scopes.
+     * Verifies owner and admin can change member scopes (admins for mods/participants).
      */
     @Test
-    fun `only owner can change member scope`() {
+    fun `owner and admin can change member scope`() {
         // Owner can change scope of others
         GroupMembersUtils.canChangeMemberScope(
+            loggedInUserScope = "admin",
+            targetMemberScope = "participant",
             loggedInUserId = "owner-uid",
             targetMemberId = "user-1",
             groupOwnerId = "owner-uid"
@@ -755,15 +757,28 @@ class CometChatGroupMembersTest {
 
         // Owner cannot change own scope
         GroupMembersUtils.canChangeMemberScope(
+            loggedInUserScope = "admin",
+            targetMemberScope = "admin",
             loggedInUserId = "owner-uid",
             targetMemberId = "owner-uid",
             groupOwnerId = "owner-uid"
         ) shouldBe false
 
-        // Non-owner cannot change scope
+        // Admin can change scope of a participant/moderator
         GroupMembersUtils.canChangeMemberScope(
+            loggedInUserScope = "admin",
+            targetMemberScope = "participant",
             loggedInUserId = "admin-uid",
             targetMemberId = "user-1",
+            groupOwnerId = "owner-uid"
+        ) shouldBe true
+
+        // Admin cannot change scope of another admin
+        GroupMembersUtils.canChangeMemberScope(
+            loggedInUserScope = "admin",
+            targetMemberScope = "admin",
+            loggedInUserId = "admin-uid",
+            targetMemberId = "other-admin",
             groupOwnerId = "owner-uid"
         ) shouldBe false
     }

@@ -18,6 +18,7 @@ import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
@@ -67,7 +68,7 @@ public class CometChatMessageBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatMessageBubble::class.java.simpleName
@@ -1114,7 +1115,7 @@ public class CometChatMessageBubble @JvmOverloads constructor(
         }
         
         removeAllViewsInLayout()
-        rootView = LayoutInflater.from(context).inflate(layoutRes, this, true)
+        rootView = LayoutInflater.from(getContext()).inflate(layoutRes, this, true)
         initView()
     }
 

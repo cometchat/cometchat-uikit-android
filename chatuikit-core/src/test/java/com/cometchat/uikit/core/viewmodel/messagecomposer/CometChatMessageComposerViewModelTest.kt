@@ -36,6 +36,7 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -140,6 +141,26 @@ class CometChatMessageComposerViewModelTest : FunSpec({
             viewModel.uiState.value.shouldBeInstanceOf<MessageComposerUIState.Error>()
             (viewModel.uiState.value as MessageComposerUIState.Error).exception.code shouldBe "ERR_SEND"
             println("    ✅ PASSED — Error state with code=ERR_SEND")
+        }
+    }
+
+    test("ENG-39322: sendTextMessage with no receiver (parent only) fails fast with ERR_NO_RECEIVER and never sends") {
+        runTest {
+            val viewModel = createViewModel()
+            // Thread composer mis-wired: only the parent is set — setUser()/setGroup() was forgotten.
+            viewModel.setParentMessageId(42L)
+
+            println("    [SETUP] No setUser()/setGroup(); only setParentMessageId(42)")
+            viewModel.sendTextMessage("Hello thread")
+            advanceUntilIdle()
+
+            println("    [ViewModel] state: ${viewModel.uiState.value}")
+            viewModel.uiState.value.shouldBeInstanceOf<MessageComposerUIState.Error>()
+            (viewModel.uiState.value as MessageComposerUIState.Error).exception.code shouldBe
+                CometChatMessageComposerViewModel.ERROR_NO_RECEIVER
+            // The send must never be attempted with an empty receiver.
+            verify(sendTextMessageUseCase, never()).invoke(any())
+            println("    ✅ PASSED — no-receiver send fails fast (ERR_NO_RECEIVER), use case never called")
         }
     }
 

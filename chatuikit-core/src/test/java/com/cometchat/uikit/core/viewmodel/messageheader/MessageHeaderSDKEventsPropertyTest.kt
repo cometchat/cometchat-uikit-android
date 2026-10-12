@@ -128,62 +128,42 @@ class MessageHeaderSDKEventsPropertyTest : FunSpec({
 
     // ==================== Group Member Count Updates ====================
 
-    test("PROPERTY: group member count should update when setGroup is called with new count") {
+    // ENG-39701: setGroup only (re)seeds the count for a NEW guid; a same-guid re-bind
+    // (e.g. recomposition handing back a stale group) must NOT clobber the live count that
+    // the realtime listeners / a deliberate refresh maintain.
+    //
+    // This stays mock-free (pure setGroup contract). The same-group re-seed path is suspend
+    // (refreshGroup → getGroupUseCase), so it is covered by the single-runTest cases below
+    // rather than here — stubbing a suspend fun repeatedly inside checkAll races the launched
+    // refresh coroutine and throws Mockito's UnfinishedStubbingException.
+    test("PROPERTY: same-guid setGroup is guarded; binding a different group re-seeds the count") {
         checkAll(30, Arb.string(5..15), Arb.int(1..100), Arb.int(1..100)) { guid, count1, count2 ->
             runTest {
                 val viewModel = createViewModel()
                 println("    → Member count: $count1 → $count2 for guid=$guid")
 
-                val group1 = MockFactory.createGroup(guid = guid, membersCount = count1)
-                viewModel.setGroup(group1)
+                viewModel.setGroup(MockFactory.createGroup(guid = guid, membersCount = count1))
                 advanceUntilIdle()
                 viewModel.memberCount.value shouldBe count1
 
-                val group2 = MockFactory.createGroup(guid = guid, membersCount = count2)
-                viewModel.setGroup(group2)
+                // Same-guid re-bind must not re-seed (guard).
+                viewModel.setGroup(MockFactory.createGroup(guid = guid, membersCount = count2))
+                advanceUntilIdle()
+                viewModel.memberCount.value shouldBe count1
+
+                // Switching to a different group re-seeds from its count.
+                viewModel.setGroup(MockFactory.createGroup(guid = guid + "-other", membersCount = count2))
                 advanceUntilIdle()
                 viewModel.memberCount.value shouldBe count2
             }
         }
     }
 
-    test("PROPERTY: member join should increase count (simulated via setGroup)") {
-        checkAll(20, Arb.int(1..50)) { initialCount ->
-            runTest {
-                val viewModel = createViewModel()
-                val joinedCount = initialCount + 1
-                println("    → Member join: $initialCount → $joinedCount")
-
-                viewModel.setGroup(MockFactory.createGroup(guid = "group-1", membersCount = initialCount))
-                advanceUntilIdle()
-                viewModel.memberCount.value shouldBe initialCount
-
-                // Simulate onGroupMemberJoined by setting updated group
-                viewModel.setGroup(MockFactory.createGroup(guid = "group-1", membersCount = joinedCount))
-                advanceUntilIdle()
-                viewModel.memberCount.value shouldBe joinedCount
-            }
-        }
-    }
-
-    test("PROPERTY: member leave should decrease count (simulated via setGroup)") {
-        checkAll(20, Arb.int(2..50)) { initialCount ->
-            runTest {
-                val viewModel = createViewModel()
-                val leftCount = initialCount - 1
-                println("    → Member leave: $initialCount → $leftCount")
-
-                viewModel.setGroup(MockFactory.createGroup(guid = "group-1", membersCount = initialCount))
-                advanceUntilIdle()
-                viewModel.memberCount.value shouldBe initialCount
-
-                // Simulate onGroupMemberLeft by setting updated group
-                viewModel.setGroup(MockFactory.createGroup(guid = "group-1", membersCount = leftCount))
-                advanceUntilIdle()
-                viewModel.memberCount.value shouldBe leftCount
-            }
-        }
-    }
+    // A member join/leave changes the authoritative count for the SAME group; the header
+    // reflects it via refreshGroup (the reconnection / manual-refresh path), not via a
+    // same-guid setGroup (guarded above). That same-guid refresh re-seed is already covered
+    // by "PROPERTY: refreshGroup should update group data from server" below, which drives the
+    // count from the initial setGroup value to an arbitrary fetched count.
 
     // ==================== Blocked User Behavior ====================
 

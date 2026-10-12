@@ -15,6 +15,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatScopeChangeLayoutBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -37,7 +38,7 @@ public class CometChatScopeChange @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatScopeChangeStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatScopeChange::class.java.simpleName
@@ -76,8 +77,8 @@ public class CometChatScopeChange @JvmOverloads constructor(
 
     init {
         Utils.initMaterialCard(this)
-        binding = CometchatScopeChangeLayoutBinding.inflate(LayoutInflater.from(context), this, true)
-        scopeAdapter = ScopeAdapter(context, null)
+        binding = CometchatScopeChangeLayoutBinding.inflate(LayoutInflater.from(getContext()), this, true)
+        scopeAdapter = ScopeAdapter(getContext(), null)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = scopeAdapter
         applyStyleAttributes(attrs, defStyleAttr, 0)

@@ -24,6 +24,7 @@ import androidx.annotation.StyleRes
 import androidx.core.content.ContextCompat
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatMediaRecorderBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -74,7 +75,7 @@ public class CometChatMediaRecorder @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMediaRecorderStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatMediaRecorder::class.java.simpleName
@@ -128,7 +129,7 @@ public class CometChatMediaRecorder @JvmOverloads constructor(
 
     init {
         binding = CometchatMediaRecorderBinding.inflate(
-            LayoutInflater.from(context), this
+            LayoutInflater.from(getContext()), this
         )
         addView(binding.root)
         Utils.initMaterialCard(this)

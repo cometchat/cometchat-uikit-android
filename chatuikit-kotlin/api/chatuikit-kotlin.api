@@ -3869,7 +3869,7 @@ public final class com/cometchat/uikit/kotlin/presentation/groupmembers/utils/Gr
 public final class com/cometchat/uikit/kotlin/presentation/groupmembers/utils/GroupMembersUtils {
 	public static final field INSTANCE Lcom/cometchat/uikit/kotlin/presentation/groupmembers/utils/GroupMembersUtils;
 	public final fun canBanMember (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun canChangeMemberScope (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun canChangeMemberScope (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
 	public final fun canKickMember (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
 	public final fun compareScopes (Ljava/lang/String;Ljava/lang/String;)I
 	public final fun getAssignableScopes ()Ljava/util/List;
@@ -5350,6 +5350,7 @@ public final class com/cometchat/uikit/kotlin/presentation/messagelist/ui/CometC
 	public final fun setTextFormatters (Ljava/util/List;)V
 	public final fun setThreadSubscriptionOptionVisibility (I)V
 	public final fun setThreadViewProvider (Lcom/cometchat/uikit/kotlin/presentation/messagelist/BubbleViewProvider;)V
+	public final fun setThreaded (Z)V
 	public final fun setTimeFormat (Ljava/text/SimpleDateFormat;)V
 	public final fun setTranslateMessageOptionVisibility (I)V
 	public final fun setUnreadMessageThreshold (I)V
@@ -5424,10 +5425,6 @@ public final class com/cometchat/uikit/kotlin/presentation/notificationfeed/ui/C
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
 	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getOnActionClick ()Lkotlin/jvm/functions/Function2;
-	public final fun getOnBackPress ()Lkotlin/jvm/functions/Function0;
-	public final fun getOnError ()Lkotlin/jvm/functions/Function1;
-	public final fun getOnItemClick ()Lkotlin/jvm/functions/Function1;
 	public final fun init (Landroidx/lifecycle/ViewModelStoreOwner;)V
 	public final fun setCategoriesRequestBuilder (Lcom/cometchat/chat/core/NotificationCategoriesRequest$NotificationCategoriesRequestBuilder;)V
 	public final fun setFeedRequestBuilder (Lcom/cometchat/chat/core/NotificationFeedRequest$NotificationFeedRequestBuilder;)V

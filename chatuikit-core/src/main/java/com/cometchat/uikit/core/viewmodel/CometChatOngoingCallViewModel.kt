@@ -23,6 +23,7 @@ import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -208,6 +209,13 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
      * Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 17.1, 17.2, 17.3
      */
     public fun startCall(callViewContainer: RelativeLayout) {
+        // ENG-39311: the Calls SDK is compileOnly and may be absent at runtime. joinSession()
+        // below would then throw NoClassDefFoundError. Bail out cleanly if the SDK isn't present.
+        if (!CallsUtils.isCallsSDKAvailable()) {
+            CometChatLogger.w(TAG, "Calls SDK is not on the classpath; cannot start the ongoing call.")
+            return
+        }
+
         // Validate required parameters
         val sid = sessionId ?: return
         val type = callType ?: return

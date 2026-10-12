@@ -54,11 +54,11 @@ class NotificationsFragment : Fragment() {
             setShowBackButton(false)
             setShowFilterChips(true)
 
-            onItemClick = { feedItem ->
+            setOnItemClick { feedItem ->
                 Log.d(TAG, "Item clicked: ${feedItem.id}")
             }
 
-            onActionClick = { feedItem, action ->
+            setOnActionClick { feedItem, action ->
                 Log.d(TAG, "Action clicked on item: ${feedItem.id}, action: $action")
                 android.widget.Toast.makeText(
                     requireContext(),
@@ -67,7 +67,7 @@ class NotificationsFragment : Fragment() {
                 ).show()
             }
 
-            onError = { exception ->
+            setOnError { exception ->
                 Log.e(TAG, "Error: ${exception.message}")
             }
 

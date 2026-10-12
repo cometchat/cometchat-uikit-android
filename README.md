@@ -21,6 +21,26 @@ experience into an existing or a new app.
 - Android device or emulator running Android 9.0 (API 28) or above.
 - Java 11 or above.
 
+### Build requirements
+
+The UI Kit pulls in modern AndroidX libraries (notably `androidx.core` 1.18.0), which set
+build-tool floors. Meet these in the consuming app or the build fails with an opaque
+`checkDebugAarMetadata` error that does not name the UI Kit as the cause:
+
+| Requirement        | Minimum |
+| ------------------ | ------- |
+| `minSdk`           | 28      |
+| `compileSdk`       | 36      |
+| Android Gradle Plugin | 8.9.1 |
+| Gradle             | 8.11    |
+
+Also enable AndroidX and Jetifier in `gradle.properties`:
+
+```properties
+android.useAndroidX=true
+android.enableJetifier=true
+```
+
 ## Installation
 
 The UI Kit is published to CometChat's Cloudsmith Maven repository, which is not

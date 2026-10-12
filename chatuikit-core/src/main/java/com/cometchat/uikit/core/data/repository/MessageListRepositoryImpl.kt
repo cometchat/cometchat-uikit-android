@@ -47,7 +47,10 @@ public class MessageListRepositoryImpl(
             .setLimit(30)
             .hideReplies(true)
             .apply {
-                if (parentMessageId > -1) setParentMessageId(parentMessageId)
+                // ENG-39321: only a positive id is a real parent message. Use `> 0` (not `> -1`) so
+                // `0`/`-1` are consistently treated as "no parent", matching the components'
+                // `parentMessageId > 0` thread-view check.
+                if (parentMessageId > 0) setParentMessageId(parentMessageId)
             })
             .apply {
                 // Opt in on EVERY fetch — main conversation and thread replies alike. The server
@@ -57,7 +60,7 @@ public class MessageListRepositoryImpl(
                 // never carries the flag.
                 if (CometChatUIKit.isThreadSubscriptionEnabled()) withThreadSubscribed(true)
             }
-        
+
         messagesRequest = this.messagesRequestBuilder?.setUID(user.uid)?.build()
         hasMore = true
     }
@@ -78,7 +81,8 @@ public class MessageListRepositoryImpl(
             .setLimit(30)
             .hideReplies(true)
             .apply {
-                if (parentMessageId > -1) setParentMessageId(parentMessageId)
+                // ENG-39321: only a positive id is a real parent message (see configureForUser).
+                if (parentMessageId > 0) setParentMessageId(parentMessageId)
             })
             .apply {
                 // Opt in on EVERY fetch — main conversation and thread replies alike. The server

@@ -33,6 +33,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.toolbar.CometChatToolbarSt
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import kotlinx.coroutines.launch
 
 /**
@@ -45,7 +46,7 @@ public class CometChatPinnedMessages @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     private val toolbar: CometChatToolbar
     private val emptyView: View
@@ -68,7 +69,7 @@ public class CometChatPinnedMessages @JvmOverloads constructor(
 
     init {
         orientation = VERTICAL
-        LayoutInflater.from(context).inflate(R.layout.cometchat_pinned_messages, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_pinned_messages, this, true)
         toolbar = findViewById(R.id.pinned_messages_toolbar)
         emptyView = findViewById(R.id.pinned_messages_empty)
         errorView = findViewById(R.id.pinned_messages_error)

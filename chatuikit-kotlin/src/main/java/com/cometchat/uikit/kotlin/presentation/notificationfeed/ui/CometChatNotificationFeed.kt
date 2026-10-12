@@ -77,10 +77,14 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
     private var style: CometChatNotificationFeedStyle = CometChatNotificationFeedStyle.default()
 
     // Callbacks
-    public var onItemClick: ((NotificationFeedItem) -> Unit)? = null
-    public var onActionClick: ((NotificationFeedItem, Map<String, Any>) -> Unit)? = null
-    public var onError: ((CometChatException) -> Unit)? = null
-    public var onBackPress: (() -> Unit)? = null
+    // ENG-39335: private backing fields set via the setOnX(...) setters below, matching the
+    // convention used by every other View component (Conversations/Users/Groups). Do not make
+    // these `public var` — a public var auto-generates a Java setOnX which clashes with the
+    // explicit setter (JVM platform-declaration clash).
+    private var onItemClick: ((NotificationFeedItem) -> Unit)? = null
+    private var onActionClick: ((NotificationFeedItem, Map<String, Any>) -> Unit)? = null
+    private var onError: ((CometChatException) -> Unit)? = null
+    private var onBackPress: (() -> Unit)? = null
 
     // Request builders
     private var feedRequestBuilder: NotificationFeedRequest.NotificationFeedRequestBuilder? = null
@@ -510,6 +514,27 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
 
     public fun setCategoriesRequestBuilder(builder: NotificationCategoriesRequest.NotificationCategoriesRequestBuilder) {
         this.categoriesRequestBuilder = builder
+    }
+
+    // ENG-39335: callback setters, matching the setOnX(...) convention of the other View components.
+    /** Sets the callback invoked when a notification feed item is clicked. */
+    public fun setOnItemClick(callback: (NotificationFeedItem) -> Unit) {
+        this.onItemClick = callback
+    }
+
+    /** Sets the callback invoked when an action on a feed item is clicked. */
+    public fun setOnActionClick(callback: (NotificationFeedItem, Map<String, Any>) -> Unit) {
+        this.onActionClick = callback
+    }
+
+    /** Sets the callback invoked when an error occurs. */
+    public fun setOnError(callback: (CometChatException) -> Unit) {
+        this.onError = callback
+    }
+
+    /** Sets the callback invoked when the back button is pressed. */
+    public fun setOnBackPress(callback: () -> Unit) {
+        this.onBackPress = callback
     }
 
     private fun applyStyle() {

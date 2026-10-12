@@ -23,6 +23,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.toolbar.CometChatToolbarSt
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatMentionsFormatter
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import kotlinx.coroutines.launch
 
 /**
@@ -35,7 +36,7 @@ public class CometChatSavedMessages @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     private val toolbar: CometChatToolbar
     private val emptyView: View
@@ -58,7 +59,7 @@ public class CometChatSavedMessages @JvmOverloads constructor(
 
     init {
         orientation = VERTICAL
-        LayoutInflater.from(context).inflate(R.layout.cometchat_saved_messages, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_saved_messages, this, true)
         toolbar = findViewById(R.id.saved_messages_toolbar)
         emptyView = findViewById(R.id.saved_messages_empty)
         errorView = findViewById(R.id.saved_messages_error)
@@ -67,7 +68,7 @@ public class CometChatSavedMessages @JvmOverloads constructor(
         recyclerView.adapter = adapter
         // Default mentions formatter so subtitle previews style mentions exactly like the
         // Conversations list item (same helper, same formatter).
-        adapter.setTextFormatters(listOf(CometChatMentionsFormatter(context)))
+        adapter.setTextFormatters(listOf(CometChatMentionsFormatter(getContext())))
         // Title styled exactly like the CometChatUsers toolbar (Heading1Bold, same as its "Users" title).
         toolbar.setStyle(
             CometChatToolbarStyle.default(context).copy(

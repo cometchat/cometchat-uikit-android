@@ -14,6 +14,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.events.CometChatEvents
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
@@ -122,10 +123,23 @@ public object CometChatUIKit {
                 override fun onSuccess(result: String) {
                     CometChat.setSource("uikit-v6", "android", "kotlin")
 
-                    // Auto-initialize CometChatCalls if enableCalling is true
-                    if (authenticationSettings?.enableCalling == true) {
+                    // Auto-initialize CometChatCalls if enableCalling is true.
+                    // ENG-39311: the calls-sdk is compileOnly, so it may be absent at runtime.
+                    // Only enter initCometChatCalls when the SDK is actually on the classpath —
+                    // otherwise the first CometChatCalls.* reference throws NoClassDefFoundError
+                    // and crashes the app at launch. If the flag is on but the artifact is missing,
+                    // log and continue chat init instead of crashing.
+                    if (authenticationSettings?.enableCalling == true && CallsUtils.isCallsSDKAvailable()) {
                         initCometChatCalls(context, callbackListener, result)
                     } else {
+                        if (authenticationSettings?.enableCalling == true) {
+                            CometChatLogger.w(
+                                TAG,
+                                "enableCalling=true but the CometChat Calls SDK is not on the " +
+                                    "classpath; skipping Calls init. Add " +
+                                    "com.cometchat:calls-sdk-android to enable calling."
+                            )
+                        }
                         callbackListener?.onSuccess(result)
                     }
                 }
@@ -235,9 +249,20 @@ public object CometChatUIKit {
                     //    fromSettings = true routes the Calls SDK through its own
                     //    telemetry-aware initFromSettings so integrationSource =
                     //    "ai-agent" propagates past the Chat SDK (ENG-37369).
-                    if (authenticationSettings?.enableCalling == true) {
+                    // ENG-39311: guard on Calls SDK presence (compileOnly, may be absent) so a
+                    // settings.json with enableCalling:true but no calls-sdk artifact logs and
+                    // continues rather than crashing with NoClassDefFoundError at launch.
+                    if (authenticationSettings?.enableCalling == true && CallsUtils.isCallsSDKAvailable()) {
                         initCometChatCalls(context, callbackListener, result, fromSettings = true)
                     } else {
+                        if (authenticationSettings?.enableCalling == true) {
+                            CometChatLogger.w(
+                                TAG,
+                                "enableCalling=true but the CometChat Calls SDK is not on the " +
+                                    "classpath; skipping Calls init. Add " +
+                                    "com.cometchat:calls-sdk-android to enable calling."
+                            )
+                        }
                         callbackListener?.onSuccess(result)
                     }
                 }
@@ -268,49 +293,61 @@ public object CometChatUIKit {
         chatInitResult: String,
         fromSettings: Boolean = false
     ) {
-        // Store the custom sessionSettingsBuilder if provided
-        storedSessionSettingsBuilder = authenticationSettings?.callSettingsBuilder as? CometChatCalls.SessionSettingsBuilder
+        // ENG-39311: the Calls SDK is a compileOnly dependency, so any reference below can throw
+        // NoClassDefFoundError / LinkageError at runtime when the artifact is absent. Callers already
+        // gate on CallsUtils.isCallsSDKAvailable(), but this catch is a defensive backstop so a Calls
+        // SDK linkage failure can never break chat init — we log it, mark calling uninitialized, and
+        // still report the Chat SDK success.
+        try {
+            // Store the custom sessionSettingsBuilder if provided
+            storedSessionSettingsBuilder = authenticationSettings?.callSettingsBuilder as? CometChatCalls.SessionSettingsBuilder
 
-        val callsInitCallback = object : CometChatCalls.CallbackListener<String>() {
-            override fun onSuccess(result: String?) {
-                CometChatLogger.d(TAG, "CometChatCalls initialized successfully: $result")
-                isCallsSDKInitialized = true
-                callbackListener?.onSuccess(chatInitResult)
+            val callsInitCallback = object : CometChatCalls.CallbackListener<String>() {
+                override fun onSuccess(result: String?) {
+                    CometChatLogger.d(TAG, "CometChatCalls initialized successfully: $result")
+                    isCallsSDKInitialized = true
+                    callbackListener?.onSuccess(chatInitResult)
+                }
+
+                override fun onError(e: com.cometchat.calls.exceptions.CometChatException?) {
+                    CometChatLogger.e(TAG, "CometChatCalls initialization failed: ${e?.message}")
+                    isCallsSDKInitialized = false
+                    // Still report success for Chat SDK, but log the Calls SDK error
+                    callbackListener?.onSuccess(chatInitResult)
+                }
             }
 
-            override fun onError(e: com.cometchat.calls.exceptions.CometChatException?) {
-                CometChatLogger.e(TAG, "CometChatCalls initialization failed: ${e?.message}")
-                isCallsSDKInitialized = false
-                // Still report success for Chat SDK, but log the Calls SDK error
-                callbackListener?.onSuccess(chatInitResult)
+            if (fromSettings) {
+                // The settings file is guaranteed present on this path — initFromSettings()
+                // already read it. The Calls SDK reads appId/region (+ optional callsSDK
+                // host overrides) from the file itself.
+                CometChatCalls.initFromSettings(context, callsInitCallback)
+                return
             }
-        }
 
-        if (fromSettings) {
-            // The settings file is guaranteed present on this path — initFromSettings()
-            // already read it. The Calls SDK reads appId/region (+ optional callsSDK
-            // host overrides) from the file itself.
-            CometChatCalls.initFromSettings(context, callsInitCallback)
-            return
-        }
+            val appId = authenticationSettings?.appId
+            val region = authenticationSettings?.region
+            val clientHost = authenticationSettings?.overrideClientHost
 
-        val appId = authenticationSettings?.appId
-        val region = authenticationSettings?.region
-        val clientHost = authenticationSettings?.overrideClientHost
+            if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
+                CometChatLogger.e(TAG, "Cannot initialize CometChatCalls: missing appId or region")
+                callbackListener?.onSuccess(chatInitResult)
+                return
+            }
 
-        if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
-            CometChatLogger.e(TAG, "Cannot initialize CometChatCalls: missing appId or region")
+            val callAppSettings = CallAppSettings.CallAppSettingBuilder()
+                .setAppId(appId)
+                .setRegion(region)
+                .setHost(clientHost)
+                .build()
+
+            CometChatCalls.init(context, callAppSettings, callsInitCallback)
+        } catch (t: Throwable) {
+            // NoClassDefFoundError / LinkageError (Calls SDK absent), or any unexpected failure.
+            CometChatLogger.e(TAG, "Skipping CometChatCalls init (Calls SDK unavailable): ${t.message}")
+            isCallsSDKInitialized = false
             callbackListener?.onSuccess(chatInitResult)
-            return
         }
-
-        val callAppSettings = CallAppSettings.CallAppSettingBuilder()
-            .setAppId(appId)
-            .setRegion(region)
-            .setHost(clientHost)
-            .build()
-
-        CometChatCalls.init(context, callAppSettings, callsInitCallback)
     }
 
     /**

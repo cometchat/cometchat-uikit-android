@@ -27,6 +27,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.model.StreamMessage
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatAiAssistantBubbleLayoutBinding
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.DIMENSION_NOT_SET
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.STYLE_NOT_SET
@@ -66,7 +67,7 @@ public class CometChatAIAssistantBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAIAssistantBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private const val TAG = "CometChatAIAssistantBubble"
@@ -74,7 +75,7 @@ public class CometChatAIAssistantBubble @JvmOverloads constructor(
 
     // ViewBinding
     private val binding: CometchatAiAssistantBubbleLayoutBinding =
-        CometchatAiAssistantBubbleLayoutBinding.inflate(LayoutInflater.from(context), this, true)
+        CometchatAiAssistantBubbleLayoutBinding.inflate(LayoutInflater.from(getContext()), this, true)
 
     // Markwon rendering
     private lateinit var markwon: Markwon

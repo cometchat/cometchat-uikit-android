@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import com.cometchat.chat.models.TypingIndicator
 import com.cometchat.uikit.kotlin.R
 
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 /**
  * CometChatTypingIndicator is a custom view that displays typing status.
  * 
@@ -29,7 +30,7 @@ public class CometChatTypingIndicator @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatTypingIndicatorStyle
-) : AppCompatTextView(context, attrs, defStyleAttr) {
+) : AppCompatTextView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatTypingIndicator::class.java.simpleName

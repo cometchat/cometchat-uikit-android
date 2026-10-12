@@ -25,6 +25,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 /**
@@ -163,6 +165,56 @@ class CometChatMessageListViewModelTest : FunSpec({
 
             vm.isInProgress.value shouldBe false
             println("    ✅ Initial isInProgress is false")
+        }
+    }
+
+    // ==================== ENG-39321: thread view without a parent ====================
+
+    test("ENG-39321: threaded view with no parent shows Empty and never fetches the full conversation") {
+        runTest(testDispatcher) {
+            val vm = CometChatMessageListViewModel(repository = repository, enableListeners = false)
+            vm.setThreaded(true)
+            val user = MockFactory.createUser(uid = "u1", name = "U1")
+            vm.setUser(user) // default parentMessageId = -1 → thread with no valid parent
+
+            vm.fetchMessages()
+            advanceUntilIdle()
+
+            vm.uiState.value.shouldBeInstanceOf<MessageListUIState.Empty>()
+            verify(repository, never()).fetchPreviousMessages()
+            println("    ✅ threaded + no parent → Empty, no fetch")
+        }
+    }
+
+    test("ENG-39321: a valid parent auto-marks the list threaded and fetches normally") {
+        runTest(testDispatcher) {
+            whenever(repository.fetchPreviousMessages()).thenReturn(Result.success(emptyList()))
+            val vm = CometChatMessageListViewModel(repository = repository, enableListeners = false)
+            val user = MockFactory.createUser(uid = "u1", name = "U1")
+            vm.setUser(user, parentMessageId = 42L) // valid parent → threaded auto-on
+
+            vm.isThreaded() shouldBe true
+            vm.fetchMessages()
+            advanceUntilIdle()
+
+            verify(repository).fetchPreviousMessages()
+            println("    ✅ valid parent → threaded, fetch proceeds")
+        }
+    }
+
+    test("ENG-39321: main conversation (not threaded) fetches normally — no regression") {
+        runTest(testDispatcher) {
+            whenever(repository.fetchPreviousMessages()).thenReturn(Result.success(emptyList()))
+            val vm = CometChatMessageListViewModel(repository = repository, enableListeners = false)
+            val user = MockFactory.createUser(uid = "u1", name = "U1")
+            vm.setUser(user) // default -1, thread flag never set
+
+            vm.isThreaded() shouldBe false
+            vm.fetchMessages()
+            advanceUntilIdle()
+
+            verify(repository).fetchPreviousMessages()
+            println("    ✅ main conversation still fetches")
         }
     }
 

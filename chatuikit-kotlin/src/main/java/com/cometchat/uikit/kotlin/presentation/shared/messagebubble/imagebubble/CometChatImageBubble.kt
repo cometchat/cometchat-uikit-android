@@ -30,6 +30,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
@@ -59,7 +60,7 @@ public class CometChatImageBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatImageBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatImageBubble::class.java.simpleName
@@ -113,7 +114,7 @@ public class CometChatImageBubble @JvmOverloads constructor(
         Utils.initMaterialCard(this)
         
         // Inflate XML layout
-        LayoutInflater.from(context).inflate(R.layout.cometchat_image_bubble, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_image_bubble, this, true)
         
         // Bind views from XML
         parentLayout = findViewById(R.id.parent)

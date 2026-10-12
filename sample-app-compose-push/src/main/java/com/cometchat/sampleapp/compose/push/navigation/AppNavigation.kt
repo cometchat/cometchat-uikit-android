@@ -219,7 +219,16 @@ fun AppNavigation(
 
         composable<MessagesRoute> { backStackEntry ->
             val route: MessagesRoute = backStackEntry.toRoute()
-            
+
+            // ENG-39697: a one-shot "jump to message" handed back by the Pinned Messages screen
+            // (only when a message was actually tapped). Consume + clear it once per entry so it
+            // scrolls exactly once and never re-fires when this screen is returned to again (back
+            // from a reopened Pinned screen, or forward/back to details).
+            var pinnedGoToMessageId by remember { mutableStateOf<Long?>(null) }
+            LaunchedEffect(Unit) {
+                pinnedGoToMessageId = backStackEntry.savedStateHandle.remove<Long>("goToMessageId")
+            }
+
             // Resolve entities from cache first (populated before navigation),
             // falling back to an API fetch if the cache is empty (e.g., deep link).
             val cachedUser = route.userId?.let { EntityCache.getUser(it) }
@@ -273,7 +282,7 @@ fun AppNavigation(
                     MessagesScreen(
                         user = user,
                         group = group,
-                        goToMessageId = route.goToMessageId,
+                        goToMessageId = pinnedGoToMessageId ?: route.goToMessageId,
                         lastMessageId = route.lastMessageId,
                         parentMessageId = route.parentMessageId,
                         onBackPress = { navController.popBackStack() },
@@ -352,11 +361,14 @@ fun AppNavigation(
                 onMessageClick = { message ->
                     user?.let { EntityCache.putUser(it.uid, it) }
                     group?.let { EntityCache.putGroup(it.guid, it) }
-                    navController.navigate(
-                        MessagesRoute(userId = user?.uid, groupId = group?.guid, goToMessageId = message.id)
-                    ) {
-                        popUpTo<MessagesRoute> { inclusive = true }
-                    }
+                    // ENG-39697: hand the tapped message back to the existing Messages screen as a
+                    // one-shot result, then return to it — instead of navigating to a new
+                    // MessagesRoute(goToMessageId=…) whose durable nav arg re-fired the scroll every
+                    // time this screen was returned to (e.g. back from a reopened Pinned screen).
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("goToMessageId", message.id)
+                    navController.popBackStack()
                 }
               )
             }

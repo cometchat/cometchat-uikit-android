@@ -1,16 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fitsSystemWindows="true">
 
-    <!-- Placeholder - CometChatBannedMembers needs to be implemented as a custom view -->
-    <TextView
-        android:id="@+id/banned_members_placeholder"
+    <!-- Header -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Banned Members - Coming Soon"
-        android:textAppearance="?attr/cometchatTextAppearanceHeading2Bold" />
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/cometchat_16dp"
+        android:paddingTop="@dimen/cometchat_16dp"
+        android:paddingEnd="@dimen/cometchat_16dp"
+        android:paddingBottom="@dimen/cometchat_16dp">
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:src="@drawable/cometchat_ic_back" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="?attr/cometchatTextAppearanceHeading2Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cometchat_margin_3"
+            android:text="Banned Members"
+            android:textColor="?attr/cometchatTextColorPrimary" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:id="@+id/scroll_banned"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/banned_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            style="?attr/cometchatTextAppearanceBodyMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No banned members"
+            android:textColor="?attr/cometchatTextColorSecondary"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

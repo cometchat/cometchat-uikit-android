@@ -29,6 +29,7 @@ import com.cometchat.uikit.core.state.MessageListUIState
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatMessageListViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.messageinformation.ui.CometChatMessageInformationBottomSheet
 import com.cometchat.uikit.kotlin.presentation.messagelist.BubbleViewProvider
 import com.cometchat.uikit.kotlin.presentation.messagelist.adapter.MessageAdapter
@@ -175,7 +176,7 @@ public class CometChatMessageList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageListStyle
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     // ========================================
     // View References
@@ -263,6 +264,9 @@ public class CometChatMessageList @JvmOverloads constructor(
      * now" — a realtime reply arrives with no `threadSubscribed` flag and is stamped from here.
      */
     private var parentMessage: BaseMessage? = null
+
+    /** ENG-39321: whether this list is a thread view (see [setThreaded]). */
+    private var threaded: Boolean = false
     private var goToMessageId: Long = 0
 
     // True while a goToMessage window fetch is in flight. handleMessagesUpdate must
@@ -457,7 +461,7 @@ public class CometChatMessageList @JvmOverloads constructor(
     // ========================================
 
     private fun inflateLayout() {
-        val view = View.inflate(context, R.layout.cometchat_message_list, this)
+        val view = View.inflate(getContext(), R.layout.cometchat_message_list, this)
         
         parentLayout = view.findViewById(R.id.parent_layout)
         headerViewContainer = view.findViewById(R.id.header_view_container)
@@ -1767,6 +1771,17 @@ public class CometChatMessageList @JvmOverloads constructor(
     public fun getParentMessage(): BaseMessage? = parentMessage
 
     /**
+     * ENG-39321: declares this list as a thread view. A thread screen should call
+     * `setThreaded(true)` so that a missing/invalid parent message renders the empty state instead
+     * of silently falling back to the whole conversation. Supplying a valid parent (via
+     * [setParentMessage] / [setParentMessageId]) already marks the list as threaded automatically.
+     */
+    public fun setThreaded(threaded: Boolean) {
+        this.threaded = threaded
+        viewModel?.setThreaded(threaded)
+    }
+
+    /**
      * Sets the ViewModel for this message list.
      *
      * @param viewModel The ViewModel to use
@@ -1775,6 +1790,7 @@ public class CometChatMessageList @JvmOverloads constructor(
         this.viewModel = viewModel
         isExternalViewModel = true
         viewModel.initSoundManager(context)
+        viewModel.setThreaded(threaded)
         viewModel.setDisableReceipt(disableReceipt)
         viewModel.setHideDeleteMessage(false)
         viewModel.setStartFromUnreadMessages(startFromUnreadMessages)
@@ -2386,7 +2402,7 @@ public class CometChatMessageList @JvmOverloads constructor(
         this.aiAssistantEmptyChatGreetingViewResId = layoutResId
         if (layoutResId != 0) {
             try {
-                aiAssistantEmptyChatGreetingView = View.inflate(context, layoutResId, null)
+                aiAssistantEmptyChatGreetingView = View.inflate(getContext(), layoutResId, null)
             } catch (e: Exception) {
                 aiAssistantEmptyChatGreetingView = null
             }

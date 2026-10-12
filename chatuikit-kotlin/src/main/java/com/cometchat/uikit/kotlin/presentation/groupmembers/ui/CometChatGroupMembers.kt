@@ -27,6 +27,7 @@ import com.cometchat.uikit.core.state.GroupMembersEvent
 import com.cometchat.uikit.core.state.GroupMembersUIState
 import com.cometchat.uikit.core.viewmodel.CometChatGroupMembersViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatGroupMembersBinding
 import com.cometchat.uikit.kotlin.presentation.groupmembers.adapter.GroupMembersAdapter
 import com.cometchat.uikit.kotlin.presentation.groupmembers.scopechange.CometChatScopeChange
@@ -100,7 +101,7 @@ public class CometChatGroupMembers @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatGroupMembersStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatGroupMembers::class.java.simpleName
@@ -185,7 +186,7 @@ public class CometChatGroupMembers @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatGroupMembersBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset card view defaults

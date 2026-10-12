@@ -47,10 +47,13 @@ public object GroupMembersUtils {
 
     /** @see GroupMembersPermissionUtils.canChangeMemberScope */
     public fun canChangeMemberScope(
+        loggedInUserScope: String,
+        targetMemberScope: String,
         loggedInUserId: String,
         targetMemberId: String,
         groupOwnerId: String?
     ): Boolean = GroupMembersPermissionUtils.canChangeMemberScope(
+        loggedInUserScope, targetMemberScope,
         loggedInUserId, targetMemberId, groupOwnerId
     )
 
@@ -98,6 +101,8 @@ public object GroupMembersUtils {
         )
 
         val canChangeScope = !disableChangeScope && canChangeMemberScope(
+            loggedInUserScope = loggedInUserScope,
+            targetMemberScope = groupMember.scope,
             loggedInUserId = loggedInUserId,
             targetMemberId = groupMember.uid,
             groupOwnerId = group.owner

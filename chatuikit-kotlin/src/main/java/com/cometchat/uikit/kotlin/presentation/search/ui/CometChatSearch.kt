@@ -39,6 +39,7 @@ import com.cometchat.uikit.core.factory.CometChatSearchViewModelFactory
 import com.cometchat.uikit.core.state.SearchUIState
 import com.cometchat.uikit.core.viewmodel.CometChatSearchViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatSearchBinding
 import com.cometchat.uikit.kotlin.presentation.search.adapter.CometChatSearchConversationsAdapter
 import com.cometchat.uikit.kotlin.presentation.search.adapter.CometChatSearchMessageListAdapter
@@ -102,7 +103,7 @@ public class CometChatSearch @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatSearchStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatSearch::class.java.simpleName
@@ -203,7 +204,7 @@ public class CometChatSearch @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatSearchBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values
@@ -2451,7 +2452,7 @@ public class CometChatSearch @JvmOverloads constructor(
     public fun setInitialView(@LayoutRes layoutRes: Int) {
         if (layoutRes != 0) {
             try {
-                val view = LayoutInflater.from(context).inflate(layoutRes, this, false)
+                val view = LayoutInflater.from(getContext()).inflate(layoutRes, this, false)
                 setInitialView(view)
             } catch (e: Exception) {
                 // Silently ignore invalid layout resources
@@ -2466,7 +2467,7 @@ public class CometChatSearch @JvmOverloads constructor(
     public fun setEmptyView(@LayoutRes layoutRes: Int) {
         if (layoutRes != 0) {
             try {
-                val view = LayoutInflater.from(context).inflate(layoutRes, this, false)
+                val view = LayoutInflater.from(getContext()).inflate(layoutRes, this, false)
                 setEmptyView(view)
             } catch (e: Exception) {
                 // Silently ignore invalid layout resources

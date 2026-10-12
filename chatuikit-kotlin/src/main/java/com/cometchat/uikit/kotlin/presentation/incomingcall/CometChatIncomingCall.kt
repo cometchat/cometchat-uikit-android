@@ -31,6 +31,7 @@ import com.cometchat.uikit.core.resources.soundmanager.Sound
 import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
 import com.cometchat.uikit.kotlin.presentation.ongoingcall.ui.CometChatOngoingCallActivity
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.incomingcall.style.CometChatIncomingCallStyle
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatarStyle
@@ -76,7 +77,7 @@ public class CometChatIncomingCall @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatIncomingCallStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private const val TAG = "CometChatIncomingCall"

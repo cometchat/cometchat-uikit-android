@@ -113,26 +113,41 @@ public object GroupMembersPermissionUtils {
     /**
      * Checks if the logged-in user can change the scope of the specified group member.
      *
-     * Permission rules:
-     * - Only the group owner can change member scopes
-     * - Cannot change your own scope
-     * - Cannot change the owner's scope
+     * Permission rules (mirror [canBanMember]):
+     * - Owners can change anyone's scope (except their own and the owner's)
+     * - Admins can change the scope of moderators and participants
+     * - Moderators and participants cannot change scopes
+     * - Cannot change your own scope or the owner's scope
      *
+     * @param loggedInUserScope The scope of the logged-in user
+     * @param targetMemberScope The scope of the target member
      * @param loggedInUserId The UID of the logged-in user
      * @param targetMemberId The UID of the target member
      * @param groupOwnerId The UID of the group owner
      * @return true if the logged-in user can change the target member's scope
      */
     public fun canChangeMemberScope(
+        loggedInUserScope: String,
+        targetMemberScope: String,
         loggedInUserId: String,
         targetMemberId: String,
         groupOwnerId: String?
     ): Boolean {
-        // Only owner can change scopes
-        if (groupOwnerId != loggedInUserId) return false
-
         // Cannot change your own scope or the owner's scope
-        return targetMemberId != loggedInUserId && targetMemberId != groupOwnerId
+        if (loggedInUserId == targetMemberId) return false
+        if (targetMemberId == groupOwnerId) return false
+
+        // Owner can change anyone's scope (except self/owner, handled above)
+        if (groupOwnerId == loggedInUserId) return true
+
+        // Admin can change the scope of moderators and participants
+        if (CometChatConstants.SCOPE_ADMIN.equals(loggedInUserScope, ignoreCase = true)) {
+            return CometChatConstants.SCOPE_MODERATOR.equals(targetMemberScope, ignoreCase = true) ||
+                    CometChatConstants.SCOPE_PARTICIPANT.equals(targetMemberScope, ignoreCase = true)
+        }
+
+        // Moderators and participants cannot change scopes
+        return false
     }
 
     // ==================== Scope Utilities ====================

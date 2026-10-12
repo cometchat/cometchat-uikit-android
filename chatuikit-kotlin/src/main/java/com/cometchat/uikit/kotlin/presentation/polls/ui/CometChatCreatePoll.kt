@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatCreatePollBinding
 import com.cometchat.uikit.kotlin.presentation.polls.adapter.PollOptionsAdapter
 import com.cometchat.uikit.kotlin.presentation.polls.style.CometChatCreatePollStyle
@@ -34,7 +35,7 @@ public class CometChatCreatePoll @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCreatePollStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     private val binding: CometchatCreatePollBinding
     private var style: CometChatCreatePollStyle = CometChatCreatePollStyle.default(context)
@@ -119,7 +120,7 @@ public class CometChatCreatePoll @JvmOverloads constructor(
 
 
     init {
-        binding = CometchatCreatePollBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = CometchatCreatePollBinding.inflate(LayoutInflater.from(getContext()), this, true)
         
         // Initialize MaterialCard views (same as reference)
         Utils.initMaterialCard(binding.pollParentCard)

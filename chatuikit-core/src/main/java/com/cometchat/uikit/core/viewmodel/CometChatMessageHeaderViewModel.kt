@@ -117,10 +117,28 @@ open public class CometChatMessageHeaderViewModel(
      * @param group The Group object to display in the header
      */
     public fun setGroup(group: Group) {
+        // Only (re)seed the member count for a NEW group. The header re-binds via
+        // setGroup every time it re-enters composition (e.g. returning from Group Info after adding
+        // members), and the group it is re-bound with can be stale. Re-seeding then would clobber
+        // the live count the realtime listeners keep up to date, so keep it for the same group.
+        // The deliberate refresh path (refreshGroup, e.g. on reconnection) goes through
+        // applyGroup(reseedCount = true) to re-seed from the authoritative server count.
+        applyGroup(group, reseedCount = currentId != group.guid)
+    }
+
+    /**
+     * Applies [group] to the header state. [reseedCount] controls whether the member count is
+     * re-seeded from [group]: false on a recomposition re-bind (which can carry a stale group and
+     * must not clobber the live listener-maintained count), true on a deliberate refresh that
+     * supplies an authoritative count.
+     */
+    private fun applyGroup(group: Group, reseedCount: Boolean) {
         _group.value = group
         _user.value = null
         currentId = group.guid
-        _memberCount.value = group.membersCount
+        if (reseedCount) {
+            _memberCount.value = group.membersCount
+        }
         _uiState.value = MessageHeaderUIState.GroupContent(group)
     }
 
@@ -157,7 +175,9 @@ open public class CometChatMessageHeaderViewModel(
         viewModelScope.launch {
             getGroupUseCase(guid)
                 .onSuccess { group ->
-                    setGroup(group)
+                    // Deliberate refresh (reconnection / manual): the fetched group carries the
+                    // authoritative count, so force a re-seed even when the guid is unchanged.
+                    applyGroup(group, reseedCount = true)
                 }
                 .onFailure { e ->
                     // Cancellation (e.g. navigating away mid-fetch) is not an error

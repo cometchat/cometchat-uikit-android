@@ -15,9 +15,14 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.cometchat.chat.core.BannedGroupMembersRequest
+import com.cometchat.chat.core.CometChat
+import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
@@ -29,6 +34,7 @@ import com.cometchat.sampleapp.kotlin.push.appflow.viewmodels.GroupDetailsViewMo
 import com.cometchat.sampleapp.kotlin.push.databinding.ActivityGroupDetailsBinding
 import com.cometchat.sampleapp.kotlin.push.databinding.DialogAddMembersBinding
 import com.cometchat.sampleapp.kotlin.push.databinding.DialogBannedMembersBinding
+import com.cometchat.sampleapp.kotlin.push.databinding.ItemBannedMemberBinding
 import com.cometchat.sampleapp.kotlin.push.databinding.DialogGroupMembersBinding
 import com.cometchat.sampleapp.kotlin.push.databinding.DialogTransferOwnershipBinding
 import com.google.gson.Gson
@@ -42,7 +48,13 @@ class GroupDetailsActivity : AppCompatActivity() {
     private var dialog: Dialog? = null
     private var confirmDialog: CometChatConfirmDialog? = null
     private var groupMember: GroupMember? = null
-    
+    private var bannedListenerId: String? = null
+    // ENG-39698: BannedGroupMembersRequest serves a stale local cache after an unban, so a
+    // just-unbanned member reappears when Banned Members is reopened. Track members we unban in
+    // this group-details session and filter them out of fetched results; a re-ban clears the uid
+    // so a genuinely re-banned member shows again.
+    private val locallyUnbannedUids = mutableSetOf<String>()
+
     // Dialog views for state management
     private var tvError: TextView? = null
     private var progressBar: ProgressBar? = null
@@ -341,15 +353,127 @@ class GroupDetailsActivity : AppCompatActivity() {
     
     private fun showBannedMembersDialog() {
         val dialogBinding = DialogBannedMembersBinding.inflate(layoutInflater)
-        // Note: CometChatBannedMembers is a custom view that needs to be implemented
-        // For now, showing a placeholder dialog
-        
+        dialogBinding.root.setBackgroundColor(CometChatTheme.getBackgroundColor1(this))
+        dialogBinding.ivBack.setColorFilter(CometChatTheme.getIconTintPrimary(this))
+
         val alertDialog = AlertDialog.Builder(this, androidx.appcompat.R.style.AlertDialog_AppCompat)
-        // Utils.removeParentFromView(dialogBinding.root)
         alertDialog.setView(dialogBinding.root)
         dialog = alertDialog.create()
-        // Utils.setDialogStatusBarColor(dialog!!, CometChatTheme.getBackgroundColor1(this))
         dialog?.show()
+
+        dialogBinding.ivBack.setOnClickListener { dialog?.dismiss() }
+
+        // The banned members currently shown. We mutate this list and re-render, mirroring the
+        // Compose dialog: an unban (whether done here or elsewhere) drops the row immediately, and
+        // a new ban refetches to pull the member in as a GroupMember. This keeps the UI in sync
+        // without a refetch-after-unban that can briefly return the just-unbanned member (stale).
+        val bannedMembers = mutableListOf<GroupMember>()
+
+        fun renderList() {
+            dialogBinding.progress.visibility = View.GONE
+            dialogBinding.bannedContainer.removeAllViews()
+            if (bannedMembers.isEmpty()) {
+                dialogBinding.tvEmpty.visibility = View.VISIBLE
+                return
+            }
+            dialogBinding.tvEmpty.visibility = View.GONE
+            bannedMembers.forEach { member ->
+                val row = ItemBannedMemberBinding.inflate(
+                    layoutInflater, dialogBinding.bannedContainer, false
+                )
+                row.avatar.setAvatar(member)
+                row.tvName.text = member.name
+                row.ivUnban.setColorFilter(CometChatTheme.getErrorColor(this@GroupDetailsActivity))
+                row.ivUnban.setOnClickListener { unbanView ->
+                    // Guard against a double-tap while the request is in flight.
+                    unbanView.isEnabled = false
+                    CometChat.unbanGroupMember(
+                        member.uid,
+                        group.guid,
+                        object : CometChat.CallbackListener<String>() {
+                            override fun onSuccess(result: String?) {
+                                runOnUiThread {
+                                    // Optimistically drop the row — the member is no longer banned.
+                                    locallyUnbannedUids.add(member.uid)
+                                    bannedMembers.removeAll { it.uid == member.uid }
+                                    renderList()
+                                }
+                            }
+
+                            override fun onError(e: CometChatException?) {
+                                runOnUiThread {
+                                    unbanView.isEnabled = true
+                                    Toast.makeText(
+                                        this@GroupDetailsActivity,
+                                        e?.message ?: "Something went wrong",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    )
+                }
+                dialogBinding.bannedContainer.addView(row.root)
+            }
+        }
+
+        fun fetchBanned() {
+            dialogBinding.progress.visibility = View.VISIBLE
+            dialogBinding.tvEmpty.visibility = View.GONE
+            BannedGroupMembersRequest.BannedGroupMembersRequestBuilder(group.guid)
+                .setLimit(30)
+                .build()
+                .fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
+                    override fun onSuccess(members: List<GroupMember>?) {
+                        runOnUiThread {
+                            bannedMembers.clear()
+                            bannedMembers.addAll(
+                                (members ?: emptyList()).filter { it.uid !in locallyUnbannedUids }
+                            )
+                            renderList()
+                        }
+                    }
+
+                    override fun onError(e: CometChatException?) {
+                        runOnUiThread {
+                            dialogBinding.progress.visibility = View.GONE
+                            Toast.makeText(
+                                this@GroupDetailsActivity,
+                                e?.message ?: "Something went wrong",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                })
+        }
+
+        fetchBanned()
+
+        // Realtime: a new ban refetches (to pull the member in as a GroupMember); an unban drops the
+        // row locally. Covers bans/unbans done elsewhere while this dialog is open.
+        val listenerId = "GroupDetails_BannedMembers_${group.guid}"
+        bannedListenerId = listenerId
+        CometChat.addGroupListener(listenerId, object : CometChat.GroupListener() {
+            override fun onGroupMemberBanned(action: Action, bannedUser: User, bannedBy: User, bannedFrom: Group) {
+                if (bannedFrom.guid == group.guid) runOnUiThread {
+                    locallyUnbannedUids.remove(bannedUser.uid)
+                    fetchBanned()
+                }
+            }
+
+            override fun onGroupMemberUnbanned(action: Action, unbannedUser: User, unbannedBy: User, unbannedFrom: Group) {
+                if (unbannedFrom.guid == group.guid) runOnUiThread {
+                    locallyUnbannedUids.add(unbannedUser.uid)
+                    bannedMembers.removeAll { it.uid == unbannedUser.uid }
+                    renderList()
+                }
+            }
+        })
+
+        dialog?.setOnDismissListener {
+            bannedListenerId?.let { CometChat.removeGroupListener(it) }
+            bannedListenerId = null
+        }
     }
     
     private fun showTransferOwnershipDialog() {

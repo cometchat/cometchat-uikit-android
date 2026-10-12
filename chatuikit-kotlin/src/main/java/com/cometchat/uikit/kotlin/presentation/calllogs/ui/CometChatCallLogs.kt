@@ -18,6 +18,7 @@ import com.cometchat.uikit.core.state.CallLogsUIState
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatCallLogsViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatCallLogsBinding
 import com.cometchat.uikit.kotlin.presentation.calllogs.style.CometChatCallLogsListItemStyle
 import com.cometchat.uikit.kotlin.presentation.calllogs.style.CometChatCallLogsStyle
@@ -63,7 +64,7 @@ public class CometChatCallLogs @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCallLogsStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatCallLogs::class.java.simpleName
@@ -133,7 +134,7 @@ public class CometChatCallLogs @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatCallLogsBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

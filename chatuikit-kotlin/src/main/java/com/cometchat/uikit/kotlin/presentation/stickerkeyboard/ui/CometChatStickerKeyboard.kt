@@ -23,6 +23,7 @@ import com.cometchat.uikit.core.state.StickerKeyboardUIState
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatStickerKeyboardViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerAdapter
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerFrameLayout
 import com.cometchat.uikit.kotlin.presentation.stickerkeyboard.adapter.StickerPagerAdapter
@@ -60,7 +61,7 @@ public class CometChatStickerKeyboard @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatStickerKeyboardStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     // ==================== Views ====================
     private val emptyLayout: LinearLayout
@@ -102,7 +103,7 @@ public class CometChatStickerKeyboard @JvmOverloads constructor(
 
     init {
         // Inflate layout
-        LayoutInflater.from(context).inflate(R.layout.cometchat_sticker_keyboard, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_sticker_keyboard, this, true)
 
         // Find views
         emptyLayout = findViewById(R.id.empty_sticker_layout)
@@ -375,7 +376,7 @@ public class CometChatStickerKeyboard @JvmOverloads constructor(
      * @param layoutRes The layout resource ID for the custom loading view
      */
     public fun setLoadingStateView(@LayoutRes layoutRes: Int) {
-        this.customLoadingView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
+        this.customLoadingView = LayoutInflater.from(getContext()).inflate(layoutRes, customLayout, false)
     }
 
     /**
@@ -393,7 +394,7 @@ public class CometChatStickerKeyboard @JvmOverloads constructor(
      * @param layoutRes The layout resource ID for the custom empty view
      */
     public fun setEmptyStateView(@LayoutRes layoutRes: Int) {
-        this.customEmptyView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
+        this.customEmptyView = LayoutInflater.from(getContext()).inflate(layoutRes, customLayout, false)
     }
 
     /**
@@ -411,7 +412,7 @@ public class CometChatStickerKeyboard @JvmOverloads constructor(
      * @param layoutRes The layout resource ID for the custom error view
      */
     public fun setErrorStateView(@LayoutRes layoutRes: Int) {
-        this.customErrorView = LayoutInflater.from(context).inflate(layoutRes, customLayout, false)
+        this.customErrorView = LayoutInflater.from(getContext()).inflate(layoutRes, customLayout, false)
     }
 
     /**

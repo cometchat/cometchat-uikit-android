@@ -24,6 +24,7 @@ import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.viewmodel.CometChatOngoingCallViewModel
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.ongoingcall.style.CometChatOngoingCallStyle
@@ -99,8 +100,14 @@ public class CometChatOngoingCall @JvmOverloads constructor(
         if (!isInEditMode) {
             initializeView()
             initViewModel()
-            // Create default CallSettingsBuilder (matching Java implementation behavior)
-            activity?.let { setSessionSettingsBuilder(CometChatCalls.SessionSettingsBuilder()) }
+            // Create default CallSettingsBuilder (matching Java implementation behavior).
+            // ENG-39311: the Calls SDK is compileOnly — only construct its SessionSettingsBuilder
+            // when the SDK is actually on the classpath, otherwise this line throws
+            // NoClassDefFoundError and crashes the host at inflate. When absent, the builder stays
+            // null and the ViewModel's startCall() no-ops.
+            if (CallsUtils.isCallsSDKAvailable()) {
+                activity?.let { setSessionSettingsBuilder(CometChatCalls.SessionSettingsBuilder()) }
+            }
             // Request the necessary permissions (matching Java implementation)
             requestCallPermissions()
         }

@@ -156,24 +156,50 @@ class GroupMembersPermissionUtilsTest : FunSpec({
 
     // ==================== canChangeMemberScope ====================
 
-    test("only the group owner can change a member's scope") {
+    test("owner can change a member's scope") {
         GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "admin", targetMemberScope = "participant",
             loggedInUserId = "owner-uid", targetMemberId = "member", groupOwnerId = "owner-uid"
         ) shouldBe true
+    }
+
+    test("admin can change scope of moderators and participants") {
         GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "admin", targetMemberScope = "moderator",
             loggedInUserId = "admin-uid", targetMemberId = "member", groupOwnerId = "owner-uid"
+        ) shouldBe true
+        GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "admin", targetMemberScope = "participant",
+            loggedInUserId = "admin-uid", targetMemberId = "member", groupOwnerId = "owner-uid"
+        ) shouldBe true
+    }
+
+    test("admin cannot change scope of another admin") {
+        GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "admin", targetMemberScope = "admin",
+            loggedInUserId = "admin-uid", targetMemberId = "other-admin", groupOwnerId = "owner-uid"
         ) shouldBe false
     }
 
-    test("the owner cannot change their own scope") {
+    test("moderators and participants cannot change scopes") {
         GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "moderator", targetMemberScope = "participant",
+            loggedInUserId = "mod-uid", targetMemberId = "member", groupOwnerId = "owner-uid"
+        ) shouldBe false
+        GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "participant", targetMemberScope = "participant",
+            loggedInUserId = "p-uid", targetMemberId = "member", groupOwnerId = "owner-uid"
+        ) shouldBe false
+    }
+
+    test("cannot change your own scope or the owner's scope") {
+        GroupMembersPermissionUtils.canChangeMemberScope(
+            loggedInUserScope = "admin", targetMemberScope = "admin",
             loggedInUserId = "owner-uid", targetMemberId = "owner-uid", groupOwnerId = "owner-uid"
         ) shouldBe false
-    }
-
-    test("a null group owner blocks scope changes entirely") {
         GroupMembersPermissionUtils.canChangeMemberScope(
-            loggedInUserId = "anyone", targetMemberId = "member", groupOwnerId = null
+            loggedInUserScope = "admin", targetMemberScope = "admin",
+            loggedInUserId = "admin-uid", targetMemberId = "owner-uid", groupOwnerId = "owner-uid"
         ) shouldBe false
     }
 

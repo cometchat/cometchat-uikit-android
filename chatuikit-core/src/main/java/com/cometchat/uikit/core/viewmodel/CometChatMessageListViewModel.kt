@@ -656,6 +656,37 @@ open public class CometChatMessageListViewModel(
     private var parentMessageId: Long = -1
 
     /**
+     * ENG-39321: whether this list is a thread view.
+     *
+     * Thread-ness cannot be inferred from [parentMessageId] alone — its "no parent" sentinel (`-1`)
+     * is indistinguishable from a legitimate main-conversation request, so a thread screen that
+     * forgets to supply a parent would silently render the whole conversation. When [threaded] is
+     * true but no valid parent is set, the fetch is skipped and the Empty state is shown instead.
+     *
+     * Set explicitly via [setThreaded], and turned on automatically once a valid parent
+     * (`parentMessageId > 0`) is configured.
+     */
+    private var threaded: Boolean = false
+
+    /**
+     * Declares whether this list is a thread view (see [threaded]). A thread screen should set this
+     * to `true` so a missing/invalid parent surfaces as Empty rather than the full conversation.
+     * Never downgraded implicitly — once a valid parent is seen the list stays a thread.
+     */
+    public fun setThreaded(threaded: Boolean) {
+        this.threaded = threaded
+    }
+
+    /** Whether this list is currently a thread view. */
+    public fun isThreaded(): Boolean = threaded
+
+    /**
+     * ENG-39321: a thread view with no valid parent. In this state the list must not fetch — the
+     * request would omit the parent filter and return the entire conversation.
+     */
+    private fun isThreadWithoutParent(): Boolean = threaded && parentMessageId <= 0L
+
+    /**
      * The thread's root message in a thread view, when the View layer can supply it.
      *
      * Held as a whole message rather than an id because it is the authority for its thread's
@@ -1154,6 +1185,8 @@ open public class CometChatMessageListViewModel(
         this.user = user
         this.group = null
         this.parentMessageId = parentMessageId
+        // ENG-39321: a valid parent unambiguously means this is a thread view.
+        if (parentMessageId > 0) this.threaded = true
         this.gotoMessageId = gotoMessageId
         countedReplyIds.clear()
 
@@ -1223,6 +1256,8 @@ open public class CometChatMessageListViewModel(
         this.group = group
         this.user = null
         this.parentMessageId = parentMessageId
+        // ENG-39321: a valid parent unambiguously means this is a thread view.
+        if (parentMessageId > 0) this.threaded = true
         this.gotoMessageId = gotoMessageId
         countedReplyIds.clear()
 
@@ -2102,6 +2137,17 @@ open public class CometChatMessageListViewModel(
      * @see fetchMessagesWithUnreadCount
      */
     public fun fetchMessages() {
+        // ENG-39321: never fetch the full conversation for a thread view that has no valid parent.
+        if (isThreadWithoutParent()) {
+            CometChatLogger.w(
+                "CometChatMessageListViewModel",
+                "Thread view has no valid parent message (parentMessageId=$parentMessageId); " +
+                    "showing the empty state instead of the full conversation. Set the thread's " +
+                    "parent via setParentMessage()."
+            )
+            _uiState.value = MessageListUIState.Empty
+            return
+        }
         if (!_hasMorePreviousMessages.value || _isInProgress.value) return
         _isInProgress.value = true
         
@@ -2249,6 +2295,17 @@ open public class CometChatMessageListViewModel(
      * @see setUnreadThreshold
      */
     public fun fetchMessagesWithUnreadCount() {
+        // ENG-39321: never fetch the full conversation for a thread view that has no valid parent.
+        if (isThreadWithoutParent()) {
+            CometChatLogger.w(
+                "CometChatMessageListViewModel",
+                "Thread view has no valid parent message (parentMessageId=$parentMessageId); " +
+                    "showing the empty state instead of the full conversation. Set the thread's " +
+                    "parent via setParentMessage()."
+            )
+            _uiState.value = MessageListUIState.Empty
+            return
+        }
         viewModelScope.launch {
             val id = user?.uid ?: group?.guid ?: return@launch
             val type = if (user != null) CometChatConstants.RECEIVER_TYPE_USER else CometChatConstants.RECEIVER_TYPE_GROUP

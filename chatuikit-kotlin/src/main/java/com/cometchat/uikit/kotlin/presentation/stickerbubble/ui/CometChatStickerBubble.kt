@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.kotlin.presentation.stickerbubble.style.CometChatStickerBubbleStyle
 import com.google.android.material.card.MaterialCardView
@@ -37,7 +38,7 @@ public class CometChatStickerBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatStickerBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     // ==================== Views ====================
     private val ivSticker: ImageView
@@ -57,7 +58,7 @@ public class CometChatStickerBubble @JvmOverloads constructor(
         radius = 0f
 
         // Inflate layout
-        LayoutInflater.from(context).inflate(R.layout.cometchat_sticker_bubble, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_sticker_bubble, this, true)
 
         // Find views
         ivSticker = findViewById(R.id.iv_sticker)

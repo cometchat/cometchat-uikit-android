@@ -982,6 +982,8 @@ open public class CometChatMessageComposerViewModel(
      */
     public fun sendTextMessage(text: String) {
         val message = createTextMessage(text) ?: return
+        // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
 
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
         _replyMessage.value?.let { quotedMsg ->
@@ -1042,6 +1044,8 @@ open public class CometChatMessageComposerViewModel(
      * @param message The TextMessage to send (with mentionedUsers already set)
      */
     public fun sendTextMessageWithMentions(message: TextMessage) {
+        // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
         _replyMessage.value?.let { quotedMsg ->
             message.quotedMessage = quotedMsg
@@ -1101,6 +1105,8 @@ open public class CometChatMessageComposerViewModel(
      * @param contentType The MIME type of the file
      */
     public fun sendMediaMessage(file: File, contentType: String, isVoiceNote: Boolean = false) {
+        // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
         CometChatLogger.d("MessageComposerVM", "sendMediaMessage: file=${file.absolutePath}, exists=${file.exists()}, size=${file.length()}, contentType=$contentType")
         val message = createMediaMessage(file, contentType)
         if (message == null) {
@@ -1287,6 +1293,8 @@ open public class CometChatMessageComposerViewModel(
         val tiles = _attachmentTiles.value
         if (tiles.isEmpty() || tiles.any { it.status != AttachmentUploadStatus.DONE }) return
         if (tiles.none { it.attachment != null }) return
+        // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
 
         // ENG-36737: split the staged attachments into one MediaMessage per type (image → video →
         // audio → file), all sharing a batchId so the message list can group them (avatar/name on
@@ -1382,6 +1390,40 @@ open public class CometChatMessageComposerViewModel(
 
         /** Error code emitted on [errorEvent] when picked files are dropped by the count guard. */
         public const val ERROR_MAX_ATTACHMENTS_EXCEEDED: String = "MAX_ATTACHMENTS_EXCEEDED"
+
+        /**
+         * ENG-39322: error code emitted on [errorEvent] when a send is attempted with no receiver
+         * configured (neither [setUser] nor [setGroup] was called). A thread composer set up with
+         * only [setParentMessageId] hits this — without a receiver the message has nowhere to go.
+         */
+        public const val ERROR_NO_RECEIVER: String = "ERR_NO_RECEIVER"
+    }
+
+    /**
+     * ENG-39322: true only when a receiver (user or group) has been configured. Every send needs one;
+     * a composer given only [setParentMessageId] (a thread with no conversation) has none.
+     */
+    private fun hasReceiver(): Boolean = receiverId.isNotEmpty() && receiverType.isNotEmpty()
+
+    /**
+     * ENG-39322: fail-fast for a send with no receiver. Logs, surfaces a clear [ERROR_NO_RECEIVER]
+     * error on [errorEvent] + [MessageComposerUIState.Error], and (in an agent chat) clears the
+     * generating indicator — instead of silently building and dropping a message with an empty
+     * receiver. Callers return without attempting the send.
+     */
+    private fun emitNoReceiverError() {
+        CometChatLogger.e(
+            "MessageComposerVM",
+            "Cannot send: no receiver set. Call setUser() or setGroup() before sending — a thread " +
+                "composer needs its conversation's user/group, not just setParentMessageId()."
+        )
+        if (isAgentChat) setAIGenerating(false)
+        val exception = CometChatException(
+            ERROR_NO_RECEIVER,
+            "Message composer has no receiver. Call setUser() or setGroup() before sending."
+        )
+        _uiState.value = MessageComposerUIState.Error(exception)
+        viewModelScope.launch { _errorEvent.emit(exception) }
     }
 
     /**
@@ -1462,6 +1504,8 @@ open public class CometChatMessageComposerViewModel(
      * @param message The CustomMessage to send
      */
     public fun sendCustomMessage(message: CustomMessage) {
+        // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
@@ -1495,7 +1539,8 @@ open public class CometChatMessageComposerViewModel(
      * @param pushNotificationMessage The push notification message to display (e.g., "Shared a Sticker")
      */
     public fun sendStickerMessage(stickerUrl: String, stickerName: String, pushNotificationMessage: String) {
-        if (receiverId.isEmpty()) return
+        // ENG-39322: was a silent `if (receiverId.isEmpty()) return` — surface a clear error instead.
+        if (!hasReceiver()) { emitNoReceiverError(); return }
 
         viewModelScope.launch {
             try {

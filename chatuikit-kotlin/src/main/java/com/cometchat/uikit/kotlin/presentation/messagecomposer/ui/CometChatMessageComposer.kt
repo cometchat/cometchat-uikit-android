@@ -66,6 +66,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageComposerViewModel
 import com.cometchat.uikit.core.domain.model.CometChatMessageComposerAction
 import com.cometchat.uikit.core.domain.model.ComposerLayoutMode
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatMessageComposerBinding
 import com.cometchat.uikit.kotlin.presentation.messagecomposer.style.CometChatMessageComposerStyle
 import com.cometchat.uikit.kotlin.presentation.messagecomposer.utils.MessageComposerViewHolderListener
@@ -141,7 +142,7 @@ public class CometChatMessageComposer @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageComposerStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatMessageComposer::class.java.simpleName
@@ -165,7 +166,7 @@ public class CometChatMessageComposer @JvmOverloads constructor(
 
     // View Binding
     private val binding: CometchatMessageComposerBinding = CometchatMessageComposerBinding.inflate(
-        LayoutInflater.from(context), this
+        LayoutInflater.from(getContext()), this
     )
 
     // ViewModel (shared from chatuikit-core)

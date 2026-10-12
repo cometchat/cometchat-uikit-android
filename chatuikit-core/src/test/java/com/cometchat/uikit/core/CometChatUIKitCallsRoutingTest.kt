@@ -5,6 +5,7 @@ import android.content.res.AssetManager
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.uikit.core.utils.CallsUtils
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -74,6 +75,17 @@ class CometChatUIKitCallsRoutingTest : FunSpec({
     afterTest {
         chatStatic.close()
         callsStatic.close()
+        // Reset CallsUtils' cached SDK-availability so an override in one test can't leak
+        // into another (the real recheck returns true because calls-sdk is on the test classpath).
+        CallsUtils.clearCache()
+    }
+
+    // Force CallsUtils.isCallsSDKAvailable() to a fixed value by seeding its private cache,
+    // so we can simulate the Calls SDK being absent even though it's on the test classpath.
+    fun forceCallsSdkAvailable(value: Boolean) {
+        val field = CallsUtils::class.java.getDeclaredField("cachedSdkAvailable")
+        field.isAccessible = true
+        field.set(CallsUtils, value)
     }
 
     test("settings door with enableCalling true routes Calls SDK through initFromSettings, not plain init") {
@@ -96,6 +108,30 @@ class CometChatUIKitCallsRoutingTest : FunSpec({
         callback.successResult shouldBe null
         callsListener.shouldNotBeNull()
         callsListener!!.onSuccess("Calls OK")
+        callback.successResult shouldBe "Chat OK"
+        callback.error shouldBe null
+    }
+
+    test("ENG-39311: enableCalling true but Calls SDK unavailable skips Calls init and still reports Chat success") {
+        // Simulate a consumer that turned calling on but never added the (compileOnly) calls-sdk.
+        forceCallsSdkAvailable(false)
+
+        val context = contextWithSettings(
+            """{"appId":"app1","region":"us","credentials":{"authKey":"k"},"uiKit":{"enableCalling":true}}"""
+        )
+        val callback = RecordingCallback()
+
+        CometChatUIKit.initFromSettings(context, callback)
+
+        chatListener.shouldNotBeNull()
+        // Before the fix this callback drove initCometChatCalls, whose first CometChatCalls
+        // reference would throw NoClassDefFoundError when the SDK is absent. The guard must
+        // now short-circuit and never touch the Calls SDK.
+        chatListener!!.onSuccess("Chat OK")
+
+        // Calls SDK is never touched — no crash path entered…
+        callsStatic.verifyNoInteractions()
+        // …and chat init completes cleanly.
         callback.successResult shouldBe "Chat OK"
         callback.error shouldBe null
     }

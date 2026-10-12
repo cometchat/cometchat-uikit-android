@@ -14,6 +14,7 @@ import androidx.annotation.StyleRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.emojikeyboard.adapter.EmojiAdapter
 import com.cometchat.uikit.kotlin.presentation.emojikeyboard.adapter.EmojiItemOnClick
 import com.cometchat.uikit.kotlin.presentation.emojikeyboard.model.EmojiCategory
@@ -35,7 +36,7 @@ public class EmojiKeyBoardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatEmojiKeyboardStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     /**
      * Interface for handling emoji click events.
@@ -73,7 +74,7 @@ public class EmojiKeyBoardView @JvmOverloads constructor(
     @Dimension private var cornerRadius: Int = 0
 
     init {
-        val view = View.inflate(context, R.layout.cometchat_emoji_keyboard_layout, null)
+        val view = View.inflate(getContext(), R.layout.cometchat_emoji_keyboard_layout, null)
         Utils.initMaterialCard(this)
         tabLayout = view.findViewById(R.id.category_tab)
         separator = view.findViewById(R.id.separator)
@@ -192,7 +193,7 @@ public class EmojiKeyBoardView @JvmOverloads constructor(
      * Creates a custom tab view with an icon for the specified drawable resource.
      */
     private fun createTabView(drawableId: Int): View {
-        val view = View.inflate(context, R.layout.cometchat_emoji_tab_item, null)
+        val view = View.inflate(getContext(), R.layout.cometchat_emoji_tab_item, null)
         val icon: ImageView = view.findViewById(R.id.tabIcon)
         icon.setImageResource(drawableId)
         return view

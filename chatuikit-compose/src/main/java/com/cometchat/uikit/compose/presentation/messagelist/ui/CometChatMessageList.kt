@@ -448,8 +448,11 @@ public fun CometChatMessageList(
     // deprecation lives in the KDoc above rather than in an @Deprecated tag.)
     parentMessageId: Long = -1,
     parentMessage: BaseMessage? = null,
+    // ENG-39321: declares a thread view. Set true on a thread screen so a missing/invalid parent
+    // shows the empty state instead of the whole conversation. A valid parent already implies this.
+    threaded: Boolean = false,
     messagesRequestBuilder: MessagesRequest.MessagesRequestBuilder? = null,
-    
+
     // Behavior
     scrollToBottomOnNewMessage: Boolean = true,
     swipeToReplyEnabled: Boolean = true,
@@ -1229,6 +1232,12 @@ public fun CometChatMessageList(
     // a Navigation re-compose, and would ignore a refreshed parent carrying a newer fetched flag.
     LaunchedEffect(vm, parentMessage) {
         vm.setParentMessage(parentMessage)
+    }
+
+    // ENG-39321: declare thread mode before the user/group init effect fetches, so a thread view
+    // with no valid parent shows the empty state instead of the whole conversation.
+    LaunchedEffect(vm, threaded) {
+        vm.setThreaded(threaded)
     }
 
     // User/Group initialization effect

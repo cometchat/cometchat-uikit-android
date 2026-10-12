@@ -17,6 +17,7 @@ import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONObject
@@ -69,7 +70,7 @@ public class CometChatPollBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatPollBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     private val question: TextView
     private val pollAnswerAdapter: PollAnswerAdapter
@@ -91,7 +92,7 @@ public class CometChatPollBubble @JvmOverloads constructor(
             LayoutParams.WRAP_CONTENT
         )
         
-        LayoutInflater.from(context).inflate(R.layout.cometchat_message_polls_bubble, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.cometchat_message_polls_bubble, this, true)
         question = findViewById(R.id.tv_question)
         val optionsRecyclerView: RecyclerView = findViewById(R.id.rv_options)
         optionsRecyclerView.layoutManager = LinearLayoutManager(context)

@@ -6,6 +6,7 @@ import com.cometchat.calls.model.CallUser
 import com.cometchat.uikit.core.domain.usecase.FetchCallLogsUseCase
 import com.cometchat.uikit.core.domain.usecase.InitiateCallUseCase
 import com.cometchat.uikit.core.state.CallLogsUIState
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.viewmodel.CometChatCallLogsViewModel
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
@@ -28,6 +29,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 /**
@@ -145,6 +148,32 @@ class CometChatCallLogsViewModelTest : FunSpec({
 
     test("warmup - absorb leaked exceptions") {
         try { runTest { } } catch (_: Exception) { }
+    }
+
+    test("ENG-39311: Calls SDK unavailable → fetchCallLogs no-ops (use case never called) and shows Empty") {
+        runTest {
+            // Simulate the compileOnly Calls SDK being absent at runtime by seeding CallsUtils' cache.
+            val cacheField = CallsUtils::class.java.getDeclaredField("cachedSdkAvailable")
+            cacheField.isAccessible = true
+            cacheField.set(CallsUtils, false)
+            try {
+                val viewModel = CometChatCallLogsViewModel(
+                    fetchCallLogsUseCase,
+                    initiateCallUseCase,
+                    enableListeners = false
+                )
+                advanceUntilIdle()
+
+                // Building a CallLogRequest (a Calls SDK type) would NoClassDefFoundError when the
+                // SDK is absent — the guard must short-circuit so the use case is never reached…
+                verify(fetchCallLogsUseCase, never()).invoke(any())
+                // …and the component shows an empty list instead of crashing.
+                viewModel.uiState.value shouldBe CallLogsUIState.Empty
+            } finally {
+                // Restore real detection (calls-sdk IS on the test classpath) for other tests.
+                CallsUtils.clearCache()
+            }
+        }
     }
 
     test("for any call log count: empty list → Empty state, non-empty → Content state") {

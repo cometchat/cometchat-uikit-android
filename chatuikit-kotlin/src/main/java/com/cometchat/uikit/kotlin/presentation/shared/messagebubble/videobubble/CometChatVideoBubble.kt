@@ -30,6 +30,7 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
@@ -58,7 +59,7 @@ public class CometChatVideoBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatVideoBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatVideoBubble::class.java.simpleName
@@ -142,7 +143,7 @@ public class CometChatVideoBubble @JvmOverloads constructor(
         rootLayout.addView(gridContainer)
 
         // Inflate XML layout for single video
-        val view = LayoutInflater.from(context).inflate(R.layout.cometchat_video_bubble, null)
+        val view = LayoutInflater.from(getContext()).inflate(R.layout.cometchat_video_bubble, null)
         
         // Bind views from XML
         videoContainerCard = view.findViewById(R.id.video_view_container_card)

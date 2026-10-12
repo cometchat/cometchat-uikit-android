@@ -20,6 +20,7 @@ import com.cometchat.uikit.core.factory.CometChatGroupsViewModelFactory
 import com.cometchat.uikit.core.state.GroupsUIState
 import com.cometchat.uikit.core.viewmodel.CometChatGroupsViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatGroupsListViewBinding
 import com.cometchat.uikit.kotlin.presentation.groups.adapter.GroupsAdapter
 import com.cometchat.uikit.kotlin.presentation.groups.style.CometChatGroupsItemStyle
@@ -67,7 +68,7 @@ public class CometChatGroups @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatGroupsStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatGroups::class.java.simpleName
@@ -153,7 +154,7 @@ public class CometChatGroups @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatGroupsListViewBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

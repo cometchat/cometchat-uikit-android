@@ -18,6 +18,7 @@ import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatThreadEvent
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import android.widget.Toast
 import com.cometchat.uikit.kotlin.databinding.CometchatThreadHeaderBinding
 import com.cometchat.uikit.kotlin.presentation.messagelist.adapter.MessageAdapter
@@ -70,7 +71,7 @@ public class CometChatThreadHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatThreadHeaderStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatThreadHeader::class.java.simpleName
@@ -138,7 +139,7 @@ public class CometChatThreadHeader @JvmOverloads constructor(
 
     init {
         // Inflate the layout binding
-        binding = CometchatThreadHeaderBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = CometchatThreadHeaderBinding.inflate(LayoutInflater.from(getContext()), this, true)
 
         binding.ivThreadSubscription.setOnClickListener { toggleThreadSubscription() }
 

@@ -19,6 +19,7 @@ import com.cometchat.uikit.core.factory.CometChatMessageInformationViewModelFact
 import com.cometchat.uikit.core.state.MessageInformationUIState
 import com.cometchat.uikit.core.viewmodel.CometChatMessageInformationViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatMessageInformationBinding
 import com.cometchat.uikit.kotlin.presentation.messageinformation.adapter.MessageInformationAdapter
 import com.cometchat.uikit.kotlin.presentation.messageinformation.style.CometChatMessageInformationStyle
@@ -79,7 +80,7 @@ public class CometChatMessageInformation @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageInformationStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatMessageInformation::class.java.simpleName
@@ -123,7 +124,7 @@ public class CometChatMessageInformation @JvmOverloads constructor(
 
     init {
         binding = CometchatMessageInformationBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
         Utils.initMaterialCard(this)
         setupRecyclerViews()

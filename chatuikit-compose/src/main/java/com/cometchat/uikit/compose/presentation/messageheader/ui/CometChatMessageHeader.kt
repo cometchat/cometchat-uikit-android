@@ -78,8 +78,13 @@ import com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
  * @param leadingView Custom composable for the leading section (avatar area)
  * @param titleView Custom composable for the title section
  * @param subtitleView Custom composable for the subtitle section
- * @param trailingView Custom composable for the trailing section
- * @param auxiliaryView Custom composable for the auxiliary section (call buttons, AI buttons)
+ * @param trailingView Custom composable for the trailing section. **Additive** — it is rendered
+ * *in addition to* the auxiliary (call/AI) buttons and the overflow menu icon; it does not remove
+ * any built-in icon. Use this to add an icon alongside the defaults.
+ * @param auxiliaryView Custom composable for the auxiliary section (call buttons, AI buttons).
+ * **Full replacement** — when non-null it replaces the default call/AI buttons entirely; the
+ * built-in call/AI icons are not rendered. To keep the defaults and add your own, prefer
+ * [trailingView]. (ENG-39332)
  * @param itemView Custom composable that replaces the entire header content
  * @param lastSeenTextFormatter Custom formatter for last seen text
  * @param dateTimeFormatter Custom date/time formatter callback

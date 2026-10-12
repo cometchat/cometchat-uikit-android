@@ -126,8 +126,18 @@ dependencies {
     implementation("io.noties.markwon:html:4.6.2")
     implementation("io.noties.markwon:recycler:4.6.2")
     implementation("io.noties.markwon:recycler-table:4.6.2")
-    implementation("io.noties.markwon:syntax-highlight:4.6.2")
-    implementation("io.noties:prism4j:2.0.0")
+    // ENG-39310: markwon:syntax-highlight also pulls prism4j -> annotations-java5, so it needs
+    // the same exclude as the direct prism4j dependency (otherwise consumers still inherit it).
+    implementation("io.noties.markwon:syntax-highlight:4.6.2") {
+        exclude(group = "org.jetbrains", module = "annotations-java5")
+    }
+    // ENG-39310: prism4j pulls legacy org.jetbrains:annotations-java5, which duplicates the
+    // modern org.jetbrains:annotations on every Kotlin/AndroidX classpath. Exclude it here so
+    // the rule rides into the published POM (see the withXml POM writer above) and consumers
+    // don't hit the duplicate-class dexing failure on their first build.
+    implementation("io.noties:prism4j:2.0.0") {
+        exclude(group = "org.jetbrains", module = "annotations-java5")
+    }
 
     // Unit testing
     testImplementation(libs.junit)

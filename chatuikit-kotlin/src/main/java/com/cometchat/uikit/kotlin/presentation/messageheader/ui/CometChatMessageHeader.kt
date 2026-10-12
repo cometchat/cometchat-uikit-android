@@ -24,6 +24,7 @@ import com.cometchat.uikit.core.utils.AgentChatDetector
 import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.viewmodel.CometChatMessageHeaderViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatMessageHeaderBinding
 import com.cometchat.uikit.kotlin.presentation.callbuttons.CometChatCallButtons
 import com.cometchat.uikit.kotlin.presentation.messageheader.style.CometChatMessageHeaderStyle
@@ -67,7 +68,7 @@ public class CometChatMessageHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatMessageHeaderStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatMessageHeader::class.java.simpleName
@@ -133,7 +134,7 @@ public class CometChatMessageHeader @JvmOverloads constructor(
 
     init {
         binding = CometchatMessageHeaderBinding.inflate(
-            LayoutInflater.from(context), this
+            LayoutInflater.from(getContext()), this
         )
         Utils.initMaterialCard(this)
         popupMenu = CometChatPopupMenu(context, 0)

@@ -22,6 +22,7 @@ import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import com.cometchat.uikit.core.utils.WaveformUtils
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
@@ -49,7 +50,7 @@ public class CometChatAudioBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAudioBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private const val TAG = "CometChatAudioBubble"
@@ -98,7 +99,7 @@ public class CometChatAudioBubble @JvmOverloads constructor(
 
     private fun inflateAndInitializeView(attrs: AttributeSet?, defStyleAttr: Int) {
         Utils.initMaterialCard(this)
-        val view = View.inflate(context, R.layout.cometchat_audio_bubble, null)
+        val view = View.inflate(getContext(), R.layout.cometchat_audio_bubble, null)
         // Player row + optional caption stack vertically. The caption rides the last message of a
         // multi-attachment batch, which is the audio message when the batch has no files
         // (image → video → audio → file send order).

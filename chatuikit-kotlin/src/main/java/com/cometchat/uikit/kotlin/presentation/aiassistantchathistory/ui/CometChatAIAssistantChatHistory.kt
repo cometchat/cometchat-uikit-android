@@ -41,6 +41,7 @@ import com.cometchat.uikit.kotlin.shared.resources.utils.recycler_touch.Recycler
 import com.cometchat.uikit.kotlin.shared.resources.utils.sticky_header.StickyHeaderAdapter
 import com.cometchat.uikit.kotlin.shared.resources.utils.sticky_header.StickyHeaderDecoration
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.google.android.material.card.MaterialCardView
 
 /**
@@ -60,7 +61,7 @@ public class CometChatAIAssistantChatHistory @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometChatAIAssistantChatHistoryStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatAIAssistantChatHistory::class.java.simpleName
@@ -116,7 +117,7 @@ public class CometChatAIAssistantChatHistory @JvmOverloads constructor(
     init {
         // Inflate layout
         binding = CometchatAiAssistantChatHistoryBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

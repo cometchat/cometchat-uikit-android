@@ -15,6 +15,7 @@ import androidx.annotation.StyleRes
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
@@ -55,7 +56,7 @@ public class CometChatCollaborativeBubble @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCollaborativeBubbleStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatCollaborativeBubble::class.java.simpleName
@@ -107,7 +108,7 @@ public class CometChatCollaborativeBubble @JvmOverloads constructor(
         )
         
         // Inflate the XML layout
-        val view = LayoutInflater.from(context).inflate(R.layout.cometchat_collaborative_bubble, this, true)
+        val view = LayoutInflater.from(getContext()).inflate(R.layout.cometchat_collaborative_bubble, this, true)
         
         // Find views
         imageContainerCard = view.findViewById(R.id.bubble_image_container)

@@ -13,6 +13,7 @@ import androidx.annotation.StyleRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatAiConversationSummaryBinding
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerAdapter
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerUtils
@@ -56,7 +57,7 @@ public class CometChatAIConversationSummaryView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatAIConversationSummaryStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatAIConversationSummaryView::class.java.simpleName
@@ -116,7 +117,7 @@ public class CometChatAIConversationSummaryView @JvmOverloads constructor(
 
     init {
         binding = CometchatAiConversationSummaryBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
         Utils.initMaterialCard(this)
 
@@ -541,7 +542,7 @@ public class CometChatAIConversationSummaryView @JvmOverloads constructor(
         if (errorViewLayout != 0) {
             this.errorViewLayout = errorViewLayout
             binding.errorViewLayout.removeAllViews()
-            val view = View.inflate(context, errorViewLayout, null)
+            val view = View.inflate(getContext(), errorViewLayout, null)
             binding.errorViewLayout.addView(view)
         }
     }
@@ -553,7 +554,7 @@ public class CometChatAIConversationSummaryView @JvmOverloads constructor(
         if (loadingViewLayout != 0) {
             this.loadingViewLayout = loadingViewLayout
             binding.loadingViewLayout.removeAllViews()
-            val view = View.inflate(context, loadingViewLayout, null)
+            val view = View.inflate(getContext(), loadingViewLayout, null)
             binding.loadingViewLayout.addView(view)
         }
     }

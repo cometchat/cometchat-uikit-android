@@ -28,6 +28,7 @@ import com.cometchat.uikit.core.factory.CometChatConversationsViewModelFactory
 import com.cometchat.uikit.core.state.UIState
 import com.cometchat.uikit.core.state.DeleteState
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatConversationsListViewBinding
 import com.cometchat.uikit.kotlin.presentation.conversations.style.CometChatConversationsStyle
 import com.cometchat.uikit.kotlin.presentation.conversations.utils.ConversationsViewHolderListener
@@ -80,7 +81,9 @@ public class CometChatConversations @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatConversationsStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+    // ENG-39309: theme the view's context so ?attr/cometchat* resolves even when the host app's
+    // theme does not derive from CometChatTheme.DayNight (otherwise inflate crashes).
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatConversations::class.java.simpleName
@@ -176,8 +179,9 @@ public class CometChatConversations @JvmOverloads constructor(
 
     init {
         // Inflate layout
+        // Use the (themed) view context — ENG-39309 — so the layout's ?attr/cometchat* resolve.
         binding = CometchatConversationsListViewBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
 
         // Reset the card view to default values

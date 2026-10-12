@@ -198,19 +198,23 @@ private fun addMembersToGroup(
         object : CometChat.CallbackListener<HashMap<String, String>>() {
             override fun onSuccess(result: HashMap<String, String>?) {
                 Log.d("AddMembersScreen", "Members added successfully")
-                
-                // Calculate added count and emit event
-                var addedCount = 0
+
+                // Drop already-members so the list reflects only the members actually added.
                 result?.forEach { (key, value) ->
                     if (value.startsWith("already_member")) {
                         groupMembers.removeIf { it.uid == key }
                     }
-                    if (value == "success") addedCount++
                 }
-                group.membersCount += addedCount
-                
-                // Emit group event for other components to update
+
                 val members: List<User> = ArrayList(groupMembers)
+
+                // Bump the count by the members ACTUALLY added, so the emitted group carries the
+                // correct new total for every listener. This group was fetched fresh when the screen
+                // opened, so (pre-add count) + (members added) is correct; the SDK result map's
+                // "success" entries were unreliable, which is what made the count drift before.
+                group.membersCount += members.size
+
+                // Emit group event for other components to update
                 val actions = members.map { user ->
                     createGroupActionMessage(user, group)
                 }

@@ -199,21 +199,29 @@ class CometChatMessageHeaderViewModelTest : FunSpec({
         }
     }
 
-    test("memberCount should update when group is set multiple times") {
+    test("memberCount re-seeds for a new group but a same-guid re-bind keeps the live count") {
         runTest {
             val viewModel = createViewModel()
-            println("    → Setting group with different member counts")
+            println("    → Setting groups and re-binding")
 
             val group1 = MockFactory.createGroup(guid = "group-1", membersCount = 5)
             viewModel.setGroup(group1)
             advanceUntilIdle()
             viewModel.memberCount.value shouldBe 5
 
-            val group2 = MockFactory.createGroup(guid = "group-1", membersCount = 10)
+            // Switching to a different group re-seeds from its count.
+            val group2 = MockFactory.createGroup(guid = "group-2", membersCount = 10)
             viewModel.setGroup(group2)
             advanceUntilIdle()
             viewModel.memberCount.value shouldBe 10
-            println("    → memberCount updated: 5 → 10")
+
+            // ENG-39701: re-binding the same group (e.g. recomposition handing back a stale
+            // group) must NOT clobber the live count the realtime listeners maintain.
+            val sameGuidStale = MockFactory.createGroup(guid = "group-2", membersCount = 999)
+            viewModel.setGroup(sameGuidStale)
+            advanceUntilIdle()
+            viewModel.memberCount.value shouldBe 10
+            println("    → new group re-seeded (5 → 10); same-guid re-bind kept 10")
         }
     }
 

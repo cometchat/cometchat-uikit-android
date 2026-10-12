@@ -22,6 +22,7 @@ import com.cometchat.uikit.core.factory.CometChatCallButtonsViewModelFactory
 import com.cometchat.uikit.core.state.CallButtonsEvent
 import com.cometchat.uikit.core.viewmodel.CometChatCallButtonsViewModel
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatCallButtonsBinding
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.presentation.callbuttons.style.CometChatCallButtonStyle
@@ -64,7 +65,7 @@ public class CometChatCallButtons @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatCallButtonsStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatCallButtons::class.java.simpleName
@@ -127,7 +128,7 @@ public class CometChatCallButtons @JvmOverloads constructor(
     }
 
     private fun inflateAndInitializeView(attrs: AttributeSet?, defStyleAttr: Int) {
-        binding = CometchatCallButtonsBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = CometchatCallButtonsBinding.inflate(LayoutInflater.from(getContext()), this, true)
         Utils.initMaterialCard(this)
         initializeContainers()
         setupClickListeners()

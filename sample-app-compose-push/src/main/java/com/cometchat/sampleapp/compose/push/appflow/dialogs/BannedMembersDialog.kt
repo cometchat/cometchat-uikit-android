@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,13 +35,17 @@ import androidx.compose.ui.window.DialogProperties
 import com.cometchat.chat.core.BannedGroupMembersRequest
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.defaultstates.CometChatEmptyState
 import com.cometchat.uikit.compose.presentation.users.ui.CometChatUsersListItem
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.events.CometChatEvents
+import com.cometchat.uikit.core.events.CometChatGroupEvent
 
 /**
  * Dialog for viewing and managing banned members.
@@ -60,13 +65,17 @@ fun BannedMembersDialog(
     var bannedMembers by remember { mutableStateOf<List<GroupMember>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
-    
+    // ENG-39698: BannedGroupMembersRequest serves a stale local cache after an unban, so a
+    // just-unbanned member can reappear on a refetch. Track members unbanned this session and
+    // filter them out; a re-ban clears the uid so a genuinely re-banned member shows again.
+    val unbannedUids = remember { mutableSetOf<String>() }
+
     // Fetch banned members
     LaunchedEffect(group) {
         fetchBannedMembers(
             group = group,
             onSuccess = { members ->
-                bannedMembers = members
+                bannedMembers = members.filter { it.uid !in unbannedUids }
                 isLoading = false
             },
             onError = { exception ->
@@ -75,7 +84,51 @@ fun BannedMembersDialog(
             }
         )
     }
-    
+
+    // ENG-39698: keep the list live for bans/unbans done through the kit (this user) and
+    // elsewhere (another admin/device). The UIKit event bus fires immediately; the SDK group
+    // listener covers out-of-app changes.
+    LaunchedEffect(group) {
+        CometChatEvents.groupEvents.collect { event ->
+            when (event) {
+                is CometChatGroupEvent.MemberBanned ->
+                    if (event.group.guid == group.guid) {
+                        unbannedUids.remove(event.user.uid)
+                        fetchBannedMembers(group, onSuccess = { members ->
+                            bannedMembers = members.filter { it.uid !in unbannedUids }
+                        }, onError = {})
+                    }
+                is CometChatGroupEvent.MemberUnbanned ->
+                    if (event.group.guid == group.guid) {
+                        unbannedUids.add(event.user.uid)
+                        bannedMembers = bannedMembers.filter { it.uid != event.user.uid }
+                    }
+                else -> {}
+            }
+        }
+    }
+    DisposableEffect(group) {
+        val listenerId = "BannedMembersDialog_${group.guid}"
+        CometChat.addGroupListener(listenerId, object : CometChat.GroupListener() {
+            override fun onGroupMemberBanned(action: Action, bannedUser: User, bannedBy: User, bannedFrom: Group) {
+                if (bannedFrom.guid == group.guid) {
+                    unbannedUids.remove(bannedUser.uid)
+                    fetchBannedMembers(group, onSuccess = { members ->
+                        bannedMembers = members.filter { it.uid !in unbannedUids }
+                    }, onError = {})
+                }
+            }
+
+            override fun onGroupMemberUnbanned(action: Action, unbannedUser: User, unbannedBy: User, unbannedFrom: Group) {
+                if (unbannedFrom.guid == group.guid) {
+                    unbannedUids.add(unbannedUser.uid)
+                    bannedMembers = bannedMembers.filter { it.uid != unbannedUser.uid }
+                }
+            }
+        })
+        onDispose { CometChat.removeGroupListener(listenerId) }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -140,6 +193,7 @@ fun BannedMembersDialog(
                                     member = member,
                                     group = group,
                                     onUnban = {
+                                        unbannedUids.add(member.uid)
                                         bannedMembers = bannedMembers.filter { it.uid != member.uid }
                                     }
                                 )

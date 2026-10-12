@@ -13,6 +13,8 @@ import com.cometchat.uikit.core.domain.usecase.InitiateCallUseCase
 import com.cometchat.uikit.core.events.CometChatCallEvent
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.state.CallLogsUIState
+import com.cometchat.uikit.core.utils.CallsUtils
+import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -106,7 +108,21 @@ open public class CometChatCallLogsViewModel(
     public fun fetchCallLogs() {
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
-        
+
+        // ENG-39311: the Calls SDK is a compileOnly dependency, so it may be absent at runtime.
+        // Building a CallLogRequest below would then throw NoClassDefFoundError and crash the host
+        // app. Skip the fetch and surface an empty list instead. (When the SDK is present but
+        // calling was never initialized, the SDK reports that via the onFailure path below.)
+        if (!CallsUtils.isCallsSDKAvailable()) {
+            CometChatLogger.w(
+                "CometChatCallLogsViewModel",
+                "Calls SDK is not on the classpath; skipping call-log fetch. Add " +
+                    "com.cometchat:calls-sdk-android to use call logs."
+            )
+            if (_callLogs.value.isEmpty()) _uiState.value = CallLogsUIState.Empty
+            return
+        }
+
         viewModelScope.launch {
             isFetching = true
             
@@ -156,6 +172,17 @@ open public class CometChatCallLogsViewModel(
         hasMoreData = true
         isFetching = false
         callLogRequest = null
+
+        // ENG-39311: guard against the Calls SDK being absent (see fetchCallLogs) so a manual
+        // refresh can't crash the host with NoClassDefFoundError when calling isn't set up.
+        if (!CallsUtils.isCallsSDKAvailable()) {
+            CometChatLogger.w(
+                "CometChatCallLogsViewModel",
+                "Calls SDK is not on the classpath; skipping call-log refresh."
+            )
+            if (_callLogs.value.isEmpty()) _uiState.value = CallLogsUIState.Empty
+            return
+        }
         
         viewModelScope.launch {
             if (_callLogs.value.isEmpty()) {

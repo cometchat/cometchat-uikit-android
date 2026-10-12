@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatDateBinding
 import com.cometchat.uikit.kotlin.shared.interfaces.DateTimeFormatterCallback
 import com.cometchat.uikit.kotlin.shared.resources.localise.CometChatLocalize
@@ -43,7 +44,7 @@ public class CometChatDate @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatDateStyle
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatDate::class.java.simpleName
@@ -80,7 +81,7 @@ public class CometChatDate @JvmOverloads constructor(
     }
 
     private fun inflateAndInitializeView(attrs: AttributeSet?, defStyleAttr: Int) {
-        binding = CometchatDateBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = CometchatDateBinding.inflate(LayoutInflater.from(getContext()), this, true)
         setDefaultValues()
         applyStyleAttributes(attrs, defStyleAttr)
     }

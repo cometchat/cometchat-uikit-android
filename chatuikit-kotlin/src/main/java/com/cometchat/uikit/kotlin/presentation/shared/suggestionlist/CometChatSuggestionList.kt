@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatSuggestionListBinding
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerAdapter
 import com.cometchat.uikit.kotlin.presentation.shared.shimmer.CometChatShimmerUtils
@@ -100,7 +101,7 @@ public class CometChatSuggestionList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cometchatSuggestionListStyle
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : MaterialCardView(cometchatThemedContext(context), attrs, defStyleAttr) {
 
     public companion object {
         private val TAG = CometChatSuggestionList::class.java.simpleName
@@ -133,7 +134,7 @@ public class CometChatSuggestionList @JvmOverloads constructor(
 
     init {
         binding = CometchatSuggestionListBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(getContext()), this, true
         )
         Utils.initMaterialCard(this)
         
