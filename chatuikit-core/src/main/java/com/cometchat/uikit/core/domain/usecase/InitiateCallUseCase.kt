@@ -2,12 +2,12 @@ package com.cometchat.uikit.core.domain.usecase
 
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
-import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.CometChatUIKit
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 
 /**
  * Use case for initiating a call based on a call log.
@@ -36,18 +36,16 @@ open public class InitiateCallUseCase {
             )
         }
         
-        return suspendCoroutine { continuation ->
-            val call = Call(receiverId, CometChatConstants.RECEIVER_TYPE_USER, callType)
-            CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(initiatedCall: Call) {
-                    continuation.resume(Result.success(initiatedCall))
-                }
-                
-                override fun onError(exception: CometChatException) {
-                    continuation.resume(Result.failure(exception))
-                }
-            })
-        }
+        // Ringing v2: the Calls SDK creates the call; the Chat SDK's initiateCall is deprecated.
+        val context = CometChatUIKit.getApplicationContext()
+            ?: return Result.failure(
+                CometChatException("NOT_INITIALIZED", "CometChatUIKit.init must run before starting a call")
+            )
+        val target = listOf(callLog.initiator, callLog.receiver)
+            .filterIsInstance<CallUser>()
+            .firstOrNull { it.uid == receiverId }
+        val receiver = target?.let { User().apply { uid = it.uid; name = it.name; avatar = it.avatar } }
+        return CallInitiationUtils.initiateUserCall(context, receiverId, callType, receiver)
     }
     
     /**

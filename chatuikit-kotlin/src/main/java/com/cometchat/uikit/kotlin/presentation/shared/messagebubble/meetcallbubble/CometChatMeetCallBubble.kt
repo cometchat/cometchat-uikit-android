@@ -16,6 +16,7 @@ import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.core.CometChatUIKit
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
@@ -225,8 +226,10 @@ public class CometChatMeetCallBubble @JvmOverloads constructor(
                 else -> MeetCallType.VOICE_OUTGOING
             }
 
-            // Extract session ID
-            sessionId = customData?.optString("sessionId", "") ?: ""
+            // Extract session ID (written as "sessionID"; "sessionId" kept as a fallback)
+            sessionId = customData?.optString(UIKitConstants.CallingJSONConstants.CALL_SESSION_ID)
+                ?.takeIf { it.isNotEmpty() }
+                ?: customData?.optString("sessionId", "") ?: ""
 
             // Extract or generate title
             val titleFromData = customData?.optString("title", "")

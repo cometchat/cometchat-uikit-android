@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
-import com.cometchat.sampleapp.kotlin.app.SampleApplication
 import com.cometchat.sampleapp.kotlin.utils.AppPreferences
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
@@ -179,14 +178,11 @@ class AppCredentialsViewModel : ViewModel() {
             .setRegion(currentState.selectedRegion!!)
             .setAuthKey(currentState.authKey)
             .subscribePresenceForAllUsers()
-            .setEnableCalling(true)
             .build()
 
         CometChatUIKit.init(context, uiKitSettings, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "UIKit initialization successful")
-                // Notify Application class that SDK is initialized
-                notifyApplicationSDKInitialized(context)
                 _state.update {
                     it.copy(isLoading = false, isInitialized = true)
                 }
@@ -210,16 +206,4 @@ class AppCredentialsViewModel : ViewModel() {
         _state.value = AppCredentialsState()
     }
 
-    /**
-     * Notifies the Application class that SDK has been initialized.
-     * This triggers call listener registration in the Application class.
-     *
-     * @param context The application context to get the Application instance
-     */
-    private fun notifyApplicationSDKInitialized(context: Context) {
-        val application = context.applicationContext
-        if (application is SampleApplication) {
-            application.onSDKInitialized()
-        }
-    }
 }

@@ -2,8 +2,8 @@ package com.cometchat.uikit.core.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cometchat.chat.core.Call
-import com.cometchat.chat.core.CometChat
+import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.calls.model.InitiatedCall
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
@@ -14,6 +14,8 @@ import com.cometchat.uikit.core.events.CometChatCallEvent
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.state.CallButtonsEvent
 import com.cometchat.uikit.core.state.CallButtonsUIState
+import com.cometchat.uikit.core.utils.CallInitiationUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,6 +105,8 @@ open public class CometChatCallButtonsViewModel(
      * @param callType The type of call (audio/video) - use CometChatConstants.CALL_TYPE_AUDIO or CALL_TYPE_VIDEO
      */
     public fun initiateCall(callType: String) {
+        // A second tap while the first call is still being started does nothing (SM-07).
+        if (_uiState.value is CallButtonsUIState.Initiating) return
         viewModelScope.launch {
             _uiState.value = CallButtonsUIState.Initiating
 
@@ -123,13 +127,19 @@ open public class CometChatCallButtonsViewModel(
     }
 
     private suspend fun initiateUserCall(callType: String) {
-        initiateUserCallUseCase(receiverId, callType)
+        initiateUserCallUseCase(receiverId, callType, user)
             .onSuccess { call ->
                 _uiState.value = CallButtonsUIState.Idle
                 _events.emit(CallButtonsEvent.CallInitiated(call))
                 CometChatEvents.emitCallEvent(CometChatCallEvent.OutgoingCall(call))
             }
             .onFailure { e ->
+                // Another entry point is already starting a call; that one reports its result.
+                // Back to Idle, or the Initiating guard would ignore every later tap.
+                if (CallInitiationUtils.isCallInProgress(e)) {
+                    _uiState.value = CallButtonsUIState.Idle
+                    return@onFailure
+                }
                 val exception = e as? CometChatException ?: CometChatException(
                     "UNKNOWN_ERROR",
                     e.message ?: "Unknown error",
@@ -161,40 +171,22 @@ open public class CometChatCallButtonsViewModel(
         listenersTag = "CallButtons_${System.currentTimeMillis()}"
 
         listenersTag?.let { tag ->
-            // SDK Call Listener
-            CometChat.addCallListener(tag, object : CometChat.CallListener() {
-                override fun onIncomingCallReceived(call: Call?) {
-                    // Not handled by this component
-                }
+            // Calls SDK listener (ringing v2): a call ending anywhere (declined, busy,
+            // unanswered, cancelled, ended) re-enables the buttons. The Chat SDK's
+            // CallListener is deprecated and not used.
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.addIncomingCallListener(tag, object : CometChatCalls.IncomingCallListener() {
+                    override fun onIncomingCallReceived(call: InitiatedCall) {
+                        // Not handled by this component
+                    }
 
-                override fun onOutgoingCallAccepted(call: Call?) {
-                    // Not handled by this component
-                }
-
-                override fun onOutgoingCallRejected(call: Call?) {
-                    call?.let {
+                    override fun onIncomingCallEnded(call: InitiatedCall, reason: String) {
                         viewModelScope.launch {
-                            _events.emit(CallButtonsEvent.CallRejected(it))
+                            _events.emit(CallButtonsEvent.CallRejected(CallInitiationUtils.toCall(call)))
                         }
                     }
-                }
-
-                override fun onIncomingCallCancelled(call: Call?) {
-                    call?.let {
-                        viewModelScope.launch {
-                            _events.emit(CallButtonsEvent.CallRejected(it))
-                        }
-                    }
-                }
-
-                override fun onCallEndedMessageReceived(call: Call?) {
-                    call?.let {
-                        viewModelScope.launch {
-                            _events.emit(CallButtonsEvent.CallRejected(it))
-                        }
-                    }
-                }
-            })
+                })
+            }
 
             // UIKit Local Events
             callEventsJob = viewModelScope.launch {
@@ -218,7 +210,9 @@ open public class CometChatCallButtonsViewModel(
      */
     public fun removeListeners() {
         listenersTag?.let { tag ->
-            CometChat.removeCallListener(tag)
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.removeIncomingCallListener(tag)
+            }
         }
         callEventsJob?.cancel()
     }

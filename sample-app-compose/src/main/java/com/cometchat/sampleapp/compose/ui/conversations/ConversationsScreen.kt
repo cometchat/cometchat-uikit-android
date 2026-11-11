@@ -261,9 +261,9 @@ private fun UserAvatarMenu(
                             .fillMaxWidth()
                             .clickable {
                                 expanded = false
-                                // Handle logout - call CometChat.logout and navigate on success
+                                // Handle logout - CometChatUIKit.logout also logs out of the Calls SDK - and navigate on success
                                 // Matches master-app-jetpack behavior
-                                CometChat.logout(object : CometChat.CallbackListener<String>() {
+                                CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                                     override fun onSuccess(result: String?) {
                                         Log.d("ConversationsScreen", "Logout successful")
                                         // Navigate to Login screen and clear back stack

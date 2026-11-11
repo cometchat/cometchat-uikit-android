@@ -1592,7 +1592,7 @@ public final class com/cometchat/uikit/kotlin/databinding/CometchatOngoingCallSc
 	public final field progressBar Landroid/widget/ProgressBar;
 	public static fun bind (Landroid/view/View;)Lcom/cometchat/uikit/kotlin/databinding/CometchatOngoingCallScreenBinding;
 	public synthetic fun getRoot ()Landroid/view/View;
-	public fun getRoot ()Landroid/widget/LinearLayout;
+	public fun getRoot ()Landroid/widget/FrameLayout;
 	public static fun inflate (Landroid/view/LayoutInflater;)Lcom/cometchat/uikit/kotlin/databinding/CometchatOngoingCallScreenBinding;
 	public static fun inflate (Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Z)Lcom/cometchat/uikit/kotlin/databinding/CometchatOngoingCallScreenBinding;
 }
@@ -4582,6 +4582,7 @@ public final class com/cometchat/uikit/kotlin/presentation/messagecomposer/ui/Co
 	public final fun setComposerCornerRadius (I)V
 	public final fun setComposerStrokeColor (I)V
 	public final fun setComposerStrokeWidth (I)V
+	public final fun setDisableSoundForMessages (Z)V
 	public final fun setDisableTypingEvents (Z)V
 	public final fun setEditMessage (Lcom/cometchat/chat/models/TextMessage;)V
 	public final fun setEditPreviewBackgroundColor (I)V
@@ -5504,12 +5505,19 @@ public final class com/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometC
 public final class com/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometChatOngoingCallActivity : androidx/appcompat/app/AppCompatActivity {
 	public static final field Companion Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;
 	public fun <init> ()V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;)V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;)V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public static final fun launchOngoingCallActivity (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public fun onPictureInPictureModeChanged (Z)V
 }
 
 public final class com/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion {
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;)V
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;)V
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public final fun launchOngoingCallActivity (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
+	public static synthetic fun launchOngoingCallActivity$default (Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;ILjava/lang/Object;)V
 	public static synthetic fun launchOngoingCallActivity$default (Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/kotlin/presentation/ongoingcall/style/CometChatOngoingCallStyle;ILjava/lang/Object;)V
 }
 
@@ -12281,6 +12289,9 @@ public final class com/cometchat/uikit/kotlin/theme/CometChatTheme {
 	public final fun getIconTintSecondary (Landroid/content/Context;)I
 	public final fun getIconTintTertiary (Landroid/content/Context;)I
 	public final fun getIconTintWhite (Landroid/content/Context;)I
+	public final fun getIncomingCallTheme (Landroid/content/Context;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public final fun getIncomingCallTheme (Landroid/content/Context;I)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static synthetic fun getIncomingCallTheme$default (Lcom/cometchat/uikit/kotlin/theme/CometChatTheme;Landroid/content/Context;IILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
 	public final fun getInfoColor (Landroid/content/Context;)I
 	public final fun getLinkButtonColor (Landroid/content/Context;)I
 	public final fun getMessageReadColor (Landroid/content/Context;)I

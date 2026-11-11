@@ -35,11 +35,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cometchat.calls.constants.CometChatCallsConstants
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
 import com.cometchat.uikit.compose.R
@@ -49,6 +49,7 @@ import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.Comet
 import com.cometchat.uikit.compose.presentation.shared.baseelements.date.CometChatDate
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.CometChatUIKit
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CallLogsUtils
 import com.cometchat.sampleapp.compose.push.appflow.components.AppFlowToolbar
 import com.cometchat.sampleapp.compose.push.appflow.viewmodels.CallDetailsViewModel
@@ -87,8 +88,8 @@ fun CallDetailsScreen(
     
     val initiator = callLog.initiator as? CallUser
     val isLoggedInUser = CometChatUIKit.getLoggedInUser()?.uid == initiator?.uid
-    val isMissedOrUnanswered = callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED ||
-            callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED
+    val isMissedOrUnanswered = callLog.status == UIKitConstants.CallStatusConstants.UNANSWERED ||
+            callLog.status == UIKitConstants.CallStatusConstants.MISSED
     
     val tabs = listOf("Participants", "Recordings", "History")
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -180,7 +181,7 @@ fun CallDetailsScreen(
                     Text(
                         text = getCallTypeText(isLoggedInUser, isMissedOrUnanswered),
                         style = CometChatTheme.typography.heading4Medium,
-                        color = if (isMissedOrUnanswered) CometChatTheme.colorScheme.errorColor else textColorPrimary
+                        color = if (isMissedOrUnanswered && !isLoggedInUser) CometChatTheme.colorScheme.errorColor else textColorPrimary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     CometChatDate(
@@ -415,8 +416,8 @@ private fun HistoryTab(
 private fun HistoryItem(callLog: CallLog) {
     val initiator = callLog.initiator as? CallUser
     val isLoggedInUser = CometChatUIKit.getLoggedInUser()?.uid == initiator?.uid
-    val isMissedOrUnanswered = callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED ||
-            callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED
+    val isMissedOrUnanswered = callLog.status == UIKitConstants.CallStatusConstants.UNANSWERED ||
+            callLog.status == UIKitConstants.CallStatusConstants.MISSED
     
     Row(
         modifier = Modifier
@@ -443,7 +444,7 @@ private fun HistoryItem(callLog: CallLog) {
             Text(
                 text = getCallTypeText(isLoggedInUser, isMissedOrUnanswered),
                 style = CometChatTheme.typography.heading4Medium,
-                color = if (isMissedOrUnanswered) CometChatTheme.colorScheme.errorColor 
+                color = if (isMissedOrUnanswered && !isLoggedInUser) CometChatTheme.colorScheme.errorColor
                        else CometChatTheme.colorScheme.textColorPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -491,9 +492,10 @@ private fun getCallDirectionIconAndColor(
     isLoggedInUser: Boolean,
     isMissedOrUnanswered: Boolean
 ): Pair<Int, androidx.compose.ui.graphics.Color> {
+    // The caller's own call is Outgoing even when unanswered; Missed is the callee's (ENG-40762).
     return when {
-        isMissedOrUnanswered -> Pair(R.drawable.cometchat_ic_missed_call, CometChatTheme.colorScheme.errorColor)
         isLoggedInUser -> Pair(R.drawable.cometchat_ic_outgoing_call, CometChatTheme.colorScheme.successColor)
+        isMissedOrUnanswered -> Pair(R.drawable.cometchat_ic_missed_call, CometChatTheme.colorScheme.errorColor)
         else -> Pair(R.drawable.cometchat_ic_incoming_call, CometChatTheme.colorScheme.successColor)
     }
 }
@@ -501,11 +503,13 @@ private fun getCallDirectionIconAndColor(
 /**
  * Get call type text.
  */
+@Composable
 private fun getCallTypeText(isLoggedInUser: Boolean, isMissedOrUnanswered: Boolean): String {
+    // The caller's own call is Outgoing even when unanswered; Missed is the callee's (ENG-40762).
     return when {
-        isMissedOrUnanswered -> "Missed"
-        isLoggedInUser -> "Outgoing"
-        else -> "Incoming"
+        isLoggedInUser -> stringResource(com.cometchat.sampleapp.compose.push.R.string.app_call_outgoing)
+        isMissedOrUnanswered -> stringResource(com.cometchat.sampleapp.compose.push.R.string.app_call_missed)
+        else -> stringResource(com.cometchat.sampleapp.compose.push.R.string.app_call_incoming)
     }
 }
 

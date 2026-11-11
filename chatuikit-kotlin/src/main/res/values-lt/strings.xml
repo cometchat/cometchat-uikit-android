@@ -79,6 +79,7 @@
     <string name="cometchat_owner" translatable="true">Savininkas</string>
     <string name="cometchat_banned" translatable="true">Užblokuotas</string>
     <string name="cometchat_calling" translatable="true">skambina</string>
+    <string name="cometchat_ringing" translatable="true">skamba</string>
     <string name="cometchat_accepted" translatable="true">priimta</string>
     <string name="cometchat_unanswered" translatable="true">neatsakyta</string>
     <string name="cometchat_message_receipt" translatable="true">Pranešimo patvirtinimas</string>

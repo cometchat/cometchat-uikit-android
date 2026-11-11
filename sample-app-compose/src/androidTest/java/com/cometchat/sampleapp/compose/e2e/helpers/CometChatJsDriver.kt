@@ -89,13 +89,6 @@ object CometChatJsDriver {
         Thread.sleep(500)
     }
 
-    /** Cancels the call this driver initiated (action "call_audio"/"call_video"), dismissing the
-     *  receiver's incoming-call UI. Keeps the session alive — call [stop] for full teardown. */
-    fun cancelCall() {
-        val instr = InstrumentationRegistry.getInstrumentation()
-        instr.runOnMainSync { webView?.evaluateJavascript("cancelCall()", null) }
-        Thread.sleep(500)
-    }
 
     /** Rapidly toggles startTyping/endTyping [count] times toward [receiver] (stress test). */
     fun rapidTyping(receiver: String, receiverType: String = "user", count: Int = 12) {

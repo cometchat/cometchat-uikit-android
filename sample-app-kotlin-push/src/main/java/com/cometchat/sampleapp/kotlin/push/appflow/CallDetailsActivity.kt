@@ -13,7 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
-import com.cometchat.calls.constants.CometChatCallsConstants
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
 import com.cometchat.chat.core.CometChat
@@ -141,14 +141,14 @@ class CallDetailsActivity : AppCompatActivity() {
     
     private fun updateInfoView() {
         val isLoggedInUser = isLoggedInUser(callLog.initiator as CallUser)
-        val isMissedOrUnanswered = callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED ||
-                callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED
+        val isMissedOrUnanswered = callLog.status == UIKitConstants.CallStatusConstants.UNANSWERED ||
+                callLog.status == UIKitConstants.CallStatusConstants.MISSED
         
         binding.tvInfoDate.setDateText(Utils.callLogsTimeStamp(callLog.initiatedAt, null))
         
-        if (callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO ||
-            callLog.type == CometChatCallsConstants.CALL_TYPE_VIDEO ||
-            callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO) {
+        if (callLog.type == UIKitConstants.CallType.AUDIO ||
+            callLog.type == UIKitConstants.CallType.VIDEO ||
+            callLog.type == UIKitConstants.CallType.AUDIO_VIDEO) {
             
             when {
                 isLoggedInUser -> {

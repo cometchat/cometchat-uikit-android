@@ -201,7 +201,7 @@ class ChatsFragment : Fragment() {
      * Validates: Requirements 8.5 (Profile menu includes logout functionality), 11.5 (Logout navigates to SplashActivity)
      */
     private fun performLogout() {
-        CometChat.logout(object : CometChat.CallbackListener<String>() {
+        CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(message: String) {
                 Log.d(TAG, "Logout successful")
                 // Navigate to SplashActivity and clear back stack

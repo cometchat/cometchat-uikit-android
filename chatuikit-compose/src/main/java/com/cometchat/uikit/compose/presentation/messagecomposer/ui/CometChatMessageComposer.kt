@@ -504,6 +504,13 @@ public fun CometChatMessageComposer(
     LaunchedEffect(disableTypingEvents) {
         composerViewModel.disableTypingEvents = disableTypingEvents
     }
+
+    // Outgoing message sound — the ViewModel owns playback so View and Compose behave
+    // identically, mirroring how the message list ViewModel owns the incoming sound.
+    LaunchedEffect(disableSoundForMessages) {
+        composerViewModel.initSoundManager(context)
+        composerViewModel.setDisableSoundForMessages(disableSoundForMessages)
+    }
     DisposableEffect(composerViewModel) {
         onDispose { composerViewModel.endTyping() }
     }

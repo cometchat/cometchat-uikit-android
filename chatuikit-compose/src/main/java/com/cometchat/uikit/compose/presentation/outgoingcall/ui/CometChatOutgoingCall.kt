@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -151,6 +152,14 @@ public fun CometChatOutgoingCall(
     // Bug fix: When onCallAccepted is null, automatically launch CometChatOngoingCallActivity
     // and finish the current activity to prevent blank screen when call ends
     // Validates: Requirements 2.4, 2.5
+    // Ringing v2: listen on the session initiateCall prepared (ringing, answered, closed)
+    // without joining it; joinSession happens only once the callee has joined.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val calleeRinging by outgoingCallViewModel.calleeRinging.collectAsState()
+    LaunchedEffect(call) {
+        outgoingCallViewModel.attachPreparedSession(lifecycleOwner)
+    }
+
     LaunchedEffect(acceptedCall) {
         acceptedCall?.let { accepted ->
             soundManager.pauseSilently()
@@ -158,7 +167,10 @@ public fun CometChatOutgoingCall(
                 // Custom callback provided - invoke it
                 onCallAccepted.invoke(accepted)
             } else {
-                // No custom callback - auto-launch ongoing call activity
+                // No custom callback - auto-launch ongoing call activity. The session now
+                // belongs to that screen, so the hosting call activity must not leave it as
+                // it finishes below.
+                com.cometchat.uikit.compose.calls.CometChatCallActivity.markHandedOver(accepted.sessionId)
                 CometChatOngoingCallActivity.launchOngoingCallActivity(
                     context,
                     accepted.sessionId,
@@ -212,7 +224,9 @@ public fun CometChatOutgoingCall(
     val cdHoist3 = stringResource(R.string.cometchat_a11y_outgoing_call_to, recipientName)
     
     // Get localized strings
-    val callingText = stringResource(R.string.cometchat_calling) + " ..."
+    val callingText = stringResource(
+        if (calleeRinging) R.string.cometchat_ringing else R.string.cometchat_calling
+    ) + " ..."
     val endCallDescription = "End call with $recipientName"
     
     Card(

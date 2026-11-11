@@ -6,12 +6,15 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.cometchat.chat.core.CometChat
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.testutils.MockFactory
 import com.cometchat.uikit.kotlin.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 
@@ -81,6 +84,21 @@ class CometChatMeetCallBubbleFunctionalTest {
             ShadowLooper.idleMainLooper()
 
             assertTrue(b.findViewById<TextView>(R.id.title_text).text.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun setMessage_readsTheSessionIdTheKitWrites() {
+        // The kit writes the meeting with "sessionID"; the bubble used to read "sessionId"
+        // and expose "" (ENG-40298).
+        val me = MockFactory.createUser(uid = "me")
+        Mockito.mockStatic(CometChat::class.java).use { cometChat ->
+            cometChat.`when`<User?> { CometChat.getLoggedInUser() }.thenReturn(me)
+            withBubble { b ->
+                b.setMessage(MockFactory.createMeetCallMessage(sessionId = "group-session"))
+
+                assertEquals("group-session", b.getSessionId())
+            }
         }
     }
 }

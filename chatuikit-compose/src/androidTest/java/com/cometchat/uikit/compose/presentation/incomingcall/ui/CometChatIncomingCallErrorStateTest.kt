@@ -199,7 +199,13 @@ class CometChatIncomingCallErrorStateTest {
         val caller = createMockUser(name = "Accept Caller")
         val call = createMockCall(caller = caller)
         val viewModel = createViewModel()
+        val acceptRequested = AtomicBoolean(false)
 
+        // Ringing v2: `viewModel.acceptCall()` marks the call accepted at once, and the
+        // component then launches CometChatOngoingCallActivity and finishes the host
+        // activity, which would take the test activity with it. `onAcceptRequested` sits in
+        // front of that step; capturing `proceed` without calling it keeps the component on
+        // screen so the "no crash without an error handler" check still means something.
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {
                 CometChatIncomingCall(
@@ -208,6 +214,7 @@ class CometChatIncomingCallErrorStateTest {
                     viewModel = viewModel,
                     disableSoundForCalls = true,
                     onError = null,
+                    onAcceptRequested = { _ -> acceptRequested.set(true) },
                     onRejectClick = { /* no-op */ }
                 )
             }
@@ -216,15 +223,13 @@ class CometChatIncomingCallErrorStateTest {
         composeTestRule.waitForIdle()
 
         // Click accept — should not crash even without error handler
-        // The accept button calls viewModel.acceptCall() which may fail
-        // without SDK initialization, but should not crash the UI
         composeTestRule.onNodeWithContentDescription("Accept Accept Caller")
             .performClick()
 
         composeTestRule.waitForIdle()
-        Thread.sleep(300)
 
-        // Component should still be displayed (or at least not crash)
+        assertTrue("Accept tap should reach onAcceptRequested", acceptRequested.get())
+        // Component should still be displayed
         composeTestRule.onNodeWithText("Accept Caller").assertIsDisplayed()
     }
 }

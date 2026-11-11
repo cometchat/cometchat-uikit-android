@@ -1,10 +1,9 @@
 package com.cometchat.uikit.kotlin.presentation.ongoingcall.ui
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -18,11 +17,11 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import com.cometchat.calls.core.CallSession
 import com.cometchat.calls.core.CometChatCalls
-import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
+import com.cometchat.uikit.core.utils.CallRingingUtils
 import com.cometchat.uikit.core.utils.CallingState
 import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.viewmodel.CometChatOngoingCallViewModel
@@ -85,6 +84,7 @@ public class CometChatOngoingCall @JvmOverloads constructor(
 
     // ==================== Callbacks ====================
     private var onError: ((CometChatException) -> Unit)? = null
+    private var callPermissionsRequested = false
 
     // ==================== Style ====================
     private var style: CometChatOngoingCallStyle
@@ -101,32 +101,29 @@ public class CometChatOngoingCall @JvmOverloads constructor(
             initializeView()
             initViewModel()
             // Create default CallSettingsBuilder (matching Java implementation behavior).
-            // ENG-39311: the Calls SDK is compileOnly — only construct its SessionSettingsBuilder
+            // the Calls SDK is compileOnly — only construct its SessionSettingsBuilder
             // when the SDK is actually on the classpath, otherwise this line throws
             // NoClassDefFoundError and crashes the host at inflate. When absent, the builder stays
             // null and the ViewModel's startCall() no-ops.
             if (CallsUtils.isCallsSDKAvailable()) {
                 activity?.let { setSessionSettingsBuilder(CometChatCalls.SessionSettingsBuilder()) }
             }
-            // Request the necessary permissions (matching Java implementation)
-            requestCallPermissions()
+            // Permissions are requested in setCallType(), once the call type is known.
         }
     }
-    
+
     /**
-     * Requests RECORD_AUDIO and CAMERA permissions required for calls.
-     * Matches the Java implementation behavior.
+     * Requests the microphone, plus the camera for a video call only (ENG-40552), once per view.
+     * Asked as soon as the call type is set so the caller answers while it rings.
      */
-    private fun requestCallPermissions() {
-        activity?.let { act ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val permissions = arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.CAMERA
-                )
-                act.requestPermissions(permissions, 101)
-            }
+    private fun requestCallPermissions(callType: String) {
+        if (callPermissionsRequested) return
+        val act = activity ?: return
+        val missing = CallRingingUtils.permissionsForCallType(callType).filter {
+            ContextCompat.checkSelfPermission(act, it) != PackageManager.PERMISSION_GRANTED
         }
+        callPermissionsRequested = true
+        if (missing.isNotEmpty()) act.requestPermissions(missing.toTypedArray(), 101)
     }
 
     // ==================== Initialization ====================
@@ -193,6 +190,7 @@ public class CometChatOngoingCall @JvmOverloads constructor(
      */
     public fun setCallType(callType: String) {
         viewModel?.setCallType(callType)
+        requestCallPermissions(callType)
     }
 
     /**
@@ -224,6 +222,8 @@ public class CometChatOngoingCall @JvmOverloads constructor(
      * **Validates: Requirements 3.1-3.8**
      */
     public fun startCall() {
+        // Runtime permissions are the app's to request before a call starts; the kit asks
+        // for none.
         viewModel?.startCall(callView)
     }
 
@@ -391,9 +391,10 @@ public class CometChatOngoingCall @JvmOverloads constructor(
     private fun handleUIState(state: OngoingCallUIState) {
         when (state) {
             is OngoingCallUIState.Loading -> {
-                // Show progress bar, hide call view (Requirements 4.1, 4.2)
+                // Show progress bar, hide call view (Requirements 4.1, 4.2). INVISIBLE, not
+                // GONE: the call view stays laid out at full size while it joins (ENG-40740).
                 progressBar.visibility = View.VISIBLE
-                callView.visibility = View.GONE
+                callView.visibility = View.INVISIBLE
             }
             is OngoingCallUIState.Connected -> {
                 // Hide progress bar, show call view (Requirements 5.1, 5.2)
@@ -474,9 +475,8 @@ public class CometChatOngoingCall @JvmOverloads constructor(
         viewModel?.removeListeners()
         if (callWorkFlow != CallWorkFlow.MEETING) {
             viewModel?.endCall()
-            CometChat.clearActiveCall()
         } else {
-            CallSession.getInstance()?.leaveSession()
+            CallSession.getInstance()?.leave()
         }
         CallingState.setIsActiveMeeting(false)
     }

@@ -22,7 +22,6 @@ import org.junit.runners.MethodSorters
  * Test IDs:
  * - 1TO1-063: testUserInfoShowsName
  * - 1TO1-064: testUserInfoShowsAvatar
- * - 1TO1-066: testUserInfoCallButtons
  * - 1TO1-067: testUserInfoBlockOption
  * - 1TO1-068: testUserInfoDeleteChatOption
  * - 1TO1-069: testDeleteChatNavigatesHome
@@ -70,26 +69,6 @@ class UserInfoE2ETest {
         val avatarImages = device.findObjects(By.clazz("android.widget.ImageView"))
             .filter { it.visibleBounds.top < device.displayHeight / 3 }
         assertTrue("Avatar not found on User Info screen", avatarImages.isNotEmpty())
-    }
-
-    /**
-     * 1TO1-066: User Info shows call buttons (voice/video).
-     * The buttons are MaterialCardViews with "Voice" and "Video" text inside.
-     */
-    @Test
-    fun test03_userInfoCallButtons() {
-        // Call buttons are MaterialCardViews with TextViews showing "Voice" and "Video"
-        val voiceCallCard = device.findObject(By.res(PACKAGE, "card_voice_call"))
-            ?: device.findObject(By.text("Voice"))
-            ?: device.findObject(By.textContains("Voice"))
-        val videoCallCard = device.findObject(By.res(PACKAGE, "card_video_call"))
-            ?: device.findObject(By.text("Video"))
-            ?: device.findObject(By.textContains("Video"))
-
-        assertTrue(
-            "Voice and/or Video call cards should be present on User Info",
-            voiceCallCard != null || videoCallCard != null
-        )
     }
 
     /**

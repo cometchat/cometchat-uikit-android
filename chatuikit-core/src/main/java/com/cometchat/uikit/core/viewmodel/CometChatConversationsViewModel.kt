@@ -13,6 +13,8 @@ import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.BaseMessage
+import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.calls.model.InitiatedCall
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.chat.models.MediaMessage
@@ -37,6 +39,8 @@ import com.cometchat.uikit.core.events.CometChatUserEvent
 import com.cometchat.uikit.core.events.MessageStatus
 import com.cometchat.uikit.core.state.DeleteState
 import com.cometchat.uikit.core.state.UIState
+import com.cometchat.uikit.core.utils.CallInitiationUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -778,38 +782,23 @@ open public class CometChatConversationsViewModel(
                 }
             })
             
-            // Call listener for call events (SDK listener for server-pushed events)
-            CometChat.addCallListener(tag, object : CometChat.CallListener() {
-                override fun onIncomingCallReceived(call: Call) {
-                    if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
-                        updateConversationWithCall(call)
+            // Calls SDK listener (ringing v2): a call starting or ending, on either side, updates
+            // that conversation's preview. The Chat SDK's CallListener is deprecated and not used.
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.addIncomingCallListener(tag, object : CometChatCalls.IncomingCallListener() {
+                    override fun onIncomingCallReceived(call: InitiatedCall) {
+                        if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
+                            updateConversationWithCall(CallInitiationUtils.toCall(call))
+                        }
                     }
-                }
-                
-                override fun onOutgoingCallAccepted(call: Call) {
-                    if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
-                        updateConversationWithCall(call)
+
+                    override fun onIncomingCallEnded(call: InitiatedCall, reason: String) {
+                        if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
+                            updateConversationWithCall(CallInitiationUtils.toCall(call))
+                        }
                     }
-                }
-                
-                override fun onOutgoingCallRejected(call: Call) {
-                    if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
-                        updateConversationWithCall(call)
-                    }
-                }
-                
-                override fun onIncomingCallCancelled(call: Call) {
-                    if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
-                        updateConversationWithCall(call)
-                    }
-                }
-                
-                override fun onCallEndedMessageReceived(call: Call) {
-                    if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnCallActivities()) {
-                        updateConversationWithCall(call)
-                    }
-                }
-            })
+                })
+            }
         }
         
         // Add local event listeners
@@ -963,7 +952,9 @@ open public class CometChatConversationsViewModel(
             CometChat.removeUserListener(tag)
             CometChat.removeGroupListener(tag)
             CometChat.removeConnectionListener(tag)
-            CometChat.removeCallListener(tag)
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.removeIncomingCallListener(tag)
+            }
         }
     }
     
@@ -1342,6 +1333,9 @@ open public class CometChatConversationsViewModel(
      * @param call The call to update the conversation with
      */
     private fun updateConversationWithCall(call: Call) {
+        // Ringing v2: a Call built from the Calls SDK has no message id; it is not a chat
+        // message and must not become a conversation's last message.
+        if (call.id <= 0) return
         viewModelScope.launch {
             // Null safety check - ensure call has required fields before calling SDK
             if (call.receiverType.isNullOrEmpty() || call.receiverUid.isNullOrEmpty()) {

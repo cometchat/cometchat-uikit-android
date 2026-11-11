@@ -1,11 +1,11 @@
 package com.cometchat.uikit.core.utils
 
-import com.cometchat.calls.constants.CometChatCallsConstants
 import com.cometchat.calls.model.CallGroup
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.constants.UIKitConstants
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -63,8 +63,8 @@ class CallLogsUtilsTest : FunSpec({
     fun userCall(
         initiatorUid: String,
         receiverUid: String,
-        status: String = CometChatCallsConstants.CALL_STATUS_ONGOING,
-        type: String = CometChatCallsConstants.CALL_TYPE_AUDIO,
+        status: String = UIKitConstants.CallStatusConstants.ONGOING,
+        type: String = UIKitConstants.CallType.AUDIO,
         initiatorName: String = "Initiator",
         receiverName: String = "Receiver",
         initiatorAvatar: String? = "initiator-avatar",
@@ -90,7 +90,7 @@ class CallLogsUtilsTest : FunSpec({
         whenever(group.guid).thenReturn(guid)
         val initiator = callUser(them)
         val log = mock<CallLog>()
-        whenever(log.receiverType).thenReturn(CometChatCallsConstants.RECEIVER_TYPE_GROUP)
+        whenever(log.receiverType).thenReturn(UIKitConstants.ReceiverType.GROUP)
         whenever(log.receiver).thenReturn(group)
         whenever(log.initiator).thenReturn(initiator)
         return log
@@ -123,9 +123,9 @@ class CallLogsUtilsTest : FunSpec({
 
     test("an incoming unanswered, missed or cancelled call counts as missed") {
         listOf(
-            CometChatCallsConstants.CALL_STATUS_UNANSWERED,
-            CometChatCallsConstants.CALL_STATUS_MISSED,
-            CometChatCallsConstants.CALL_STATUS_CANCELLED
+            UIKitConstants.CallStatusConstants.UNANSWERED,
+            UIKitConstants.CallStatusConstants.MISSED,
+            UIKitConstants.CallStatusConstants.CANCELLED
         ).forEach { status ->
             CallLogsUtils.isMissedCall(
                 userCall(initiatorUid = them, receiverUid = me, status = status)
@@ -135,7 +135,7 @@ class CallLogsUtilsTest : FunSpec({
 
     test("an incoming call that was answered is not missed") {
         CallLogsUtils.isMissedCall(
-            userCall(initiatorUid = them, receiverUid = me, status = CometChatCallsConstants.CALL_STATUS_ENDED)
+            userCall(initiatorUid = them, receiverUid = me, status = UIKitConstants.CallStatusConstants.ENDED)
         ) shouldBe false
     }
 
@@ -144,7 +144,7 @@ class CallLogsUtilsTest : FunSpec({
             userCall(
                 initiatorUid = me,
                 receiverUid = them,
-                status = CometChatCallsConstants.CALL_STATUS_UNANSWERED
+                status = UIKitConstants.CallStatusConstants.UNANSWERED
             )
         ) shouldBe false
     }
@@ -153,31 +153,31 @@ class CallLogsUtilsTest : FunSpec({
 
     test("incoming means received and answered") {
         CallLogsUtils.isIncomingCall(
-            userCall(initiatorUid = them, receiverUid = me, status = CometChatCallsConstants.CALL_STATUS_ENDED)
+            userCall(initiatorUid = them, receiverUid = me, status = UIKitConstants.CallStatusConstants.ENDED)
         ) shouldBe true
     }
 
     test("a missed call is not incoming, and neither is an outgoing one") {
         CallLogsUtils.isIncomingCall(
-            userCall(them, me, status = CometChatCallsConstants.CALL_STATUS_MISSED)
+            userCall(them, me, status = UIKitConstants.CallStatusConstants.MISSED)
         ) shouldBe false
         CallLogsUtils.isIncomingCall(
-            userCall(me, them, status = CometChatCallsConstants.CALL_STATUS_ENDED)
+            userCall(me, them, status = UIKitConstants.CallStatusConstants.ENDED)
         ) shouldBe false
     }
 
     // ==================== media type ====================
 
     test("audio calls are audio and nothing else") {
-        val log = userCall(me, them, type = CometChatCallsConstants.CALL_TYPE_AUDIO)
+        val log = userCall(me, them, type = UIKitConstants.CallType.AUDIO)
         CallLogsUtils.isAudioCall(log) shouldBe true
         CallLogsUtils.isVideoCall(log) shouldBe false
     }
 
     test("both video and audio/video count as a video call") {
         listOf(
-            CometChatCallsConstants.CALL_TYPE_VIDEO,
-            CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO
+            UIKitConstants.CallType.VIDEO,
+            UIKitConstants.CallType.AUDIO_VIDEO
         ).forEach { type ->
             val log = userCall(me, them, type = type)
             CallLogsUtils.isVideoCall(log) shouldBe true
@@ -218,7 +218,7 @@ class CallLogsUtilsTest : FunSpec({
     test("a group call whose receiver is not a CallGroup degrades rather than throwing") {
         val wrongType = callUser(them) // a CallUser where a CallGroup is expected
         val log = mock<CallLog>()
-        whenever(log.receiverType).thenReturn(CometChatCallsConstants.RECEIVER_TYPE_GROUP)
+        whenever(log.receiverType).thenReturn(UIKitConstants.ReceiverType.GROUP)
         whenever(log.receiver).thenReturn(wrongType)
         CallLogsUtils.getDisplayName(log) shouldBe ""
         CallLogsUtils.getAvatarUrl(log) shouldBe null

@@ -156,10 +156,11 @@ class CometChatVideoBubbleComposeFunctionalTest {
         // CometChatVideoBubble's own private `extractAttachments` never consults
         // `message.attachments` at all — it goes metadata, then single attachment.
         //
-        // So a multi-image message delivered through the SDK list, with no
-        // metadata mirror, renders as zero images here while the multi-attachment
-        // bubble would render three. Asserting both sides so the difference is
-        // visible if either changes.
+        // Chat SDK 5.1.1 narrowed the gap: `setAttachments(list)` now also sets the
+        // single `attachment` to the first item, so a multi-image message delivered
+        // through the SDK list, with no metadata mirror, renders ONE image here (the
+        // first) while the multi-attachment bubble would render three. Asserting both
+        // sides so the difference is visible if either changes.
         val message = MockFactory.createMediaMessage(count = 0, type = CometChatConstants.MESSAGE_TYPE_VIDEO, mimeType = "video/mp4", extension = "mp4").apply {
             attachments = (1..3).map { MockFactory.createAttachment(it, "video/mp4", "mp4") }
         }
@@ -172,9 +173,9 @@ class CometChatVideoBubbleComposeFunctionalTest {
 
         render(message)
 
-        composeRule.onNodeWithContentDescription("Video message with 0 video(s)").assertIsDisplayed()
-        // It falls through to the empty/upload branch: one placeholder, not three tiles.
-        assertEquals("the image bubble resolves none of them into tiles", 1, tileCount())
+        composeRule.onNodeWithContentDescription("Video message with 1 video(s)").assertIsDisplayed()
+        // Only the SDK-mirrored first attachment becomes a tile, not three.
+        assertEquals("the video bubble resolves only the first of them into a tile", 1, tileCount())
     }
 
     // ── the attachments overload ────────────────────────────────────────────

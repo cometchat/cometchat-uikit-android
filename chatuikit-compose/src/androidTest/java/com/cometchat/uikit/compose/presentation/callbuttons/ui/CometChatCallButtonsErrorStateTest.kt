@@ -98,7 +98,7 @@ class CometChatCallButtonsErrorStateTest {
      */
     private fun createViewModelWithActiveCall(): CometChatCallButtonsViewModel {
         val dataSource = object : CallButtonsDataSource {
-            override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+            override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                 return Result.success(createMockCall())
             }
             override suspend fun sendGroupCallMessage(groupId: String, callType: String): Result<CustomMessage> {
@@ -122,7 +122,7 @@ class CometChatCallButtonsErrorStateTest {
      */
     private fun createViewModelWithCallFailure(): CometChatCallButtonsViewModel {
         val dataSource = object : CallButtonsDataSource {
-            override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+            override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                 return Result.failure(CometChatException("CALL_FAILED", "Call initiation failed", "Network error"))
             }
             override suspend fun sendGroupCallMessage(groupId: String, callType: String): Result<CustomMessage> {
@@ -145,7 +145,7 @@ class CometChatCallButtonsErrorStateTest {
      */
     private fun createViewModelWithSuccess(): CometChatCallButtonsViewModel {
         val dataSource = object : CallButtonsDataSource {
-            override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+            override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                 return Result.success(createMockCall())
             }
             override suspend fun sendGroupCallMessage(groupId: String, callType: String): Result<CustomMessage> {

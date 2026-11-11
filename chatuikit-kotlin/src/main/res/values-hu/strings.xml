@@ -80,6 +80,7 @@
     <string name="cometchat_owner" translatable="true">Tulajdonos</string>
     <string name="cometchat_banned" translatable="true">Kitiltva</string>
     <string name="cometchat_calling" translatable="true">hívás folyamatban</string>
+    <string name="cometchat_ringing" translatable="true">kicseng</string>
     <string name="cometchat_accepted" translatable="true">elfogadva</string>
     <string name="cometchat_unanswered" translatable="true">megválaszolatlan</string>
     <string name="cometchat_message_receipt" translatable="true">Üzenet fogadása</string>

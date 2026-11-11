@@ -27,6 +27,8 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
+import com.cometchat.uikit.core.utils.CallRingingUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.resources.soundmanager.Sound
 import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
 import com.cometchat.uikit.kotlin.presentation.ongoingcall.ui.CometChatOngoingCallActivity
@@ -73,6 +75,7 @@ import kotlinx.coroutines.launch
  * incomingCall.setOnRejectClickListener { /* handle reject */ }
  * ```
  */
+@Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself. The app's answer activity opens CometChatOngoingCallActivity with the answered call; drop this component unless the app draws its own ring screen with setIncomingCallActivity and wires accept and decline to CometChatCallNotifications itself.")
 public class CometChatIncomingCall @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -820,7 +823,6 @@ public class CometChatIncomingCall @JvmOverloads constructor(
      */
     private fun handleAcceptedCall(call: Call) {
         pauseSound()
-        // Launch ongoing call activity
         launchOngoingCall(call)
     }
 
@@ -844,9 +846,7 @@ public class CometChatIncomingCall @JvmOverloads constructor(
     private fun launchOngoingCall(call: Call) {
         CometChatOngoingCallActivity.launchOngoingCallActivity(
             context,
-            call.sessionId,
-            call.type,
-            CallWorkFlow.DEFAULT,
+            call,
             callSettingsBuilder as? CometChatCalls.SessionSettingsBuilder,
             null
         )
@@ -858,7 +858,8 @@ public class CometChatIncomingCall @JvmOverloads constructor(
      * **Validates: Requirements 7a.15**
      */
     public fun playSound() {
-        if (!disableSoundForCalls) {
+        // An app on the Push SDK is already ringing; a second ringtone would overlap it.
+        if (!disableSoundForCalls && !CallsUtils.isPushCallsSDKAvailable()) {
             soundManager.play(Sound.INCOMING_CALL, customSoundForCalls)
         }
     }

@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Перевести</string>
     <string name="cometchat_unpin" translatable="true">Открепить сообщение</string>
     <string name="cometchat_unsave" translatable="true">Убрать сообщение из сохранённого</string>
+    <string name="cometchat_call_no_internet" translatable="true">Нет подключения к интернету. Проверьте подключение и повторите попытку.</string>
 </resources>

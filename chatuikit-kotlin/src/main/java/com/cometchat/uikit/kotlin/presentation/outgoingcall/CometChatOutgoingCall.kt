@@ -8,6 +8,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.PowerManager
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -134,6 +135,7 @@ public class CometChatOutgoingCall @JvmOverloads constructor(
     // ==================== Observer Jobs ====================
     private var acceptedCallJob: Job? = null
     private var rejectedCallJob: Job? = null
+    private var calleeRingingJob: Job? = null
     private var errorJob: Job? = null
     private var endCallButtonEnabledJob: Job? = null
 
@@ -204,6 +206,9 @@ public class CometChatOutgoingCall @JvmOverloads constructor(
                 topMargin = Utils.convertDpToPx(context, 80) // cometchat_80dp = 80dp
             }
             gravity = Gravity.CENTER
+            // One line with "…", as in Compose, so a long name does not wrap (ENG-40767).
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
             setTextColor(CometChatTheme.getTextColorPrimary(context))
             setTextAppearance(CometChatTheme.getTextAppearanceHeading2Bold(context))
             contentDescription = context.getString(R.string.cometchat_recipient_name)
@@ -413,11 +418,15 @@ public class CometChatOutgoingCall @JvmOverloads constructor(
     public fun setCall(call: Call) {
         this.call = call
         viewModel?.setCall(call)
-        
+        // Asks for the microphone (and the camera, for video only) while the call rings.
+        ongoingCallView.setCallType(call.type)
+
         // If receiver is a User, set the user
         if (call.receiverType == CometChatConstants.RECEIVER_TYPE_USER) {
             setUser(call.receiver as? User)
         }
+        // Ringing v2: listen on the prepared session (ringing, answered, closed) without joining.
+        (lifecycleOwner ?: activity as? LifecycleOwner)?.let { viewModel?.attachPreparedSession(it) }
     }
 
     /**
@@ -720,6 +729,14 @@ public class CometChatOutgoingCall @JvmOverloads constructor(
         }
 
         // Observe end call button enabled state
+        calleeRingingJob = scope.launch {
+            vm.calleeRinging.collect { ringing ->
+                subtitleTextView.text = context.getString(
+                    if (ringing) R.string.cometchat_ringing else R.string.cometchat_calling
+                ) + " ..."
+            }
+        }
+
         endCallButtonEnabledJob = scope.launch {
             vm.endCallButtonEnabled.collect { enabled ->
                 setEndCallButtonEnabled(enabled)
@@ -733,6 +750,7 @@ public class CometChatOutgoingCall @JvmOverloads constructor(
     public fun disposeObservers() {
         acceptedCallJob?.cancel()
         rejectedCallJob?.cancel()
+        calleeRingingJob?.cancel()
         errorJob?.cancel()
         endCallButtonEnabledJob?.cancel()
         acceptedCallJob = null

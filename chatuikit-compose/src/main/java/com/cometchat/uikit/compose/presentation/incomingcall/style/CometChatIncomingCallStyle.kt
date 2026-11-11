@@ -39,6 +39,7 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * @param avatarStyle Style configuration for the caller's avatar
  */
 @Immutable
+@Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself, themed by the cometchat_pn_call_* colour resources. This style only applies to the deprecated CometChatIncomingCall component.")
 public data class CometChatIncomingCallStyle(
     // Container styling
     val backgroundColor: Color,

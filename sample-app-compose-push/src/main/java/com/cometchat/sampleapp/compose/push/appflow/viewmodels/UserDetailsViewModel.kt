@@ -2,8 +2,10 @@ package com.cometchat.sampleapp.compose.push.appflow.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
@@ -11,6 +13,7 @@ import com.cometchat.chat.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the User Details screen.
@@ -121,24 +124,23 @@ class UserDetailsViewModel : ViewModel() {
      */
     private fun startCall(callType: String) {
         val currentUser = _user.value ?: return
-        
-        val call = Call(currentUser.uid, CometChatConstants.RECEIVER_TYPE_USER, callType)
-        
         _isLoading.value = true
-        
-        CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-            override fun onSuccess(initiatedCall: Call?) {
-                _isLoading.value = false
-                Log.d(TAG, "Call initiated successfully")
-                initiatedCall?.let { _callInitiated.value = it }
-            }
-            
-            override fun onError(exception: CometChatException?) {
-                _isLoading.value = false
-                _error.value = exception?.message
-                Log.e(TAG, "Failed to initiate call: ${exception?.message}")
-            }
-        })
+        // Ringing v2: the Calls SDK creates the call and the backend rings the callee by push.
+        viewModelScope.launch {
+            CallInitiationUtils.initiateUserCall(currentUser.uid, callType, currentUser)
+                .onSuccess { call ->
+                    _isLoading.value = false
+                    Log.d(TAG, "Call initiated successfully")
+                    _callInitiated.value = call
+                }
+                .onFailure { e ->
+                    _isLoading.value = false
+                    // A second tap while the first call is still being started: nothing to show.
+                    if (CallInitiationUtils.isCallInProgress(e)) return@onFailure
+                    _error.value = e.message
+                    Log.e(TAG, "Failed to initiate call: ${e.message}")
+                }
+        }
     }
     
     /**

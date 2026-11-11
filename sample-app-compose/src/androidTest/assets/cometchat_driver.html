@@ -47,15 +47,6 @@
           } catch (e) { status("ERR-typing:" + (e && e.message ? e.message : e)); }
         }, 2000);
       }
-      if (action === "call_audio" || action === "call_video") {
-        // Initiate a default call so the receiver (app under test) gets onIncomingCallReceived.
-        var callType = (action === "call_video") ? CometChat.CALL_TYPE.VIDEO : CometChat.CALL_TYPE.AUDIO;
-        var call = new CometChat.Call(receiver, callType, receiverType);
-        CometChat.initiateCall(call).then(function (c) {
-          window.__callSessionId = c.getSessionId();
-          status("call-initiated:" + c.getSessionId());
-        }).catch(function (e) { status("ERR-call:" + (e && e.message ? e.message : JSON.stringify(e))); });
-      }
       // For "presence": nothing else to do — staying logged in keeps this user ONLINE.
     } catch (e) {
       status("ERR:" + (e && e.message ? e.message : JSON.stringify(e)));
@@ -74,17 +65,6 @@
     } catch (e) { status("ERR-endtyping:" + (e && e.message ? e.message : e)); }
   }
 
-  // Cancels the call this driver initiated (initiator-side CANCELLED) so the receiver's
-  // incoming-call UI dismisses immediately.
-  function cancelCall() {
-    try {
-      if (window.CometChat && window.__callSessionId) {
-        CometChat.rejectCall(window.__callSessionId, CometChat.CALL_STATUS.CANCELLED)
-          .then(function () { status("call-cancelled"); })
-          .catch(function (e) { status("ERR-cancel:" + (e && e.message ? e.message : e)); });
-      }
-    } catch (e) { status("ERR-cancel:" + (e && e.message ? e.message : e)); }
-  }
 
   // Rapidly toggles startTyping/endTyping `count` times to stress the receiver's typing handling.
   function rapidTyping(count, receiver, receiverType) {

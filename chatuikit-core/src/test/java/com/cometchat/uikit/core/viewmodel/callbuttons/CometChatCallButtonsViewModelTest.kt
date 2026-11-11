@@ -27,6 +27,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -166,7 +168,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke(uid, callType)).thenReturn(Result.success(mockCall))
+                whenever(initiateUseCase.invoke(eq(uid), eq(callType), anyOrNull())).thenReturn(Result.success(mockCall))
 
                 // Collect events before triggering
                 val collectedEvents = mutableListOf<CallButtonsEvent>()
@@ -177,7 +179,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.initiateCall(callType)
                 advanceUntilIdle()
 
-                verify(initiateUseCase).invoke(uid, callType)
+                verify(initiateUseCase).invoke(eq(uid), eq(callType), anyOrNull())
                 viewModel.uiState.value shouldBe CallButtonsUIState.Idle
                 collectedEvents.size shouldBe 1
                 collectedEvents[0].shouldBeInstanceOf<CallButtonsEvent.CallInitiated>()
@@ -234,12 +236,12 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke(any(), any())).thenReturn(Result.success(mockCall))
+                whenever(initiateUseCase.invoke(any(), any(), anyOrNull())).thenReturn(Result.success(mockCall))
 
                 viewModel.initiateCall(callType)
                 advanceUntilIdle()
 
-                verify(initiateUseCase).invoke("user-1", callType)
+                verify(initiateUseCase).invoke(eq("user-1"), eq(callType), anyOrNull())
                 println("    → callType=$callType passed to initiateUserCallUseCase ✅")
             }
         }
@@ -282,7 +284,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                     "Cannot initiate call while another call is active",
                     "An active call is already in progress"
                 )
-                whenever(initiateUseCase.invoke(uid, callType))
+                whenever(initiateUseCase.invoke(eq(uid), eq(callType), anyOrNull()))
                     .thenReturn(Result.failure(activeCallException))
 
                 // Collect error events
@@ -385,7 +387,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val exception = CometChatException("ERR_GENERIC", errorMsg)
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke(eq("user-1"), eq(callType), anyOrNull()))
                     .thenReturn(Result.failure(exception))
 
                 viewModel.initiateCall(callType)
@@ -423,7 +425,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke(eq("user-1"), eq(callType), anyOrNull()))
                     .thenReturn(Result.success(mockCall))
 
                 // Before call
@@ -449,7 +451,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val exception = CometChatException(errCode, "Test error")
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke(eq("user-1"), eq(callType), anyOrNull()))
                     .thenReturn(Result.failure(exception))
 
                 // Before call
@@ -479,7 +481,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.setUser(user)
 
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke(uid, callType))
+                whenever(initiateUseCase.invoke(eq(uid), eq(callType), anyOrNull()))
                     .thenReturn(Result.success(mockCall))
 
                 viewModel.initiateCall(callType)
@@ -507,7 +509,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 viewModel.initiateCall(callType)
                 advanceUntilIdle()
 
-                verify(initiateUseCase, never()).invoke(any(), any())
+                verify(initiateUseCase, never()).invoke(any(), any(), anyOrNull())
                 println("    → guid=$guid: initiateUserCallUseCase NOT called ✅")
             }
         }
@@ -546,7 +548,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                         "ERR_BLOCKED",
                         "Cannot call blocked user"
                     )
-                    whenever(initiateUseCase.invoke("blocked-user", callType))
+                    whenever(initiateUseCase.invoke(eq("blocked-user"), eq(callType), anyOrNull()))
                         .thenReturn(Result.failure(blockedException))
 
                     viewModel.initiateCall(callType)
@@ -559,7 +561,7 @@ class CometChatCallButtonsViewModelTest : FunSpec({
                 } else {
                     // Non-blocked user should succeed
                     val mockCall = mock<Call>()
-                    whenever(initiateUseCase.invoke("blocked-user", callType))
+                    whenever(initiateUseCase.invoke(eq("blocked-user"), eq(callType), anyOrNull()))
                         .thenReturn(Result.success(mockCall))
 
                     viewModel.initiateCall(callType)

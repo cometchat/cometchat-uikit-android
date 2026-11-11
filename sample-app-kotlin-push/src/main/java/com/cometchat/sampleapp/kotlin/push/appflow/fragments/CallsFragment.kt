@@ -10,11 +10,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.cometchat.calls.constants.CometChatCallsConstants
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.kotlin.calls.CometChatCallActivity
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.cometchat.sampleapp.kotlin.push.R
@@ -113,10 +113,13 @@ class CallsFragment : Fragment() {
                         Log.e(TAG, "Failed to initiate call: ${e.message}")
                     }
                 }
-                if (callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO) {
-                    viewModel.startCall(CometChatConstants.CALL_TYPE_AUDIO, callLog, listener)
-                } else if (callLog.type == CometChatCallsConstants.CALL_TYPE_VIDEO) {
-                    viewModel.startCall(CometChatConstants.CALL_TYPE_VIDEO, callLog, listener)
+                val callType = when (callLog.type) {
+                    UIKitConstants.CallType.AUDIO -> CometChatConstants.CALL_TYPE_AUDIO
+                    UIKitConstants.CallType.VIDEO -> CometChatConstants.CALL_TYPE_VIDEO
+                    else -> null
+                }
+                if (callType != null) {
+                    viewModel.startCall(callType, callLog, listener)
                 }
             }
         }

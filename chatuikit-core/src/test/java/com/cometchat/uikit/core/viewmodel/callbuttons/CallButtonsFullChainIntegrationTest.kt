@@ -3,6 +3,7 @@ package com.cometchat.uikit.core.viewmodel.callbuttons
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.CustomMessage
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.data.datasource.CallButtonsDataSource
 import com.cometchat.uikit.core.data.repository.CallButtonsRepositoryImpl
 import com.cometchat.uikit.core.domain.usecase.InitiateUserCallUseCase
@@ -101,7 +102,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] Created mock Call (receiverUid=user-1, type=audio)")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     println("    [DataSource] initiateUserCall(receiverId=$receiverId, callType=$callType) → returning Result.success(Call)")
                     return Result.success(mockCall)
                 }
@@ -158,7 +159,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] Created mock CustomMessage (receiverUid=group-1)")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     throw IllegalStateException("Should not be called for group call")
                 }
 
@@ -214,7 +215,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] DataSource will return Result.failure(CometChatException(code=NET_ERR))")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     println("    [DataSource] initiateUserCall(receiverId=$receiverId, callType=$callType) → returning Result.failure")
                     return Result.failure(exception)
                 }
@@ -263,7 +264,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] DataSource.getActiveCall() will return non-null (active call exists)")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     throw IllegalStateException("Should not be called when active call exists")
                 }
 
@@ -308,7 +309,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] DataSource.isActiveMeeting() will return true")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     throw IllegalStateException("Should not be called when active meeting exists")
                 }
 
@@ -356,7 +357,7 @@ class CallButtonsFullChainIntegrationTest : FunSpec({
             println("    [SETUP] DataSource.getActiveCallingExtensionCall() will return non-null")
 
             val dataSource = object : CallButtonsDataSource {
-                override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+                override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                     throw IllegalStateException("Should not be called when active call exists")
                 }
 

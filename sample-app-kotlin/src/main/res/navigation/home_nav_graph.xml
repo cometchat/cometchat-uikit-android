@@ -4,7 +4,6 @@
     
     Defines the navigation destinations for the bottom navigation tabs:
     - Chats (ChatsFragment)
-    - Calls (CallsFragment)
     - Users (UsersFragment)
     - Groups (GroupsFragment)
     
@@ -22,13 +21,6 @@
         android:name="com.cometchat.sampleapp.kotlin.ui.chats.ChatsFragment"
         android:label="@string/tab_chats"
         tools:layout="@layout/fragment_chats" />
-
-    <!-- Calls Tab - Call Logs List -->
-    <fragment
-        android:id="@+id/nav_calls"
-        android:name="com.cometchat.sampleapp.kotlin.ui.calls.CallsFragment"
-        android:label="@string/tab_calls"
-        tools:layout="@layout/fragment_call_logs" />
 
     <!-- Users Tab - Users List -->
     <fragment

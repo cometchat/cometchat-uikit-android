@@ -63,31 +63,30 @@ class CometChatOutgoingCallViewModelPreservationTest : FunSpec({
          * This behavior MUST be preserved after the fix.
          */
         fun simulateOnOutgoingCallRejected(call: Call) {
-            // Use reflection to call the private handleOutgoingCallRejected method
+            // Ringing v2: the Calls SDK reports a remote end through
+            // IncomingCallListener.onIncomingCallEnded(call, reason); the ViewModel handles it
+            // in the private handleCallEnded(sessionId, reason).
             val method = this::class.java.superclass.getDeclaredMethod(
-                "handleOutgoingCallRejected",
-                Call::class.java
+                "handleCallEnded",
+                String::class.java,
+                String::class.java
             )
             method.isAccessible = true
-            method.invoke(this, call)
+            method.invoke(this, call.sessionId, call.callStatus ?: "rejected")
         }
         
         /**
-         * Simulates the `onOutgoingCallAccepted` SDK callback.
-         * 
-         * In the real implementation, this is called by the CometChat SDK
-         * when the recipient accepts the outgoing call.
-         * 
-         * This behavior MUST be preserved after the fix.
+         * Simulates the callee joining the prepared session (ringing v2 "answered"), which the
+         * Calls SDK reports through CometChatCallsEventsListener.onUserJoined and the ViewModel
+         * handles in the private handleUserJoined(uid).
          */
         fun simulateOnOutgoingCallAccepted(call: Call) {
-            // Use reflection to call the private handleOutgoingCallAccepted method
             val method = this::class.java.superclass.getDeclaredMethod(
-                "handleOutgoingCallAccepted",
-                Call::class.java
+                "handleUserJoined",
+                String::class.java
             )
             method.isAccessible = true
-            method.invoke(this, call)
+            method.invoke(this, call.receiverUid ?: "callee")
         }
         
         /**

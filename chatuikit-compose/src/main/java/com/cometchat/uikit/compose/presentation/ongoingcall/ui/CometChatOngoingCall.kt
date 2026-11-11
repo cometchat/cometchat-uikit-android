@@ -195,9 +195,10 @@ public fun CometChatOngoingCall(
                     if (callViewContainer == null) {
                         callViewContainer = view
                     }
-                    // Control visibility based on loading state
+                    // Control visibility based on loading state. INVISIBLE, not GONE: the
+                    // container stays laid out at full size while it joins (ENG-40740).
                     view.visibility = if (isLoading) {
-                        android.view.View.GONE
+                        android.view.View.INVISIBLE
                     } else {
                         android.view.View.VISIBLE
                     }

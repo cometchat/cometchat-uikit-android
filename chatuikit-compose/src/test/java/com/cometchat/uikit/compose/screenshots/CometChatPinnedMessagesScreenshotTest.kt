@@ -136,7 +136,7 @@ class CometChatPinnedMessagesScreenshotTest {
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onSuccess(queue.removeFirstOrNull() ?: emptyList())
             null
-        }.whenever(req).fetchNext(any())
+        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         return req
     }
 

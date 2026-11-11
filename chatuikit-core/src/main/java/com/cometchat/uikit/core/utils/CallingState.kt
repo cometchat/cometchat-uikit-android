@@ -46,10 +46,31 @@ public object CallingState {
     }
     
     /**
+     * The outgoing call still ringing, if any: set by the outgoing screen, cleared once it is
+     * answered or over. Logout cancels it, so the callee stops ringing for a user who is gone.
+     */
+    @Volatile
+    internal var ringingOutgoingCall: Call? = null
+
+    /** When each call was placed (elapsed realtime), so the ring window counts from placement. */
+    private val placedAt = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
+    internal fun markPlaced(sessionId: String, at: Long = android.os.SystemClock.elapsedRealtime()) {
+        placedAt[sessionId] = at
+    }
+
+    internal fun placedAt(sessionId: String): Long? = placedAt[sessionId]
+
+    internal fun forgetPlaced(sessionId: String) {
+        placedAt.remove(sessionId)
+    }
+
+    /**
      * Clears all active call state.
      */
     public fun clear() {
         activeCall = null
         isActiveMeeting = false
+        ringingOutgoingCall = null
     }
 }

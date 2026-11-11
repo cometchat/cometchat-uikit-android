@@ -2,15 +2,14 @@ package com.cometchat.sampleapp.kotlin.push.fcm
 
 import android.util.Log
 import com.cometchat.pushnotification.CometChatPushNotifications
-import com.cometchat.pushnotification.models.PushPlatform
-import com.cometchat.sampleapp.kotlin.push.shared.AppCredentials
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 /**
- * Minimal FCM service that delegates all push handling to the CometChat Push Notifications SDK.
- * Skips call notifications in the foreground — the real-time CallListener (see KotlinApplication)
- * handles those via WebSocket to avoid a duplicate incoming-call UI.
+ * Hands every push to the CometChat Push Notifications SDK (2.0). Call pushes are never
+ * dropped: in Ringing v2 the push is the only signal that a call is coming in, in every app
+ * state, and the SDK rings it itself. `sentTime` lets the SDK ignore a push Firebase held
+ * back while the device was dozing, so it does not ring for a call that is already over.
  */
 class AppFCMService : FirebaseMessagingService() {
 
@@ -19,27 +18,18 @@ class AppFCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val data = message.data
-
-        if (CometChatPushNotifications.isAppInForeground() && isCallNotification(data)) {
-            Log.d(TAG, "Skipping call push in foreground — CallListener handles it")
-            return
+        val handled = CometChatPushNotifications.handlePushNotification(
+            context = this,
+            data = message.data,
+            sentTimeMs = message.sentTime
+        )
+        if (!handled) {
+            Log.d(TAG, "Push not from CometChat; nothing to do")
         }
-
-        CometChatPushNotifications.handlePushNotification(context = this, data = data)
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "onNewToken: $token")
-        CometChatPushNotifications.handleTokenRefresh(
-            PushPlatform.FCM_ANDROID,
-            token,
-            AppCredentials.PROVIDER_ID
-        )
-    }
-
-    private fun isCallNotification(data: Map<String, String>): Boolean {
-        val type = data["type"] ?: ""
-        return type.contains("call", ignoreCase = true)
+        // The SDK re-registers the rotated token under the logged-in user.
+        CometChatPushNotifications.handleTokenRefresh(token)
     }
 }

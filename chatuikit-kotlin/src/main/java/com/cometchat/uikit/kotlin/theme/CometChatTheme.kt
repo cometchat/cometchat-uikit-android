@@ -8,6 +8,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.FontRes
 import androidx.annotation.StyleRes
+import com.cometchat.uikit.core.utils.CometChatIncomingCallTheme
 import com.cometchat.uikit.kotlin.R
 import kotlin.math.roundToInt
 
@@ -595,6 +596,36 @@ public object CometChatTheme {
     public fun getWhiteButtonPressed(context: Context): Int {
         val color = getColorFromAttr(context, R.attr.cometchatWhiteButtonPressed)
         return if (color == 0) getNeutralColor300(context) else color
+    }
+    // endregion
+
+    // region Incoming Call Theme
+    /**
+     * This theme as colours for the Push SDK's incoming-call screen, in light and dark.
+     *
+     * The Push SDK draws that screen itself and cannot read the UIKit theme there, so the app
+     * copies these into a `CometChatPNIncomingCallTheme` (the field names match) and passes it to the Push
+     * SDK at `init`, and again whenever its theme changes. Both modes are read now, whatever mode
+     * the device is in, so a killed app rings in the right colours either way. Colours set with
+     * the setters on this object apply to both modes.
+     *
+     * @param themeRes the theme that carries the UIKit's colours; the app's manifest theme unless
+     *   the app applies its UIKit theme per activity
+     */
+    @JvmOverloads
+    public fun getIncomingCallTheme(
+        context: Context,
+        @StyleRes themeRes: Int = context.applicationInfo.theme
+    ): CometChatIncomingCallTheme = CometChatIncomingCallTheme.fromTheme(context, themeRes) { themed ->
+        CometChatIncomingCallTheme.Colors.fromThemeColors(
+            backgroundColor1 = getBackgroundColor1(themed),
+            textColorPrimary = getTextColorPrimary(themed),
+            textColorSecondary = getTextColorSecondary(themed),
+            primaryColor = getPrimaryColor(themed),
+            successColor = getSuccessColor(themed),
+            errorColor = getErrorColor(themed),
+            colorWhite = getColorWhite(themed)
+        )
     }
     // endregion
 

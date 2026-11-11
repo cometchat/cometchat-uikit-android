@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
@@ -18,6 +19,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.factory.CometChatCallButtonsViewModelFactory
 import com.cometchat.uikit.core.state.CallButtonsEvent
 import com.cometchat.uikit.core.viewmodel.CometChatCallButtonsViewModel
@@ -40,7 +42,7 @@ import kotlinx.coroutines.launch
  * for initiating calls with users or groups.
  *
  * This component supports:
- * - 1-to-1 (User) calls via CometChat.initiateCall
+ * - 1-to-1 (User) calls via CometChatCalls.initiateCall (ringing v2)
  * - Conference (Group) calls via CometChatUIKit.sendCustomMessage
  * - Active call detection to prevent concurrent calls
  * - Full customization of button appearance and behavior
@@ -225,7 +227,17 @@ public class CometChatCallButtons @JvmOverloads constructor(
 
         coroutineScope?.launch {
             viewModel?.errorEvent?.collect { exception ->
-                onError?.invoke(exception)
+                val handler = onError
+                if (handler != null) {
+                    handler(exception)
+                } else if (exception.code == UIKitConstants.CallErrorCodes.NO_INTERNET) {
+                    // Without an app error handler an offline tap showed nothing (ENG-40540).
+                    Toast.makeText(
+                        context,
+                        com.cometchat.uikit.core.R.string.cometchat_call_no_internet,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }

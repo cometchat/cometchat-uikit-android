@@ -71,26 +71,17 @@ class CometChatOutgoingCallViewModelBugTest : FunSpec({
          * if the session ID matches the current outgoing call.
          */
         fun simulateOnCallEndedMessageReceived(call: Call) {
-            // This simulates what the SDK would do - call the listener method
-            // The ViewModel should handle this by emitting rejectedCall
-            // 
-            // On UNFIXED code: This does nothing because the handler doesn't exist
-            // On FIXED code: This should call handleCallEndedMessageReceived(call)
-            //
-            // We need to directly invoke the handler that SHOULD exist
-            // Since it doesn't exist in unfixed code, we use reflection to check
-            // Note: The method is in the superclass CometChatOutgoingCallViewModel
-            try {
-                val method = CometChatOutgoingCallViewModel::class.java.getDeclaredMethod(
-                    "handleCallEndedMessageReceived",
-                    Call::class.java
-                )
-                method.isAccessible = true
-                method.invoke(this, call)
-            } catch (e: NoSuchMethodException) {
-                // Method doesn't exist - this is the BUG!
-                // The handler is missing, so rejectedCall will NOT be emitted
-            }
+            // Ringing v2: busy / unanswered / ended reach the caller as a terminal push that the
+            // Calls SDK reports through IncomingCallListener.onIncomingCallEnded(call, reason).
+            // The ViewModel handles it in the private handleCallEnded(sessionId, reason), which
+            // only acts when the session id matches the current outgoing call.
+            val method = CometChatOutgoingCallViewModel::class.java.getDeclaredMethod(
+                "handleCallEnded",
+                String::class.java,
+                String::class.java
+            )
+            method.isAccessible = true
+            method.invoke(this, call.sessionId, call.callStatus ?: "ended")
         }
         
         /**

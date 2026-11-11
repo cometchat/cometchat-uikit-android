@@ -21,7 +21,6 @@ import org.junit.runners.MethodSorters
  * Test IDs:
  * - 1TO1-063: testUserInfoShowsName
  * - 1TO1-064: testUserInfoShowsAvatar
- * - 1TO1-066: testUserInfoCallButtons
  * - 1TO1-067: testUserInfoBlockOption
  * - 1TO1-068: testUserInfoDeleteChatOption
  * - 1TO1-069: testDeleteChatNavigatesHome
@@ -67,26 +66,6 @@ class UserInfoE2ETest {
             device, By.clazz("android.widget.ImageView")
         ) { it.top < device.displayHeight / 3 }
         assertTrue("Avatar not found on User Info screen", avatarBounds.isNotEmpty())
-    }
-
-    /**
-     * 1TO1-066: User Info shows call buttons.
-     */
-    @Test
-    fun test03_userInfoCallButtons() {
-        val callOption = device.findObject(By.textContains("Call"))
-            ?: device.findObject(By.descContains("Call"))
-            ?: device.findObject(By.descContains("Voice"))
-            ?: device.findObject(By.descContains("Video"))
-
-        val callIcons = E2ETestHelper.safeGetBounds(
-            device, By.clickable(true)
-        ) { it.top < device.displayHeight / 3 }
-
-        assertTrue(
-            "Call buttons or icons should be present on User Info",
-            callOption != null || callIcons.size >= 2
-        )
     }
 
     /**

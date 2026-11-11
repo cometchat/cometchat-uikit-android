@@ -93,6 +93,8 @@ dependencies {
 
     // CometChat Push Notifications SDK
     implementation(libs.push.notifications.android)
+    // Push SDK calls module: rings incoming calls and opens CallAnswerActivity on answer
+    implementation(libs.push.notifications.calls.android)
 
     // Firebase Cloud Messaging
     implementation(platform(libs.firebase.bom))

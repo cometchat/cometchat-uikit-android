@@ -77,7 +77,7 @@ public final class com/cometchat/uikit/core/CometChatUIKit {
 
 public final class com/cometchat/uikit/core/UIKitSettings {
 	public static final field Companion Lcom/cometchat/uikit/core/UIKitSettings$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/Object;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/Object;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAppId ()Ljava/lang/String;
 	public final fun getAuthKey ()Ljava/lang/String;
 	public final fun getAutoEstablishSocketConnection ()Z
@@ -85,6 +85,7 @@ public final class com/cometchat/uikit/core/UIKitSettings {
 	public final fun getEnableCalling ()Z
 	public final fun getEnableThreadSubscription ()Z
 	public final fun getOverrideAdminHost ()Ljava/lang/String;
+	public final fun getOverrideCallsHost ()Ljava/lang/String;
 	public final fun getOverrideClientHost ()Ljava/lang/String;
 	public final fun getRegion ()Ljava/lang/String;
 	public final fun getRoles ()Ljava/util/List;
@@ -98,6 +99,7 @@ public final class com/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder {
 	public fun <init> ()V
 	public final fun build ()Lcom/cometchat/uikit/core/UIKitSettings;
 	public final fun overrideAdminHost (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
+	public final fun overrideCallsHost (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun overrideClientHost (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setAppId (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setAuthKey (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
@@ -197,6 +199,13 @@ public final class com/cometchat/uikit/core/constants/UIKitConstants$AuxiliaryBu
 	public static fun values ()[Lcom/cometchat/uikit/core/constants/UIKitConstants$AuxiliaryButtonAlignment;
 }
 
+public final class com/cometchat/uikit/core/constants/UIKitConstants$CallErrorCodes {
+	public static final field ACTIVE_CALL Ljava/lang/String;
+	public static final field CALL_IN_PROGRESS Ljava/lang/String;
+	public static final field INSTANCE Lcom/cometchat/uikit/core/constants/UIKitConstants$CallErrorCodes;
+	public static final field NO_INTERNET Ljava/lang/String;
+}
+
 public final class com/cometchat/uikit/core/constants/UIKitConstants$CallOption {
 	public static final field CALL_HISTORY Ljava/lang/String;
 	public static final field INSTANCE Lcom/cometchat/uikit/core/constants/UIKitConstants$CallOption;
@@ -210,9 +219,17 @@ public final class com/cometchat/uikit/core/constants/UIKitConstants$CallStatusC
 	public static final field ENDED Ljava/lang/String;
 	public static final field INITIATED Ljava/lang/String;
 	public static final field INSTANCE Lcom/cometchat/uikit/core/constants/UIKitConstants$CallStatusConstants;
+	public static final field MISSED Ljava/lang/String;
 	public static final field ONGOING Ljava/lang/String;
 	public static final field REJECTED Ljava/lang/String;
 	public static final field UNANSWERED Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/constants/UIKitConstants$CallType {
+	public static final field AUDIO Ljava/lang/String;
+	public static final field AUDIO_VIDEO Ljava/lang/String;
+	public static final field INSTANCE Lcom/cometchat/uikit/core/constants/UIKitConstants$CallType;
+	public static final field VIDEO Ljava/lang/String;
 }
 
 public final class com/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow : java/lang/Enum {
@@ -720,9 +737,15 @@ public final class com/cometchat/uikit/core/constants/UIKitConstants$ViewTag {
 public abstract interface class com/cometchat/uikit/core/data/datasource/CallButtonsDataSource {
 	public abstract fun getActiveCall ()Lcom/cometchat/chat/core/Call;
 	public abstract fun getActiveCallingExtensionCall ()Lcom/cometchat/chat/core/Call;
-	public abstract fun initiateUserCall-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun hasActiveCallSession ()Z
+	public abstract fun initiateUserCall-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun isActiveMeeting ()Z
 	public abstract fun sendGroupCallMessage-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/cometchat/uikit/core/data/datasource/CallButtonsDataSource$DefaultImpls {
+	public static fun hasActiveCallSession (Lcom/cometchat/uikit/core/data/datasource/CallButtonsDataSource;)Z
+	public static synthetic fun initiateUserCall-BWLJW6A$default (Lcom/cometchat/uikit/core/data/datasource/CallButtonsDataSource;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class com/cometchat/uikit/core/data/datasource/CallLogsDataSource {
@@ -859,7 +882,7 @@ public final class com/cometchat/uikit/core/data/datasource/UsersDataSourceImpl 
 public final class com/cometchat/uikit/core/data/repository/CallButtonsRepositoryImpl : com/cometchat/uikit/core/domain/repository/CallButtonsRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/CallButtonsDataSource;)V
 	public fun hasActiveCall ()Z
-	public fun initiateUserCall-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun initiateUserCall-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun startGroupCall-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -1177,8 +1200,12 @@ public final class com/cometchat/uikit/core/domain/model/SurroundingMessagesResu
 
 public abstract interface class com/cometchat/uikit/core/domain/repository/CallButtonsRepository {
 	public abstract fun hasActiveCall ()Z
-	public abstract fun initiateUserCall-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun initiateUserCall-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun startGroupCall-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/cometchat/uikit/core/domain/repository/CallButtonsRepository$DefaultImpls {
+	public static synthetic fun initiateUserCall-BWLJW6A$default (Lcom/cometchat/uikit/core/domain/repository/CallButtonsRepository;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class com/cometchat/uikit/core/domain/repository/CallLogsRepository {
@@ -1385,7 +1412,8 @@ public class com/cometchat/uikit/core/domain/usecase/InitiateCallUseCase {
 
 public class com/cometchat/uikit/core/domain/usecase/InitiateUserCallUseCase {
 	public fun <init> (Lcom/cometchat/uikit/core/domain/repository/CallButtonsRepository;)V
-	public fun invoke-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun invoke-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun invoke-BWLJW6A$default (Lcom/cometchat/uikit/core/domain/usecase/InitiateUserCallUseCase;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public class com/cometchat/uikit/core/domain/usecase/JoinGroupUseCase {
@@ -4554,6 +4582,16 @@ public final class com/cometchat/uikit/core/utils/AudioPlayer$Companion {
 	public final fun getInstance ()Lcom/cometchat/uikit/core/utils/AudioPlayer;
 }
 
+public final class com/cometchat/uikit/core/utils/CallInitiationUtils {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/CallInitiationUtils;
+	public final fun endCall (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun initiateUserCall-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun initiateUserCall-BWLJW6A$default (Lcom/cometchat/uikit/core/utils/CallInitiationUtils;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun initiateUserCall-yxL6bBk (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun initiateUserCall-yxL6bBk$default (Lcom/cometchat/uikit/core/utils/CallInitiationUtils;Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/chat/models/User;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun isCallInProgress (Ljava/lang/Throwable;)Z
+}
+
 public final class com/cometchat/uikit/core/utils/CallLogsUtils {
 	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/CallLogsUtils;
 	public final fun getAvatarUrl (Lcom/cometchat/calls/model/CallLog;)Ljava/lang/String;
@@ -4577,6 +4615,22 @@ public final class com/cometchat/uikit/core/utils/CallManager {
 	public final fun setIsActiveMeeting (Z)V
 }
 
+public final class com/cometchat/uikit/core/utils/CallRingingUtils {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/CallRingingUtils;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)Lcom/cometchat/chat/core/Call;
+	public static final fun buildIncomingCall (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)Lcom/cometchat/chat/core/Call;
+	public static synthetic fun buildIncomingCall$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;ILjava/lang/Object;)Lcom/cometchat/chat/core/Call;
+	public static final fun decline (Ljava/lang/String;)V
+	public static final fun permissionsForCallType (Ljava/lang/String;)[Ljava/lang/String;
+	public static final fun permissionsToAnswer (Lcom/cometchat/chat/core/Call;)[Ljava/lang/String;
+}
+
 public final class com/cometchat/uikit/core/utils/CallingState {
 	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/CallingState;
 	public final fun clear ()V
@@ -4588,8 +4642,74 @@ public final class com/cometchat/uikit/core/utils/CallingState {
 
 public final class com/cometchat/uikit/core/utils/CallsUtils {
 	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/CallsUtils;
+	public static final fun activeSessionId ()Ljava/lang/String;
 	public final fun isCallingEnabled ()Z
 	public final fun isCallsSDKAvailable ()Z
+	public final fun isPushCallsSDKAvailable ()Z
+	public static final fun ownsActiveSession (Ljava/lang/String;)Z
+}
+
+public final class com/cometchat/uikit/core/utils/CometChatIncomingCallTheme {
+	public static final field Companion Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Companion;
+	public fun <init> (Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;)V
+	public final fun component1 ()Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public final fun component2 ()Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public final fun copy (Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;ILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromTheme (Landroid/content/Context;ILcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static final fun fromTheme (Landroid/content/Context;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public final fun getDark ()Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public final fun getLight ()Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors {
+	public static final field Companion Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors$Companion;
+	public fun <init> (IIIIIIIIIII)V
+	public final fun component1 ()I
+	public final fun component10 ()I
+	public final fun component11 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun component6 ()I
+	public final fun component7 ()I
+	public final fun component8 ()I
+	public final fun component9 ()I
+	public final fun copy (IIIIIIIIIII)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;IIIIIIIIIIIILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public fun equals (Ljava/lang/Object;)Z
+	public static final fun fromThemeColors (IIIIIII)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+	public final fun getAcceptButton ()I
+	public final fun getAcceptIcon ()I
+	public final fun getAcceptLabel ()I
+	public final fun getAvatarBackground ()I
+	public final fun getAvatarText ()I
+	public final fun getBackground ()I
+	public final fun getCallerName ()I
+	public final fun getDeclineButton ()I
+	public final fun getDeclineIcon ()I
+	public final fun getDeclineLabel ()I
+	public final fun getSubtitle ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors$Companion {
+	public final fun fromThemeColors (IIIIIII)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
+}
+
+public final class com/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Companion {
+	public final fun fromTheme (Landroid/content/Context;ILcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public final fun fromTheme (Landroid/content/Context;Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static synthetic fun fromTheme$default (Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Companion;Landroid/content/Context;ILcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader;ILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+}
+
+public abstract interface class com/cometchat/uikit/core/utils/CometChatIncomingCallTheme$ThemeReader {
+	public abstract fun read (Landroid/content/Context;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
 }
 
 public final class com/cometchat/uikit/core/utils/CometChatLogger {
@@ -4859,6 +4979,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatCallLogsViewModel : and
 	public final fun clear ()V
 	public fun clearItems ()V
 	public final fun fetchCallLogs ()V
+	public final fun getCallInitiationError ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getCallLogs ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getInitiatedCall ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getInsertAtTopEvent ()Lkotlinx/coroutines/flow/SharedFlow;
@@ -5064,6 +5185,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatIncomingCallViewModel :
 	public final fun getCall ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getErrorEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getRejectedCall ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun onCallEnded (Ljava/lang/String;)V
 	protected fun onCleared ()V
 	public final fun rejectCall ()V
 	public final fun removeListeners ()V
@@ -5191,6 +5313,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageComposerViewMode
 	public final fun getShowVideoOption ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUser ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun initSoundManager (Landroid/content/Context;)V
 	public final fun isAIGenerating ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun isAttachmentPopupExpanded ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun isInRecordingMode ()Z
@@ -5214,6 +5337,8 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageComposerViewMode
 	public final fun setCollaborativeDocumentOptionVisibility (Z)V
 	public final fun setCollaborativeWhiteboardOptionVisibility (Z)V
 	public final fun setComposeText (Ljava/lang/String;)V
+	public final fun setCustomSoundForMessages (I)V
+	public final fun setDisableSoundForMessages (Z)V
 	public final fun setDisableTypingEvents (Z)V
 	public final fun setEditMessage (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun setFileOptionVisibility (Z)V
@@ -5476,6 +5601,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatOngoingCallViewModel : 
 	public final fun isLoading ()Lkotlinx/coroutines/flow/StateFlow;
 	protected fun onCleared ()V
 	public final fun removeListeners ()V
+	public final fun setCall (Lcom/cometchat/chat/core/Call;)V
 	public final fun setCallType (Ljava/lang/String;)V
 	public final fun setCallWorkFlow (Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;)V
 	public final fun setSessionId (Ljava/lang/String;)V
@@ -5488,20 +5614,29 @@ public final class com/cometchat/uikit/core/viewmodel/CometChatOngoingCallViewMo
 
 public class com/cometchat/uikit/core/viewmodel/CometChatOutgoingCallViewModel : androidx/lifecycle/ViewModel {
 	public static final field Companion Lcom/cometchat/uikit/core/viewmodel/CometChatOutgoingCallViewModel$Companion;
+	public static final field DEFAULT_CLOSE_GRACE_MS J
+	public static final field DEFAULT_RING_TIMEOUT_MS J
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addListeners ()V
+	public final fun attachPreparedSession (Landroidx/lifecycle/LifecycleOwner;)V
 	public final fun cancelCall ()V
 	public final fun getAcceptedCall ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getCall ()Lcom/cometchat/chat/core/Call;
 	public final fun getCall ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getCalleeRinging ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getCloseGraceMs ()J
 	public final fun getEndCallButtonEnabled ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getEndReason ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getErrorEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getRejectedCall ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getRingTimeoutMs ()J
 	protected fun onCleared ()V
 	public final fun removeListeners ()V
 	public final fun setCall (Lcom/cometchat/chat/core/Call;)V
+	public final fun setCloseGraceMs (J)V
+	public final fun setRingTimeoutMs (J)V
 }
 
 public final class com/cometchat/uikit/core/viewmodel/CometChatOutgoingCallViewModel$Companion {

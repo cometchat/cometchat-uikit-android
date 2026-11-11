@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">번역</string>
     <string name="cometchat_unpin" translatable="true">메시지 고정 해제</string>
     <string name="cometchat_unsave" translatable="true">메시지 저장 해제</string>
+    <string name="cometchat_call_no_internet" translatable="true">인터넷에 연결되어 있지 않습니다. 연결을 확인한 후 다시 시도하세요.</string>
 </resources>

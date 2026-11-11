@@ -188,22 +188,6 @@ object SavedMessagesRoute
 @Serializable
 object NewChatRoute
 
-/**
- * Route for the call details screen.
- *
- * Displays detailed information about a call log including:
- * - Call recipient information
- * - Call type (incoming/outgoing/missed)
- * - Call date and duration
- *
- * @property callLogJson The serialized CallLog JSON string for passing call data
- *
- * Validates: Requirements 9.2, 13.5
- */
-@Serializable
-data class CallDetailsRoute(
-    val callLogJson: String
-)
 
 /**
  * Route for the add members screen.

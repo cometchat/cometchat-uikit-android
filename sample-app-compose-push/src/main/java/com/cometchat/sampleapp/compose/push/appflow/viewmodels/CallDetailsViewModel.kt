@@ -2,7 +2,7 @@ package com.cometchat.sampleapp.compose.push.appflow.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cometchat.calls.constants.CometChatCallsConstants
+import com.cometchat.calls.constants.Constants
 import com.cometchat.calls.core.CallLogRequest
 import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.calls.exceptions.CometChatException
@@ -75,16 +75,12 @@ class CallDetailsViewModel : ViewModel() {
         setupHistoryRequest(callUser)
     }
     
-    // setCallCategory's @StringDef names com.cometchat.calls.constants.Constants, but the
-    // public CometChatCallsConstants facade holds the same values (both CALL_CATEGORY_CALL
-    // are "call" in calls-sdk-android 5.0.4). Lint cannot see across the two holders.
-    @Suppress("WrongConstant")
     private fun setupHistoryRequest(callUser: CallUser?) {
         callUser?.uid?.let { uid ->
             callLogRequest = CallLogRequest.CallLogRequestBuilder()
                 .setUid(uid)
                 .setLimit(30)
-                .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
+                .setCallCategory(Constants.CALL_CATEGORY_CALL)
                 .build()
             
             // Reset state

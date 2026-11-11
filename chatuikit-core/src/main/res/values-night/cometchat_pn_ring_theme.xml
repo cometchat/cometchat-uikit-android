@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Ringing v2, Push SDK 2.0 AUTO mode: the Push SDK draws the incoming call with its own ring
+  screen (push-notifications-calls-android). These override its colour resources with the UIKit's
+  default colours, so an app that does nothing still gets a UIKit-looking incoming-call screen.
+
+  They are build-time only, and win over the Push SDK's own values only when the app lists the
+  UIKit before the Push artifacts. To follow the app's actual theme, including one changed at
+  runtime, the app passes a CometChatPNIncomingCallTheme built from CometChatIncomingCallTheme to the Push SDK;
+  that wins over these colour by colour.
+-->
+<resources>
+    <color name="cometchat_pn_call_background">#141414</color>
+    <color name="cometchat_pn_call_text">#FFFFFF</color>
+    <color name="cometchat_pn_call_text_secondary">#989898</color>
+    <color name="cometchat_pn_call_avatar">#6852D6</color>
+    <color name="cometchat_pn_call_accept">#0B9F5D</color>
+    <color name="cometchat_pn_call_decline">#C73C3E</color>
+</resources>

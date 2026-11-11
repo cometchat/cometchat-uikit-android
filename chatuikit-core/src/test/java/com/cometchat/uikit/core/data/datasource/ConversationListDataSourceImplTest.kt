@@ -42,7 +42,7 @@ class ConversationListDataSourceImplTest : FunSpec({
 
             println("  → Testing fetchConversations success with ${expectedConversations.size} conversations")
 
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<Conversation>>>(0)
                 callback.onSuccess(expectedConversations)
@@ -63,7 +63,7 @@ class ConversationListDataSourceImplTest : FunSpec({
 
             println("  → Testing fetchConversations failure with code=${expectedException.code}")
 
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<Conversation>>>(0)
                 callback.onError(expectedException)
@@ -85,7 +85,7 @@ class ConversationListDataSourceImplTest : FunSpec({
 
             println("  → Testing fetchConversations with empty result")
 
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<Conversation>>>(0)
                 callback.onSuccess(emptyList())
@@ -105,7 +105,7 @@ class ConversationListDataSourceImplTest : FunSpec({
 
             println("  → Testing fetchConversations with ${expectedConversations.size} conversations (large page)")
 
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<Conversation>>>(0)
                 callback.onSuccess(expectedConversations)

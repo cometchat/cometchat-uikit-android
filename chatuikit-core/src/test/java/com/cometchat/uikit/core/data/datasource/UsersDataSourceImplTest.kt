@@ -33,7 +33,7 @@ class UsersDataSourceImplTest : FunSpec({
             val expectedUsers = MockFactory.createUsers(3)
 
             // Simulate SDK success callback
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
                 callback.onSuccess(expectedUsers)
@@ -52,7 +52,7 @@ class UsersDataSourceImplTest : FunSpec({
             val expectedException = MockFactory.createCometChatException("ERR_FETCH", "Network error")
 
             // Simulate SDK error callback
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
                 callback.onError(expectedException)
@@ -71,7 +71,7 @@ class UsersDataSourceImplTest : FunSpec({
         runTest {
             val mockRequest = mock<UsersRequest>()
 
-            whenever(mockRequest.fetchNext(any())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
                 val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
                 callback.onSuccess(emptyList())

@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Versti</string>
     <string name="cometchat_unpin" translatable="true">Atsegti žinutę</string>
     <string name="cometchat_unsave" translatable="true">Pašalinti žinutę iš išsaugotų</string>
+    <string name="cometchat_call_no_internet" translatable="true">Nėra interneto ryšio. Patikrinkite ryšį ir bandykite dar kartą.</string>
 </resources>

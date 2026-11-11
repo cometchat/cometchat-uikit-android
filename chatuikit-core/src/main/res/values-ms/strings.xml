@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Terjemah</string>
     <string name="cometchat_unpin" translatable="true">Nyahsemat Mesej</string>
     <string name="cometchat_unsave" translatable="true">Nyahsimpan Mesej</string>
+    <string name="cometchat_call_no_internet" translatable="true">Tiada sambungan internet. Semak sambungan anda dan cuba lagi.</string>
 </resources>

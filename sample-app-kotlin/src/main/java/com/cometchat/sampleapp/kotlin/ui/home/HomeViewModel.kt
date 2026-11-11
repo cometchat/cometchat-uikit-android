@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.core.CometChat
+import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.sampleapp.kotlin.utils.AppPreferences
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -107,7 +108,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _logoutState.value = LogoutState.Loading
         Log.d(TAG, "Starting logout process...")
 
-        CometChat.logout(object : CometChat.CallbackListener<String>() {
+        CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "CometChat logout successful")
                 // Clear session from preferences

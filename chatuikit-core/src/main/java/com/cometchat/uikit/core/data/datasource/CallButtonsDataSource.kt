@@ -2,6 +2,7 @@ package com.cometchat.uikit.core.data.datasource
 
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.models.CustomMessage
+import com.cometchat.chat.models.User
 
 /**
  * Data source interface for call buttons operations.
@@ -12,9 +13,10 @@ public interface CallButtonsDataSource {
      * Initiates a 1-to-1 call with a user.
      * @param receiverId The UID of the user to call
      * @param callType The type of call (audio/video)
+     * @param receiver The callee as the UIKit knows them, for the name and avatar on the outgoing screen
      * @return Result containing the initiated Call or an error
      */
-    suspend public fun initiateUserCall(receiverId: String, callType: String): Result<Call>
+    suspend public fun initiateUserCall(receiverId: String, callType: String, receiver: User? = null): Result<Call>
 
     /**
      * Sends a custom message to start a group conference call.
@@ -25,10 +27,17 @@ public interface CallButtonsDataSource {
     suspend public fun sendGroupCallMessage(groupId: String, callType: String): Result<CustomMessage>
 
     /**
-     * Gets the currently active call from CometChat SDK.
+     * Gets the UIKit's currently active call. The Chat SDK no longer tracks one
+     * (its calling APIs are deprecated in favour of the Calls SDK).
      * @return The active Call or null if no call is active
      */
     public fun getActiveCall(): Call?
+
+    /**
+     * Checks if the Calls SDK has a session joining or joined.
+     * @return true if a call session is active, false otherwise
+     */
+    public fun hasActiveCallSession(): Boolean = false
 
     /**
      * Gets the currently active call from CallingExtension.

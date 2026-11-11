@@ -5,7 +5,6 @@
     This layout displays user profile information and actions:
     - Custom toolbar with back icon and title
     - User avatar, name, and online/offline status
-    - Voice and Video call cards
     - Block/unblock user option
     - Delete chat option
     
@@ -143,63 +142,6 @@
             android:textColor="?attr/cometchatTextColorSecondary"
             tools:text="Online" />
 
-        <!-- Voice/Video Call Cards -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/cometchat_margin_5"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <!-- Voice Call Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_voice_call"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/cometchat_73dp"
-                android:layout_marginEnd="@dimen/cometchat_margin_1"
-                android:layout_weight="1"
-                app:cardCornerRadius="@dimen/cometchat_radius_2"
-                app:strokeColor="?attr/cometchatStrokeColorDefault"
-                app:strokeWidth="@dimen/cometchat_1dp">
-
-                <TextView
-                    android:id="@+id/tv_voice_call"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/voice"
-                    android:textAppearance="?attr/cometchatTextAppearanceButtonRegular"
-                    android:textColor="?attr/cometchatTextColorSecondary"
-                    app:drawableTint="?attr/cometchatIconTintHighlight"
-                    app:drawableTopCompat="@drawable/cometchat_ic_call_voice" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Video Call Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_video_call"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/cometchat_73dp"
-                android:layout_marginStart="@dimen/cometchat_margin_1"
-                android:layout_weight="1"
-                app:cardCornerRadius="@dimen/cometchat_radius_2"
-                app:strokeColor="?attr/cometchatStrokeColorDefault"
-                app:strokeWidth="@dimen/cometchat_1dp">
-
-                <TextView
-                    android:id="@+id/tv_video_call"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/video"
-                    android:textAppearance="?attr/cometchatTextAppearanceButtonRegular"
-                    android:textColor="?attr/cometchatTextColorSecondary"
-                    app:drawableTint="?attr/cometchatIconTintHighlight"
-                    app:drawableTopCompat="@drawable/cometchat_ic_call_video" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
 
     </LinearLayout>
 

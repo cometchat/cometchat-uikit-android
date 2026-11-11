@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.cometchat.chat.core.CometChat
-import com.cometchat.pushnotification.CometChatPushNotifications
+import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.presentation.conversations.ui.CometChatConversations
@@ -84,7 +84,7 @@ fun ChatsTab(
                         showOverflowMenu = false
                         // Always unregister the FCM token BEFORE logging out (prevents ghost pushes).
                         val doLogout = {
-                            CometChat.logout(object : CometChat.CallbackListener<String>() {
+                            CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                                 override fun onSuccess(p0: String?) {
                                     Log.d("ChatsTab", "Logout successful")
                                     // Navigate to Login screen and clear back stack
@@ -96,13 +96,8 @@ fun ChatsTab(
                                 }
                             })
                         }
-                        CometChatPushNotifications.unregisterToken(
-                            onSuccess = { Log.d("ChatsTab", "FCM token unregistered"); doLogout() },
-                            onError = { e ->
-                                Log.e("ChatsTab", "Token unregister failed (proceeding): ${e.message}")
-                                doLogout()
-                            }
-                        )
+                        // Push SDK 2.0 unregisters the FCM token itself on logout.
+                        doLogout()
                     }
                 )
             },

@@ -185,12 +185,16 @@ fun AppNavigation(
         }
 
         // App flow destinations
-        composable<AppFlowHomeRoute> {
+        composable<AppFlowHomeRoute> { backStackEntry ->
             AppFlowScreen(
                 onNavigateToMessages = { user, group, lastMessageId ->
                     user?.let { EntityCache.putUser(it.uid, it) }
                     group?.let { EntityCache.putGroup(it.guid, it) }
-                    navController.navigate(MessagesRoute(userId = user?.uid, groupId = group?.guid, lastMessageId = lastMessageId))
+                    // Only the tap that arrives while this screen is still on top navigates —
+                    // the second tap of a double-tap is ignored (ENG-29984).
+                    if (backStackEntry.lifecycleIsResumed()) {
+                        navController.navigate(MessagesRoute(userId = user?.uid, groupId = group?.guid, lastMessageId = lastMessageId))
+                    }
                 },
                 onNavigateToCallDetails = { callLog ->
                     // Store CallLog in cache before navigating (SDK doesn't support fetching by session ID)

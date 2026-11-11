@@ -2,9 +2,11 @@ package com.cometchat.sampleapp.kotlin.push.appflow.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 import com.cometchat.chat.core.CometChat.UserListener
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.helpers.CometChatHelper
@@ -14,6 +16,7 @@ import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.events.CometChatConversationEvent
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatUserEvent
+import kotlinx.coroutines.launch
 
 class UserDetailsViewModel : ViewModel() {
     
@@ -164,19 +167,18 @@ class UserDetailsViewModel : ViewModel() {
     
     fun startCall(callType: String?) {
         val currentUser = user.value
-        if (currentUser != null) {
-            val call = Call(currentUser.uid, CometChatConstants.RECEIVER_TYPE_USER, callType)
-            CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(call: Call) {
-                    _onCallStart.value = call
-                }
-                
-                override fun onError(e: CometChatException) {
-                    _onCallStartError.value = e.message
-                }
-            })
-        } else {
+        if (currentUser == null) {
             _onCallStartError.value = "User is null"
+            return
+        }
+        // Ringing v2: the Calls SDK creates the call and the backend rings the callee by push.
+        viewModelScope.launch {
+            CallInitiationUtils.initiateUserCall(currentUser.uid, callType ?: CometChatConstants.CALL_TYPE_AUDIO, currentUser)
+                .onSuccess { _onCallStart.value = it }
+                .onFailure {
+                    // A second tap while the first call is still being started: nothing to show.
+                    if (!CallInitiationUtils.isCallInProgress(it)) _onCallStartError.value = it.message
+                }
         }
     }
 }

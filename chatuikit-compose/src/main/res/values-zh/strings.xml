@@ -78,6 +78,7 @@
     <string name="cometchat_owner" translatable="true">所有者</string>
     <string name="cometchat_banned" translatable="true">被禁言</string>
     <string name="cometchat_calling" translatable="true">正在呼叫</string>
+    <string name="cometchat_ringing" translatable="true">响铃中</string>
     <string name="cometchat_accepted" translatable="true">已接受</string>
     <string name="cometchat_unanswered" translatable="true">未接听</string>
     <string name="cometchat_message_receipt" translatable="true">消息回执</string>

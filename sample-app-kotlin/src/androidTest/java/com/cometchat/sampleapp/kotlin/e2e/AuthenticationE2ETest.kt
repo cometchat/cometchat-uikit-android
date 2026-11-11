@@ -41,8 +41,6 @@ class AuthenticationE2ETest {
     fun setup() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         E2ETestHelper.initSdk()
-        val app = androidx.test.core.app.ApplicationProvider.getApplicationContext<com.cometchat.sampleapp.kotlin.app.SampleApplication>()
-        app.onSDKInitialized()
         E2ETestHelper.logoutIfNeeded()
     }
 

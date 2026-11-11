@@ -220,9 +220,6 @@ private fun MessagesContent(
                 group = group,
                 // Show back button for navigation
                 hideBackButton = false,
-                // Show call buttons
-                hideVideoCallButton = false,
-                hideVoiceCallButton = false,
                 // Hide built-in menu icon - we use custom trailingView
                 hideMenuIcon = true,
                 onBackPress = onBackPress,

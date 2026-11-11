@@ -54,7 +54,6 @@
     
     <!-- Home Screen -->
     <string name="tab_chats">Chats</string>
-    <string name="tab_calls">Calls</string>
     <string name="tab_users">Users</string>
     <string name="tab_groups">Groups</string>
     
@@ -116,13 +115,6 @@
     <string name="selected">Selected</string>
     <string name="no_longer_part_of_group">You are no longer part of this group</string>
     
-    <!-- Call Details Screen -->
-    <string name="call_details">Call Details</string>
-    <string name="call_outgoing">Outgoing</string>
-    <string name="call_incoming">Incoming</string>
-    <string name="call_missed">Missed</string>
-    <string name="no_recordings_found">No Recordings Found</string>
-    <string name="tab_history">History</string>
     <string name="tab_participants">Participants</string>
     <string name="tab_recordings">Recordings</string>
 </resources>

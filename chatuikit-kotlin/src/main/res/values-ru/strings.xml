@@ -80,6 +80,7 @@
     <string name="cometchat_owner" translatable="true">Владелец</string>
     <string name="cometchat_banned" translatable="true">Заблокирован(а)</string>
     <string name="cometchat_calling" translatable="true">звонит</string>
+    <string name="cometchat_ringing" translatable="true">идут гудки</string>
     <string name="cometchat_accepted" translatable="true">принят(а)</string>
     <string name="cometchat_unanswered" translatable="true">без ответа</string>
     <string name="cometchat_message_receipt" translatable="true">Получение сообщения</string>

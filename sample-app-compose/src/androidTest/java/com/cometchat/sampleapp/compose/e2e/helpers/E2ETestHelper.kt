@@ -29,8 +29,7 @@ import java.util.concurrent.TimeUnit
  * Key differences from the Kotlin sample helper:
  * - No resource IDs (Compose uses semantics/testTag instead of R.id)
  * - No separate activities — everything is Compose Navigation within MainActivity
- * - No CometChatCalls SDK initialization (no onSDKInitialized())
- * - Bottom navigation uses content descriptions: "Chats", "Calls", "Users", "Groups"
+ * - Bottom navigation uses content descriptions: "Chats", "Users", "Groups"
  * - Login screen uses BasicTextField (hint "Enter UID") and Button with text "Continue"
  *
  * Credentials can be passed via instrumentation arguments for CI/CD:
@@ -123,9 +122,6 @@ object E2ETestHelper {
     /**
      * Initializes the CometChat UIKit SDK.
      * Saves credentials to SharedPreferences so the app recognizes them.
-     *
-     * Note: Unlike the Kotlin sample, there is NO onSDKInitialized() call here
-     * because the Compose app does not have CometChatCalls SDK integration.
      */
     fun initSdk() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -141,7 +137,6 @@ object E2ETestHelper {
             .setAppId(appId)
             .setRegion(region)
             .setAuthKey(authKey)
-            .setEnableCalling(true)
             .subscribePresenceForAllUsers()
             .build()
 
@@ -225,7 +220,7 @@ object E2ETestHelper {
      * The Compose login screen uses:
      * - BasicTextField with placeholder "Enter UID" (renders differently in a11y tree)
      * - Button with text "Continue"
-     * - After login, bottom nav appears with content descriptions "Chats", "Calls", "Users", "Groups"
+     * - After login, bottom nav appears with content descriptions "Chats", "Users", "Groups"
      *
      * IMPORTANT: Compose's BasicTextField does NOT always render as android.widget.EditText
      * in the accessibility tree. On newer Compose versions, it appears as a generic View
@@ -349,11 +344,6 @@ object E2ETestHelper {
 
         initSdk()
 
-        // Trigger the Application-level Calls SDK init + incoming-call listeners (the harness inits
-        // the UIKit SDK itself, bypassing SampleApplication.initializeCometChat, so call this here).
-        (InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-            as com.cometchat.sampleapp.compose.app.SampleApplication).onSDKInitialized()
-
         logoutIfNeeded()
         launchApp(device)
         loginViaUI(device)
@@ -363,7 +353,7 @@ object E2ETestHelper {
 
     /**
      * Navigates to a tab in the bottom navigation.
-     * Valid tab names: "Chats", "Calls", "Users", "Groups"
+     * Valid tab names: "Chats", "Users", "Groups"
      *
      * Uses coordinate-based click to avoid StaleObjectException in Compose.
      * Compose NavigationBarItem uses contentDescription = label.

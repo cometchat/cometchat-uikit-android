@@ -1,35 +1,13 @@
 package com.cometchat.sampleapp.kotlin.app
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.FrameLayout
-import com.cometchat.calls.core.CallAppSettings
-import com.cometchat.calls.core.CometChatCalls
-import com.cometchat.chat.constants.CometChatConstants
-import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
-import com.cometchat.chat.models.User
-import com.cometchat.sampleapp.kotlin.utils.AppPreferences
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
-import com.cometchat.uikit.core.events.CometChatCallEvent
-import com.cometchat.uikit.core.events.CometChatEvents
-import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
-import com.cometchat.uikit.core.resources.soundmanager.Sound
-import com.cometchat.uikit.core.utils.CallManager
-import com.cometchat.uikit.kotlin.presentation.incomingcall.CometChatIncomingCall
-import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -37,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * This class serves as the entry point for the application and provides
  * methods to initialize the CometChat SDK with configurable credentials.
- * It also manages incoming call notifications using a Snackbar at the top of the screen.
  *
  * ## Key Design Decisions:
  * - SDK initialization is **deferred to the login flow** rather than being
@@ -45,8 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   switching and ensures initialization happens with valid credentials.
  * - **No Firebase/FCM initialization** - Push notifications are excluded
  *   from this sample app to maintain simplicity and focus on core chat features.
- * - **No VoIP/Calling setup** - Real-time VoIP calling is excluded from this sample app.
- * - **CometChatCalls SDK** is initialized for Calls UI features (call buttons, call logs).
+ * - **No calling** - This sample is chat only: no Calls tab, call buttons or incoming-call
+ *   UI, and `enableCalling` stays off. In Ringing v2 an incoming call reaches an app only
+ *   through the Push SDK, so calling lives in sample-app-kotlin-push.
  *
  * ## Usage:
  * ```kotlin
@@ -75,31 +53,17 @@ class SampleApplication : Application() {
 
     companion object {
         private const val TAG = "SampleApplication"
-        private val LISTENER_ID = "AppCallListener_${System.currentTimeMillis()}"
 
         // Static state for tracking app foreground/background
         var currentOpenChatId: String? = null
         private var isAppInForeground: Boolean = false
         var currentActivity: Activity? = null
-        private var tempCall: Call? = null
 
         fun isAppInForeground(): Boolean = isAppInForeground
-
-        fun getTempCall(): Call? = tempCall
-
-        fun setTempCall(call: Call?) {
-            tempCall = call
-        }
     }
 
     private var currentActivityInstance: Activity? = null
-    private var snackBar: Snackbar? = null
-    private var soundManager: CometChatSoundManager? = null
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val isConnectedToWebSockets = AtomicBoolean(false)
-
-    /** Flag to track if SDK has been initialized and listeners registered */
-    private var isSDKInitialized = false
 
     /**
      * Called when the application is starting, before any activity, service,
@@ -112,7 +76,6 @@ class SampleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "SampleApplication created")
-        soundManager = CometChatSoundManager(this)
 
         // Register activity lifecycle callbacks to track current activity and foreground state
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
@@ -129,12 +92,12 @@ class SampleApplication : Application() {
                 currentActivity = activity
 
                 // Connect to WebSocket when app comes to foreground.
-                // ENG-39442: guard on CometChat.isInitialized(): before credentials are entered the SDK is
+                // ENG-39442: guard on SDK init: before credentials are entered the SDK is
                 // not initialized, and calling connect() then crashes with the SDK's
                 // "Please call the CometChat.init() method..." error (getLoggedInUser hits an
                 // uninitialized SQLiteManager). Skipping here lets the app route to the credentials
                 // screen; connect still runs after init + login and on subsequent foregrounds.
-                if (CometChat.isInitialized() && isConnectedToWebSockets.compareAndSet(false, true)) {
+                if (CometChatUIKit.isSDKInitialized() && isConnectedToWebSockets.compareAndSet(false, true)) {
                     CometChat.connect(object : CometChat.CallbackListener<String?>() {
                         override fun onSuccess(s: String?) {
                             isConnectedToWebSockets.set(true)
@@ -155,10 +118,6 @@ class SampleApplication : Application() {
             override fun onActivityResumed(activity: Activity) {
                 currentActivityInstance = activity
                 currentActivity = activity
-                // Re-show snackbar if there's a pending call
-                if (snackBar != null && tempCall != null) {
-                    showTopSnackBar(tempCall)
-                }
             }
 
             override fun onActivityPaused(activity: Activity) {}
@@ -171,7 +130,7 @@ class SampleApplication : Application() {
 
                     // Disconnect WebSocket when app goes to background (only if the SDK was
                     // initialized — otherwise disconnect hits the same uninitialized-SDK crash). ENG-39442.
-                    if (CometChat.isInitialized()) {
+                    if (CometChatUIKit.isSDKInitialized()) {
                         CometChat.disconnect(object : CometChat.CallbackListener<String?>() {
                             override fun onSuccess(s: String?) {
                                 isConnectedToWebSockets.set(false)
@@ -195,7 +154,7 @@ class SampleApplication : Application() {
 
         // SDK initialization is deferred to login flow
         // No Firebase/FCM initialization (excluded from sample apps)
-        // No VoIP setup (excluded from sample apps)
+        // No calling (excluded from sample apps)
     }
 
     /**
@@ -281,7 +240,6 @@ class SampleApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setAutoEstablishSocketConnection(true)
-            .setEnableCalling(true)
             .build()
 
         // Initialize the CometChat UIKit
@@ -321,239 +279,4 @@ class SampleApplication : Application() {
         return CometChatUIKit.isSDKInitialized()
     }
 
-    /**
-     * Called after SDK initialization succeeds to register call listeners
-     * and initialize CometChatCalls SDK.
-     *
-     * This method is idempotent - it will only register listeners once.
-     * Call this method after successful SDK initialization to enable
-     * incoming call handling and Calls UI features.
-     *
-     * ## Usage:
-     * ```kotlin
-     * app.initializeCometChat(appId, region, authKey,
-     *     onSuccess = {
-     *         app.onSDKInitialized()
-     *         // Proceed with login
-     *     },
-     *     onError = { /* handle error */ }
-     * )
-     * ```
-     */
-    fun onSDKInitialized() {
-        if (!isSDKInitialized) {
-            isSDKInitialized = true
-            Log.d(TAG, "onSDKInitialized: Registering call listeners")
-
-            // Initialize CometChatCalls SDK after CometChatUIKit is initialized
-            // Call listeners are added in the success callback to ensure proper initialization order
-            initCometChatCalls()
-
-            // Add UIKit call events listener (this doesn't depend on CometChatCalls)
-            addCallEventsListener()
-        }
-    }
-
-    /**
-     * Initializes the CometChatCalls SDK using credentials from SharedPreferences.
-     * Call listeners are registered after successful initialization.
-     *
-     * Note: This initializes Calls UI features (call buttons, call logs) only.
-     * VoIP real-time calling is NOT included in this sample app.
-     */
-    private fun initCometChatCalls() {
-        val appPreferences = AppPreferences(this)
-        val appId = appPreferences.getAppId()
-        val region = appPreferences.getRegion()
-
-        if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot initialize CometChatCalls: missing credentials")
-            return
-        }
-
-        val callAppSettings = CallAppSettings.CallAppSettingBuilder()
-            .setAppId(appId)
-            .setRegion(region)
-            .build()
-
-        CometChatCalls.init(this, callAppSettings, object : CometChatCalls.CallbackListener<String>() {
-            override fun onSuccess(p0: String?) {
-                Log.d(TAG, "CometChatCalls init onSuccess: $p0")
-                // Add call listener AFTER CometChatCalls is initialized
-                addCallListener()
-            }
-
-            override fun onError(p0: com.cometchat.calls.exceptions.CometChatException?) {
-                Log.e(TAG, "CometChatCalls init onError: ${p0?.message}")
-            }
-        })
-    }
-
-    /**
-     * Adds a call listener to handle incoming calls using SDK listeners.
-     */
-    private fun addCallListener() {
-        CometChat.addCallListener(LISTENER_ID, object : CometChat.CallListener() {
-            override fun onIncomingCallReceived(call: Call) {
-                Log.d(TAG, "onIncomingCallReceived: ${call.sessionId}")
-                playSound()
-                launchIncomingCallPopup(call)
-            }
-
-            override fun onOutgoingCallAccepted(call: Call) {
-                Log.d(TAG, "onOutgoingCallAccepted: ${call.sessionId}")
-                dismissTopSnackBar()
-            }
-
-            override fun onOutgoingCallRejected(call: Call) {
-                Log.d(TAG, "onOutgoingCallRejected: ${call.sessionId}")
-                dismissTopSnackBar()
-            }
-
-            override fun onIncomingCallCancelled(call: Call) {
-                Log.d(TAG, "onIncomingCallCancelled: ${call.sessionId}")
-                dismissTopSnackBar()
-            }
-
-            override fun onCallEndedMessageReceived(call: Call) {
-                Log.d(TAG, "onCallEndedMessageReceived: ${call.sessionId}")
-                dismissTopSnackBar()
-            }
-        })
-    }
-
-    /**
-     * Adds UIKit call events listener to handle call accepted/rejected from UI.
-     */
-    private fun addCallEventsListener() {
-        applicationScope.launch {
-            CometChatEvents.callEvents.collect { event ->
-                when (event) {
-                    is CometChatCallEvent.CallAccepted -> {
-                        Log.d(TAG, "CallAccepted event received")
-                        dismissTopSnackBar()
-                    }
-                    is CometChatCallEvent.CallRejected -> {
-                        Log.d(TAG, "CallRejected event received")
-                        dismissTopSnackBar()
-                    }
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    /**
-     * Launches an incoming call popup when an incoming call is received.
-     */
-    private fun launchIncomingCallPopup(call: Call) {
-        // Check if call initiator is the logged-in user
-        val callInitiator = call.callInitiator
-        if (callInitiator is User) {
-            val loggedInUser = CometChatUIKit.getLoggedInUser()
-            if (loggedInUser != null && loggedInUser.uid.equals(callInitiator.uid, ignoreCase = true)) {
-                return
-            }
-        }
-
-        // Check if there's already an active call
-        if (CometChat.getActiveCall() == null && CallManager.getActiveCall() == null) {
-            CallManager.setActiveCall(call)
-            showTopSnackBar(call)
-        } else {
-            rejectCallWithBusyStatus(call)
-        }
-    }
-
-    /**
-     * Displays a custom SnackBar notification at the top of the screen for incoming calls.
-     */
-    @SuppressLint("RestrictedApi")
-    private fun showTopSnackBar(call: Call?) {
-        if (currentActivityInstance == null || call == null) return
-        tempCall = call
-
-        // Dismiss existing snackbar if showing to prevent multiple instances
-        if (snackBar != null && snackBar!!.isShown) {
-            snackBar?.dismiss()
-        }
-
-        // Get the root view of the current activity
-        val rootView: View = currentActivityInstance!!.findViewById(android.R.id.content)
-
-        // Create the incoming call component
-        val cometChatIncomingCall = CometChatIncomingCall(currentActivityInstance!!).apply {
-            setDisableSoundForCalls(true) // Sound is managed by Application
-            setCall(call)
-            fitsSystemWindows = true
-            setOnError { _ -> dismissTopSnackBar() }
-        }
-
-        // Create and configure the snackbar
-        snackBar = Snackbar.make(rootView, " ", Snackbar.LENGTH_INDEFINITE)
-        val layout = snackBar?.view as? Snackbar.SnackbarLayout
-        layout?.let {
-            val params = it.layoutParams as FrameLayout.LayoutParams
-            params.gravity = Gravity.TOP
-            params.topMargin = Utils.convertDpToPx(this, 35)
-            it.layoutParams = params
-            it.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            it.addView(cometChatIncomingCall, 0)
-        }
-
-        snackBar?.show()
-    }
-
-    /**
-     * Dismisses the current top SnackBar if it's being shown.
-     */
-    private fun dismissTopSnackBar() {
-        if (snackBar != null && snackBar!!.isShown) {
-            snackBar?.dismiss()
-            snackBar = null
-            tempCall = null
-            CallManager.setActiveCall(null)
-        }
-        pauseSound()
-    }
-
-    /**
-     * Rejects an incoming call with busy status when already in a call.
-     */
-    private fun rejectCallWithBusyStatus(call: Call) {
-        Thread {
-            try {
-                Thread.sleep(2000)
-            } catch (e: InterruptedException) {
-                Log.e(TAG, "Sleep interrupted: ${e.message}")
-            }
-            CometChat.rejectCall(
-                call.sessionId,
-                CometChatConstants.CALL_STATUS_BUSY,
-                object : CometChat.CallbackListener<Call>() {
-                    override fun onSuccess(rejectedCall: Call) {
-                        Log.d(TAG, "Call rejected with busy status")
-                    }
-
-                    override fun onError(e: CometChatException) {
-                        Log.e(TAG, "Failed to reject call: ${e.message}")
-                    }
-                }
-            )
-        }.start()
-    }
-
-    /**
-     * Plays the sound for an incoming call notification.
-     */
-    private fun playSound() {
-        soundManager?.play(Sound.INCOMING_CALL, 0)
-    }
-
-    /**
-     * Silently pauses any currently playing sound.
-     */
-    private fun pauseSound() {
-        soundManager?.pauseSilently()
-    }
 }

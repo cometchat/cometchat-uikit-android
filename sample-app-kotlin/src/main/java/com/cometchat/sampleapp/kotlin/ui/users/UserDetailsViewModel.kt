@@ -3,7 +3,6 @@ package com.cometchat.sampleapp.kotlin.ui.users
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.cometchat.chat.constants.CometChatConstants
-import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.CometChat.UserListener
 import com.cometchat.chat.exceptions.CometChatException
@@ -23,8 +22,6 @@ class UserDetailsViewModel : ViewModel() {
     
     private val USER_LISTENER_ID: String = UserDetailsViewModel::class.java.simpleName
     private val _baseMessage: MutableLiveData<BaseMessage?> = MutableLiveData()
-    private val _onCallStart = MutableLiveData<Call>()
-    private val _onCallStartError = MutableLiveData<String?>()
     
     val user: MutableLiveData<User?> = MutableLiveData()
     val isUserBlockedByMe: MutableLiveData<Boolean> = MutableLiveData()
@@ -32,8 +29,6 @@ class UserDetailsViewModel : ViewModel() {
     val isUserUnblocked: MutableLiveData<Boolean> = MutableLiveData()
     val isChatDeleted: MutableLiveData<Boolean> = MutableLiveData()
     
-    fun onCallStart(): MutableLiveData<Call> = _onCallStart
-    fun onCallStartError(): MutableLiveData<String?> = _onCallStartError
     fun getBaseMessage(): MutableLiveData<BaseMessage?> = _baseMessage
     
     fun addListeners() {
@@ -162,21 +157,4 @@ class UserDetailsViewModel : ViewModel() {
         }
     }
     
-    fun startCall(callType: String?) {
-        val currentUser = user.value
-        if (currentUser != null) {
-            val call = Call(currentUser.uid, CometChatConstants.RECEIVER_TYPE_USER, callType)
-            CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(call: Call) {
-                    _onCallStart.value = call
-                }
-                
-                override fun onError(e: CometChatException) {
-                    _onCallStartError.value = e.message
-                }
-            })
-        } else {
-            _onCallStartError.value = "User is null"
-        }
-    }
 }

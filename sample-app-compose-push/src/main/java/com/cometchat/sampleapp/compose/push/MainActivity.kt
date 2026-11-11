@@ -35,14 +35,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
 import android.Manifest
 import android.os.Build
-import com.cometchat.pushnotification.helpers.CometChatPNHelper
+import com.cometchat.pushnotification.RingReadiness
+import com.cometchat.pushnotification.CometChatPushNotifications
+import androidx.core.content.ContextCompat
+import android.widget.Toast
+import android.content.pm.PackageManager
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.PushNotification
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.presentation.conversations.ui.CometChatConversations
-import com.cometchat.uikit.compose.presentation.incomingcall.ui.CometChatIncomingCall
 import com.cometchat.uikit.compose.presentation.messagecomposer.ui.CometChatMessageComposer
 import com.cometchat.uikit.compose.presentation.messageheader.ui.CometChatMessageHeader
 import com.cometchat.uikit.compose.presentation.messagelist.ui.CometChatMessageList
@@ -116,7 +119,25 @@ class MainActivity : ComponentActivity() {
         handleNotificationIntent(intent)
 
         setContent {
-            MainNavigation()
+            // The ring-readiness check runs only after the sign-in permission request returns:
+            // ensureRingReady asks for POST_NOTIFICATIONS itself, and a request made while
+            // another is open is dropped by Android, which lost the mic prompt at sign-in.
+            MainNavigation(onSignInPermissionsSettled = ::checkRingReadiness)
+        }
+    }
+
+    /**
+     * Names what would silence an incoming call on this phone (notifications off, muted channel,
+     * full-screen intent revoked on Android 14+, Do Not Disturb). Logged for now; the matching
+     * settings screen is one tap away via CometChatPushNotifications.settingsIntentFor.
+     */
+    private fun checkRingReadiness() {
+        CometChatPushNotifications.ensureRingReady(this) { result ->
+            val readiness = result.valueOrNull() ?: return@ensureRingReady
+            if (readiness != RingReadiness.READY) {
+                Log.w(TAG, "Incoming calls may not ring: $readiness")
+                Toast.makeText(this, "Incoming calls may not ring: $readiness", Toast.LENGTH_LONG).show()
+            }
         }
     }
     
@@ -208,42 +229,42 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Main navigation composable that uses NavHost-based navigation.
- * Delegates all navigation handling to AppNavigation composable.
- * Also observes incoming call state and shows incoming call UI overlay.
- */
-/**
- * Requests the POST_NOTIFICATIONS runtime permission on Android 13+ using a Compose launcher.
- * Relies on the CometChat SDK helper to read the current permission state.
+ * Asks at sign-in for notifications (Android 13+), the microphone and the camera, in ONE
+ * request. Android shows one permission request at a time and drops a second one made while
+ * the first is still open, so two separate launchers lost the mic prompt on Android 13+.
+ * Mic and camera are asked here because the UIKit asks for no runtime permission before a call.
  */
 @Composable
-private fun RequestNotificationPermission() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+private fun RequestSignInPermissions(onSettled: () -> Unit) {
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        Log.d("MainActivity", "POST_NOTIFICATIONS granted=$granted")
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+        Log.d("MainActivity", "sign-in permissions: $result")
+        onSettled()
     }
     LaunchedEffect(Unit) {
-        if (!CometChatPNHelper.hasNotificationPermission(context)) {
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        val wanted = buildList {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
         }
+        val missing = wanted.filter {
+            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty()) launcher.launch(missing.toTypedArray()) else onSettled()
     }
 }
 
+/**
+ * Main navigation composable that uses NavHost-based navigation.
+ * Delegates all navigation handling to AppNavigation composable.
+ */
 @Composable
-fun MainNavigation() {
+fun MainNavigation(onSignInPermissionsSettled: () -> Unit = {}) {
     val systemDarkMode = isSystemInDarkTheme()
     var isDarkMode by remember { mutableStateOf(systemDarkMode) }
     val navController = rememberNavController()
 
-    // Request the POST_NOTIFICATIONS runtime permission (Android 13+).
-    RequestNotificationPermission()
+    // Notifications, mic and camera in one sign-in request (see RequestSignInPermissions).
+    RequestSignInPermissions(onSettled = onSignInPermissionsSettled)
 
-    // Observe incoming call state from Application
-    val application = ComposeApplication.getInstance()
-    val incomingCall by application?.incomingCall?.collectAsState() ?: remember { mutableStateOf(null) }
     
     AppTheme(isDarkTheme = isDarkMode) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -255,31 +276,6 @@ fun MainNavigation() {
                 onDarkModeChange = { isDarkMode = it }
             )
             
-            // Incoming call overlay at the top
-            incomingCall?.let { call ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 48.dp, start = 16.dp, end = 16.dp)
-                        .align(Alignment.TopCenter)
-                ) {
-                    CometChatIncomingCall(
-                        call = call,
-                        modifier = Modifier.fillMaxWidth(),
-                        disableSoundForCalls = true, // Sound is managed by Application
-                        // Don't provide onAcceptClick - let the component handle accept via viewModel.acceptCall()
-                        // and auto-launch CometChatOngoingCallActivity
-                        onAcceptClick = null,
-                        // Don't provide onRejectClick - let the component handle rejection via viewModel.rejectCall()
-                        // The CallRejected event will trigger dismissIncomingCall() via addCallEventsListener()
-                        onRejectClick = null,
-                        onError = { exception ->
-                            Log.e("MainActivity", "IncomingCall error: code=${exception.code}, message=${exception.message}", exception)
-                            application?.dismissIncomingCall()
-                        }
-                    )
-                }
-            }
         }
     }
 }

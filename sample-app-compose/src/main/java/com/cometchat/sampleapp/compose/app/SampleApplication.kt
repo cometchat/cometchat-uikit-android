@@ -1,33 +1,12 @@
 package com.cometchat.sampleapp.compose.app
 
-import android.app.Activity
 import android.app.Application
-import android.os.Bundle
 import android.util.Log
-import com.cometchat.calls.core.CallAppSettings
-import com.cometchat.calls.core.CometChatCalls
-import com.cometchat.chat.constants.CometChatConstants
-import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
-import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.compose.utils.AppPreferences
-import com.cometchat.uikit.compose.presentation.ongoingcall.ui.CometChatOngoingCallActivity
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
-import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
-import com.cometchat.uikit.core.events.CometChatCallEvent
-import com.cometchat.uikit.core.events.CometChatEvents
-import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
-import com.cometchat.uikit.core.resources.soundmanager.Sound
-import com.cometchat.uikit.core.utils.CallManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * Application class for the CometChat Sample App (Jetpack Compose).
@@ -41,11 +20,9 @@ import kotlinx.coroutines.launch
  *   switching and ensures initialization happens with valid credentials.
  * - **No Firebase/FCM initialization** - Push notifications are excluded
  *   from this sample app to maintain simplicity and focus on core chat features.
- * - **In-app calling is wired.** After the SDK is initialized, [onSDKInitialized]
- *   initializes the Calls SDK and registers a [CometChat.CallListener] so that an
- *   incoming voice/video call surfaces the [com.cometchat.uikit.compose.presentation.incomingcall.ui.CometChatIncomingCall]
- *   overlay (observed by MainActivity via [incomingCall]). This mirrors master-app-compose's
- *   foreground call chain; killed-state FCM/VoIP push is intentionally out of scope for the sample.
+ * - **No calling** - This sample is chat only: no Calls tab, call buttons or incoming-call
+ *   UI, and `enableCalling` stays off. In Ringing v2 an incoming call reaches an app only
+ *   through the Push SDK, so calling lives in sample-app-compose-push.
  *
  * @see CometChatUIKit
  * @see UIKitSettings
@@ -54,25 +31,7 @@ class SampleApplication : Application() {
 
     companion object {
         private const val TAG = "SampleApplication"
-        private val LISTENER_ID = "AppCallListener_${System.currentTimeMillis()}"
-
-        private var instance: SampleApplication? = null
-        private var tempCall: Call? = null
-
-        /** Access the singleton so Compose UI (MainActivity) can observe incoming-call state. */
-        fun getInstance(): SampleApplication? = instance
     }
-
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private var soundManager: CometChatSoundManager? = null
-    private var currentActivityInstance: Activity? = null
-
-    // Guards against registering the call listeners more than once.
-    private var callListenersRegistered = false
-
-    // Incoming call state exposed for Compose UI to observe.
-    private val _incomingCall = MutableStateFlow<Call?>(null)
-    val incomingCall: StateFlow<Call?> = _incomingCall.asStateFlow()
 
     /**
      * Called when the application is starting, before any activity, service,
@@ -84,35 +43,7 @@ class SampleApplication : Application() {
      */
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        soundManager = CometChatSoundManager(this)
         Log.d(TAG, "SampleApplication created")
-
-        // Track the current activity (needed to launch the ongoing-call screen) and re-show a
-        // pending incoming call when an activity resumes.
-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                currentActivityInstance = activity
-            }
-
-            override fun onActivityStarted(activity: Activity) {
-                currentActivityInstance = activity
-            }
-
-            override fun onActivityResumed(activity: Activity) {
-                currentActivityInstance = activity
-                if (_incomingCall.value == null && tempCall != null) {
-                    _incomingCall.value = tempCall
-                }
-            }
-
-            override fun onActivityPaused(activity: Activity) {}
-            override fun onActivityStopped(activity: Activity) {}
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-            override fun onActivityDestroyed(activity: Activity) {
-                if (currentActivityInstance === activity) currentActivityInstance = null
-            }
-        })
     }
 
     /**
@@ -191,7 +122,7 @@ class SampleApplication : Application() {
             return
         }
 
-        // Persist credentials so the Calls SDK init (and warm-start paths) can read them.
+        // Persist credentials so warm-start paths can read them.
         AppPreferences(this).saveCredentials(appId = appId, region = region, authKey = authKey)
 
         // Build UIKit settings with the provided credentials
@@ -201,7 +132,6 @@ class SampleApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setAutoEstablishSocketConnection(true)
-            .setEnableCalling(true)
             .build()
 
         // Initialize the CometChat UIKit
@@ -211,8 +141,6 @@ class SampleApplication : Application() {
             callbackListener = object : CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String?) {
                     Log.d(TAG, "CometChat SDK initialized successfully: $result")
-                    // Wire the Calls SDK + incoming-call listener now that the SDK is ready.
-                    onSDKInitialized()
                     onSuccess()
                 }
 
@@ -243,158 +171,4 @@ class SampleApplication : Application() {
         return CometChatUIKit.isSDKInitialized()
     }
 
-    // ─── Calling ────────────────────────────────────────────────────────────────
-
-    /**
-     * Registers the Calls SDK and the incoming-call listeners after the CometChat SDK is
-     * initialized. Idempotent — repeated calls (credential switch, re-login) are no-ops.
-     *
-     * Called from [initializeCometChat]'s success callback for the normal app flow, and directly
-     * by the E2E harness after it initializes the SDK itself.
-     */
-    fun onSDKInitialized() {
-        if (callListenersRegistered) return
-        callListenersRegistered = true
-        Log.d(TAG, "onSDKInitialized — registering call listeners")
-        initCometChatCalls()
-        addCallEventsListener()
-    }
-
-    /** Initializes the CometChatCalls SDK, then registers the incoming-call listener. */
-    private fun initCometChatCalls() {
-        val prefs = AppPreferences(this)
-        val appId = prefs.getAppId()
-        val region = prefs.getRegion()
-        if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
-            Log.e(TAG, "Cannot initialize CometChatCalls: missing credentials")
-            return
-        }
-        val callAppSettings = CallAppSettings.CallAppSettingBuilder()
-            .setAppId(appId)
-            .setRegion(region)
-            .build()
-        CometChatCalls.init(this, callAppSettings, object : CometChatCalls.CallbackListener<String>() {
-            override fun onSuccess(p0: String?) {
-                Log.d(TAG, "CometChatCalls init onSuccess: $p0")
-                addCallListener()
-            }
-
-            override fun onError(p0: com.cometchat.calls.exceptions.CometChatException?) {
-                Log.e(TAG, "CometChatCalls init onError: ${p0?.message}")
-            }
-        })
-    }
-
-    /** Handles incoming calls via WebSocket (in-app, foreground). */
-    private fun addCallListener() {
-        CometChat.addCallListener(LISTENER_ID, object : CometChat.CallListener() {
-            override fun onIncomingCallReceived(call: Call) {
-                Log.d(TAG, "onIncomingCallReceived: ${call.sessionId}")
-                playSound()
-                launchIncomingCallPopup(call)
-            }
-
-            override fun onOutgoingCallAccepted(call: Call) {
-                Log.d(TAG, "onOutgoingCallAccepted: ${call.sessionId}")
-                dismissIncomingCall()
-            }
-
-            override fun onOutgoingCallRejected(call: Call) {
-                Log.d(TAG, "onOutgoingCallRejected: ${call.sessionId}")
-                dismissIncomingCall()
-            }
-
-            override fun onIncomingCallCancelled(call: Call) {
-                Log.d(TAG, "onIncomingCallCancelled: ${call.sessionId}")
-                dismissIncomingCall()
-            }
-
-            override fun onCallEndedMessageReceived(call: Call) {
-                Log.d(TAG, "onCallEndedMessageReceived: ${call.sessionId}")
-                dismissIncomingCall()
-            }
-        })
-    }
-
-    /** Handles call accepted/rejected raised from the incoming-call UI. */
-    private fun addCallEventsListener() {
-        applicationScope.launch {
-            CometChatEvents.callEvents.collect { event ->
-                when (event) {
-                    is CometChatCallEvent.CallAccepted -> {
-                        if (_incomingCall.value != null) {
-                            val call = event.call
-                            currentActivityInstance?.let { activity ->
-                                CometChatOngoingCallActivity.launchOngoingCallActivity(
-                                    activity,
-                                    call.sessionId,
-                                    call.type,
-                                    CallWorkFlow.DEFAULT,
-                                    null,
-                                    null
-                                )
-                            }
-                        }
-                        dismissIncomingCall()
-                    }
-
-                    is CometChatCallEvent.CallRejected -> dismissIncomingCall()
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    /** Surfaces the incoming-call overlay, guarding against self-calls and busy state. */
-    private fun launchIncomingCallPopup(call: Call) {
-        val callInitiator = call.callInitiator
-        if (callInitiator is User) {
-            val loggedInUser = CometChatUIKit.getLoggedInUser()
-            if (loggedInUser != null && loggedInUser.uid.equals(callInitiator.uid, ignoreCase = true)) {
-                return
-            }
-        }
-        if (CometChat.getActiveCall() == null && CallManager.getActiveCall() == null) {
-            CallManager.setActiveCall(call)
-            tempCall = call
-            _incomingCall.value = call
-        } else {
-            rejectCallWithBusyStatus(call)
-        }
-    }
-
-    /** Dismisses the incoming-call overlay and clears active-call state. */
-    fun dismissIncomingCall() {
-        if (_incomingCall.value != null) {
-            _incomingCall.value = null
-            tempCall = null
-            CallManager.setActiveCall(null)
-        }
-        pauseSound()
-    }
-
-    /** Rejects an incoming call with busy status when already in a call. */
-    private fun rejectCallWithBusyStatus(call: Call) {
-        CometChat.rejectCall(
-            call.sessionId,
-            CometChatConstants.CALL_STATUS_BUSY,
-            object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(rejectedCall: Call) {
-                    Log.d(TAG, "Call rejected with busy status")
-                }
-
-                override fun onError(e: CometChatException) {
-                    Log.e(TAG, "Failed to reject call: ${e.message}")
-                }
-            }
-        )
-    }
-
-    private fun playSound() {
-        soundManager?.play(Sound.INCOMING_CALL, 0)
-    }
-
-    private fun pauseSound() {
-        soundManager?.pauseSilently()
-    }
 }

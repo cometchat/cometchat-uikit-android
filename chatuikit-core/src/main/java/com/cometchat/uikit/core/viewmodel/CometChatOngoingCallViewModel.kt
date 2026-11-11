@@ -25,6 +25,7 @@ import com.cometchat.uikit.core.models.OngoingCallUIState
 import com.cometchat.uikit.core.utils.CallingState
 import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatLogger
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -50,6 +51,12 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
 
     public companion object {
         private const val TAG = "CometChatOngoingCallViewModel"
+
+        /** How often startCall checks that the session is joined before revealing the call view. */
+        private const val JOIN_CHECK_INTERVAL_MS = 250L
+
+        /** Reveals the call view after this long even if no join was seen, so the spinner never sticks. */
+        private const val JOIN_REVEAL_TIMEOUT_MS = 10_000L
     }
 
     // ==================== State Flows ====================
@@ -103,6 +110,12 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
     internal var callType: String? = null
 
     /**
+     * The call this session belongs to, when known (e.g. the incoming call the Push SDK
+     * handed to the answer activity). Used to emit CometChatCallEvent.CallEnded.
+     */
+    private var call: Call? = null
+
+    /**
      * Current call workflow.
      * DEFAULT for 1:1 calls, MEETING for group calls.
      * Defaults to DEFAULT.
@@ -123,7 +136,7 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
 
     /**
      * The active CallSession instance returned by joinSession().
-     * Used for session actions (leaveSession, etc.) and lifecycle-aware listeners.
+     * Used for session actions (leave(), etc.) and lifecycle-aware listeners.
      */
     internal var callSession: CallSession? = null
 
@@ -160,6 +173,15 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
      */
     public fun setSessionId(sessionId: String) {
         this.sessionId = sessionId
+    }
+
+    /**
+     * Sets the call this session belongs to, so hanging up can emit
+     * CometChatCallEvent.CallEnded with it.
+     * @param call The call, or null when unknown
+     */
+    public fun setCall(call: Call?) {
+        this.call = call
     }
 
     /**
@@ -231,7 +253,13 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
         } else {
             SessionType.VIDEO
         }
-        sessionSettings = builder.setSessionType(sessionType).build()
+        // A 1:1 call is a peer call, matching the prepared session: the Calls SDK leaves the
+        // room when the other side leaves. A meeting is not. Set either way, since the builder
+        // may be the app's shared one.
+        sessionSettings = builder
+            .setSessionType(sessionType)
+            .setPeerCall(callWorkFlow == CallWorkFlow.DEFAULT)
+            .build()
 
         val settings = sessionSettings ?: return
 
@@ -240,9 +268,11 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
             override fun onSuccess(session: CallSession) {
                 // Store the CallSession for actions and events
                 callSession = session
-                // On success: set isLoading false, UI state to Connected (Requirements 3.5, 3.6)
-                mutableIsLoading.value = false
-                mutableUiState.value = OngoingCallUIState.Connected(sid, type)
+                // joinSession succeeds before the call is joined and its view drawn; revealing
+                // the call view here showed an empty, zero-width view for seconds (ENG-40740).
+                // Reveal once the session is joined: onSessionJoined, or this check when the
+                // status listener could not be registered before the join.
+                viewModelScope.launch { revealWhenJoined(session, sid, type) }
             }
 
             override fun onError(e: com.cometchat.calls.exceptions.CometChatException) {
@@ -257,16 +287,37 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
     }
 
     /**
+     * Waits until [session] reports joined (at most [JOIN_REVEAL_TIMEOUT_MS]), then reveals the
+     * call view. Stops early if the call has already been revealed, ended or failed.
+     */
+    private suspend fun revealWhenJoined(session: CallSession, sid: String, type: String) {
+        var waited = 0L
+        while (!session.isSessionJoined() && waited < JOIN_REVEAL_TIMEOUT_MS) {
+            if (mutableUiState.value !is OngoingCallUIState.Loading) return
+            delay(JOIN_CHECK_INTERVAL_MS)
+            waited += JOIN_CHECK_INTERVAL_MS
+        }
+        markConnected(sid, type)
+    }
+
+    /** Moves Loading to Connected, once; later calls and any other state are left alone. */
+    private fun markConnected(sid: String? = sessionId, type: String? = callType) {
+        if (mutableUiState.value !is OngoingCallUIState.Loading) return
+        if (sid == null || type == null) return
+        mutableIsLoading.value = false
+        mutableUiState.value = OngoingCallUIState.Connected(sid, type)
+    }
+
+    /**
      * Ends the current call with workflow-dependent cleanup.
      *
      * For DEFAULT workflow (1:1 calls):
-     * 1. Call CometChat.endCall(sessionId)
-     * 2. On success: call callSession.leaveSession(), CometChat.clearActiveCall()
+     * 1. Leave the session via callSession.leave() (ringing v2; no Chat SDK endCall)
+     * 2. Clear the UIKit's active call
      * 3. Set UI state to Ended, emit CallEnded event
-     * 4. On failure: still set Ended state, emit Error event
      *
      * For MEETING workflow (group calls):
-     * 1. Call callSession.leaveSession() only
+     * 1. Call callSession.leave() only
      * 2. Set CallingState.setIsActiveMeeting(false)
      * 3. Set UI state to Ended, emit CallEnded event
      *
@@ -274,11 +325,21 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
      * Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7
      */
     public fun endCall() {
+        // Ringing v2: hanging up leaves the media session. The Chat SDK's endCall and
+        // clearActiveCall are deprecated and not used.
+        callSession?.leave()
+            ?: CallSession.getInstance()?.leave()
+        onCallLeft()
+    }
+
+    /**
+     * Local clean-up once this device has left the session: clears the UIKit's call state,
+     * moves the UI to Ended and emits CallEnded. It does not leave the session itself, so it
+     * is also what runs when the Calls SDK's own End button has already left.
+     */
+    private fun onCallLeft() {
         when (callWorkFlow) {
             CallWorkFlow.MEETING -> {
-                // For MEETING: leave session via CallSession instance
-                callSession?.leaveSession()
-                    ?: CallSession.getInstance()?.leaveSession()
                 CallingState.setIsActiveMeeting(false)
                 mutableUiState.value = OngoingCallUIState.Ended
                 viewModelScope.launch {
@@ -286,42 +347,18 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
                 }
             }
             CallWorkFlow.DEFAULT -> {
-                // For DEFAULT: call CometChat.endCall(), then cleanup
-                val sid = sessionId ?: run {
-                    // If no session ID, still transition to Ended state
-                    mutableUiState.value = OngoingCallUIState.Ended
-                    return
+                CallingState.setActiveCall(null)
+
+                mutableUiState.value = OngoingCallUIState.Ended
+                viewModelScope.launch {
+                    mutableEvents.emit(OngoingCallEvent.CallEnded)
                 }
 
-                CometChat.endCall(sid, object : CometChat.CallbackListener<Call>() {
-                    override fun onSuccess(call: Call?) {
-                        // On success: leave session via CallSession, clear active call
-                        // (Requirement 7.2, 7.3)
-                        callSession?.leaveSession()
-                            ?: CallSession.getInstance()?.leaveSession()
-                        CometChat.clearActiveCall()
-                        
-                        // Set UI state to Ended, emit CallEnded event (Requirement 7.4, 7.5)
-                        mutableUiState.value = OngoingCallUIState.Ended
-                        viewModelScope.launch {
-                            mutableEvents.emit(OngoingCallEvent.CallEnded)
-                        }
-                        
-                        // Emit UIKit event for inter-component communication
-                        call?.let {
-                            CometChatEvents.emitCallEvent(CometChatCallEvent.CallEnded(it))
-                        }
-                    }
-
-                    override fun onError(e: CometChatException) {
-                        // On failure: still set Ended state, emit Error event (Requirement 7.6, 7.7)
-                        CometChatLogger.e(TAG, "endCall error: $e")
-                        mutableUiState.value = OngoingCallUIState.Ended
-                        viewModelScope.launch {
-                            mutableEvents.emit(OngoingCallEvent.Error(e))
-                        }
-                    }
-                })
+                // Emit UIKit event for inter-component communication
+                call?.let { endedCall ->
+                    CometChatEvents.emitCallEvent(CometChatCallEvent.CallEnded(endedCall))
+                }
+                Unit
             }
         }
     }
@@ -345,7 +382,8 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
         // 1. Session lifecycle listener
         session.addSessionStatusListener(resolvedOwner, object : SessionStatusListener() {
             override fun onSessionJoined() {
-                // No additional action — UI state already set in joinSession callback
+                // The call view is live: reveal it (ENG-40740).
+                markConnected()
             }
 
             /**
@@ -359,7 +397,7 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
                 when (callWorkFlow) {
                     CallWorkFlow.DEFAULT -> {
                         // Session already left — just clean up and transition to Ended
-                        CometChat.clearActiveCall()
+                        CallingState.setActiveCall(null)
                         mutableUiState.value = OngoingCallUIState.Ended
                         viewModelScope.launch {
                             mutableEvents.emit(OngoingCallEvent.CallEnded)
@@ -384,7 +422,7 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
              */
             override fun onSessionTimedOut() {
                 CallingState.setIsActiveMeeting(false)
-                // Session already timed out — no need to call leaveSession()
+                // Session already timed out — no need to call leave()
                 mutableUiState.value = OngoingCallUIState.Ended
                 viewModelScope.launch {
                     mutableEvents.emit(OngoingCallEvent.SessionTimeout)
@@ -399,8 +437,23 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
                 CometChatLogger.d(TAG, "Call connection restored")
             }
 
+            /**
+             * The connection to the call closed without a session-left event: the join failed
+             * (e.g. no network right after the device woke) or the room went away. The call is
+             * over for this screen, as on Flutter; without this it stayed on "The session has
+             * ended." with nothing to close it.
+             */
             override fun onConnectionClosed() {
                 CometChatLogger.d(TAG, "Call connection closed")
+                if (mutableUiState.value is OngoingCallUIState.Ended) return
+                when (callWorkFlow) {
+                    CallWorkFlow.DEFAULT -> CallingState.setActiveCall(null)
+                    CallWorkFlow.MEETING -> CallingState.setIsActiveMeeting(false)
+                }
+                mutableUiState.value = OngoingCallUIState.Ended
+                viewModelScope.launch {
+                    mutableEvents.emit(OngoingCallEvent.CallEnded)
+                }
             }
         })
 
@@ -476,26 +529,14 @@ open public class CometChatOngoingCallViewModel : ViewModel() {
         // 3. Button click listener
         session.addButtonClickListener(resolvedOwner, object : ButtonClickListener() {
             /**
-             * Called when the user presses the leave session button in the SDK UI.
-             * For DEFAULT workflow: call endCall()
-             * For MEETING workflow: leave session only + exit
+             * Called when the user presses the leave session button in the SDK UI. The Calls
+             * SDK has already left the session before notifying (its button runs
+             * leave() first), so only the local clean-up runs here.
              *
              * Validates: Requirements 6.3, 6.4
              */
             override fun onLeaveSessionButtonClicked() {
-                when (callWorkFlow) {
-                    CallWorkFlow.DEFAULT -> {
-                        endCall()
-                    }
-                    CallWorkFlow.MEETING -> {
-                        session.leaveSession()
-                        CallingState.setIsActiveMeeting(false)
-                        mutableUiState.value = OngoingCallUIState.Ended
-                        viewModelScope.launch {
-                            mutableEvents.emit(OngoingCallEvent.CallEnded)
-                        }
-                    }
-                }
+                onCallLeft()
             }
 
             override fun onToggleAudioButtonClicked() {

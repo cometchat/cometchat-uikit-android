@@ -2,6 +2,7 @@ package com.cometchat.uikit.core.viewmodel
 
 import android.content.Context
 import android.view.View
+import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.constants.CometChatConstants
@@ -25,6 +26,8 @@ import com.cometchat.uikit.core.models.AttachmentSource
 import com.cometchat.uikit.core.models.AttachmentUploadStatus
 import com.cometchat.uikit.core.models.AttachmentUploadTile
 import com.cometchat.uikit.core.models.StagedAttachmentInput
+import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
+import com.cometchat.uikit.core.resources.soundmanager.Sound
 import com.cometchat.uikit.core.domain.model.CometChatMessageComposerAction
 import com.cometchat.uikit.core.domain.usecase.EditMessageUseCase
 import com.cometchat.uikit.core.domain.usecase.SendCustomMessageUseCase
@@ -364,6 +367,15 @@ open public class CometChatMessageComposerViewModel(
     /** Shared listener for every upload batch; routes SDK callbacks to tiles by `fileId`. */
     private val mediaUploadListener: UploadFileListener by lazy { createUploadFileListener() }
 
+    /** Whether to suppress the sound played when the local user sends a message. */
+    private var disableSoundForMessages: Boolean = false
+
+    /** Custom sound resource ID for outgoing messages, or 0 for the default sound. */
+    @RawRes private var customSoundForMessages: Int = 0
+
+    /** Sound manager for playing the outgoing message sound. */
+    private var soundManager: CometChatSoundManager? = null
+
     // Event listener jobs
     private var messageEventsJob: Job? = null
     private var uiEventsJob: Job? = null
@@ -515,10 +527,61 @@ open public class CometChatMessageComposerViewModel(
     /** Job for monitoring stream completion as a fallback safety mechanism. */
     private var streamMonitorJob: Job? = null
 
+    // ==================== Outgoing Message Sound ====================
+
+    /**
+     * Initializes the sound manager used for the outgoing message sound.
+     *
+     * Call this from the UI layer; the manager is created once and keeps the application
+     * context. Without it no outgoing sound is played.
+     *
+     * @param context The Android context (application context recommended).
+     */
+    public fun initSoundManager(context: Context) {
+        if (soundManager == null) {
+            soundManager = CometChatSoundManager(context.applicationContext)
+        }
+    }
+
+    /**
+     * Sets whether the outgoing message sound is suppressed.
+     *
+     * Mirrors [CometChatMessageListViewModel.setDisableSoundForMessages], which owns the
+     * incoming sound, so both directions are configured the same way.
+     *
+     * @param disable `true` to disable the sound, `false` to enable (default).
+     */
+    public fun setDisableSoundForMessages(disable: Boolean) {
+        disableSoundForMessages = disable
+    }
+
+    /**
+     * Sets a custom sound resource for outgoing messages.
+     *
+     * @param rawRes Raw resource ID of the sound file, or `0` for the default sound.
+     */
+    public fun setCustomSoundForMessages(@RawRes rawRes: Int) {
+        customSoundForMessages = rawRes
+    }
+
+    /**
+     * Plays the outgoing message sound unless it has been disabled.
+     *
+     * Called when the user sends a message from the composer — text, media, or custom
+     * (sticker/poll) — so every send path sounds the same.
+     */
+    private fun playOutgoingMessageSound() {
+        if (!disableSoundForMessages) {
+            soundManager?.play(Sound.OUTGOING_MESSAGE, customSoundForMessages)
+        }
+    }
+
+    // ==================== AI State (continued) ====================
+
     /**
      * Sets the AI generating state.
      * Updates UI state accordingly.
-     * 
+     *
      * @param generating True if AI is generating, false otherwise
      */
     public fun setAIGenerating(generating: Boolean) {
@@ -985,6 +1048,8 @@ open public class CometChatMessageComposerViewModel(
         // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
         if (!hasReceiver()) { emitNoReceiverError(); return }
 
+        playOutgoingMessageSound()
+
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
         _replyMessage.value?.let { quotedMsg ->
             message.quotedMessage = quotedMsg
@@ -1046,6 +1111,7 @@ open public class CometChatMessageComposerViewModel(
     public fun sendTextMessageWithMentions(message: TextMessage) {
         // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
         if (!hasReceiver()) { emitNoReceiverError(); return }
+        playOutgoingMessageSound()
         // Attach quoted message if present (matches Java CometChatMessageComposer behavior)
         _replyMessage.value?.let { quotedMsg ->
             message.quotedMessage = quotedMsg
@@ -1120,6 +1186,8 @@ open public class CometChatMessageComposerViewModel(
             return
         }
         CometChatLogger.d("MessageComposerVM", "sendMediaMessage: MediaMessage created successfully")
+
+        playOutgoingMessageSound()
 
         // ENG-36737: mark a mic-recorded voice note so the receive side routes it to
         // VoiceNoteBubble. Uses the DD / iOS-compatible metaData["audioType"] = "voice_note".
@@ -1295,6 +1363,9 @@ open public class CometChatMessageComposerViewModel(
         if (tiles.none { it.attachment != null }) return
         // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
         if (!hasReceiver()) { emitNoReceiverError(); return }
+
+        // One send from the user's point of view, however many messages the batch splits into.
+        playOutgoingMessageSound()
 
         // ENG-36737: split the staged attachments into one MediaMessage per type (image → video →
         // audio → file), all sharing a batchId so the message list can group them (avatar/name on
@@ -1506,6 +1577,7 @@ open public class CometChatMessageComposerViewModel(
     public fun sendCustomMessage(message: CustomMessage) {
         // ENG-39322: fail-fast with a clear error instead of silently dropping a receiver-less send.
         if (!hasReceiver()) { emitNoReceiverError(); return }
+        playOutgoingMessageSound()
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
@@ -1541,6 +1613,8 @@ open public class CometChatMessageComposerViewModel(
     public fun sendStickerMessage(stickerUrl: String, stickerName: String, pushNotificationMessage: String) {
         // ENG-39322: was a silent `if (receiverId.isEmpty()) return` — surface a clear error instead.
         if (!hasReceiver()) { emitNoReceiverError(); return }
+
+        playOutgoingMessageSound()
 
         viewModelScope.launch {
             try {

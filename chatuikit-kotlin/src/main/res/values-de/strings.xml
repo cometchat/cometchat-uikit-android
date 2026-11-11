@@ -78,6 +78,7 @@
     <string name="cometchat_owner" translatable="true">Eigentümer</string>
     <string name="cometchat_banned" translatable="true">Gesperrt</string>
     <string name="cometchat_calling" translatable="true">ruft an</string>
+    <string name="cometchat_ringing" translatable="true">klingelt</string>
     <string name="cometchat_accepted" translatable="true">angenommen</string>
     <string name="cometchat_unanswered" translatable="true">unbeantwortet</string>
     <string name="cometchat_message_receipt" translatable="true">Nachrichtenempfang</string>

@@ -46,6 +46,8 @@ import com.cometchat.uikit.compose.presentation.ongoingcall.ui.CometChatOngoingC
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
+import com.cometchat.uikit.core.utils.CallRingingUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.resources.soundmanager.Sound
 import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
 
@@ -83,10 +85,12 @@ import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
  * @param trailingView Custom composable for the trailing area (avatar)
  * @param onAcceptClick Callback when accept button is clicked. If null, auto-launches ongoing call
  * @param onRejectClick Callback when decline button is clicked. If null, uses viewModel.rejectCall()
+ * @param onAcceptRequested Runs before the call is answered, e.g. to ask for microphone and camera; call `proceed` to answer
  * @param onError Callback for error events from the ViewModel
  * 
  * Validates: Requirements 7.1-7.21, 2.3, 2.5
  */
+@Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself. The app's answer activity opens CometChatOngoingCallActivity with the answered call; drop this component unless the app draws its own ring screen with setIncomingCallActivity and wires accept and decline to CometChatCallNotifications itself.")
 @Composable
 public fun CometChatIncomingCall(
     call: Call,
@@ -107,6 +111,7 @@ public fun CometChatIncomingCall(
     // Callbacks
     onAcceptClick: ((Call) -> Unit)? = null,
     onRejectClick: ((Call) -> Unit)? = null,
+    onAcceptRequested: ((proceed: () -> Unit) -> Unit)? = null,
     onError: ((CometChatException) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -138,7 +143,8 @@ public fun CometChatIncomingCall(
     
     // Play incoming call sound when component is displayed
     LaunchedEffect(disableSoundForCalls, customSoundForCalls) {
-        if (!disableSoundForCalls) {
+        // An app on the Push SDK is already ringing; a second ringtone would overlap it.
+        if (!disableSoundForCalls && !CallsUtils.isPushCallsSDKAvailable()) {
             soundManager.play(Sound.INCOMING_CALL, customSoundForCalls)
         }
     }
@@ -168,12 +174,9 @@ public fun CometChatIncomingCall(
         acceptedCall?.let { accepted ->
             // Pause sound before launching ongoing call
             soundManager.pauseSilently()
-            // Always launch ongoing call activity with correct parameters
             CometChatOngoingCallActivity.launchOngoingCallActivity(
                 context,
-                accepted.sessionId,
-                accepted.type,
-                CallWorkFlow.DEFAULT,
+                accepted,
                 callSettingsBuilder as? CometChatCalls.SessionSettingsBuilder,
                 null
             )
@@ -356,7 +359,8 @@ public fun CometChatIncomingCall(
                 // The LaunchedEffect(acceptedCall) handles launching ongoing call and invoking callback
                 Button(
                     onClick = {
-                        incomingCallViewModel.acceptCall()
+                        val answer = { incomingCallViewModel.acceptCall() }
+                        if (onAcceptRequested != null) onAcceptRequested(answer) else answer()
                     },
                     modifier = Modifier
                         .weight(1f)

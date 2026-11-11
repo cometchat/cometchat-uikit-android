@@ -3,7 +3,7 @@
     Home Activity Layout
 
     Home screen displayed after successful login.
-    Shows bottom navigation with Chats, Calls, Users, Groups tabs.
+    Shows bottom navigation with Chats, Users, Groups tabs.
     Matches master-app-kotlin flow (no intermediate App Flow card).
 
     Validates: Requirements 2.2, 3.5

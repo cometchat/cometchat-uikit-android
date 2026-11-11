@@ -44,7 +44,7 @@ class GroupMembersDataSourceImplTest : FunSpec({
     test("fetchGroupMembers returns members and reports hasMore") {
         runTest {
             val request = mock<GroupMembersRequest>()
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<GroupMember>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<GroupMember>>>(0)
                     .onSuccess(listOf(mock<GroupMember>(), mock<GroupMember>()))
                 null
@@ -66,7 +66,7 @@ class GroupMembersDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupMembersRequest>()
             val error = MockFactory.createCometChatException("ERR_MEMBERS", "boom")
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<GroupMember>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<GroupMember>>>(0).onError(error)
                 null
             }

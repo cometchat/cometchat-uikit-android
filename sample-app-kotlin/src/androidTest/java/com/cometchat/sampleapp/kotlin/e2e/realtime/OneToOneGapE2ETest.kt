@@ -17,7 +17,7 @@ import org.junit.runners.MethodSorters
  * - 1TO1-022  Markdown bold renders (asterisks stripped)
  *
  * Other one-to-one gaps are tracked as manual / mapped elsewhere:
- * - 1TO1-095 video-call  → CallButtonsE2ETest.test02b_videoCallShowsOutgoing
+ * - 1TO1-095 video-call  → N/A: this sample is chat only (calling lives in sample-app-kotlin-push)
  * - 1TO1-100 app-resume  → RealTimeReceiveEdgeE2ETest.test05_appResumeAfterBackground (RT-EDGE-008)
  * - 1TO1-073 unread divider → MANUAL: rendered as a canvas ItemDecoration (newMessageIndicatorDecoration),
  *                              so it's not an accessibility node (invisible to UIAutomator).

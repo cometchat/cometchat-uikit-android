@@ -143,6 +143,16 @@ public fun CometChatCallLogs(
     val callLogs by callLogsViewModel.callLogs.collectAsState()
     
     // Handle error callback
+    // A call back placed from the list: open the outgoing call screen.
+    LaunchedEffect(callLogsViewModel) {
+        callLogsViewModel.initiatedCall.collect { call ->
+            com.cometchat.uikit.compose.calls.CometChatCallActivity.launchOutgoingCallScreen(context, call, null)
+        }
+    }
+    LaunchedEffect(callLogsViewModel) {
+        callLogsViewModel.callInitiationError.collect { e -> onError?.invoke(e) }
+    }
+
     LaunchedEffect(uiState) {
         when (uiState) {
             is CallLogsUIState.Error -> {
@@ -247,7 +257,8 @@ public fun CometChatCallLogs(
                             }
                             onItemLongClick?.invoke(callLog)
                         },
-                        onCallIconClick = onCallIconClick,
+                        // By default the call icon calls back, as on Flutter; a callback replaces that.
+                        onCallIconClick = onCallIconClick ?: { callLog -> callLogsViewModel.initiateCall(callLog) },
                         onLoadMore = { callLogsViewModel.fetchCallLogs() },
                         scrollToTopEvent = callLogsViewModel.scrollToTopEvent
                     )

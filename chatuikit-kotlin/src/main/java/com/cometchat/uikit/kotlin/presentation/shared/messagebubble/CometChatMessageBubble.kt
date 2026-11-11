@@ -724,7 +724,7 @@ public class CometChatMessageBubble @JvmOverloads constructor(
             if (useMinimalSlots) {
                 threadViewContainer?.visibility = GONE
             } else if (factoryThreadView != null && customThreadView == null) {
-                InternalContentRenderer.bindThreadView(factoryThreadView!!, message, alignment)
+                InternalContentRenderer.bindThreadView(factoryThreadView!!, message, alignment, effectiveStyle)
             }
 
             // Footer: hide for minimal slots

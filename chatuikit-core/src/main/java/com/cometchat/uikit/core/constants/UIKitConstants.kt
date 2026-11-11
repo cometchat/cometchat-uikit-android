@@ -530,6 +530,7 @@ public object UIKitConstants {
         public const val BUSY: String = "busy"
         public const val UNANSWERED: String = "unanswered"
         public const val ENDED: String = "ended"
+        public const val MISSED: String = "missed"
     }
 
     /**
@@ -590,6 +591,23 @@ public object UIKitConstants {
         public const val PARAM_LIMIT: String = "limit"
     }
 
+    /**
+     * Error codes the UIKit's call initiation returns, read off `CometChatException.code`.
+     */
+    public object CallErrorCodes {
+        /** Another call is already active on this device; the new call was not started. */
+        public const val ACTIVE_CALL: String = "ACTIVE_CALL"
+
+        /**
+         * A call is already being started from this device (a second tap while the first
+         * request is in flight). Nothing was started; callers ignore it rather than report it.
+         */
+        public const val CALL_IN_PROGRESS: String = "CALL_IN_PROGRESS"
+
+        /** The device has no internet connection, so the call was not started. */
+        public const val NO_INTERNET: String = "NO_INTERNET"
+    }
+
 
     /**
      * File operations.
@@ -627,6 +645,20 @@ public object UIKitConstants {
     public object CallingJSONConstants {
         public const val CALL_TYPE: String = "callType"
         public const val CALL_SESSION_ID: String = "sessionID"
+    }
+
+    /**
+     * Call types as they appear on a call log. A call upgraded from audio to video is logged as
+     * `audio/video`; treat it as a video call.
+     *
+     * Compare against these, not the Calls SDK constants. Values handed to a Calls SDK API that
+     * declares a `@StringDef` (`InitiateCallOptions.type`, `CallLogRequestBuilder`, `endCall`)
+     * use `com.cometchat.calls.constants.Constants` so lint can check them.
+     */
+    public object CallType {
+        public const val AUDIO: String = "audio"
+        public const val VIDEO: String = "video"
+        public const val AUDIO_VIDEO: String = "audio/video"
     }
 
     /**

@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Traduzir</string>
     <string name="cometchat_unpin" translatable="true">Desafixar mensagem</string>
     <string name="cometchat_unsave" translatable="true">Remover mensagem dos salvos</string>
+    <string name="cometchat_call_no_internet" translatable="true">Sem conexão com a internet. Verifique sua conexão e tente novamente.</string>
 </resources>

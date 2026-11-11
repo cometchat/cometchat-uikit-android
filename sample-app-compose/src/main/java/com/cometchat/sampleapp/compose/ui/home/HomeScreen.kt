@@ -28,12 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cometchat.calls.model.CallLog
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.compose.R
-import com.cometchat.sampleapp.compose.ui.calls.CallLogsScreen
 import com.cometchat.sampleapp.compose.ui.conversations.ConversationsScreen
 import com.cometchat.sampleapp.compose.ui.groups.GroupsScreen
 import com.cometchat.sampleapp.compose.ui.users.UsersScreen
@@ -54,9 +52,8 @@ private data class BottomNavItem(
 /**
  * Home screen composable with bottom navigation.
  *
- * This screen contains four tabs:
+ * This screen contains three tabs:
  * - Chats: Displays the conversation list
- * - Calls: Displays the call logs
  * - Users: Displays the user list
  * - Groups: Displays the group list
  *
@@ -78,9 +75,6 @@ private data class BottomNavItem(
  *     onConversationClick = { conversation ->
  *         // Navigate to messages
  *     },
- *     onCallLogClick = { callLog ->
- *         // Navigate to messages with call log participant
- *     },
  *     onUserClick = { user ->
  *         // Navigate to messages with user
  *     },
@@ -93,7 +87,6 @@ private data class BottomNavItem(
  * @param viewModel The HomeViewModel instance
  * @param onLogout Callback when logout is successful
  * @param onConversationClick Callback when a conversation is tapped
- * @param onCallLogClick Callback when a call log is tapped
  * @param onUserClick Callback when a user is tapped
  * @param onGroupClick Callback when a group is tapped
  * @param onNewChatClick Callback when new chat is requested
@@ -106,7 +99,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     onLogout: () -> Unit,
     onConversationClick: (Conversation) -> Unit,
-    onCallLogClick: (CallLog) -> Unit = {},
     onUserClick: (User) -> Unit,
     onGroupClick: (Group) -> Unit,
     onNewChatClick: () -> Unit = {},
@@ -136,12 +128,11 @@ fun HomeScreen(
         }
     }
 
-    // Bottom navigation items - Chats, Calls, Users, Groups (Requirement 5.1)
+    // Bottom navigation items - Chats, Users, Groups (Requirement 5.1)
     // Using custom drawable icons to match sample-app-kotlin
     val navItems = remember {
         listOf(
             BottomNavItem(HomeTab.CHATS, "Chats", R.drawable.ic_nav_chats),
-            BottomNavItem(HomeTab.CALLS, "Calls", R.drawable.ic_nav_calls),
             BottomNavItem(HomeTab.USERS, "Users", R.drawable.ic_nav_users),
             BottomNavItem(HomeTab.GROUPS, "Groups", R.drawable.ic_nav_groups)
         )
@@ -231,17 +222,6 @@ fun HomeScreen(
                 )
             }
             
-            // Calls tab - always in composition, visibility controlled by currentTab
-            // Validates: Requirement 5.3
-            AnimatedVisibility(
-                visible = currentTab == HomeTab.CALLS,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                CallLogsScreen(
-                    onCallLogClick = onCallLogClick
-                )
-            }
             
             // Users tab - always in composition, visibility controlled by currentTab
             // Validates: Requirement 5.4

@@ -97,7 +97,7 @@ class CometChatCallButtonsComponentTest {
         hasActiveCall: Boolean = false
     ): CometChatCallButtonsViewModel {
         val dataSource = object : CallButtonsDataSource {
-            override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+            override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                 return initiateUserCallResult
             }
             override suspend fun sendGroupCallMessage(groupId: String, callType: String) =

@@ -623,7 +623,7 @@ class CometChatCallButtonsScreenshotTest {
 
     private fun createViewModel(): CometChatCallButtonsViewModel {
         val repository = object : CallButtonsRepository {
-            override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
+            override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
                 return Result.failure(RuntimeException("Not implemented in screenshot test"))
             }
             override suspend fun startGroupCall(groupId: String, callType: String): Result<CustomMessage> {

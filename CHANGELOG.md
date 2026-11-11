@@ -3,6 +3,63 @@
 All notable changes to the CometChat UI Kit for Android are documented here.
 Each entry is generated from that release's pull-request description.
 
+## v6.2.0 (2026-11-11)
+
+# v6.2.0
+
+## New
+- Moved calling onto the Calls SDK 5.1 and the Push SDK 2.0 calls module. Incoming calls now ring through `push-notifications-calls-android`, including when the app is killed or the screen is locked, and the Push SDK handles busy state when the callee is already on a call. The UI Kit no longer uses any Chat SDK calling APIs.
+- Added `UIKitSettings.overrideCallsHost` to point the Calls SDK at a staging or dedicated calls deployment. The UI Kit now forwards the admin, client and calls host overrides to the Calls SDK when it initialises it.
+- Added `CometChatIncomingCallTheme` so the Push SDK's incoming-call screen follows the UI Kit theme in light and dark mode. Build it with `CometChatTheme.getIncomingCallTheme(context)` in the View UI Kit or `incomingCallTheme(light, dark)` in the Compose UI Kit, and pass it to the Push SDK through `PNConfiguration.Builder.setIncomingCallTheme()`. Apps that do nothing get UI Kit default colours through the `cometchat_pn_call_*` colour resources when the UI Kit is listed before the Push SDK artifacts in their dependencies; to follow the app's own theme, pass the theme as above.
+- Added `CometChatOngoingCallActivity.launchOngoingCallActivity(context, call)` in both UI Kits, with optional `SessionSettingsBuilder` and `CometChatOngoingCallStyle` parameters, so an app's answer activity can open the call screen directly with an answered call.
+- Added `CallRingingUtils` with `buildIncomingCall(...)` to construct a `Call` from a push payload, `decline(sessionId)` to decline a ringing call, and `permissionsToAnswer(call)` to list the runtime permissions a call needs.
+- Added `CallInitiationUtils` with `initiateUserCall(...)`, `endCall(sessionId, reason)` and `isCallInProgress(throwable)` for apps that start or end calls from their own screens.
+- Added `CometChatMessageComposer.setDisableSoundForMessages(Boolean)` to the View UI Kit to mute the outgoing message sound, matching the `disableSoundForMessages` parameter the Compose composer already had.
+- Added `UIKitConstants.CallErrorCodes` with `ACTIVE_CALL`, `CALL_IN_PROGRESS` and `NO_INTERNET`, and `UIKitConstants.CallType` with `AUDIO`, `VIDEO` and `AUDIO_VIDEO`, so apps can tell these outcomes apart in `onError`.
+
+## Enhancements
+- Improved the call-logs call icon to call back by default in both UI Kits. Call-log errors now go to `onError` instead of replacing the list with an error state.
+- Improved the outgoing call screen: End wins over a late answer and is disabled after the first tap, a cancel is capped at 10 seconds, the ring timer counts from when the call was placed, session timeouts are handled, and end reasons are normalised so `declined` shows as rejected and `timed_out` as unanswered.
+- Improved "End & accept" on an ongoing call: the call screen switches to the new call in place, and leaving a call only tears down that call's own session and state.
+- Improved logout to cancel an outgoing call that is still ringing and leave a joined call first, bounded at 3 seconds, so the other side does not keep ringing or talking to a user who has gone.
+- Improved permission prompts: the UI Kit asks for the microphone and camera once, when the call screen is created. Voice calls ask for the microphone only. Call buttons, call logs and the outgoing screen no longer ask for anything.
+- Improved 1:1 calls to end when the other participant leaves, by preparing them as peer calls on the Calls SDK.
+- Improved call buttons to start exactly one call on a double tap and to ignore taps while a call is already being started.
+- Improved the call screen to appear once the call is actually joined, instead of a blank grey view for several seconds after the callee answered.
+- Improved offline handling: tapping a call button without a connection now fails at once with `NO_INTERNET`, and `CometChatCallButtons` shows a "No internet connection" toast when the app sets no `onError`. The message is translated in all 19 locales.
+- Improved the Back button on Android 12 and later to keep the call alive in picture-in-picture instead of ending it.
+- Improved call status labels in `CometChatCallActionBubble` and translated "ringing" in all supported locales.
+- Improved the View UI Kit outgoing call title to stay on one line with an ellipsis for long names, matching Compose.
+
+
+## Fixes
+- Fixed the Join button on meeting call bubbles (`CometChatMeetCallBubble`, both UI Kits) doing nothing because the bubble read a different `sessionId` key than the one the UI Kit writes into the message.
+- Fixed the Compose UI Kit not opening the outgoing call screen for a second call started from the same open chat.
+- Fixed the call screen staying on "The session has ended" after the connection closed. It now closes.
+- Fixed group and direct call joins failing with "The session was cancelled before it was joined" on Android 12 and later, caused by a race while handing over between call screens.
+- Fixed the call button staying stuck in its loading state after a second call start was refused because another one was already in flight.
+- Fixed voice calls requesting camera permission.
+- Fixed multi-attachment sends from the composer tray playing no outgoing message sound. They now play it once per send, and `disableSoundForMessages` still silences it.
+
+## Deprecations
+- Deprecated the `CometChatIncomingCall` component and `CometChatIncomingCallStyle` in both UI Kits, together with `CometChatIncomingCallViewModel` and `CometChatIncomingCallViewModelFactory`. The Push SDK calls module now rings and draws the incoming call itself. Remove the component unless the app draws its own ring screen through `setIncomingCallActivity` and wires accept and decline to `CometChatCallNotifications`.
+- Deprecated `CallManager` in `chatuikit-core`. It now delegates to `CallingState`, which has the same `getActiveCall`, `setActiveCall`, `isActiveMeeting` and `setIsActiveMeeting` API, and it will be removed in a later release. For the Calls SDK's own view of an active session use `CometChatCalls.getActiveSession()`, or `CallButtonsDataSource.hasActiveCallSession()` from a custom data source.
+- Deprecated `CometChatCallActivity.launchIncomingCallScreen` in both UI Kits for the same reason. Open the call screen from the app's answer activity with `CometChatOngoingCallActivity.launchOngoingCallActivity(context, call)` instead. `CometChatCallActivity` itself and its `launchOutgoingCallScreen` / `launchConferenceCallScreen` are unchanged.
+
+## Removals
+- Removed the Chat SDK call listeners that `CallManager` registered. `CallManager` itself stays for one release as a deprecated alias that delegates to `CallingState` (see Deprecations).
+
+## Breaking Changes
+- Incoming calls no longer ring through the Chat SDK. To receive calls, add `com.cometchat:push-notifications-calls-android:2.0.0`, initialise the Push SDK with the app's push token, and register an answer activity that reads the call with `CallBundles.getCall`, builds it with `CallRingingUtils.buildIncomingCall(...)` and opens `CometChatOngoingCallActivity.launchOngoingCallActivity(context, call)`. Apps that still rely on the `CometChatIncomingCall` component alone will **not** ring.
+- Upgraded the Calls SDK to 5.1.0. It stays a `compileOnly` dependency of the UI Kit, as in 6.1, so a chat-only app ships none of its permissions, foreground-service types or WebRTC libraries. An app that uses calling must declare `com.cometchat:calls-sdk-android:5.1.0` itself and replace any pin to 5.0.x. Apps using `push-notifications-android` must move from 1.0.0 to 2.0.0.
+- Binary-incompatible changes that a recompile absorbs but prebuilt binaries will not: the synthetic `UIKitSettings` constructor gained the `overrideCallsHost` field (use `UIKitSettingsBuilder`), the deprecated Compose `CometChatIncomingCall` gained the `onAcceptRequested` parameter with no old overload, and `CometchatOngoingCallScreenBinding.getRoot()` in the View UI Kit now returns a `FrameLayout` instead of a `LinearLayout`.
+- Remove any direct `CometChatCalls.init(...)` call from the app. The UI Kit initialises the Calls SDK with the hosts from `UIKitSettings`, and the Calls SDK keeps the hosts of its first initialisation, so a second init with different hosts is ignored.
+- Changed the signature of `initiateUserCall` on `CallButtonsDataSource`, `CallButtonsRepository` and `InitiateUserCallUseCase` to take the callee `User`. Custom implementations must add the parameter.
+- Chat SDK 5.1.x adds typed `*FetchListener` overloads of `fetchNext` and `fetchPrevious` on every request builder and deprecates the `CallbackListener` ones. Kotlin or Mockito code that calls or stubs `fetchNext(any())` / `fetchPrevious(any())` now fails to compile with an ambiguous overload; name the listener type (for example `any<CometChat.CallbackListener<List<BaseMessage>>>()`).
+
+## Dependencies
+- **Chat SDK → 5.1.1** — Bundled `com.cometchat:chat-sdk-android` updated from 5.0.7 to 5.1.1. Every integrator gets it transitively through `chatuikit-core`. 5.1.1 also deprecates the Chat SDK calling APIs, which the UI Kit no longer uses.
+
 ## v6.1.1 (2026-10-12)
 
 # v6.1.1

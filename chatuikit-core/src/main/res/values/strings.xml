@@ -21,4 +21,5 @@
     <string name="cometchat_report" translatable="true">Report</string>
     <string name="cometchat_message_privately" translatable="true">Message Privately</string>
     <string name="cometchat_mark_unread" translatable="true">Mark Unread</string>
+    <string name="cometchat_call_no_internet" translatable="true">No internet connection. Check your connection and try again.</string>
 </resources>

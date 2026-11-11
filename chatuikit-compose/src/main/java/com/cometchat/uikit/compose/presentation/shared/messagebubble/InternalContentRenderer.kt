@@ -1099,11 +1099,11 @@ internal object InternalContentRenderer {
             UIKitConstants.MessageBubbleAlignment.RIGHT -> CometChatFileBubbleStyle.outgoing()
             UIKitConstants.MessageBubbleAlignment.CENTER -> CometChatFileBubbleStyle.default()
         }
-        return if (messageBubbleStyle != null) {
-            mergeWithBase(alignmentDefault, messageBubbleStyle)
-        } else {
-            alignmentDefault
-        }
+        // Always merge (ENG-39093): the bare per-type style leaves wrapper props such as
+        // cornerRadius as UNSET_DP, and CometChatFileBubble feeds cornerRadius straight into
+        // RoundedCornerShape, which throws on an unspecified Dp at draw time. With no caller
+        // base style, fall back to the message-bubble defaults instead of skipping the merge.
+        return mergeWithBase(alignmentDefault, messageBubbleStyle ?: CometChatMessageBubbleStyle.default())
     }
 
     /**

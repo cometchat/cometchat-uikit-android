@@ -2,12 +2,15 @@ package com.cometchat.uikit.core.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cometchat.calls.constants.CometChatCallsConstants
+import com.cometchat.calls.constants.Constants
 import com.cometchat.calls.core.CallLogRequest
+import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.calls.exceptions.CometChatException
 import com.cometchat.calls.model.CallLog
+import com.cometchat.calls.model.InitiatedCall
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.usecase.FetchCallLogsUseCase
 import com.cometchat.uikit.core.domain.usecase.InitiateCallUseCase
 import com.cometchat.uikit.core.events.CometChatCallEvent
@@ -15,6 +18,7 @@ import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.state.CallLogsUIState
 import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatLogger
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -49,7 +53,14 @@ open public class CometChatCallLogsViewModel(
     // Initiated call event - emitted when a call is successfully initiated
     private val _initiatedCall = MutableSharedFlow<Call>()
     public val initiatedCall: SharedFlow<Call> = _initiatedCall.asSharedFlow()
-    
+
+    /**
+     * A call back from the list that could not be placed (another call active, the Calls SDK
+     * refused, …). An error for that action, not for the list: the list stays as it is.
+     */
+    private val _callInitiationError = MutableSharedFlow<CometChatException>()
+    public val callInitiationError: SharedFlow<CometChatException> = _callInitiationError.asSharedFlow()
+
     // Scroll to top event - emits when list should scroll to top
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
@@ -109,7 +120,7 @@ open public class CometChatCallLogsViewModel(
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
 
-        // ENG-39311: the Calls SDK is a compileOnly dependency, so it may be absent at runtime.
+        // the Calls SDK is a compileOnly dependency, so it may be absent at runtime.
         // Building a CallLogRequest below would then throw NoClassDefFoundError and crash the host
         // app. Skip the fetch and surface an empty list instead. (When the SDK is present but
         // calling was never initialized, the SDK reports that via the onFailure path below.)
@@ -135,7 +146,7 @@ open public class CometChatCallLogsViewModel(
                 val builder = callLogRequestBuilder 
                     ?: CallLogRequest.CallLogRequestBuilder()
                         .setLimit(limit)
-                        .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
+                        .setCallCategory(Constants.CALL_CATEGORY_CALL)
                 callLogRequest = builder.build()
             }
             
@@ -173,7 +184,7 @@ open public class CometChatCallLogsViewModel(
         isFetching = false
         callLogRequest = null
 
-        // ENG-39311: guard against the Calls SDK being absent (see fetchCallLogs) so a manual
+        // guard against the Calls SDK being absent (see fetchCallLogs) so a manual
         // refresh can't crash the host with NoClassDefFoundError when calling isn't set up.
         if (!CallsUtils.isCallsSDKAvailable()) {
             CometChatLogger.w(
@@ -183,7 +194,7 @@ open public class CometChatCallLogsViewModel(
             if (_callLogs.value.isEmpty()) _uiState.value = CallLogsUIState.Empty
             return
         }
-        
+
         viewModelScope.launch {
             if (_callLogs.value.isEmpty()) {
                 _uiState.value = CallLogsUIState.Loading
@@ -192,7 +203,7 @@ open public class CometChatCallLogsViewModel(
             val builder = callLogRequestBuilder 
                 ?: CallLogRequest.CallLogRequestBuilder()
                     .setLimit(limit)
-                    .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
+                    .setCallCategory(Constants.CALL_CATEGORY_CALL)
             
             callLogRequest = builder.build()
             
@@ -225,7 +236,7 @@ open public class CometChatCallLogsViewModel(
      */
     public fun initiateCall(callLog: CallLog) {
         // Determine call type from the call log
-        val callType = callLog.type ?: CometChatCallsConstants.CALL_TYPE_AUDIO
+        val callType = callLog.type ?: UIKitConstants.CallType.AUDIO
         initiateCall(callLog, callType)
     }
     
@@ -245,7 +256,11 @@ open public class CometChatCallLogsViewModel(
                     CometChatEvents.emitCallEvent(CometChatCallEvent.OutgoingCall(call))
                 }
                 .onFailure { exception ->
-                    _uiState.value = CallLogsUIState.Error(exception as CometChatException)
+                    // A second tap while the first call is still being started: nothing to report.
+                    if (CallInitiationUtils.isCallInProgress(exception)) return@onFailure
+                    _callInitiationError.emit(
+                        exception as? CometChatException ?: CometChatException("ERROR", exception.message ?: "Call failed")
+                    )
                 }
         }
     }
@@ -258,7 +273,7 @@ open public class CometChatCallLogsViewModel(
      */
     public fun setCallLogRequestBuilder(builder: CallLogRequest.CallLogRequestBuilder) {
         callLogRequestBuilder = builder
-            .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
+            .setCallCategory(Constants.CALL_CATEGORY_CALL)
         callLogRequest = callLogRequestBuilder?.build()
     }
     
@@ -431,29 +446,20 @@ open public class CometChatCallLogsViewModel(
         listenersTag = "CallLogs_${System.currentTimeMillis()}"
         
         listenersTag?.let { tag ->
-            // Call listener for real-time call events
-            CometChat.addCallListener(tag, object : CometChat.CallListener() {
-                override fun onIncomingCallReceived(call: Call) {
-                    handleCallEvent(call)
-                }
-                
-                override fun onOutgoingCallAccepted(call: Call) {
-                    handleCallEvent(call)
-                }
-                
-                override fun onOutgoingCallRejected(call: Call) {
-                    handleCallEvent(call)
-                }
-                
-                override fun onIncomingCallCancelled(call: Call) {
-                    handleCallEvent(call)
-                }
-                
-                override fun onCallEndedMessageReceived(call: Call) {
-                    handleCallEvent(call)
-                }
-            })
-            
+            // Calls SDK listener (ringing v2): any call starting or ending, on either side,
+            // refreshes the list. The Chat SDK's CallListener is deprecated and not used.
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.addIncomingCallListener(tag, object : CometChatCalls.IncomingCallListener() {
+                    override fun onIncomingCallReceived(call: InitiatedCall) {
+                        handleCallEvent()
+                    }
+
+                    override fun onIncomingCallEnded(call: InitiatedCall, reason: String) {
+                        handleCallEvent()
+                    }
+                })
+            }
+
             // Connection listener for reconnection - refresh list when reconnected
             CometChat.addConnectionListener(tag, object : CometChat.ConnectionListener {
                 override fun onConnected() {
@@ -474,7 +480,9 @@ open public class CometChatCallLogsViewModel(
      */
     private fun removeListeners() {
         listenersTag?.let { tag ->
-            CometChat.removeCallListener(tag)
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.removeIncomingCallListener(tag)
+            }
             CometChat.removeConnectionListener(tag)
         }
     }
@@ -485,7 +493,7 @@ open public class CometChatCallLogsViewModel(
      * 
      * @param call The call event received
      */
-    private fun handleCallEvent(call: Call) {
+    private fun handleCallEvent() {
         // Refresh the call logs to get the latest data
         // This ensures we have the proper CallLog format from the server
         viewModelScope.launch {

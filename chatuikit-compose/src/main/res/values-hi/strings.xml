@@ -78,6 +78,7 @@
     <string name="cometchat_owner" translatable="true">मालिक</string>
     <string name="cometchat_banned" translatable="true">प्रतिबंधित</string>
     <string name="cometchat_calling" translatable="true">कॉलिंग</string>
+    <string name="cometchat_ringing" translatable="true">घंटी बज रही है</string>
     <string name="cometchat_accepted" translatable="true">स्वीकृत</string>
     <string name="cometchat_unanswered" translatable="true">बिना उत्तर</string>
     <string name="cometchat_message_receipt" translatable="true">संदेश रसीद</string>

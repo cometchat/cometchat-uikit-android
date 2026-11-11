@@ -2,7 +2,6 @@ package com.cometchat.sampleapp.kotlin.ui.users
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cometchat.chat.constants.CometChatConstants
-import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
@@ -29,14 +27,12 @@ import com.cometchat.uikit.kotlin.theme.CometChatTheme
  * This activity displays detailed information about a user:
  * - Custom toolbar with back icon and title
  * - User avatar, name, and online/offline status
- * - Voice and Video call cards
  * - Block/unblock user functionality
  * - Delete chat option
  *
  * ## Features:
  * - Display user profile information
  * - Show online/offline presence status with last seen
- * - Voice and Video call cards (matching master-app-kotlin2)
  * - Block/unblock user with CometChatConfirmDialog
  * - Delete chat option
  * - Real-time user status updates
@@ -131,13 +127,9 @@ class UserDetailsActivity : AppCompatActivity() {
      * Applies theme colors to UI elements (matching master-app-kotlin2).
      */
     private fun applyThemeColors() {
-        binding.tvVideoCall.compoundDrawableTintList = ColorStateList.valueOf(CometChatTheme.getIconTintHighlight(this))
-        binding.tvVoiceCall.compoundDrawableTintList = ColorStateList.valueOf(CometChatTheme.getIconTintHighlight(this))
         binding.toolbarTitle.setTextColor(CometChatTheme.getTextColorPrimary(this))
         binding.userName.setTextColor(CometChatTheme.getTextColorPrimary(this))
         binding.userStatus.setTextColor(CometChatTheme.getTextColorSecondary(this))
-        binding.tvVoiceCall.setTextColor(CometChatTheme.getTextColorSecondary(this))
-        binding.tvVideoCall.setTextColor(CometChatTheme.getTextColorSecondary(this))
     }
 
     /**
@@ -156,16 +148,6 @@ class UserDetailsActivity : AppCompatActivity() {
         // Pinned Messages option
         binding.tvPinnedMessages.setOnClickListener {
             user?.let { u -> PinnedMessagesActivity.start(this, u) }
-        }
-
-        // Voice Call card
-        binding.cardVoiceCall.setOnClickListener {
-            startCall(CometChatConstants.CALL_TYPE_AUDIO)
-        }
-
-        // Video Call card
-        binding.cardVideoCall.setOnClickListener {
-            startCall(CometChatConstants.CALL_TYPE_VIDEO)
         }
 
         // Block/Unblock button
@@ -276,44 +258,13 @@ class UserDetailsActivity : AppCompatActivity() {
                     )
                 }
                 
-                // Hide call cards when blocked
-                binding.cardVoiceCall.visibility = View.GONE
-                binding.cardVideoCall.visibility = View.GONE
                 binding.userStatus.visibility = View.GONE
             } else {
                 // Hide info message banner
                 binding.infoMessage.visibility = View.GONE
-                // Show call cards
-                binding.cardVoiceCall.visibility = View.VISIBLE
-                binding.cardVideoCall.visibility = View.VISIBLE
                 // Update block button text
                 binding.tvBlock.text = getString(R.string.block_user)
             }
-        }
-    }
-
-    /**
-     * Starts a call with the user.
-     *
-     * @param callType The type of call (audio or video)
-     */
-    private fun startCall(callType: String) {
-        user?.let { u ->
-            val call = Call(u.uid, CometChatConstants.RECEIVER_TYPE_USER, callType)
-            CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(initiatedCall: Call) {
-                    // Launch outgoing call screen
-                    com.cometchat.uikit.kotlin.calls.CometChatCallActivity.launchOutgoingCallScreen(
-                        this@UserDetailsActivity,
-                        initiatedCall,
-                        null
-                    )
-                }
-
-                override fun onError(e: CometChatException) {
-                    // Handle error
-                }
-            })
         }
     }
 

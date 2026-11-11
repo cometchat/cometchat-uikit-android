@@ -1,6 +1,7 @@
 package com.cometchat.uikit.compose.presentation.callbuttons.ui
 
 import android.view.View
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +16,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +35,7 @@ import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.callbuttons.style.CallButtonStyle
 import com.cometchat.uikit.compose.presentation.callbuttons.style.CometChatCallButtonsStyle
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.factory.CometChatCallButtonsViewModelFactory
 import com.cometchat.uikit.core.state.CallButtonsEvent
 import com.cometchat.uikit.core.viewmodel.CometChatCallButtonsViewModel
@@ -93,9 +93,6 @@ public fun CometChatCallButtons(
     val context = LocalContext.current
     val actualViewModel = viewModel ?: viewModel(factory = CometChatCallButtonsViewModelFactory())
     
-    // Track if we've already launched the call screen to prevent double launches
-    val hasLaunchedCallScreen = remember { mutableStateOf(false) }
-
     // Set user or group
     LaunchedEffect(user) {
         user?.let { actualViewModel.setUser(it) }
@@ -113,11 +110,12 @@ public fun CometChatCallButtons(
                     if (onCallInitiated != null) {
                         // Custom callback provided - let the app handle it
                         onCallInitiated.invoke(event.call)
-                    } else if (!hasLaunchedCallScreen.value) {
-                        // No custom callback - automatically launch outgoing call screen
-                        // This matches the Java UIKit behavior where CallingExtensionDecorator
-                        // automatically handles the call flow
-                        hasLaunchedCallScreen.value = true
+                    } else {
+                        // No custom callback - automatically launch outgoing call screen.
+                        // CometChatCallActivity guards against a double launch itself. A
+                        // remembered "already launched" flag here was only reset by the old
+                        // Chat SDK CallRejected event, so with ringing v2 every later call from
+                        // the same open chat was placed without its outgoing screen.
                         com.cometchat.uikit.compose.calls.CometChatCallActivity.launchOutgoingCallScreen(
                             context,
                             event.call,
@@ -129,9 +127,8 @@ public fun CometChatCallButtons(
                     if (onStartDirectCall != null) {
                         // Custom callback provided - let the app handle it
                         onStartDirectCall.invoke(event.message)
-                    } else if (!hasLaunchedCallScreen.value) {
+                    } else {
                         // No custom callback - automatically launch conference call screen
-                        hasLaunchedCallScreen.value = true
                         com.cometchat.uikit.compose.calls.CometChatCallActivity.launchConferenceCallScreen(
                             context,
                             event.message,
@@ -139,10 +136,7 @@ public fun CometChatCallButtons(
                         )
                     }
                 }
-                is CallButtonsEvent.CallRejected -> {
-                    // Call rejection handled internally - reset the flag
-                    hasLaunchedCallScreen.value = false
-                }
+                is CallButtonsEvent.CallRejected -> Unit
             }
         }
     }
@@ -150,7 +144,17 @@ public fun CometChatCallButtons(
     // Collect errors
     LaunchedEffect(Unit) {
         actualViewModel.errorEvent.collect { exception ->
-            onError?.invoke(exception)
+            val handler = onError
+            if (handler != null) {
+                handler(exception)
+            } else if (exception.code == UIKitConstants.CallErrorCodes.NO_INTERNET) {
+                // Without an app error handler an offline tap showed nothing (ENG-40540).
+                Toast.makeText(
+                    context,
+                    com.cometchat.uikit.core.R.string.cometchat_call_no_internet,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

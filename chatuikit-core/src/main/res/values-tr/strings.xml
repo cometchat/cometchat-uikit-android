@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Çevir</string>
     <string name="cometchat_unpin" translatable="true">Mesajın Sabitlemesini Kaldır</string>
     <string name="cometchat_unsave" translatable="true">Mesajın Kaydını Kaldır</string>
+    <string name="cometchat_call_no_internet" translatable="true">İnternet bağlantısı yok. Bağlantınızı kontrol edip tekrar deneyin.</string>
 </resources>

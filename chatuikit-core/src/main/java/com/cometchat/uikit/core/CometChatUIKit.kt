@@ -5,6 +5,10 @@ import android.os.Looper
 import androidx.annotation.MainThread
 import com.cometchat.calls.core.CallAppSettings
 import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CallInitiationUtils
+import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.chat.core.AppSettings
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
@@ -14,7 +18,6 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.events.CometChatEvents
-import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
@@ -62,6 +65,15 @@ public object CometChatUIKit {
     @Volatile
     private var storedSessionSettingsBuilder: CometChatCalls.SessionSettingsBuilder? = null
 
+    @Volatile
+    private var applicationContext: Context? = null
+
+    /**
+     * The application context captured by [init] / [initFromSettings], for core code that has
+     * no context of its own (e.g. `CometChatCalls.initiateCall`).
+     */
+    internal fun getApplicationContext(): Context? = applicationContext
+
     /**
      * Fails fast when a main-thread-only entry point is called off the main
      * thread. A wrong-thread call is a programming error: better an immediate,
@@ -91,6 +103,7 @@ public object CometChatUIKit {
     ) {
         requireMainThread("init")
         CometChatLogger.initFromContext(context)
+        applicationContext = context.applicationContext
         authenticationSettings = authSettings
 
         if (!checkAuthSettings(callbackListener)) return
@@ -124,11 +137,12 @@ public object CometChatUIKit {
                     CometChat.setSource("uikit-v6", "android", "kotlin")
 
                     // Auto-initialize CometChatCalls if enableCalling is true.
-                    // ENG-39311: the calls-sdk is compileOnly, so it may be absent at runtime.
-                    // Only enter initCometChatCalls when the SDK is actually on the classpath —
+                    // The Calls SDK is a compileOnly dependency: a calling app adds
+                    // com.cometchat:calls-sdk-android itself, a chat-only app has no copy of it.
+                    // Only enter initCometChatCalls when the SDK is actually on the classpath,
                     // otherwise the first CometChatCalls.* reference throws NoClassDefFoundError
-                    // and crashes the app at launch. If the flag is on but the artifact is missing,
-                    // log and continue chat init instead of crashing.
+                    // and crashes the app at launch. If the flag is on but the artifact is
+                    // missing, log and continue chat init instead of crashing.
                     if (authenticationSettings?.enableCalling == true && CallsUtils.isCallsSDKAvailable()) {
                         initCometChatCalls(context, callbackListener, result)
                     } else {
@@ -173,6 +187,7 @@ public object CometChatUIKit {
     ) {
         requireMainThread("initFromSettings")
         CometChatLogger.initFromContext(context)
+        applicationContext = context.applicationContext
         // 1. Read cometchat-settings.json from assets
         val settingsJson: JSONObject
         try {
@@ -249,7 +264,7 @@ public object CometChatUIKit {
                     //    fromSettings = true routes the Calls SDK through its own
                     //    telemetry-aware initFromSettings so integrationSource =
                     //    "ai-agent" propagates past the Chat SDK (ENG-37369).
-                    // ENG-39311: guard on Calls SDK presence (compileOnly, may be absent) so a
+                    // Guard on Calls SDK presence (compileOnly, so it may be absent) so a
                     // settings.json with enableCalling:true but no calls-sdk artifact logs and
                     // continues rather than crashing with NoClassDefFoundError at launch.
                     if (authenticationSettings?.enableCalling == true && CallsUtils.isCallsSDKAvailable()) {
@@ -293,7 +308,7 @@ public object CometChatUIKit {
         chatInitResult: String,
         fromSettings: Boolean = false
     ) {
-        // ENG-39311: the Calls SDK is a compileOnly dependency, so any reference below can throw
+        // The Calls SDK is a compileOnly dependency, so any reference below can throw
         // NoClassDefFoundError / LinkageError at runtime when the artifact is absent. Callers already
         // gate on CallsUtils.isCallsSDKAvailable(), but this catch is a defensive backstop so a Calls
         // SDK linkage failure can never break chat init — we log it, mark calling uninitialized, and
@@ -328,6 +343,8 @@ public object CometChatUIKit {
             val appId = authenticationSettings?.appId
             val region = authenticationSettings?.region
             val clientHost = authenticationSettings?.overrideClientHost
+            val adminHost = authenticationSettings?.overrideAdminHost
+            val callsHost = authenticationSettings?.overrideCallsHost
 
             if (appId.isNullOrEmpty() || region.isNullOrEmpty()) {
                 CometChatLogger.e(TAG, "Cannot initialize CometChatCalls: missing appId or region")
@@ -335,10 +352,18 @@ public object CometChatUIKit {
                 return
             }
 
+            // The Calls SDK keeps the hosts of its first init (ApiConnection is one-shot), so every
+            // override the app gave the UIKit is forwarded here: admin and client as the Chat SDK
+            // got them, plus the Calls host the call-token requests go to.
             val callAppSettings = CallAppSettings.CallAppSettingBuilder()
                 .setAppId(appId)
                 .setRegion(region)
                 .setHost(clientHost)
+                .apply {
+                    adminHost?.takeIf { it.isNotBlank() }?.let { overrideAdminHost(it) }
+                    clientHost?.takeIf { it.isNotBlank() }?.let { overrideClientHost(it) }
+                    callsHost?.takeIf { it.isNotBlank() }?.let { overrideCallsHost(it) }
+                }
                 .build()
 
             CometChatCalls.init(context, callAppSettings, callsInitCallback)
@@ -543,6 +568,48 @@ public object CometChatUIKit {
     @MainThread
     public fun logout(callbackListener: CometChat.CallbackListener<String>?) {
         requireMainThread("logout")
+        // Calls end with the user, as on Flutter: the other side must not be left ringing or
+        // talking to someone who has gone. Done first, while the Calls login can still send.
+        // A call still ringing here is stopped by the Push SDK on the Calls logout.
+        endCallsBeforeLogout { logoutChat(callbackListener) }
+    }
+
+    /**
+     * Cancels the outgoing call still ringing, if any, and leaves a joined call, then runs [then]
+     * — after the cancel reports back or [LOGOUT_CALL_TEARDOWN_MS] at the latest.
+     */
+    private fun endCallsBeforeLogout(then: () -> Unit) {
+        if (authenticationSettings?.enableCalling != true || !isCallsSDKInitialized ||
+            !CallsUtils.isCallsSDKAvailable()
+        ) {
+            then()
+            return
+        }
+        runCatching {
+            CometChatCalls.getActiveSession()?.takeIf { it.isSessionJoined() }?.leave()
+        }
+        val outgoing = CallingState.ringingOutgoingCall?.sessionId
+        if (outgoing.isNullOrEmpty()) {
+            then()
+            return
+        }
+        CallingState.ringingOutgoingCall = null
+        val main = android.os.Handler(android.os.Looper.getMainLooper())
+        var done = false
+        val proceed = Runnable {
+            if (done) return@Runnable
+            done = true
+            then()
+        }
+        main.postDelayed(proceed, LOGOUT_CALL_TEARDOWN_MS)
+        CallInitiationUtils.endCall(outgoing, UIKitConstants.CallStatusConstants.CANCELLED) {
+            main.post { main.removeCallbacks(proceed); proceed.run() }
+        }
+    }
+
+    private const val LOGOUT_CALL_TEARDOWN_MS = 3_000L
+
+    private fun logoutChat(callbackListener: CometChat.CallbackListener<String>?) {
         CometChat.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(successMessage: String) {
                 // Cleanup the events bridge on logou

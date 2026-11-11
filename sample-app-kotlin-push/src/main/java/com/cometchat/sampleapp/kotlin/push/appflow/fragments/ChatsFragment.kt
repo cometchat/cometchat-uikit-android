@@ -26,7 +26,6 @@ import com.cometchat.sampleapp.kotlin.push.appflow.NewChatActivity
 import com.cometchat.sampleapp.kotlin.push.appflow.SavedMessagesActivity
 import com.cometchat.sampleapp.kotlin.push.appflow.SearchActivity
 import com.cometchat.sampleapp.kotlin.push.databinding.FragmentChatsBinding
-import com.cometchat.pushnotification.CometChatPushNotifications
 import com.google.gson.Gson
 
 /**
@@ -165,21 +164,12 @@ class ChatsFragment : Fragment() {
      * Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5
      */
     private fun performLogout() {
-        // Always unregister the FCM token BEFORE logging out to prevent ghost notifications.
-        CometChatPushNotifications.unregisterToken(
-            onSuccess = {
-                Log.d(TAG, "FCM token unregistered")
-                doLogout()
-            },
-            onError = { e ->
-                Log.e(TAG, "Token unregister failed (proceeding with logout): ${e.message}")
-                doLogout()
-            }
-        )
+        // Push SDK 2.0 unregisters the FCM token itself on logout.
+        doLogout()
     }
 
     private fun doLogout() {
-        CometChat.logout(object : CometChat.CallbackListener<String>() {
+        CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(message: String) {
                 Log.d(TAG, "Logout successful")
                 // Navigate to LoginActivity and clear back stack
@@ -202,7 +192,9 @@ class ChatsFragment : Fragment() {
     private fun navigateToMessages(user: User? = null, group: Group? = null) {
         Log.d(TAG, "Navigate to messages - User: ${user?.name}, Group: ${group?.name}")
         
-        val intent = Intent(requireContext(), MessagesActivity::class.java)
+        val intent = Intent(requireContext(), MessagesActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
         user?.let { intent.putExtra(getString(R.string.app_user), it.toJson().toString()) }
         group?.let { intent.putExtra(getString(R.string.app_group), Gson().toJson(it)) }
         startActivity(intent)

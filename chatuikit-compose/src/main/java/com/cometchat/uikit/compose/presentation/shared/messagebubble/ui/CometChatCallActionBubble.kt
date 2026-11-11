@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -28,6 +29,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.Comet
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.CallType
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.getCallType
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.isMissedCall
+import com.cometchat.uikit.compose.presentation.shared.utils.CallsUtils
 
 /**
  * A composable that displays a call action message bubble.
@@ -65,8 +67,11 @@ public fun CometChatCallActionBubble(
         isMissedCall(callType)
     }
 
-    val callStatusText = remember(callType) {
-        getCallStatusText(callType)
+    // One label per call status, as in v5 (e.g. "Call Ended", "Call Rejected").
+    // getCallStatus is empty for non-user receivers; keep the type label there.
+    val context = LocalContext.current
+    val callStatusText = remember(message.id, message.callStatus, callType) {
+        CallsUtils.getCallStatus(context, message).ifBlank { getCallStatusText(callType) }
     }
 
     CometChatCallActionBubble(

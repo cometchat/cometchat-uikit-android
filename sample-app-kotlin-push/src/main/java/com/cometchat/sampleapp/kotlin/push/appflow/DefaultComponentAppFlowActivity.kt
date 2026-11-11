@@ -4,12 +4,15 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.cometchat.pushnotification.CometChatPushNotifications
+import com.cometchat.pushnotification.RingReadiness
 import com.cometchat.pushnotification.helpers.CometChatPNHelper
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -20,6 +23,7 @@ import com.cometchat.sampleapp.kotlin.push.appflow.fragments.GroupsFragment
 import com.cometchat.sampleapp.kotlin.push.appflow.fragments.NotificationsFragment
 import com.cometchat.sampleapp.kotlin.push.appflow.fragments.UsersFragment
 import com.cometchat.sampleapp.kotlin.push.databinding.ActivityDefaultComponentAppFlowBinding
+import com.cometchat.sampleapp.kotlin.push.KotlinApplication
 
 /**
  * Main activity for the App Flow, containing BottomNavigationView and fragment container.
@@ -35,6 +39,21 @@ class DefaultComponentAppFlowActivity : AppCompatActivity() {
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 
+    /**
+     * Names what would silence an incoming call on this phone (notifications off, muted channel,
+     * full-screen intent revoked on Android 14+, Do Not Disturb). Logged for now; the matching
+     * settings screen is one tap away via CometChatPushNotifications.settingsIntentFor.
+     */
+    private fun checkRingReadiness() {
+        CometChatPushNotifications.ensureRingReady(this) { result ->
+            val readiness = result.valueOrNull() ?: return@ensureRingReady
+            if (readiness != RingReadiness.READY) {
+                Log.w(TAG, "Incoming calls may not ring: $readiness")
+                Toast.makeText(this, "Incoming calls may not ring: $readiness", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,6 +66,7 @@ class DefaultComponentAppFlowActivity : AppCompatActivity() {
         if (!CometChatPNHelper.hasNotificationPermission(this)) {
             CometChatPNHelper.requestNotificationPermission(this, NOTIFICATION_PERMISSION_REQUEST_CODE)
         }
+        checkRingReadiness()
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -69,10 +89,13 @@ class DefaultComponentAppFlowActivity : AppCompatActivity() {
                 .setRegion(appCredentials.REGION)
                 .setAuthKey(appCredentials.AUTH_KEY)
                 .subscribePresenceForAllUsers()
+                .setEnableCalling(true)
                 .build()
             CometChatUIKit.init(this, uiKitSettings, object : com.cometchat.chat.core.CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String?) {
                     Log.d(TAG, "onCreate: SDK initialized, now loading UI")
+                    // Calls SDK + Push SDK come up with the rest of the app (ringing v2).
+                    (application as? KotlinApplication)?.onSDKInitialized()
                     initializeUI()
                 }
                 override fun onError(e: com.cometchat.chat.exceptions.CometChatException) {

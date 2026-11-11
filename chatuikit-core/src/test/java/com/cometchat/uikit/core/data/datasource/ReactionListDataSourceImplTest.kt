@@ -46,7 +46,7 @@ class ReactionListDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<ReactionsRequest>()
             val reactions = listOf(mock<Reaction>(), mock<Reaction>())
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Reaction>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Reaction>>>(0).onSuccess(reactions)
                 null
             }
@@ -62,7 +62,7 @@ class ReactionListDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<ReactionsRequest>()
             val error = MockFactory.createCometChatException("ERR_FETCH", "boom")
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Reaction>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Reaction>>>(0).onError(error)
                 null
             }

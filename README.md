@@ -62,10 +62,10 @@ you do not need to declare it yourself:
 
 ```kotlin
 // Jetpack Compose
-implementation("com.cometchat:chatuikit-compose-android:")
+implementation("com.cometchat:chatuikit-compose-android:6.2.0")
 
 // or XML views
-implementation("com.cometchat:chatuikit-kotlin-android:")
+implementation("com.cometchat:chatuikit-kotlin-android:6.2.0")
 ```
 
 ### Voice and video calling (optional)
@@ -98,6 +98,20 @@ To set up CometChat Android UI Kit and utilize CometChat for your chat functiona
 
 4. Refer to the [Integration Steps](https://www.cometchat.com/docs/android-uikit/integration) in our documentation to integrate the UI Kit into your
    Android app.
+
+## Integrate with AI Coding Agents
+
+[CometChat Agent Skills](https://www.cometchat.com/docs/agent-skills) teach your AI coding agent how to build with the CometChat Android UI Kit in Jetpack Compose or Kotlin (Views) apps. Ask your agent to *"add chat to my app"* and it detects your project setup, walks you through a short plan for your approval, and then writes the integration code directly into your existing app, following the official CometChat guides. The skills work with Claude Code, Cursor, GitHub Copilot, Codex, Windsurf, and other popular coding agents.
+
+Run the installer in your project root (requires Node.js 18+):
+
+```bash
+npx @cometchat/skills add
+```
+
+The skills are installed for Claude Code by default; pass `--ide <agent>` (for example, `--ide cursor`) to install them for a different agent. Then open your project in your agent and prompt it with *"add chat to my app"*, or run `/cometchat`.
+
+To learn more, visit [CometChat Agent Skills](https://www.cometchat.com/docs/agent-skills).
 
 ## Help and Support
 

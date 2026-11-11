@@ -10,6 +10,8 @@ import com.cometchat.chat.core.MessagesRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.BaseMessage
+import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.calls.model.InitiatedCall
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.chat.models.Group
@@ -47,6 +49,8 @@ import com.cometchat.uikit.core.state.ConversationStarterUIState
 import com.cometchat.uikit.core.state.ConversationSummaryUIState
 import com.cometchat.uikit.core.state.SmartRepliesUIState
 import com.cometchat.uikit.core.utils.AgentChatDetector
+import com.cometchat.uikit.core.utils.CallInitiationUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.utils.PinSaveUtils
 import com.cometchat.uikit.core.utils.CometChatLogger
@@ -3910,6 +3914,17 @@ open public class CometChatMessageListViewModel(
      * @see updateListByActionMessages
      * @see fetchNextMessagesOnReconnect
      */
+    /**
+     * A call for this chat started or ended (ringing v2, reported by the Calls SDK). The call
+     * message itself is written by the backend, so it is fetched like any missed message.
+     */
+    private fun onCallActivity(call: InitiatedCall) {
+        if (!isMessageForCurrentChat(CallInitiationUtils.toCall(call))) return
+        if (_messages.value.isNotEmpty()) {
+            fetchMissedMessages()
+        }
+    }
+
     private fun fetchMissedMessages() {
         // Skip if message list is empty - use fetchMessages() for initial load instead
         if (_messages.value.isEmpty()) return
@@ -4451,6 +4466,10 @@ open public class CometChatMessageListViewModel(
      */
     private fun handleOutgoingCallEvent(event: CometChatCallEvent.OutgoingCall) {
         val call = event.call
+        // Ringing v2: the kit builds this Call from the Calls SDK's InitiatedCall, whose
+        // messageId is the call message's id. A Call without an id cannot be matched to the
+        // real message later, so it is not drawn.
+        if (call.id <= 0) return
         
         // Check if call is for current conversation
         if (!isCallForCurrentChat(call)) return
@@ -4469,6 +4488,7 @@ open public class CometChatMessageListViewModel(
      */
     private fun handleCallAcceptedEvent(event: CometChatCallEvent.CallAccepted) {
         val call = event.call
+        if (call.id <= 0) return // locally built call, not a chat message (ringing v2)
         
         // Check if call is for current conversation
         if (!isCallForCurrentChat(call)) return
@@ -4490,6 +4510,7 @@ open public class CometChatMessageListViewModel(
      */
     private fun handleCallRejectedEvent(event: CometChatCallEvent.CallRejected) {
         val call = event.call
+        if (call.id <= 0) return // locally built call, not a chat message (ringing v2)
         
         // Check if call is for current conversation
         if (!isCallForCurrentChat(call)) return
@@ -4511,6 +4532,7 @@ open public class CometChatMessageListViewModel(
      */
     private fun handleCallEndedEvent(event: CometChatCallEvent.CallEnded) {
         val call = event.call
+        if (call.id <= 0) return // locally built call, not a chat message (ringing v2)
         
         // Check if call is for current conversation
         if (!isCallForCurrentChat(call)) return
@@ -4743,30 +4765,19 @@ open public class CometChatMessageListViewModel(
                 }
             })
             
-            // Call listener
-            CometChat.addCallListener(tag, object : CometChat.CallListener() {
-                override fun onIncomingCallReceived(call: Call) {
-                    // Call actions are handled via message listener
-                }
-                
-                override fun onOutgoingCallAccepted(call: Call) {
-                    // Call actions are handled via message listener
-                }
-                
-                override fun onOutgoingCallRejected(call: Call) {
-                    // Call actions are handled via message listener
-                }
-                
-                override fun onIncomingCallCancelled(call: Call) {
-                    // Call actions are handled via message listener
-                }
-                
-                override fun onCallEndedMessageReceived(call: Call) {
-                    if (isMessageForCurrentChat(call)) {
-                        addMessage(call)
+            // Calls SDK listener (ringing v2): when a call for this chat starts or ends, pull the
+            // call message the backend wrote. The Chat SDK's CallListener is deprecated and not used.
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.addIncomingCallListener(tag, object : CometChatCalls.IncomingCallListener() {
+                    override fun onIncomingCallReceived(call: InitiatedCall) {
+                        onCallActivity(call)
                     }
-                }
-            })
+
+                    override fun onIncomingCallEnded(call: InitiatedCall, reason: String) {
+                        onCallActivity(call)
+                    }
+                })
+            }
             
             // Connection listener
             CometChat.addConnectionListener(tag, object : CometChat.ConnectionListener {
@@ -4798,7 +4809,9 @@ open public class CometChatMessageListViewModel(
         listenersTag?.let { tag ->
             CometChat.removeMessageListener(tag)
             CometChat.removeGroupListener(tag)
-            CometChat.removeCallListener(tag)
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.removeIncomingCallListener(tag)
+            }
             CometChat.removeConnectionListener(tag)
         }
     }

@@ -1,6 +1,7 @@
 package com.cometchat.uikit.core.domain.usecase
 
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.uikit.core.domain.repository.CallButtonsRepository
 
@@ -21,7 +22,7 @@ open public class StartGroupCallUseCase(
         if (repository.hasActiveCall()) {
             return Result.failure(
                 CometChatException(
-                    "ACTIVE_CALL",
+                    UIKitConstants.CallErrorCodes.ACTIVE_CALL,
                     "Cannot start call while another call is active",
                     "An active call is already in progress"
                 )

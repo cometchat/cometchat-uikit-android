@@ -79,6 +79,7 @@
     <string name="cometchat_owner" translatable="true">Pemilik</string>
     <string name="cometchat_banned" translatable="true">Disekat</string>
     <string name="cometchat_calling" translatable="true">memanggil</string>
+    <string name="cometchat_ringing" translatable="true">berdering</string>
     <string name="cometchat_accepted" translatable="true">diterima</string>
     <string name="cometchat_unanswered" translatable="true">belum dijawab</string>
     <string name="cometchat_message_receipt" translatable="true">Resit Mesej</string>

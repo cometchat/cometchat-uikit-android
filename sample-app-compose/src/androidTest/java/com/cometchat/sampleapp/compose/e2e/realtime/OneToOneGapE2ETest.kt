@@ -14,7 +14,7 @@ import org.junit.runners.MethodSorters
  * One-to-one UI gap E2E tests (sample-app-compose). Mirror of the kotlin OneToOneGapE2ETest.
  *
  * Covers: 1TO1-022 (markdown bold). Others manual / mapped elsewhere — see the kotlin twin:
- * 1TO1-095 → CallButtonsE2ETest.test04b; 1TO1-100 → RealTimeReceiveEdgeE2ETest.test05;
+ * 1TO1-095 → N/A (chat-only sample; calling lives in sample-app-compose-push); 1TO1-100 → RealTimeReceiveEdgeE2ETest.test05;
  * 1TO1-073 (canvas ItemDecoration), 1TO1-082 (no Mark-Unread action), 1TO1-005 → MANUAL.
  */
 @RunWith(AndroidJUnit4::class)

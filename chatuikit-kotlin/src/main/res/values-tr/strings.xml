@@ -80,6 +80,7 @@
     <string name="cometchat_owner" translatable="true">Sahip</string>
     <string name="cometchat_banned" translatable="true">Yasaklı</string>
     <string name="cometchat_calling" translatable="true">çağrılıyor</string>
+    <string name="cometchat_ringing" translatable="true">çalıyor</string>
     <string name="cometchat_accepted" translatable="true">kabul edildi</string>
     <string name="cometchat_unanswered" translatable="true">cevapsız</string>
     <string name="cometchat_message_receipt" translatable="true">Mesaj Alındı</string>

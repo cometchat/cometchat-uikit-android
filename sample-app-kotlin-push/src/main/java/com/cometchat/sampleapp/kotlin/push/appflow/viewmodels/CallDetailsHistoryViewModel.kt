@@ -2,7 +2,7 @@ package com.cometchat.sampleapp.kotlin.push.appflow.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cometchat.calls.constants.CometChatCallsConstants
+import com.cometchat.calls.constants.Constants
 import com.cometchat.calls.core.CallLogRequest
 import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.calls.exceptions.CometChatException
@@ -50,10 +50,6 @@ class CallDetailsHistoryViewModel : ViewModel() {
      * Determines the user to filter by based on whether the logged-in user
      * was the initiator or receiver of the call.
      */
-    // setCallCategory's @StringDef names com.cometchat.calls.constants.Constants, but the
-    // public CometChatCallsConstants facade holds the same values (both CALL_CATEGORY_CALL
-    // are "call" in calls-sdk-android 5.0.4). Lint cannot see across the two holders.
-    @Suppress("WrongConstant")
     fun setCallLog(callLog: CallLog) {
         val initiator = callLog.initiator as CallUser
         val isLoggedInUser = CometChatUIKit.getLoggedInUser()?.uid == initiator.uid
@@ -62,7 +58,7 @@ class CallDetailsHistoryViewModel : ViewModel() {
         callLogRequest = CallLogRequest.CallLogRequestBuilder()
             .setUid(user.uid)
             .setLimit(30)
-            .setCallCategory(CometChatCallsConstants.CALL_CATEGORY_CALL)
+            .setCallCategory(Constants.CALL_CATEGORY_CALL)
             .build()
         
         // Reset state for new user

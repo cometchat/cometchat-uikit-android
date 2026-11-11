@@ -46,7 +46,7 @@ class GroupsDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupsRequest>()
             val groups = listOf(mock<Group>(), mock<Group>(), mock<Group>())
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onSuccess(groups)
                 null
             }
@@ -59,7 +59,7 @@ class GroupsDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupsRequest>()
             val error = MockFactory.createCometChatException("ERR_FETCH", "Network error")
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onError(error)
                 null
             }
@@ -101,7 +101,7 @@ class GroupsDataSourceImplTest : FunSpec({
             runTest {
                 val request = mock<GroupsRequest>()
                 val groups = (1..count).map { mock<Group>() }
-                whenever(request.fetchNext(any())).thenAnswer { inv ->
+                whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
                     inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onSuccess(groups)
                     null
                 }

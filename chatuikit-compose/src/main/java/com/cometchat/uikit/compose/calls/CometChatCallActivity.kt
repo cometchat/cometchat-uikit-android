@@ -6,13 +6,16 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.cometchat.calls.core.CallSession
 import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.chat.core.Call
@@ -27,6 +30,10 @@ import com.cometchat.uikit.compose.presentation.outgoingcall.style.CometChatOutg
 import com.cometchat.uikit.compose.presentation.outgoingcall.ui.CometChatOutgoingCall
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CallRingingUtils
+import com.cometchat.uikit.core.utils.CallsUtils
+import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
 
 /**
  * CometChatCallActivity is a ComponentActivity that hosts call screens (outgoing call, ongoing call).
@@ -60,6 +67,19 @@ public class CometChatCallActivity : ComponentActivity() {
         // Flag to prevent double launches
         @Volatile
         private var isLaunching: Boolean = false
+
+        /**
+         * Session the outgoing screen handed to [CometChatOngoingCallActivity] when the callee
+         * answered. This activity finishes right after the hand-over; leaving the session in
+         * onDestroy would close the call the new screen is joining, so that leave is skipped.
+         */
+        @Volatile
+        private var handedOverSessionId: String? = null
+
+        /** Records that [sessionId] now belongs to the ongoing-call screen. */
+        internal fun markHandedOver(sessionId: String?) {
+            handedOverSessionId = sessionId
+        }
 
         /**
          * Launches the outgoing call screen.
@@ -98,6 +118,7 @@ public class CometChatCallActivity : ComponentActivity() {
          * @param style Optional style configuration for the incoming call screen
          */
         @JvmStatic
+        @Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself. The app's answer activity opens CometChatOngoingCallActivity with the answered call; drop this component unless the app draws its own ring screen with setIncomingCallActivity and wires accept and decline to CometChatCallNotifications itself.")
         public fun launchIncomingCallScreen(
             context: Context,
             call: Call,
@@ -140,12 +161,40 @@ public class CometChatCallActivity : ComponentActivity() {
         }
     }
 
+    /** Answer to run once the mic/camera prompt returns; a denial still answers, muted. */
+    private var pendingAnswer: (() -> Unit)? = null
+
+    private val answerPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            pendingAnswer?.invoke()
+            pendingAnswer = null
+        }
+
+    /** A custom ring screen asks for mic and camera itself. A denial still answers, muted. */
+    private fun answerAfterPermissions(proceed: () -> Unit) {
+        pendingAnswer = proceed
+        answerPermissionLauncher.launch(CallRingingUtils.permissionsToAnswer(call))
+    }
+
+    /** ViewModel of the incoming-call screen, shared with the content to decline through it. */
+    private val incomingCallViewModel: CometChatIncomingCallViewModel by lazy {
+        CometChatIncomingCallViewModel(enableListeners = true)
+    }
+
+    /**
+     * The session this instance was created for. The companion's [call] is shared and cleared
+     * by whichever instance is destroyed last, so the id is captured per instance: onDestroy
+     * tears down this session only, never the next call's (see [CallsUtils.ownsActiveSession]).
+     */
+    private var ownedSessionId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         // Reset the launching flag now that activity is created
         isLaunching = false
-        
+        ownedSessionId = call?.sessionId
+
         // Guard: If callingType is null, the static data was cleared (activity recreated after finish)
         // Just finish immediately to prevent blank screen
         if (callingType == null) {
@@ -160,6 +209,13 @@ public class CometChatCallActivity : ComponentActivity() {
             return
         }
         
+        if (callingType == INCOMING_CALL) {
+            setupScreenManagement()
+        }
+        showContent()
+    }
+
+    private fun showContent() {
         setContent {
             CometChatTheme {
                 CallActivityContent(
@@ -169,12 +225,30 @@ public class CometChatCallActivity : ComponentActivity() {
                     callSettingsBuilder = onGoingSessionSettingsBuilder,
                     outgoingStyle = outgoingCallStyle,
                     incomingStyle = incomingCallStyle,
+                    incomingCallViewModel = incomingCallViewModel,
+                    onAcceptRequested = ::answerAfterPermissions,
                     onBackPress = { finish() }
                 )
             }
         }
     }
-    
+
+    /**
+     * Shows the ring screen over the lock screen and turns the screen on.
+     */
+    private fun setupScreenManagement() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            @Suppress("DEPRECATION")
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
+        }
+    }
+
     /**
      * Handles direct call (group conference) by launching CometChatOngoingCallActivity
      * and finishing this activity to prevent blank screen when call ends.
@@ -251,10 +325,22 @@ public class CometChatCallActivity : ComponentActivity() {
         // 
         // Only call endSession() for OUTGOING_CALL and INCOMING_CALL where this activity
         // hosts the call UI directly.
-        if (callingType != null && !wasDirectCall) {
-            CallSession.getInstance()?.leaveSession()
-            CometChat.clearActiveCall()
+        // An incoming call's prepared session survives into the ongoing-call screen that the
+        // answer opened, so it is not left here either.
+        if (callingType != null && !wasDirectCall && callingType != INCOMING_CALL) {
+            val handedOver = handedOverSessionId != null && handedOverSessionId == ownedSessionId
+            if (!handedOver) {
+                // Only this screen's own session. After "End & accept" the next call's screen
+                // may already hold the active session, and leaving it here would drop that call.
+                if (CallsUtils.ownsActiveSession(ownedSessionId)) {
+                    CallSession.getInstance()?.leave()
+                }
+                if (CallingState.getActiveCall()?.sessionId.let { it == null || it == ownedSessionId }) {
+                    CallingState.setActiveCall(null)
+                }
+            }
         }
+        handedOverSessionId = null
         
         // Reset the launching flag to allow new calls
         isLaunching = false
@@ -278,8 +364,11 @@ private fun CallActivityContent(
     callSettingsBuilder: CometChatCalls.SessionSettingsBuilder?,
     outgoingStyle: CometChatOutgoingCallStyle?,
     incomingStyle: CometChatIncomingCallStyle?,
+    incomingCallViewModel: CometChatIncomingCallViewModel,
+    onAcceptRequested: (proceed: () -> Unit) -> Unit,
     onBackPress: () -> Unit
 ) {
+    val context = LocalContext.current
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
@@ -303,13 +392,18 @@ private fun CallActivityContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
+                        viewModel = incomingCallViewModel,
                         style = incomingStyle ?: CometChatIncomingCallStyle.default(),
+                        // Decline through the ViewModel (Calls SDK endCall as rejected), then
+                        // close the ring screen.
                         onRejectClick = { _ ->
+                            incomingCallViewModel.rejectCall()
                             onBackPress()
                         },
                         onAcceptClick = { _ ->
                             // Call accepted - the component handles starting the call
                         },
+                        onAcceptRequested = onAcceptRequested,
                         onError = { _ ->
                             onBackPress()
                         }

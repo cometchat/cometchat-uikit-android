@@ -14,6 +14,7 @@ import com.cometchat.chat.core.Call
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.core.CometChatUIKit
+import com.cometchat.uikit.kotlin.presentation.shared.utils.CallsUtils
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
 
@@ -142,8 +143,10 @@ public class CometChatCallActionBubble @JvmOverloads constructor(
         val iconRes = getCallIcon(isVideo, isInitiator, callStatus)
         callIconImageView.setImageResource(iconRes)
 
-        // Set status text
-        val statusText = getCallStatusText(isVideo, isInitiator, callStatus)
+        // Status text: one label per call status, as in v5 (e.g. "Call Ended", "Call Rejected").
+        // getCallStatus is empty for non-user receivers; keep the type label there.
+        val statusText = CallsUtils.getCallStatus(context, message)
+            .ifBlank { getCallStatusText(isVideo, isInitiator, callStatus) }
         statusTextView.text = statusText
 
         // Apply styles based on missed status

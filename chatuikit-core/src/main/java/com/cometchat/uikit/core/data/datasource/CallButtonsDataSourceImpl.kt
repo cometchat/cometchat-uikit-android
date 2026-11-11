@@ -1,13 +1,17 @@
 package com.cometchat.uikit.core.data.datasource
 
+import com.cometchat.calls.core.CometChatCalls
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.CustomMessage
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CallsUtils
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -18,19 +22,14 @@ import kotlin.coroutines.suspendCoroutine
  */
 internal class CallButtonsDataSourceImpl : CallButtonsDataSource {
 
-    override suspend fun initiateUserCall(receiverId: String, callType: String): Result<Call> {
-        return suspendCoroutine { continuation ->
-            val call = Call(receiverId, CometChatConstants.RECEIVER_TYPE_USER, callType)
-            CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(initiatedCall: Call) {
-                    continuation.resume(Result.success(initiatedCall))
-                }
-
-                override fun onError(e: CometChatException) {
-                    continuation.resume(Result.failure(e))
-                }
-            })
-        }
+    override suspend fun initiateUserCall(receiverId: String, callType: String, receiver: User?): Result<Call> {
+        // Ringing v2: the Calls SDK creates the call and prepares the session; the backend
+        // pushes the callee. The Chat SDK's initiateCall is deprecated and not used.
+        val context = CometChatUIKit.getApplicationContext()
+            ?: return Result.failure(
+                CometChatException("NOT_INITIALIZED", "CometChatUIKit.init must run before starting a call")
+            )
+        return CallInitiationUtils.initiateUserCall(context, receiverId, callType, receiver)
     }
 
     override suspend fun sendGroupCallMessage(groupId: String, callType: String): Result<CustomMessage> {
@@ -48,7 +47,11 @@ internal class CallButtonsDataSourceImpl : CallButtonsDataSource {
         }
     }
 
-    override fun getActiveCall(): Call? = CometChat.getActiveCall()
+    override fun getActiveCall(): Call? = CallingState.getActiveCall()
+
+    override fun hasActiveCallSession(): Boolean {
+        return CallsUtils.isCallsSDKAvailable() && CometChatCalls.getActiveSession() != null
+    }
 
     override fun getActiveCallingExtensionCall(): Call? {
         return try {

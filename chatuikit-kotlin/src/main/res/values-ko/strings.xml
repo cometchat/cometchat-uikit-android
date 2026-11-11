@@ -80,6 +80,7 @@
     <string name="cometchat_owner" translatable="true">소유자</string>
     <string name="cometchat_banned" translatable="true">차단됨</string>
     <string name="cometchat_calling" translatable="true">전화 중</string>
+    <string name="cometchat_ringing" translatable="true">벨 울리는 중</string>
     <string name="cometchat_accepted" translatable="true">수락됨</string>
     <string name="cometchat_unanswered" translatable="true">응답 없음</string>
     <string name="cometchat_message_receipt" translatable="true">메시지 수신</string>

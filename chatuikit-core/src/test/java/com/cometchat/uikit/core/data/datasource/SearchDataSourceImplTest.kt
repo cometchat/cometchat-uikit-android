@@ -32,7 +32,7 @@ class SearchDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<ConversationsRequest>()
             val conversations = listOf(mock<Conversation>(), mock<Conversation>())
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Conversation>>>(0).onSuccess(conversations)
                 null
             }
@@ -45,7 +45,7 @@ class SearchDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<ConversationsRequest>()
             val error = MockFactory.createCometChatException("ERR_CONV", "boom")
-            whenever(request.fetchNext(any())).thenAnswer { inv ->
+            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Conversation>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<Conversation>>>(0).onError(error)
                 null
             }
@@ -58,7 +58,7 @@ class SearchDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<MessagesRequest>()
             val messages = MockFactory.createMessages(2)
-            whenever(request.fetchPrevious(any())).thenAnswer { inv ->
+            whenever(request.fetchPrevious(any<CometChat.CallbackListener<List<BaseMessage>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0).onSuccess(messages)
                 null
             }
@@ -71,7 +71,7 @@ class SearchDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<MessagesRequest>()
             val error = MockFactory.createCometChatException("ERR_MSG", "boom")
-            whenever(request.fetchPrevious(any())).thenAnswer { inv ->
+            whenever(request.fetchPrevious(any<CometChat.CallbackListener<List<BaseMessage>>>())).thenAnswer { inv ->
                 inv.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0).onError(error)
                 null
             }

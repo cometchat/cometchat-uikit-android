@@ -1,9 +1,9 @@
 package com.cometchat.uikit.compose.presentation.ongoingcall.ui
 
-import android.Manifest
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
@@ -16,17 +16,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.calls.core.CallSession
 import com.cometchat.calls.core.CometChatCalls
-import com.cometchat.chat.core.CometChat
+import com.cometchat.chat.core.Call
 import com.cometchat.uikit.compose.presentation.ongoingcall.style.CometChatOngoingCallStyle
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants.CallWorkFlow
 import com.cometchat.uikit.core.models.OngoingCallEvent
 import com.cometchat.uikit.core.models.OngoingCallUIState
+import com.cometchat.uikit.core.utils.CallRingingUtils
+import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.CallingState
+import com.cometchat.uikit.core.utils.CallsUtils
 import com.cometchat.uikit.core.viewmodel.CometChatOngoingCallViewModel
 
 /**
@@ -59,6 +63,7 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
         private const val EXTRA_SESSION_ID = "extra_session_id"
         private const val EXTRA_CALL_TYPE = "extra_call_type"
         private const val EXTRA_CALL_WORKFLOW = "extra_call_workflow"
+        private const val EXTRA_CALL_JSON = "extra_call_json"
 
         // Static storage for SessionSettingsBuilder (cannot be passed via Intent)
         // **Validates: Requirement 12.4**
@@ -103,11 +108,51 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
             }
             context.startActivity(intent)
         }
+
+        /**
+         * Launches the ongoing call activity for an answered incoming [call], as the final step
+         * of the app's Push SDK answer activity (`PNConfiguration.setAnswerActivity`). The app
+         * reads the Push SDK's `IncomingCall` from its intent with `CallBundles.getCall`,
+         * builds the [Call] with `CallRingingUtils.buildIncomingCall`, then calls this. The
+         * screen joins the session the Push SDK prepared and emits
+         * `CometChatCallEvent.CallEnded(call)` on hang-up.
+         *
+         * A different call answered while this screen is already up (End & accept on a call
+         * that rang over the live one) opens a fresh screen and closes the old one.
+         *
+         * @param context The context to start the activity from
+         * @param call The answered call; `sessionId` and `type` must be set
+         * @param callSettingsBuilder Optional call settings builder for custom configuration
+         * @param style Optional style configuration for the ongoing call screen
+         */
+        @JvmStatic
+        @JvmOverloads
+        public fun launchOngoingCallActivity(
+            context: Context,
+            call: Call,
+            callSettingsBuilder: CometChatCalls.SessionSettingsBuilder? = null,
+            style: CometChatOngoingCallStyle? = null
+        ) {
+            val sessionId = call.sessionId ?: return
+            val callType = call.type ?: return
+            onGoingSessionSettingsBuilder = callSettingsBuilder
+            ongoingCallStyle = style
+
+            val intent = Intent(context, CometChatOngoingCallActivity::class.java).apply {
+                putExtra(EXTRA_SESSION_ID, sessionId)
+                putExtra(EXTRA_CALL_TYPE, callType)
+                putExtra(EXTRA_CALL_WORKFLOW, CallWorkFlow.DEFAULT.name)
+                call.rawMessage?.let { putExtra(EXTRA_CALL_JSON, it.toString()) }
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            context.startActivity(intent)
+        }
     }
 
     // ==================== State ====================
     private var sessionId: String? = null
     private var callType: String? = null
+    private var answeredCall: Call? = null
     private var callWorkFlow: CallWorkFlow = CallWorkFlow.DEFAULT
     private var isInPipMode: Boolean = false
     
@@ -119,21 +164,64 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
 
     // ==================== Lifecycle Methods ====================
 
+    /**
+     * A second call answered while this screen is up (End & accept on a call that rang over the
+     * live one): the launch intent arrives here because it carries SINGLE_TOP. The Push SDK has
+     * already left the live call, so open a fresh screen for the new call and close this one.
+     * Reusing this screen would share its activity-scoped ViewModel with the call that ended.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val next = intent.getStringExtra(EXTRA_SESSION_ID) ?: return
+        if (next == sessionId) return
+        startActivity(
+            Intent(intent).setClass(this, CometChatOngoingCallActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+        finish()
+    }
+
+    /** The answered call the app's answer activity put in [intent], if any. */
+    private fun answeredCallFrom(intent: Intent?): Call? {
+        val json = intent?.getStringExtra(EXTRA_CALL_JSON) ?: return null
+        return try {
+            Call.fromJson(json)
+        } catch (e: Exception) {
+            CometChatLogger.e(TAG, "answered call could not be read: ${e.message}")
+            null
+        }
+    }
+
+    /**
+     * Requests the microphone, plus the camera for a video call only (ENG-40552).
+     */
+    private fun requestCallPermissions(callType: String?) {
+        val missing = CallRingingUtils.permissionsForCallType(callType).filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty()) requestPermissions(missing.toTypedArray(), 101)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Set screen management flags (Requirements 8.1, 8.2, 8.3)
         setupScreenManagement()
-        
-        // Request necessary permissions for calls (matching Java implementation)
-        requestCallPermissions()
 
         // Extract intent extras
         sessionId = intent.getStringExtra(EXTRA_SESSION_ID)
         callType = intent.getStringExtra(EXTRA_CALL_TYPE)
+
+        // Same as v5: ask for permissions when the call screen is created, now matched to the
+        // call type. The answer is not awaited; the SDK joins either way.
+        requestCallPermissions(callType)
         callWorkFlow = intent.getStringExtra(EXTRA_CALL_WORKFLOW)?.let {
             try { CallWorkFlow.valueOf(it) } catch (e: Exception) { CallWorkFlow.DEFAULT }
         } ?: CallWorkFlow.DEFAULT
+
+        // Opened for an answered incoming call: the call travels in the intent so hang-up can
+        // report it (CometChatCallEvent.CallEnded).
+        answeredCall = answeredCallFrom(intent)
 
         // Apply window insets for edge-to-edge (Requirement 8.4)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -153,6 +241,7 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
                 
                 // Store ViewModel reference for PIP handling
                 ongoingCallViewModel = viewModel
+                answeredCall?.let { viewModel.setCall(it) }
 
                 // Observe events for call ended and user joined
                 LaunchedEffect(Unit) {
@@ -202,10 +291,10 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
             }
         }
         
-        // ENG-38657 (T5): on API 31+ the system auto-enters PiP on the back
-        // gesture (setAutoEnterEnabled), so predictive back keeps working; the
-        // manual interceptor below - which disables predictive back - is only
-        // registered where auto-enter is unavailable.
+        // on API 31+ enable auto-enter so Home and recents send the
+        // call to PiP. Auto-enter does NOT fire on the Back gesture, though, so Back must be
+        // intercepted explicitly on every API level - otherwise Back finishes this activity
+        // and the call ends (reproduced on API 31+ where the interceptor used to be skipped).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val pipMetrics = resources.displayMetrics
             setPictureInPictureParams(
@@ -214,13 +303,12 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
                     .setAutoEnterEnabled(true)
                     .build()
             )
-        } else {
-            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    enterPipMode()
-                }
-            })
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                enterPipMode()
+            }
+        })
     }
 
     /**
@@ -244,20 +332,6 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
         }
     }
     
-    /**
-     * Requests RECORD_AUDIO and CAMERA permissions required for calls.
-     * Matches the Java implementation behavior.
-     */
-    private fun requestCallPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val permissions = arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA
-            )
-            requestPermissions(permissions, 101)
-        }
-    }
-
     // ==================== PIP Mode Methods ====================
 
     /**
@@ -350,10 +424,9 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
         if (callWorkFlow != CallWorkFlow.MEETING) {
             // DEFAULT workflow: end call and clear active call
             ongoingCallViewModel?.endCall()
-            CometChat.clearActiveCall()
         } else {
             // MEETING workflow: leave session only
-            CallSession.getInstance()?.leaveSession()
+            CallSession.getInstance()?.leave()
         }
 
         CallingState.setIsActiveMeeting(false)
@@ -371,15 +444,21 @@ public class CometChatOngoingCallActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // Ensure the call session is fully torn down to stop WebRTC rendering
-        CallSession.getInstance()?.leaveSession()
+        // Only this screen's own session and call. After End & accept the next call's screen may
+        // already be up, and tearing down "whatever is active" here would drop that call.
+        val active = CallsUtils.activeSessionId()
+        if (active == null || active == sessionId) {
+            // Ensure the call session is fully torn down to stop WebRTC rendering
+            CallSession.getInstance()?.leave()
+        }
 
         // Clear static builder (Requirement 11.1)
         onGoingSessionSettingsBuilder = null
         ongoingCallStyle = null
 
         // Clear active call (Requirement 11.2)
-        CallingState.setActiveCall(null)
-        CometChat.clearActiveCall()
+        if (CallingState.getActiveCall()?.sessionId.let { it == null || it == sessionId }) {
+            CallingState.setActiveCall(null)
+        }
     }
 }

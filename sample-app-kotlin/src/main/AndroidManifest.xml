@@ -16,8 +16,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <!-- Chat works without a camera or microphone: attachments can come from storage and
-         calling is optional. Declaring these as not required keeps the app installable on
+    <!-- Chat works without a camera or microphone: attachments can come from storage.
+         Declaring these as not required keeps the app installable on
          camera-less hardware (ChromeOS, some tablets) instead of Play filtering it out. -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
@@ -87,11 +87,6 @@
             android:exported="false"
             android:theme="@style/Theme.SampleApp" />
 
-        <!-- Call Details Activity -->
-        <activity
-            android:name=".ui.calls.CallDetailsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.SampleApp" />
 
         <!-- Splash Activity - Entry point for SDK initialization -->
         <activity

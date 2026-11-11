@@ -78,6 +78,7 @@
     <string name="cometchat_owner" translatable="true">Ägare</string>
     <string name="cometchat_banned" translatable="true">Blockerad</string>
     <string name="cometchat_calling" translatable="true">ringer</string>
+    <string name="cometchat_ringing" translatable="true">det ringer</string>
     <string name="cometchat_accepted" translatable="true">accepterad</string>
     <string name="cometchat_unanswered" translatable="true">obesvarad</string>
     <string name="cometchat_message_receipt" translatable="true">Mottagningsbekräftelse</string>

@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- The call view fills the screen and stays laid out (invisible) while the session joins, so
+     the Calls SDK's view has its full size before it is shown; the spinner sits over it.
+     A wrap_content container left the SDK's view zero-width for seconds after the answer
+     (ENG-40740). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cometchat_calling_background"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:background="@color/cometchat_calling_background">
+
+    <RelativeLayout
+        android:id="@+id/call_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:visibility="invisible" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:indeterminateTint="@color/cometchat_color_white" />
 
-    <RelativeLayout
-        android:id="@+id/call_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        android:minWidth="450dp"
-        android:visibility="gone" />
-
-</LinearLayout>
+</FrameLayout>

@@ -10,7 +10,7 @@ package com.cometchat.uikit.core.utils
  * on the Calls SDK, allowing the UIKit to gracefully handle scenarios where
  * calling functionality is not available.
  * 
- * @see CallManager for active call state management
+ * @see CallingState for active call state management
  */
 public object CallsUtils {
     
@@ -22,11 +22,42 @@ public object CallsUtils {
     private const val COMETCHAT_CALLS_CLASS = "com.cometchat.calls.core.CometChatCalls"
     
     /**
+     * The fully qualified class name of the Push SDK's calls entry point (ringing v2).
+     */
+    private const val COMETCHAT_CALL_NOTIFICATIONS_CLASS =
+        "com.cometchat.pushnotification.calls.CometChatCallNotifications"
+
+    /**
      * Cached result of SDK availability check to avoid repeated reflection calls.
      */
     @Volatile
     private var cachedSdkAvailable: Boolean? = null
-    
+
+    @Volatile
+    private var cachedPushCallsSdkAvailable: Boolean? = null
+
+    /**
+     * Checks if the CometChat Push SDK calls module (push-notifications-calls-android 2.0+)
+     * is on the app's classpath. The kit does not depend on it; this is a reflection check
+     * only, used so the deprecated [com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel]
+     * screen does not play a second ringtone over the Push SDK's.
+     *
+     * @return true if CometChatCallNotifications is on the classpath, false otherwise
+     */
+    public fun isPushCallsSDKAvailable(): Boolean {
+        cachedPushCallsSdkAvailable?.let { return it }
+        val isAvailable = try {
+            Class.forName(COMETCHAT_CALL_NOTIFICATIONS_CLASS)
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        } catch (e: LinkageError) {
+            false
+        }
+        cachedPushCallsSdkAvailable = isAvailable
+        return isAvailable
+    }
+
     /**
      * Checks if the CometChat Calls SDK is available at runtime.
      * 
@@ -86,6 +117,34 @@ public object CallsUtils {
     }
     
     /**
+     * The session id of the call the Calls SDK currently holds active, or null when there is
+     * none or the SDK is not on the classpath. A thin read shared by the ongoing-call screens of
+     * both UI Kits, so each tears down only its own session.
+     */
+    @JvmStatic
+    public fun activeSessionId(): String? {
+        if (!isCallsSDKAvailable()) return null
+        return runCatching { com.cometchat.calls.core.CometChatCalls.getActiveSession()?.sessionId }
+            .getOrNull()
+    }
+
+    /**
+     * True when a call screen that hosts [ownedSessionId] may tear down the Calls SDK's current
+     * session in its `onDestroy`.
+     *
+     * `CallSession.getInstance()` is whichever session is active *now*, not the one the screen
+     * was created for. After "End & accept" the next call's screen may already have prepared or
+     * joined its own session by the time the old screen is destroyed, so leaving "whatever is
+     * active" would drop the new call. A screen leaves only its own session, or when nothing is
+     * active (then the leave is a no-op). A screen that never learned its session id owns nothing.
+     */
+    @JvmStatic
+    public fun ownsActiveSession(ownedSessionId: String?): Boolean {
+        val active = activeSessionId() ?: return true
+        return ownedSessionId != null && active == ownedSessionId
+    }
+
+    /**
      * Clears the cached SDK availability result.
      * 
      * This is primarily useful for testing purposes to reset the cached state.
@@ -93,5 +152,6 @@ public object CallsUtils {
      */
     internal fun clearCache() {
         cachedSdkAvailable = null
+        cachedPushCallsSdkAvailable = null
     }
 }

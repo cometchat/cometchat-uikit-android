@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">翻訳</string>
     <string name="cometchat_unpin" translatable="true">メッセージのピン留めを解除</string>
     <string name="cometchat_unsave" translatable="true">メッセージの保存を解除</string>
+    <string name="cometchat_call_no_internet" translatable="true">インターネットに接続されていません。接続を確認して、もう一度お試しください。</string>
 </resources>

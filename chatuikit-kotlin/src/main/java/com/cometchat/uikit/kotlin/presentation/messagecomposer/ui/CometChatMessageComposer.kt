@@ -189,6 +189,11 @@ public class CometChatMessageComposer @JvmOverloads constructor(
             viewModel?.disableTypingEvents = value
         }
 
+    /**
+     * When true, the outgoing message sound is suppressed.
+     */
+    private var disableSoundForMessages: Boolean = false
+
     // Rich text formatting - using RichTextEditorController from chatuikit-core (same as Jetpack)
     private val richTextController = RichTextEditorController()
     private var richTextFormatterManager: RichTextFormatterManager? = null
@@ -4490,6 +4495,8 @@ public class CometChatMessageComposer @JvmOverloads constructor(
             }
         }
         viewModel?.disableTypingEvents = disableTypingEvents
+        viewModel?.initSoundManager(context)
+        viewModel?.setDisableSoundForMessages(disableSoundForMessages)
         startCollectingFlows()
     }
 
@@ -6226,12 +6233,28 @@ public class CometChatMessageComposer @JvmOverloads constructor(
         suggestionList?.showAvatar(show)
     }
 
+    /**
+     * Sets whether the sound played when the local user sends a message is disabled.
+     *
+     * Mirrors [CometChatMessageList.setDisableSoundForMessages] / [CometChatConversations.setDisableSoundForMessages],
+     * which control the incoming sound.
+     *
+     * @param disable True to disable the outgoing message sound, false to enable (default).
+     */
+    public fun setDisableSoundForMessages(disable: Boolean) {
+        disableSoundForMessages = disable
+        viewModel?.initSoundManager(context)
+        viewModel?.setDisableSoundForMessages(disable)
+    }
+
     // ==================== ViewModel Setter ====================
 
     public fun setViewModel(viewModel: CometChatMessageComposerViewModel) {
         this.viewModel = viewModel
         isExternalViewModel = true
         viewModel.disableTypingEvents = disableTypingEvents
+        viewModel.initSoundManager(context)
+        viewModel.setDisableSoundForMessages(disableSoundForMessages)
         startCollectingFlows()
     }
 

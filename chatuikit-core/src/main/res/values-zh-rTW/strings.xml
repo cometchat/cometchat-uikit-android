@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">翻譯</string>
     <string name="cometchat_unpin" translatable="true">取消釘選訊息</string>
     <string name="cometchat_unsave" translatable="true">取消儲存訊息</string>
+    <string name="cometchat_call_no_internet" translatable="true">沒有網路連線。請檢查連線後再試一次。</string>
 </resources>

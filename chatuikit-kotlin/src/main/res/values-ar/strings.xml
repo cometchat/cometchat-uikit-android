@@ -78,6 +78,7 @@
     <string name="cometchat_owner" translatable="true">المالك</string>
     <string name="cometchat_banned" translatable="true">محظور</string>
     <string name="cometchat_calling" translatable="true">جارٍ الاتصال</string>
+    <string name="cometchat_ringing" translatable="true">يرن</string>
     <string name="cometchat_accepted" translatable="true">تم القبول</string>
     <string name="cometchat_unanswered" translatable="true">غير مجابة</string>
     <string name="cometchat_message_receipt" translatable="true">إيصال الرسالة</string>

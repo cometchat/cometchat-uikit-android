@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Chat works without a camera or microphone: attachments can come from storage and
          calling is optional. Declaring these as not required keeps the app installable on
@@ -108,6 +109,16 @@
             android:theme="@style/Theme.KotlinUIKit" />
 
         <!-- CometChat Push Notifications: FCM service -->
+        <!-- Push SDK answer activity: reads the answered call and opens the UI Kit call screen -->
+        <activity
+            android:name=".calls.CallAnswerActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <service
             android:name=".fcm.AppFCMService"
             android:exported="false">

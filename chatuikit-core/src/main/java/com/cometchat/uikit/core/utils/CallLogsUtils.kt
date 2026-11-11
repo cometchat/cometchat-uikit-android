@@ -1,10 +1,10 @@
 package com.cometchat.uikit.core.utils
 
-import com.cometchat.calls.constants.CometChatCallsConstants
 import com.cometchat.calls.model.CallGroup
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
 import com.cometchat.chat.core.CometChat
+import com.cometchat.uikit.core.constants.UIKitConstants
 
 /**
  * Utility functions for call log classification and data extraction.
@@ -35,9 +35,9 @@ public object CallLogsUtils {
         // Only incoming calls can be "missed" from the user's perspective
         if (isOutgoingCall(callLog)) return false
         
-        return callLog.status == CometChatCallsConstants.CALL_STATUS_UNANSWERED ||
-               callLog.status == CometChatCallsConstants.CALL_STATUS_MISSED ||
-               callLog.status == CometChatCallsConstants.CALL_STATUS_CANCELLED
+        return callLog.status == UIKitConstants.CallStatusConstants.UNANSWERED ||
+               callLog.status == UIKitConstants.CallStatusConstants.MISSED ||
+               callLog.status == UIKitConstants.CallStatusConstants.CANCELLED
     }
     
     /**
@@ -58,7 +58,7 @@ public object CallLogsUtils {
      * @return true if the call was audio-only, false otherwise
      */
     public fun isAudioCall(callLog: CallLog): Boolean {
-        return callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO
+        return callLog.type == UIKitConstants.CallType.AUDIO
     }
     
     /**
@@ -69,8 +69,8 @@ public object CallLogsUtils {
      * @return true if the call was a video call, false otherwise
      */
     public fun isVideoCall(callLog: CallLog): Boolean {
-        return callLog.type == CometChatCallsConstants.CALL_TYPE_VIDEO ||
-               callLog.type == CometChatCallsConstants.CALL_TYPE_AUDIO_VIDEO
+        return callLog.type == UIKitConstants.CallType.VIDEO ||
+               callLog.type == UIKitConstants.CallType.AUDIO_VIDEO
     }
     
     /**
@@ -83,7 +83,7 @@ public object CallLogsUtils {
      */
     public fun getDisplayName(callLog: CallLog): String {
         // Handle group calls
-        if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
+        if (callLog.receiverType == UIKitConstants.ReceiverType.GROUP) {
             val receiver = callLog.receiver as? CallGroup
             return receiver?.name ?: ""
         }
@@ -110,7 +110,7 @@ public object CallLogsUtils {
      */
     public fun getAvatarUrl(callLog: CallLog): String? {
         // Handle group calls
-        if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
+        if (callLog.receiverType == UIKitConstants.ReceiverType.GROUP) {
             val receiver = callLog.receiver as? CallGroup
             return receiver?.icon
         }
@@ -136,7 +136,7 @@ public object CallLogsUtils {
      */
     public fun getOtherParticipantUid(callLog: CallLog): String {
         // Handle group calls
-        if (callLog.receiverType == CometChatCallsConstants.RECEIVER_TYPE_GROUP) {
+        if (callLog.receiverType == UIKitConstants.ReceiverType.GROUP) {
             val receiver = callLog.receiver as? CallGroup
             return receiver?.guid ?: ""
         }

@@ -131,8 +131,6 @@ class AccessibilityAuditE2ETest {
 
     @Test fun test03_groupsScreen() = assertScreenClean("Groups") { E2ETestHelper.navigateToTab(device, "Groups") }
 
-    @Test fun test04_callsScreen() = assertScreenClean("Calls") { E2ETestHelper.navigateToTab(device, "Calls") }
-
     @Test fun test05_searchScreen() = assertScreenClean("Search") { openSearch() }
 
     // ─── Largest font (Dynamic-Type equivalent) across the main tabs ───────────────
@@ -143,7 +141,7 @@ class AccessibilityAuditE2ETest {
         device.waitForIdle()
         Thread.sleep(2500)
         val v = mutableListOf<String>()
-        for (tab in listOf("Chats", "Users", "Groups", "Calls")) {
+        for (tab in listOf("Chats", "Users", "Groups")) {
             E2ETestHelper.navigateToTab(device, tab)
             v += auditCurrentScreen("$tab @1.3x")
         }

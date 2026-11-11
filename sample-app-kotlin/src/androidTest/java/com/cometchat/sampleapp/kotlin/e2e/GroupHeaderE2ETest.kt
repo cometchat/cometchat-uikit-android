@@ -42,8 +42,6 @@ import java.util.concurrent.TimeUnit
  * - GRP-009: testHeaderDisplaysGroupName
  * - GRP-010: testHeaderDisplaysGroupAvatar
  * - GRP-011: testHeaderDisplaysMemberCount
- * - GRP-016: testVoiceCallButtonVisibleInGroupHeader
- * - GRP-017: testVideoCallButtonVisibleInGroupHeader
  * - GRP-018: testDetailsMenuNavigatesToGroupDetails
  * - GRP-019: testBackFromGroupDetailsReturnsToMessages
  *
@@ -174,76 +172,6 @@ class GroupHeaderE2ETest {
             "Member count not in header area (top=${memberText!!.visibleBounds.top}, expected < 300)",
             memberText.visibleBounds.top < 300
         )
-    }
-
-    /**
-     * GRP-016: Voice call button visible in group header.
-     *
-     * Verifies the voice/audio call button is present in the header.
-     */
-    @Test
-    fun test04_voiceCallButtonVisibleInGroupHeader() {
-        val messageList = device.findObject(By.res(PACKAGE, "messageList"))
-        assertNotNull("Messages screen not loaded", messageList)
-
-        // Voice call button is an ImageView in the header area (right side)
-        // It has content description related to "call" or "voice" or "audio"
-        val voiceCallBtn = device.findObject(By.descContains("voice"))
-            ?: device.findObject(By.descContains("audio"))
-            ?: device.findObject(By.descContains("Voice"))
-            ?: device.findObject(By.descContains("Audio"))
-
-        // Fallback: Look for clickable ImageViews in the right portion of the header
-        if (voiceCallBtn == null) {
-            val headerRightButtons = device.findObjects(
-                By.clazz("android.widget.ImageView").clickable(true)
-            ).filter {
-                it.visibleBounds.top < 300 &&
-                    it.visibleBounds.left > device.displayWidth / 2
-            }
-            assertTrue(
-                "No call buttons found in the right side of group header",
-                headerRightButtons.size >= 2 // voice + video
-            )
-        } else {
-            assertTrue(
-                "Voice call button not in header area",
-                voiceCallBtn.visibleBounds.top < 300
-            )
-        }
-    }
-
-    /**
-     * GRP-017: Video call button visible in group header.
-     *
-     * Verifies the video call button is present in the header.
-     */
-    @Test
-    fun test05_videoCallButtonVisibleInGroupHeader() {
-        val messageList = device.findObject(By.res(PACKAGE, "messageList"))
-        assertNotNull("Messages screen not loaded", messageList)
-
-        val videoCallBtn = device.findObject(By.descContains("video"))
-            ?: device.findObject(By.descContains("Video"))
-
-        // Fallback: count clickable ImageViews on right side of header
-        if (videoCallBtn == null) {
-            val headerRightButtons = device.findObjects(
-                By.clazz("android.widget.ImageView").clickable(true)
-            ).filter {
-                it.visibleBounds.top < 300 &&
-                    it.visibleBounds.left > device.displayWidth / 2
-            }
-            assertTrue(
-                "Less than 2 call buttons in header (need voice + video)",
-                headerRightButtons.size >= 2
-            )
-        } else {
-            assertTrue(
-                "Video call button not in header area",
-                videoCallBtn.visibleBounds.top < 300
-            )
-        }
     }
 
     /**

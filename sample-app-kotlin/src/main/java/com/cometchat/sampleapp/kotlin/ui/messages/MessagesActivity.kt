@@ -350,10 +350,6 @@ class MessagesActivity : AppCompatActivity() {
             setBackButtonVisibility(View.VISIBLE)
             setOnBackPress { finish() }
 
-            // Show call buttons for voice and video calls
-            setVideoCallButtonVisibility(View.VISIBLE)
-            setVoiceCallButtonVisibility(View.VISIBLE)
-
             // Navigate to AI chat history screen
             setOnChatHistoryClick {
                 user?.let { ChatHistoryActivity.start(this@MessagesActivity, it) }

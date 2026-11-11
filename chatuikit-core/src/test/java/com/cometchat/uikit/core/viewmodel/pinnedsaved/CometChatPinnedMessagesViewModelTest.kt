@@ -72,7 +72,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onSuccess(queue.removeFirstOrNull() ?: emptyList())
             null
-        }.whenever(req).fetchNext(any())
+        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         return req
     }
 
@@ -83,7 +83,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onError(exception)
             null
-        }.whenever(req).fetchNext(any())
+        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         return req
     }
 
@@ -161,7 +161,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             vm.count.value shouldBe 5
             vm.uiState.value shouldBe PinnedSavedListUIState.Content
             // 2 content pages + 1 terminating empty page
-            verify(currentRequest, times(3)).fetchNext(any())
+            verify(currentRequest, times(3)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         }
     }
 
@@ -177,7 +177,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
 
             // 30+30+30+30 = 120 ≥ cap, so the 5th page is never requested.
             vm.count.value shouldBe 120
-            verify(currentRequest, times(4)).fetchNext(any())
+            verify(currentRequest, times(4)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         }
     }
 
@@ -219,7 +219,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             doAnswer { invocation ->
                 stalledCallbacks.add(invocation.getArgument(0))
                 null
-            }.whenever(stalledRequest).fetchNext(any())
+            }.whenever(stalledRequest).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
 
             currentRequest = stalledRequest
             val vm = CometChatPinnedMessagesViewModel(enableListeners = false)

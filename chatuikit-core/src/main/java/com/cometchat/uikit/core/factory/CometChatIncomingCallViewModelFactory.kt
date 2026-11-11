@@ -15,6 +15,7 @@ import com.cometchat.uikit.core.viewmodel.CometChatIncomingCallViewModel
  * 
  * Validates: Requirements 13.1, 13.2, 13.3
  */
+@Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself. The app's answer activity opens CometChatOngoingCallActivity with the answered call; drop this component unless the app draws its own ring screen with setIncomingCallActivity and wires accept and decline to CometChatCallNotifications itself.")
 public class CometChatIncomingCallViewModelFactory(
     private val enableListeners: Boolean = true
 ) : ViewModelProvider.Factory {

@@ -1,5 +1,6 @@
 package com.cometchat.uikit.core.events
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,8 +41,23 @@ public object CometChatEvents {
      * Uses SupervisorJob to prevent child failures from cancelling the scope.
      * Uses Default dispatcher for background-safe event delivery.
      * Note: Subscribers should switch to Main dispatcher if needed for UI updates.
+     *
+     * Unit tests replace the dispatcher through [setEmitDispatcherForTesting] so an emission
+     * completes inside the test that caused it rather than on a background worker after that
+     * test has returned, where it would resume a collector on whatever Main the next test has
+     * installed.
      */
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    @Volatile
+    private var scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /**
+     * Test-only: the `emit*` functions launch on [dispatcher] from now on. The unit-test project
+     * configuration pins [kotlinx.coroutines.Dispatchers.Unconfined] once per test JVM so emits
+     * run synchronously on the calling thread and never outlive the test that made them.
+     */
+    internal fun setEmitDispatcherForTesting(dispatcher: CoroutineDispatcher) {
+        scope = CoroutineScope(SupervisorJob() + dispatcher)
+    }
 
     // ==================== Message Events ====================
 

@@ -3,9 +3,9 @@ package com.cometchat.uikit.compose.presentation.shared.messagebubble.ui
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatFileBubbleStyle
@@ -13,7 +13,6 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.testutils.MockFactory
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,16 +20,21 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Pins a defect: [CometChatFileBubble] cannot be called with its own default style.
+ * Regression coverage for ENG-39093.
  *
- * `CometChatFileBubbleStyle.incoming()` leaves `cornerRadius` as an unset sentinel
- * (`Dp.Unspecified`) for `InternalContentRenderer` to fill during the style merge, but
- * that same factory is the composable's declared default argument, and the bubble
- * feeds the value straight into `RoundedCornerShape`. So the message list is fine and
- * an integrator calling the public composable directly is not.
+ * `CometChatFileBubbleStyle.incoming()` / `.outgoing()` leave `cornerRadius` as an unset
+ * sentinel (`Dp.Unspecified`) for the message-list style merge to fill. That same factory is
+ * the composable's declared default argument, and the bubble used to feed the sentinel straight
+ * into `RoundedCornerShape`, which throws on first draw. Two things now guard against that:
  *
- * These tests assert the behaviour that exists today. When the sentinel is given a
- * fallback they will fail, which is the point — that is the signal to delete them.
+ * - [CometChatFileBubble] falls back to the message-bubble default radius when the value is
+ *   unspecified, so a direct call with the default style renders.
+ * - `InternalContentRenderer` always merges the per-type style with a base message-bubble
+ *   style, so [CometChatMessageBubble] with no explicit style and multi-attachments disabled
+ *   renders too.
+ *
+ * The factories still return the sentinel on purpose: that is what lets the merge tell an
+ * explicit override from "inherit from the base style".
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -54,7 +58,7 @@ class CometChatFileBubbleDefaultStyleTest {
     }
 
     @Test
-    fun theStyleFactoriesLeaveCornerRadiusUnset() {
+    fun theStyleFactoriesStillLeaveCornerRadiusUnsetForTheMerge() {
         var incoming: CometChatFileBubbleStyle? = null
         var outgoing: CometChatFileBubbleStyle? = null
         composeRule.setContent {
@@ -66,40 +70,49 @@ class CometChatFileBubbleDefaultStyleTest {
         composeRule.waitForIdle()
         assertEquals(Dp.Unspecified, incoming!!.cornerRadius)
         assertEquals(Dp.Unspecified, outgoing!!.cornerRadius)
-        assertEquals("the inner radius is a real value; only the outer one is a sentinel", 2.dp, incoming!!.innerCornerRadius)
     }
 
     @Test
-    fun theDefaultStyleThrowsOnFirstRender() {
-        val result = runCatching {
-            composeRule.setContent {
-                CometChatTheme {
-                    CometChatFileBubble(
+    fun aSingleFileWithTheDefaultStyleRendersAndDraws() {
+        composeRule.setContent {
+            CometChatTheme {
+                CometChatFileBubble(
+                    message = fileMessage(1),
+                    alignment = UIKitConstants.MessageBubbleAlignment.LEFT,
+                )
+            }
+        }
+        composeRule.waitForIdle()
+        draw()
+    }
+
+    @Test
+    fun aMultiFilePayloadWithTheDefaultStyleRendersAndDraws() {
+        // Exercises getItemCornerRadius, which mixes the outer radius with the inner one.
+        composeRule.setContent {
+            CometChatTheme {
+                CometChatFileBubble(
+                    message = fileMessage(3),
+                    alignment = UIKitConstants.MessageBubbleAlignment.RIGHT,
+                )
+            }
+        }
+        composeRule.waitForIdle()
+        draw()
+    }
+
+    @Test
+    fun theMessageBubbleWithNoBaseStyleAndMultiAttachmentsOffRendersAndDraws() {
+        // The ticket's original repro: no messageBubbleStyle, so the renderer used to skip the
+        // merge and hand the bubble the raw sentinel.
+        composeRule.setContent {
+            CometChatTheme {
+                CompositionLocalProvider(LocalEnableMultipleAttachments provides false) {
+                    CometChatMessageBubble(
                         message = fileMessage(1),
                         alignment = UIKitConstants.MessageBubbleAlignment.LEFT,
                     )
                 }
-            }
-            composeRule.waitForIdle()
-        }
-        val cause = generateSequence(result.exceptionOrNull()) { it.cause }
-            .firstOrNull { it is IllegalArgumentException }
-        assertTrue(
-            "expected a corner-size failure, got ${result.exceptionOrNull()}",
-            cause?.message?.contains("Corner size") == true,
-        )
-    }
-
-    @Test
-    fun aResolvedRadiusRendersAndDrawsCleanly() {
-        // The same call with the radius the renderer would have merged in.
-        composeRule.setContent {
-            CometChatTheme {
-                CometChatFileBubble(
-                    message = fileMessage(2),
-                    alignment = UIKitConstants.MessageBubbleAlignment.LEFT,
-                    style = CometChatFileBubbleStyle.incoming().copy(cornerRadius = 12.dp),
-                )
             }
         }
         composeRule.waitForIdle()

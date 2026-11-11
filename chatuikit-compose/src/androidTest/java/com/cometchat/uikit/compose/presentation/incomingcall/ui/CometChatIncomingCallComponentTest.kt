@@ -231,8 +231,14 @@ class CometChatIncomingCallComponentTest {
         val caller = createMockUser(name = "Charlie")
         val call = createMockCall(caller = caller)
         val viewModel = createViewModel()
-        val acceptClicked = AtomicBoolean(false)
+        val acceptRequested = AtomicBoolean(false)
 
+        // Ringing v2: the accept button runs `viewModel.acceptCall()`, which marks the call
+        // accepted at once (no SDK round trip). The component answers that by launching
+        // CometChatOngoingCallActivity and finishing the host activity, which takes the
+        // test's own activity with it ("No compose hierarchies found"). `onAcceptRequested`
+        // is the app hook that sits in front of that step; capturing `proceed` without
+        // calling it verifies the click wiring and keeps the test activity alive.
         composeTestRule.setContent {
             CometChatTheme(colorScheme = lightColorScheme()) {
                 CometChatIncomingCall(
@@ -240,9 +246,7 @@ class CometChatIncomingCallComponentTest {
                     modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                     viewModel = viewModel,
                     disableSoundForCalls = true,
-                    onAcceptClick = { _ ->
-                        acceptClicked.set(true)
-                    },
+                    onAcceptRequested = { _ -> acceptRequested.set(true) },
                     onRejectClick = { /* no-op */ }
                 )
             }
@@ -252,13 +256,9 @@ class CometChatIncomingCallComponentTest {
         composeTestRule.onNodeWithContentDescription("Accept Charlie")
             .performClick()
         composeTestRule.waitForIdle()
-        Thread.sleep(500)
 
-        // Note: The accept button always calls viewModel.acceptCall() first.
-        // The onAcceptClick callback is invoked via LaunchedEffect(acceptedCall).
-        // In test without real SDK, the ViewModel may not emit acceptedCall,
-        // so we verify the button is clickable without crash.
-        // The callback may or may not be invoked depending on ViewModel behavior.
+        assertTrue("Accept tap should reach onAcceptRequested", acceptRequested.get())
+        // The host activity is still here because `proceed` was never invoked.
         composeTestRule.onNodeWithContentDescription("Accept Charlie")
             .assertIsDisplayed()
     }

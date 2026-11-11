@@ -85,7 +85,6 @@ object E2ETestHelper {
             .setAppId(appId)
             .setRegion(region)
             .setAuthKey(authKey)
-            .setEnableCalling(true)
             .subscribePresenceForAllUsers()
             .build()
 
@@ -223,10 +222,6 @@ object E2ETestHelper {
 
         initSdk()
 
-        // Trigger the Application-level Calls SDK init + call listeners
-        val app = ApplicationProvider.getApplicationContext<com.cometchat.sampleapp.kotlin.app.SampleApplication>()
-        app.onSDKInitialized()
-
         logoutIfNeeded()
         launchApp(device)
         device.waitForIdle()
@@ -237,7 +232,7 @@ object E2ETestHelper {
 
     /**
      * Navigates to a tab in the bottom navigation.
-     * Valid tab names: "Chats", "Calls", "Users", "Groups"
+     * Valid tab names: "Chats", "Users", "Groups"
      *
      * BottomNavigationView renders menu item titles as contentDescription on the
      * item views in the accessibility tree, so we use By.desc() first, then
@@ -246,7 +241,6 @@ object E2ETestHelper {
     fun navigateToTab(device: UiDevice, tabName: String) {
         val menuItemId = when (tabName) {
             "Chats" -> "nav_chats"
-            "Calls" -> "nav_calls"
             "Users" -> "nav_users"
             "Groups" -> "nav_groups"
             else -> null

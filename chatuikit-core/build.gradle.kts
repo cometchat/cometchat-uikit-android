@@ -53,6 +53,9 @@ android {
             // Recycle the worker every 100 test classes so Mockito's inline-mock bookkeeping and
             // ByteBuddy's generated classes cannot accumulate across the whole suite in one JVM.
             it.forkEvery = 100
+            // Read META-INF/services for Main dispatcher factories, so UnitTestMainDispatcherFactory
+            // gives resetMain() a dispatcher to restore instead of an absent one.
+            it.systemProperty("kotlinx.coroutines.fast.service.loader", "false")
             it.testLogging {
                 events("passed", "failed", "skipped")
                 showStandardStreams = true

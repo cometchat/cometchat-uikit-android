@@ -1,6 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.shared.messagebubble
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -1223,7 +1224,8 @@ internal object InternalContentRenderer {
     fun bindThreadView(
         view: View,
         message: BaseMessage,
-        alignment: UIKitConstants.MessageBubbleAlignment
+        alignment: UIKitConstants.MessageBubbleAlignment,
+        style: CometChatMessageBubbleStyle? = null
     ) {
         val textView = view.findViewById<TextView>(R.id.cometchat_thread_reply_count)
         val imageView = view.findViewById<ImageView>(R.id.cometchat_thread_left_image)
@@ -1231,6 +1233,20 @@ internal object InternalContentRenderer {
         if (message.deletedAt == 0L && message.replyCount > 0) {
             imageView?.visibility = View.VISIBLE
             textView?.visibility = View.VISIBLE
+
+            // The thread indicator carries no styling in its layout, so the theme has to be
+            // applied here — otherwise the count renders in the platform default color and
+            // ignores both the Kit theme and any builder override.
+            val resolved = style ?: CometChatMessageBubbleStyle.default(view.context)
+            resolved.threadIndicatorTextAppearance
+                .takeIf { it != 0 }
+                ?.let { textView?.setTextAppearance(it) }
+            resolved.threadIndicatorTextColor
+                .takeIf { it != 0 }
+                ?.let { textView?.setTextColor(it) }
+            resolved.threadIndicatorIconTint
+                .takeIf { it != 0 }
+                ?.let { imageView?.imageTintList = ColorStateList.valueOf(it) }
 
             val replyText = if (message.replyCount == 1) {
                 "${message.replyCount} ${view.context.getString(R.string.cometchat_reply)}"

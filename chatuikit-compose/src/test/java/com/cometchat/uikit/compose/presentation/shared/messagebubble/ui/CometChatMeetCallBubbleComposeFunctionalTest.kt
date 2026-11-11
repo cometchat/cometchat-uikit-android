@@ -5,11 +5,16 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.cometchat.chat.core.CometChat
+import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.theme.CometChatTheme
+import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.testutils.MockFactory
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.robolectric.annotation.Config
 
 /**
@@ -100,5 +105,30 @@ class CometChatMeetCallBubbleComposeFunctionalTest {
     fun emptySubtitle_rendersWithoutCrashing() {
         render(subtitle = "")
         composeRule.onNodeWithText("Video call").assertIsDisplayed()
+    }
+
+    @Test
+    fun messageOverload_tappingJoin_handsBackTheSessionIdTheKitWrites() {
+        // The kit writes the meeting with "sessionID"; the bubble used to read "sessionId"
+        // and hand back "" (ENG-40298).
+        val me = MockFactory.createUser(uid = "me")
+        Mockito.mockStatic(CometChat::class.java).use { cometChat ->
+            cometChat.`when`<User?> { CometChat.getLoggedInUser() }.thenReturn(me)
+            var joined: String? = null
+            composeRule.setContent {
+                CometChatTheme {
+                    CometChatMeetCallBubble(
+                        message = MockFactory.createMeetCallMessage(sessionId = "group-session"),
+                        alignment = UIKitConstants.MessageBubbleAlignment.LEFT,
+                        onJoinClick = { joined = it },
+                    )
+                }
+            }
+
+            composeRule.onNodeWithText("Join").performClick()
+            composeRule.waitForIdle()
+
+            assertEquals("group-session", joined)
+        }
     }
 }

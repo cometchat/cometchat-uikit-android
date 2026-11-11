@@ -133,7 +133,7 @@ private fun UserProfileOverflowMenu(onLogout: () -> Unit) {
                         textStyle = typography.bodyRegular
                     ) {
                         expanded = false
-                        CometChat.logout(object : CometChat.CallbackListener<String>() {
+                        CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                             override fun onSuccess(result: String?) {
                                 onLogout()
                             }

@@ -89,7 +89,6 @@ dependencies {
 
     // CometChat SDKs
     implementation(libs.chat.sdk.android)
-    implementation(libs.calls.sdk.android)
 
     // AndroidX Core
     implementation(libs.androidx.core.ktx)

@@ -105,10 +105,11 @@ import java.io.File
  * entries assert a *measurable* consequence instead — a taller menu item, a taller alert
  * line — so neither passes on a style that was ignored.
  *
- * Six props are waived; see [waivedProps]. Every one is a defect — three dead parameters,
+ * Six props are waived; see [waivedProps]. Five are defects — two dead parameters,
  * a pair that a stale `remember` makes unreachable, and a callback behind a panel the
  * composer populates from a ViewModel it does not expose — which is the finding this
- * matrix exists to surface, not a gap in the layer.
+ * matrix exists to surface, not a gap in the layer. The sixth, `disableSoundForMessages`,
+ * is honoured but has no visible effect to assert here.
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -1033,16 +1034,17 @@ class CometChatMessageComposerComposePropMatrixTest {
      * above passes one exactly as a host would.) The View composer's `setAttachmentOptions`
      * has no such gap.
      *
-     * `maxLines`, `layoutMode` and `disableSoundForMessages` are **dead parameters**: all
-     * three are declared and documented on the public composable and never read in its
-     * body. `maxLines` promises to cap the input's height, `layoutMode` promises a
-     * single-row versus two-row layout, `disableSoundForMessages` promises to mute the
-     * outgoing-message sound — and each is passed straight past every use site. There is
-     * no assertion an entry could make about them that would not be asserting the defect.
-     * The View composer honours all three (`setLayoutMode` switches the row layout,
-     * `setShowFormattingToolbar` depends on it), so this is a Compose/View divergence as
-     * well as three dead params.
+     * `maxLines` and `layoutMode` are **dead parameters**: both are declared and
+     * documented on the public composable and never read in its body. `maxLines` promises
+     * to cap the input's height, `layoutMode` promises a single-row versus two-row layout,
+     * and each is passed straight past every use site. There is no assertion an entry could
+     * make about them that would not be asserting the defect. The View composer honours
+     * both (`setLayoutMode` switches the row layout, `setShowFormattingToolbar` depends on
+     * it), so this is a Compose/View divergence as well as two dead params.
      *
+     * `disableSoundForMessages` is live since ENG-38137: a `LaunchedEffect` hands it to the
+     * composer ViewModel, which gates `Sound.OUTGOING_MESSAGE` on every send path. Its only
+     * effect is audio, which the decor-view bitmap cannot show, so it stays waived here.
      *
      * `onStickerSelected` fires only when a sticker in the keyboard panel is tapped, and
      * the panel populates itself from an SDK extension fetch through a ViewModel the

@@ -1,21 +1,20 @@
 package com.cometchat.uikit.core.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.cometchat.chat.constants.CometChatConstants
+import com.cometchat.calls.core.CometChatCalls
+import com.cometchat.calls.model.InitiatedCall
 import com.cometchat.chat.core.Call
-import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.uikit.core.events.CometChatCallEvent
 import com.cometchat.uikit.core.events.CometChatEvents
-import com.cometchat.uikit.core.utils.CallManager
+import com.cometchat.uikit.core.utils.CallRingingUtils
+import com.cometchat.uikit.core.utils.CallsUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * ViewModel for CometChatIncomingCall component.
@@ -24,12 +23,16 @@ import kotlinx.coroutines.launch
  * This ViewModel:
  * - Exposes StateFlows for the current call, accepted call, and rejected call states
  * - Exposes a SharedFlow for error events
- * - Provides methods to accept and reject incoming calls
- * - Listens for onIncomingCallCancelled events to handle caller cancellation
+ * - Accepts locally (the component opens the ongoing-call screen) and declines through the
+ *   Calls SDK; it never uses the Chat SDK's deprecated calling APIs. An app that rings with
+ *   the Push SDK answers and declines through `CometChatCallNotifications` itself, from its
+ *   own accept and decline listeners
+ * - Listens for the call ending elsewhere through the Calls SDK's incoming-call listener
  * - Emits CometChatCallEvent.CallAccepted/CallRejected through CometChatEvents
  * 
  * Validates: Requirements 5.1-5.14
  */
+@Deprecated("Ringing v2 runs the Push SDK in AUTO mode: push-notifications-calls-android rings and draws the incoming call itself. The app's answer activity opens CometChatOngoingCallActivity with the answered call; drop this component unless the app draws its own ring screen with setIncomingCallActivity and wires accept and decline to CometChatCallNotifications itself.")
 open public class CometChatIncomingCallViewModel(
     private val enableListeners: Boolean = true
 ) : ViewModel() {
@@ -119,160 +122,90 @@ open public class CometChatIncomingCallViewModel(
     }
 
     /**
-     * Accepts the current incoming call.
-     * 
-     * On success:
-     * - Emits the accepted Call through acceptedCall StateFlow
-     * - Emits CometChatCallEvent.CallAccepted through CometChatEvents
-     * 
-     * On failure:
-     * - Emits the CometChatException through errorEvent SharedFlow
-     * 
-     * Validates: Requirements 5.6, 5.8, 5.9, 5.12
+     * Accepts the current incoming call: emits it through [acceptedCall], which makes the
+     * component open the ongoing-call screen, and CometChatCallEvent.CallAccepted.
+     *
+     * An app that rings with the Push SDK must also call
+     * `CometChatCallNotifications.answer(context, sessionId)` from its accept listener so the
+     * Push SDK stops its ring.
      */
     public fun acceptCall() {
         val currentCall = _call.value ?: return
-        
-        CometChat.acceptCall(currentCall.sessionId, object : CometChat.CallbackListener<Call>() {
-            override fun onSuccess(call: Call) {
-                // Emit accepted call through StateFlow
-                _acceptedCall.value = call
-                
-                // Emit CallAccepted event through CometChatEvents
-                CometChatEvents.emitCallEvent(CometChatCallEvent.CallAccepted(call))
-            }
+        if (currentCall.sessionId == null) return
 
-            override fun onError(exception: CometChatException) {
-                // Emit error through SharedFlow
-                viewModelScope.launch {
-                    _errorEvent.emit(exception)
-                }
-            }
-        })
+        _acceptedCall.value = currentCall
+        CometChatEvents.emitCallEvent(CometChatCallEvent.CallAccepted(currentCall))
     }
 
     /**
-     * Rejects the current incoming call.
-     * 
-     * On success:
-     * - Emits the rejected Call through rejectedCall StateFlow
-     * - Emits CometChatCallEvent.CallRejected through CometChatEvents
-     * 
-     * On failure:
-     * - Emits the CometChatException through errorEvent SharedFlow
-     * - Still emits CallRejected event (following Java implementation pattern)
-     * 
-     * Validates: Requirements 5.7, 5.10, 5.11, 5.12
+     * Declines the current incoming call as rejected through the Calls SDK
+     * ([CallRingingUtils.decline]), then emits it through [rejectedCall] and
+     * CometChatCallEvent.CallRejected.
+     *
+     * An app that rings with the Push SDK should instead call
+     * `CometChatCallNotifications.decline(context, sessionId)` from its decline listener, which
+     * stops the ring and sends busy or rejected through the Push SDK's durable queue.
      */
     public fun rejectCall() {
         val currentCall = _call.value ?: return
-        
-        CometChat.rejectCall(
-            currentCall.sessionId,
-            CometChatConstants.CALL_STATUS_REJECTED,
-            object : CometChat.CallbackListener<Call>() {
-                override fun onSuccess(call: Call) {
-                    // Emit rejected call through StateFlow
-                    _rejectedCall.value = call
-                    
-                    // Emit CallRejected event through CometChatEvents
-                    CometChatEvents.emitCallEvent(CometChatCallEvent.CallRejected(call))
-                }
+        val sessionId = currentCall.sessionId ?: return
 
-                override fun onError(exception: CometChatException) {
-                    // Emit CallRejected event even on error (following Java implementation)
-                    _call.value?.let { call ->
-                        CometChatEvents.emitCallEvent(CometChatCallEvent.CallRejected(call))
-                    }
-                    
-                    // Emit error through SharedFlow
-                    viewModelScope.launch {
-                        _errorEvent.emit(exception)
-                    }
-                }
-            }
-        )
+        CallRingingUtils.decline(sessionId)
+        _rejectedCall.value = currentCall
+        CometChatEvents.emitCallEvent(CometChatCallEvent.CallRejected(currentCall))
     }
 
     /**
-     * Adds CometChat SDK call listeners for handling incoming call cancellation.
-     * 
-     * Validates: Requirement 5.13
+     * Listens for the call ending elsewhere (caller cancelled, timed out, answered on
+     * another device) through the Calls SDK's incoming-call listener.
      */
     public fun addListeners() {
-        if (listenerId != null) {
-            // Listeners already added
+        if (listenerId != null || !CallsUtils.isCallsSDKAvailable()) {
             return
         }
-        
-        listenerId = "IncomingCall_${System.currentTimeMillis()}"
-        
-        CometChat.addCallListener(listenerId!!, object : CometChat.CallListener() {
-            override fun onIncomingCallReceived(call: Call?) {
+
+        val id = "IncomingCall_${System.currentTimeMillis()}"
+        listenerId = id
+
+        CometChatCalls.addIncomingCallListener(id, object : CometChatCalls.IncomingCallListener() {
+            override fun onIncomingCallReceived(call: InitiatedCall) {
                 // Not handled - incoming calls are set via setCall()
             }
 
-            override fun onOutgoingCallAccepted(call: Call?) {
-                // Not handled by incoming call component
-            }
-
-            override fun onOutgoingCallRejected(call: Call?) {
-                // Not handled by incoming call component
-            }
-
-            /**
-             * Called when the caller cancels the incoming call.
-             * 
-             * If the session ID matches the current call (or if there's no active call
-             * in CallManager and the session ID matches), emit the cancelled call
-             * through the rejectedCall StateFlow.
-             * 
-             * Validates: Requirement 5.14
-             */
-            override fun onIncomingCallCancelled(call: Call?) {
-                call?.let { cancelledCall ->
-                    handleIncomingCallCancelled(cancelledCall)
-                }
+            override fun onIncomingCallEnded(call: InitiatedCall, reason: String) {
+                handleIncomingCallEnded(call.sessionId)
             }
         })
     }
 
     /**
-     * Removes the CometChat SDK call listeners.
+     * Removes the Calls SDK incoming-call listener.
      */
     public fun removeListeners() {
         listenerId?.let { id ->
-            CometChat.removeCallListener(id)
+            if (CallsUtils.isCallsSDKAvailable()) {
+                CometChatCalls.removeIncomingCallListener(id)
+            }
             listenerId = null
         }
     }
 
+    /**
+     * Called when the ring for [sessionId] ended without this screen answering or
+     * declining it. Emits the current call through [rejectedCall] so the UI closes.
+     */
+    public fun onCallEnded(sessionId: String?) {
+        handleIncomingCallEnded(sessionId)
+    }
+
     // ==================== Private Methods ====================
 
-    /**
-     * Handles the onIncomingCallCancelled event.
-     * 
-     * Checks if the cancelled call's session ID matches the current call's session ID.
-     * If there's no active call in CometChat SDK and the session IDs match (or if
-     * CallManager has no active call), emits the cancelled call through rejectedCall.
-     * 
-     * This follows the same logic as the Java implementation in IncomingCallViewModel.
-     * 
-     * @param cancelledCall The call that was cancelled by the caller
-     */
-    private fun handleIncomingCallCancelled(cancelledCall: Call) {
-        // Get the session ID from CallManager's active call (if any)
-        val activeCallSessionId = CallManager.getActiveCall()?.sessionId ?: ""
-        
-        // Check if there's no active call in CometChat SDK
-        // and if the session IDs match (or if there's no active call in CallManager)
-        if (CometChat.getActiveCall() == null && 
-            (cancelledCall.sessionId == activeCallSessionId || activeCallSessionId.isEmpty())) {
-            // Also check against the current call in this ViewModel
-            val currentCall = _call.value
-            if (currentCall == null || currentCall.sessionId == cancelledCall.sessionId) {
-                _rejectedCall.value = cancelledCall
-            }
+    private fun handleIncomingCallEnded(sessionId: String?) {
+        val currentCall = _call.value ?: return
+        if (sessionId != null && sessionId == currentCall.sessionId &&
+            _acceptedCall.value == null && _rejectedCall.value == null
+        ) {
+            _rejectedCall.value = currentCall
         }
     }
 

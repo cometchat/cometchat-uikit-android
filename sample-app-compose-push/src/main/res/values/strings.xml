@@ -44,6 +44,11 @@
     <string name="app_session_id" translatable="true">session_id</string>
     <string name="app_call_type" translatable="true">call_type</string>
 
+    <!-- Call Details: call direction -->
+    <string name="app_call_outgoing" translatable="true">Outgoing</string>
+    <string name="app_call_missed" translatable="true">Missed</string>
+    <string name="app_call_incoming" translatable="true">Incoming</string>
+
     <!-- Composer replacements -->
     <string name="app_block_user_unable_to_send_message" translatable="true">You are no longer a member of this group</string>
     <string name="app_unblock_message" translatable="true">You have blocked this user</string>

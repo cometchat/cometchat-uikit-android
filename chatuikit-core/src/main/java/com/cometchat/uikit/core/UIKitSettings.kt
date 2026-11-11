@@ -13,6 +13,7 @@ package com.cometchat.uikit.core
  * @property roles List of roles for presence subscription
  * @property overrideAdminHost Custom admin host URL (optional)
  * @property overrideClientHost Custom client host URL (optional)
+ * @property overrideCallsHost Custom Calls SDK host URL (optional); the Calls SDK uses it for call tokens
  * @property enableCalling Whether calling features are enabled (default false)
  * @property callSettingsBuilder Custom SessionSettingsBuilder for call configuration (CometChatCalls.SessionSettingsBuilder)
  */
@@ -25,6 +26,7 @@ public class UIKitSettings private constructor(
     public val roles: List<String>?,
     public val overrideAdminHost: String?,
     public val overrideClientHost: String?,
+    public val overrideCallsHost: String?,
     public val enableCalling: Boolean,
     public val callSettingsBuilder: Any?,
     public val enableThreadSubscription: Boolean
@@ -45,6 +47,7 @@ public class UIKitSettings private constructor(
         private var roles: List<String>? = null
         private var overrideAdminHost: String? = null
         private var overrideClientHost: String? = null
+        private var overrideCallsHost: String? = null
         private var enableCalling: Boolean = false
         private var callSettingsBuilder: Any? = null
         private var enableThreadSubscription: Boolean = true
@@ -159,6 +162,19 @@ public class UIKitSettings private constructor(
         }
 
         /**
+         * Sets a custom Calls SDK host URL (a staging or dedicated deployment), passed to
+         * `CallAppSettings.overrideCallsHost` when the UIKit initialises the Calls SDK. The Calls
+         * SDK takes its hosts from its first `init`, so the UIKit must carry this one.
+         *
+         * @param callsHost The Calls host URL
+         * @return This builder instance
+         */
+        public fun overrideCallsHost(callsHost: String): UIKitSettingsBuilder {
+            this.overrideCallsHost = callsHost
+            return this
+        }
+
+        /**
          * Sets whether calling features are enabled.
          * When enabled, the CometChatCalls SDK will be initialized during UIKit initialization.
          *
@@ -217,6 +233,7 @@ public class UIKitSettings private constructor(
                 roles = roles,
                 overrideAdminHost = overrideAdminHost,
                 overrideClientHost = overrideClientHost,
+                overrideCallsHost = overrideCallsHost,
                 enableCalling = enableCalling,
                 callSettingsBuilder = callSettingsBuilder,
                 enableThreadSubscription = enableThreadSubscription

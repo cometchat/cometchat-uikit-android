@@ -66,7 +66,7 @@ class CometChatSavedMessagesViewModelTest : FunSpec({
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onSuccess(queue.removeFirstOrNull() ?: emptyList())
             null
-        }.whenever(req).fetchNext(any())
+        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         return req
     }
 
@@ -76,7 +76,7 @@ class CometChatSavedMessagesViewModelTest : FunSpec({
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onError(exception)
             null
-        }.whenever(req).fetchNext(any())
+        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         return req
     }
 
@@ -172,7 +172,7 @@ class CometChatSavedMessagesViewModelTest : FunSpec({
             val vm = CometChatSavedMessagesViewModel(enableListeners = false)
             vm.reload()
             vm.messages.value.map { it.id } shouldBe listOf(1L, 2L, 3L)
-            verify(currentRequest, times(3)).fetchNext(any())
+            verify(currentRequest, times(3)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
 
             val bigPages = (0 until 5).map { pageIndex ->
                 messagesOf(*(1..30).map { (pageIndex * 30 + it).toLong() }.toLongArray())
@@ -180,7 +180,7 @@ class CometChatSavedMessagesViewModelTest : FunSpec({
             currentRequest = requestServing(*bigPages.toTypedArray())
             vm.reload()
             vm.count.value shouldBe 120
-            verify(currentRequest, times(4)).fetchNext(any())
+            verify(currentRequest, times(4)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
         }
     }
 
@@ -207,7 +207,7 @@ class CometChatSavedMessagesViewModelTest : FunSpec({
             doAnswer { invocation ->
                 stalledCallbacks.add(invocation.getArgument(0))
                 null
-            }.whenever(stalledRequest).fetchNext(any())
+            }.whenever(stalledRequest).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
 
             currentRequest = stalledRequest
             val vm = CometChatSavedMessagesViewModel(enableListeners = false)

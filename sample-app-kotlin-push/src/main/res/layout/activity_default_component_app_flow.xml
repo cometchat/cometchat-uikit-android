@@ -44,6 +44,7 @@
         app:elevation="0dp"
         app:itemHorizontalTranslationEnabled="false"
         app:itemIconSize="32dp"
+        app:labelVisibilityMode="labeled"
         app:itemRippleColor="@android:color/transparent"
         app:itemTextAppearanceActive="?attr/cometchatTextAppearanceCaption1Medium"
         app:itemTextAppearanceInactive="?attr/cometchatTextAppearanceCaption1Regular"

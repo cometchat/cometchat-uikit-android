@@ -18,4 +18,5 @@
     <string name="cometchat_translate" translatable="true">Översätt</string>
     <string name="cometchat_unpin" translatable="true">Lossa meddelande</string>
     <string name="cometchat_unsave" translatable="true">Ta bort meddelande från sparade</string>
+    <string name="cometchat_call_no_internet" translatable="true">Ingen internetanslutning. Kontrollera anslutningen och försök igen.</string>
 </resources>

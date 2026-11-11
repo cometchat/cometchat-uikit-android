@@ -21,8 +21,6 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
-import com.cometchat.sampleapp.compose.ui.calls.CallDetailsScreen
-import com.cometchat.sampleapp.compose.ui.calls.toJson
 import com.cometchat.sampleapp.compose.ui.conversations.getGroup
 import com.cometchat.sampleapp.compose.ui.conversations.getUser
 import com.cometchat.sampleapp.compose.ui.credentials.AppCredentialsScreen
@@ -169,13 +167,6 @@ fun AppNavGraph(
                             )
                         }
                     }
-                },
-                onCallLogClick = { callLog ->
-                    // Navigate to CallDetailsScreen with serialized call log
-                    // Validates: Requirement 9.2
-                    navController.navigate(
-                        CallDetailsRoute(callLogJson = callLog.toJson())
-                    )
                 },
                 onUserClick = { user ->
                     navController.navigate(
@@ -487,18 +478,5 @@ fun AppNavGraph(
             )
         }
 
-        // Call Details Screen - Display call log details
-        // Validates: Requirements 9.2, 13.5
-        composable<CallDetailsRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<CallDetailsRoute>()
-            CallDetailsScreen(
-                callLogJson = route.callLogJson,
-                onBackPress = { navController.popBackStack() },
-                onUserClick = { user ->
-                    // Navigate to user details when user is clicked
-                    navController.navigate(UserDetailsRoute(userId = user.uid))
-                }
-            )
-        }
     }
 }

@@ -41,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cometchat.chat.constants.CometChatConstants
-import com.cometchat.chat.core.Call
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
@@ -59,14 +58,12 @@ import com.cometchat.uikit.compose.theme.CometChatTheme
  * - Custom toolbar with back icon and title (matching master-app-jetpack)
  * - Info message banner for blocked user warning
  * - User avatar (120dp), name, and online/offline status
- * - Voice and Video call cards (matching master-app-jetpack)
  * - Block/unblock user functionality
  * - Delete chat option (when lastMessage exists)
  *
  * ## Features:
  * - Display user profile information
  * - Show online/offline presence status
- * - Voice and Video call cards with proper icons
  * - Block/unblock user with CometChatDialog
  * - Delete chat option
  * - Real-time user status updates
@@ -325,53 +322,6 @@ fun UserDetailsScreen(
                         )
                     }
 
-                    // Voice/Video Call Cards (matching master-app-jetpack) - 20dp top margin
-                    if (!isBlocked) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            // Voice Call Card
-                            CallActionCard(
-                                modifier = Modifier.weight(1f),
-                                icon = UiKitR.drawable.cometchat_ic_call_voice,
-                                label = "Voice",
-                                strokeColor = colorScheme.strokeColorDefault,
-                                iconTint = colorScheme.iconTintHighlight,
-                                onClick = {
-                                    user?.let { u ->
-                                        val call = Call(u.uid, CometChatConstants.RECEIVER_TYPE_USER, CometChatConstants.CALL_TYPE_AUDIO)
-                                        CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                                            override fun onSuccess(initiatedCall: Call) {
-                                                com.cometchat.uikit.compose.calls.CometChatCallActivity.launchOutgoingCallScreen(context, initiatedCall, null)
-                                            }
-                                            override fun onError(e: CometChatException) {}
-                                        })
-                                    }
-                                }
-                            )
-                            // Video Call Card
-                            CallActionCard(
-                                modifier = Modifier.weight(1f),
-                                icon = UiKitR.drawable.cometchat_ic_call_video,
-                                label = "Video",
-                                strokeColor = colorScheme.strokeColorDefault,
-                                iconTint = colorScheme.iconTintHighlight,
-                                onClick = {
-                                    user?.let { u ->
-                                        val call = Call(u.uid, CometChatConstants.RECEIVER_TYPE_USER, CometChatConstants.CALL_TYPE_VIDEO)
-                                        CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-                                            override fun onSuccess(initiatedCall: Call) {
-                                                com.cometchat.uikit.compose.calls.CometChatCallActivity.launchOutgoingCallScreen(context, initiatedCall, null)
-                                            }
-                                            override fun onError(e: CometChatException) {}
-                                        })
-                                    }
-                                }
-                            )
-                        }
-                    }
                 }
 
                 // Separator - 20dp top margin
@@ -417,52 +367,6 @@ fun UserDetailsScreen(
     }
 }
 
-/**
- * Call action card matching MaterialCardView with stroke border.
- * Height: 73dp, cornerRadius: 8dp, strokeWidth: 1dp
- */
-@Composable
-private fun CallActionCard(
-    modifier: Modifier = Modifier,
-    icon: Int,
-    label: String,
-    strokeColor: Color,
-    iconTint: Color,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier
-            .height(73.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CometChatTheme.colorScheme.backgroundColor1
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, strokeColor)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = label,
-                tint = iconTint,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = label,
-                style = CometChatTheme.typography.buttonRegular,
-                color = CometChatTheme.colorScheme.textColorSecondary
-            )
-        }
-    }
-}
 
 /**
  * Action button with icon matching XML layout.

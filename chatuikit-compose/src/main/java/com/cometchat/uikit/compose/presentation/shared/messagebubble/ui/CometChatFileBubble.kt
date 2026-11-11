@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.takeOrElse
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.compose.R
@@ -136,6 +137,11 @@ public fun CometChatFileBubble(
     onLongClick: (() -> Unit)? = null
 ) {
     val cdHoist1 = stringResource(R.string.cometchat_a11y_file_message_with_file_s, attachments.size)
+    // ENG-39093: the style factories leave cornerRadius as an unset sentinel (Dp.Unspecified)
+    // for the message-list style merge to fill. When the composable is called directly with
+    // its default style there is no merge, and RoundedCornerShape throws on an unspecified
+    // Dp at draw time. Degrade to the message-bubble default radius instead.
+    val outerCornerRadius = style.cornerRadius.takeOrElse { DefaultFileBubbleCornerRadius }
     Column(
         modifier = modifier
             .width(240.dp)
@@ -152,7 +158,7 @@ public fun CometChatFileBubble(
                     mimeType = null,
                     style = style,
                     showDownloadIcon = false,
-                    cornerRadius = RoundedCornerShape(style.cornerRadius),
+                    cornerRadius = RoundedCornerShape(outerCornerRadius),
                     onClick = { },
                     onDownloadClick = { },
                     onLongClick = onLongClick
@@ -168,7 +174,7 @@ public fun CometChatFileBubble(
                     fileUrl = attachment.fileUrl,
                     style = style,
                     showDownloadIcon = showDownloadIcon,
-                    cornerRadius = RoundedCornerShape(style.cornerRadius),
+                    cornerRadius = RoundedCornerShape(outerCornerRadius),
                     onClick = { onFileClick?.invoke(0) },
                     onDownloadClick = { onDownloadClick?.invoke(0) },
                     onLongClick = onLongClick
@@ -183,7 +189,7 @@ public fun CometChatFileBubble(
                         val itemCornerRadius = getItemCornerRadius(
                             index = index,
                             totalCount = attachments.size,
-                            outerRadius = style.cornerRadius,
+                            outerRadius = outerCornerRadius,
                             innerRadius = style.innerCornerRadius
                         )
                         
@@ -321,6 +327,9 @@ private fun SingleFileItem(
         }
     }
 }
+
+/** Mirrors `CometChatMessageBubbleStyle.default().cornerRadius`, the value the renderer merges in. */
+private val DefaultFileBubbleCornerRadius: Dp = 12.dp
 
 /**
  * Calculates the corner radius for a file item based on its position in the list.

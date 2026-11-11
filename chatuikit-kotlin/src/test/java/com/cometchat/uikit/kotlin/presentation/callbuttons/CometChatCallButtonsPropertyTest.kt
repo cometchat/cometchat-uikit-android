@@ -108,11 +108,11 @@ class CometChatCallButtonsPropertyTest : FunSpec({
 
                 if (shouldSucceed) {
                     val mockCall = mock<Call>()
-                    whenever(initiateUseCase.invoke("user-1", callType))
+                    whenever(initiateUseCase.invoke("user-1", callType, user))
                         .thenReturn(Result.success(mockCall))
                 } else {
                     val exception = CometChatException("ERR", "Test error")
-                    whenever(initiateUseCase.invoke("user-1", callType))
+                    whenever(initiateUseCase.invoke("user-1", callType, user))
                         .thenReturn(Result.failure(exception))
                 }
 
@@ -154,14 +154,14 @@ class CometChatCallButtonsPropertyTest : FunSpec({
                 viewModel.setUser(user)
 
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke("user-1", callType, user))
                     .thenReturn(Result.success(mockCall))
 
                 viewModel.initiateCall(callType)
                 advanceUntilIdle()
 
                 // Property: callType is forwarded unchanged
-                org.mockito.kotlin.verify(initiateUseCase).invoke("user-1", callType)
+                org.mockito.kotlin.verify(initiateUseCase).invoke("user-1", callType, user)
                 println("    → callType=$callType forwarded correctly ✅")
             }
         }
@@ -219,7 +219,7 @@ class CometChatCallButtonsPropertyTest : FunSpec({
 
                 // First call fails
                 val exception = CometChatException("ERR", "Failed")
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke("user-1", callType, user))
                     .thenReturn(Result.failure(exception))
 
                 viewModel.initiateCall(callType)
@@ -228,7 +228,7 @@ class CometChatCallButtonsPropertyTest : FunSpec({
 
                 // Second call succeeds
                 val mockCall = mock<Call>()
-                whenever(initiateUseCase.invoke("user-1", callType))
+                whenever(initiateUseCase.invoke("user-1", callType, user))
                     .thenReturn(Result.success(mockCall))
 
                 viewModel.initiateCall(callType)

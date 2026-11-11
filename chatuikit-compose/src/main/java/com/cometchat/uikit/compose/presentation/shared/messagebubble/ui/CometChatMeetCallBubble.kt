@@ -335,8 +335,10 @@ private fun extractMeetCallData(message: CustomMessage): MeetCallData {
             else -> MeetCallType.VOICE_OUTGOING
         }
         
-        // Extract session ID
-        val sessionId = customData?.optString("sessionId", "") ?: ""
+        // Extract session ID (written as "sessionID"; "sessionId" kept as a fallback)
+        val sessionId = customData?.optString(UIKitConstants.CallingJSONConstants.CALL_SESSION_ID)
+            ?.takeIf { it.isNotEmpty() }
+            ?: customData?.optString("sessionId", "") ?: ""
         
         // Extract or generate title
         val title = customData?.optString("title", null) 

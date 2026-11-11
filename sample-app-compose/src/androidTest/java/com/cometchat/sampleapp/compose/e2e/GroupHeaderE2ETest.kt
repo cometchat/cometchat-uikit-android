@@ -47,8 +47,6 @@ import java.util.concurrent.TimeUnit
  * - GRP-009: testHeaderDisplaysGroupName
  * - GRP-010: testHeaderDisplaysGroupAvatar
  * - GRP-011: testHeaderDisplaysMemberCount
- * - GRP-016: testVoiceCallButtonVisibleInGroupHeader
- * - GRP-017: testVideoCallButtonVisibleInGroupHeader
  * - GRP-018: testDetailsMenuNavigatesToGroupDetails
  * - GRP-019: testBackFromGroupDetailsReturnsToMessages
  *
@@ -199,48 +197,6 @@ class GroupHeaderE2ETest {
         assertTrue(
             "Member count text not found in group header area",
             memberBounds.isNotEmpty() || memberBoundsAlt.isNotEmpty()
-        )
-    }
-
-    /**
-     * GRP-016: Voice call button visible in group header.
-     *
-     * In Compose: CometChatCallButtons renders with contentDescription = "Voice Call"
-     * (verified from chatuikit-compose/.../callbuttons/ui/CometChatCallButtons.kt)
-     */
-    @Test
-    fun test04_voiceCallButtonVisibleInGroupHeader() {
-        val composer = device.findObject(By.clazz("android.widget.EditText"))
-        assertNotNull("Messages screen not loaded", composer)
-
-        // Exact contentDescription from source: "Voice Call"
-        val voiceBtn = device.findObject(By.desc("Voice Call"))
-            ?: device.findObject(By.descContains("Voice Call"))
-
-        assertNotNull(
-            "Voice call button (desc='Voice Call') not found in group header",
-            voiceBtn
-        )
-    }
-
-    /**
-     * GRP-017: Video call button visible in group header.
-     *
-     * In Compose: CometChatCallButtons renders with contentDescription = "Video Call"
-     * (verified from chatuikit-compose/.../callbuttons/ui/CometChatCallButtons.kt)
-     */
-    @Test
-    fun test05_videoCallButtonVisibleInGroupHeader() {
-        val composer = device.findObject(By.clazz("android.widget.EditText"))
-        assertNotNull("Messages screen not loaded", composer)
-
-        // Exact contentDescription from source: "Video Call"
-        val videoBtn = device.findObject(By.desc("Video Call"))
-            ?: device.findObject(By.descContains("Video Call"))
-
-        assertNotNull(
-            "Video call button (desc='Video Call') not found in group header",
-            videoBtn
         )
     }
 

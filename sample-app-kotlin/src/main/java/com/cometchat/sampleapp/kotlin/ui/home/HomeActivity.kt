@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.databinding.ActivityHomeBinding
-import com.cometchat.sampleapp.kotlin.ui.calls.CallsFragment
 import com.cometchat.sampleapp.kotlin.ui.chats.ChatsFragment
 import com.cometchat.sampleapp.kotlin.ui.groups.GroupsFragment
 import com.cometchat.sampleapp.kotlin.ui.login.LoginActivity
@@ -27,12 +26,12 @@ import kotlinx.coroutines.launch
 
 /**
  * Home screen activity displayed after successful login.
- * Shows bottom navigation with Chats, Calls, Users, Groups tabs.
+ * Shows bottom navigation with Chats, Users, Groups tabs.
  * Matches master-app-kotlin flow (no intermediate App Flow card).
  *
  * Features:
  * - Authentication guard in onCreate and onResume
- * - Bottom navigation with Chats, Calls, Users, Groups
+ * - Bottom navigation with Chats, Users, Groups
  * - Fragment-based navigation
  * - Logout functionality via ViewModel
  *
@@ -176,7 +175,6 @@ class HomeActivity : AppCompatActivity() {
     private fun getFragment(itemId: Int): Fragment {
         return when (itemId) {
             R.id.nav_chats -> ChatsFragment()
-            R.id.nav_calls -> CallsFragment()
             R.id.nav_users -> UsersFragment()
             R.id.nav_groups -> GroupsFragment()
             else -> ChatsFragment()

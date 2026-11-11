@@ -45,6 +45,12 @@ import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
+import com.cometchat.uikit.core.resources.soundmanager.Sound
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 /**
  * ENG-36737 — batch-send tests for [CometChatMessageComposerViewModel.sendStagedAttachments]:
@@ -153,6 +159,59 @@ class MessageComposerSendStagedAttachmentsTest : FunSpec({
         logMock.close()
         cometChatMock.close()
         settingsRepoMock.close()
+    }
+
+    /** The composer's sound manager is created from a Context; inject a mock in its place. */
+    fun soundManagerOf(viewModel: CometChatMessageComposerViewModel): CometChatSoundManager {
+        val sound = mock<CometChatSoundManager>()
+        CometChatMessageComposerViewModel::class.java.getDeclaredField("soundManager").apply {
+            isAccessible = true
+            set(viewModel, sound)
+        }
+        return sound
+    }
+
+    // ==================== Outgoing sound ====================
+
+    test("a staged send plays the outgoing sound once, however many messages the batch splits into") {
+        runTest {
+            val viewModel = createViewModel()
+            val sound = soundManagerOf(viewModel)
+            stageAndComplete(viewModel, listOf(input("a.jpg", "image/jpeg"), input("b.mp4", "video/mp4")))
+
+            viewModel.sendStagedAttachments("caption")
+            advanceUntilIdle()
+
+            sendMediaMessageUseCase.sent shouldHaveSize 2
+            verify(sound, times(1)).play(eq(Sound.OUTGOING_MESSAGE), any<Int>())
+        }
+    }
+
+    test("a staged send is silent when the app disabled message sounds") {
+        runTest {
+            val viewModel = createViewModel()
+            val sound = soundManagerOf(viewModel)
+            viewModel.setDisableSoundForMessages(true)
+            stageAndComplete(viewModel, listOf(input("a.jpg", "image/jpeg")))
+
+            viewModel.sendStagedAttachments(null)
+            advanceUntilIdle()
+
+            sendMediaMessageUseCase.sent shouldHaveSize 1
+            verify(sound, never()).play(any<Sound>(), any<Int>())
+        }
+    }
+
+    test("a staged send that is refused makes no sound") {
+        runTest {
+            val viewModel = createViewModel()
+            val sound = soundManagerOf(viewModel)
+
+            viewModel.sendStagedAttachments("caption")   // nothing staged
+            advanceUntilIdle()
+
+            verify(sound, never()).play(any<Sound>(), any<Int>())
+        }
     }
 
     // ==================== Send gate ====================

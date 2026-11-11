@@ -6,10 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
-import com.cometchat.pushnotification.CometChatPushNotifications
-import com.cometchat.pushnotification.models.PushPlatform
 import com.cometchat.uikit.core.CometChatUIKit
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -124,7 +121,6 @@ class LoginViewModel : ViewModel() {
                 Log.d(TAG, "Login successful for user: ${user?.uid}")
 
                 // Register the FCM token so the backend can deliver pushes to this user.
-                registerPushToken()
 
                 establishSocketConnection()
             }
@@ -141,23 +137,6 @@ class LoginViewModel : ViewModel() {
         })
     }
 
-    /**
-     * Fetches the current FCM token and registers it with CometChat so push notifications
-     * can be delivered to the logged-in user.
-     */
-    private fun registerPushToken() {
-        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-            CometChatPushNotifications.registerToken(
-                platform = PushPlatform.FCM_ANDROID,
-                token = token,
-                providerId = AppCredentials.PROVIDER_ID,
-                onSuccess = { Log.d(TAG, "FCM token registered with CometChat") },
-                onError = { e -> Log.e(TAG, "FCM token registration failed: ${e.message}") }
-            )
-        }.addOnFailureListener { e ->
-            Log.e(TAG, "Failed to fetch FCM token: ${e.message}")
-        }
-    }
 
     /**
      * Establishes the CometChat socket connection.

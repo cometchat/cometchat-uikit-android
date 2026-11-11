@@ -115,7 +115,7 @@ class AIAssistantUsersActivity : AppCompatActivity() {
         }
 
         popupBinding.tvLogout.setOnClickListener {
-            CometChat.logout(object : CometChat.CallbackListener<String>() {
+            CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String?) {
                     popupWindow.dismiss()
                     startActivity(Intent(this@AIAssistantUsersActivity, SplashActivity::class.java).apply {

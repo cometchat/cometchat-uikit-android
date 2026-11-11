@@ -1209,7 +1209,7 @@ public final class com/cometchat/uikit/compose/presentation/incomingcall/style/C
 }
 
 public final class com/cometchat/uikit/compose/presentation/incomingcall/ui/CometChatIncomingCallKt {
-	public static final fun CometChatIncomingCall (Lcom/cometchat/chat/core/Call;Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatIncomingCallViewModel;Lcom/cometchat/uikit/compose/presentation/incomingcall/style/CometChatIncomingCallStyle;ZILjava/lang/Object;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
+	public static final fun CometChatIncomingCall (Lcom/cometchat/chat/core/Call;Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatIncomingCallViewModel;Lcom/cometchat/uikit/compose/presentation/incomingcall/style/CometChatIncomingCallStyle;ZILjava/lang/Object;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/cometchat/uikit/compose/presentation/messagecomposer/state/MessageComposerMentionState {
@@ -2142,12 +2142,19 @@ public final class com/cometchat/uikit/compose/presentation/ongoingcall/ui/Comet
 	public static final field $stable I
 	public static final field Companion Lcom/cometchat/uikit/compose/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;
 	public fun <init> ()V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;)V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;)V
+	public static final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public static final fun launchOngoingCallActivity (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public fun onPictureInPictureModeChanged (Z)V
 }
 
 public final class com/cometchat/uikit/compose/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion {
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;)V
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;)V
+	public final fun launchOngoingCallActivity (Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
 	public final fun launchOngoingCallActivity (Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;)V
+	public static synthetic fun launchOngoingCallActivity$default (Lcom/cometchat/uikit/compose/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;Landroid/content/Context;Lcom/cometchat/chat/core/Call;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;ILjava/lang/Object;)V
 	public static synthetic fun launchOngoingCallActivity$default (Lcom/cometchat/uikit/compose/presentation/ongoingcall/ui/CometChatOngoingCallActivity$Companion;Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$CallWorkFlow;Lcom/cometchat/calls/core/CometChatCalls$SessionSettingsBuilder;Lcom/cometchat/uikit/compose/presentation/ongoingcall/style/CometChatOngoingCallStyle;ILjava/lang/Object;)V
 }
 
@@ -8433,6 +8440,12 @@ public final class com/cometchat/uikit/compose/theme/FontKt {
 	public static final fun getCometchatFontBold ()Landroidx/compose/ui/text/font/FontFamily;
 	public static final fun getCometchatFontMedium ()Landroidx/compose/ui/text/font/FontFamily;
 	public static final fun getCometchatFontRegular ()Landroidx/compose/ui/text/font/FontFamily;
+}
+
+public final class com/cometchat/uikit/compose/theme/IncomingCallThemeKt {
+	public static final fun incomingCallTheme (Lcom/cometchat/uikit/compose/theme/CometChatColorScheme;Lcom/cometchat/uikit/compose/theme/CometChatColorScheme;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static synthetic fun incomingCallTheme$default (Lcom/cometchat/uikit/compose/theme/CometChatColorScheme;Lcom/cometchat/uikit/compose/theme/CometChatColorScheme;ILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme;
+	public static final fun toIncomingCallColors (Lcom/cometchat/uikit/compose/theme/CometChatColorScheme;)Lcom/cometchat/uikit/core/utils/CometChatIncomingCallTheme$Colors;
 }
 
 public final class com/cometchat/uikit/compose/theme/ShapeDefaults {

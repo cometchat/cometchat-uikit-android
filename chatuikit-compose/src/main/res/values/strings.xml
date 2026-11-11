@@ -90,6 +90,7 @@
     <string name="cometchat_owner" translatable="true">Owner</string>
     <string name="cometchat_banned" translatable="true">Banned</string>
     <string name="cometchat_calling" translatable="true">calling</string>
+    <string name="cometchat_ringing" translatable="true">ringing</string>
     <string name="cometchat_accepted" translatable="true">accepted</string>
     <string name="cometchat_unanswered" translatable="true">unanswered</string>
     <string name="cometchat_message_receipt" translatable="true">Message Receipt</string>

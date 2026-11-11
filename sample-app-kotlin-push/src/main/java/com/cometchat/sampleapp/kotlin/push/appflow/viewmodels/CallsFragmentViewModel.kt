@@ -2,13 +2,16 @@ package com.cometchat.sampleapp.kotlin.push.appflow.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cometchat.calls.model.CallLog
 import com.cometchat.calls.model.CallUser
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.Call
+import com.cometchat.uikit.core.utils.CallInitiationUtils
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for CallsFragment handling call initiation logic.
@@ -72,17 +75,20 @@ class CallsFragmentViewModel : ViewModel() {
         user: User,
         listener: CometChat.CallbackListener<Void>
     ) {
-        val call = Call(user.uid, CometChatConstants.RECEIVER_TYPE_USER, callType)
-        CometChat.initiateCall(call, object : CometChat.CallbackListener<Call>() {
-            override fun onSuccess(call: Call) {
-                listener.onSuccess(null)
-                onCallStart.value = call
-            }
-
-            override fun onError(e: CometChatException) {
-                listener.onError(e)
-                onError.value = e
-            }
-        })
+        // Ringing v2: the Calls SDK creates the call and the backend rings the callee by push.
+        viewModelScope.launch {
+            CallInitiationUtils.initiateUserCall(user.uid, callType, user)
+                .onSuccess { call ->
+                    listener.onSuccess(null)
+                    onCallStart.value = call
+                }
+                .onFailure { e ->
+                    // A second tap while the first call is still being started: nothing to show.
+                    if (CallInitiationUtils.isCallInProgress(e)) return@onFailure
+                    val exception = e as? CometChatException ?: CometChatException("ERROR", e.message ?: "Call failed")
+                    listener.onError(exception)
+                    onError.value = exception
+                }
+        }
     }
 }

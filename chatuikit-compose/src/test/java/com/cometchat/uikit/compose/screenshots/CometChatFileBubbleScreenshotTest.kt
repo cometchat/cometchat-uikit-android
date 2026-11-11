@@ -42,11 +42,10 @@ import java.util.TimeZone
  * both outgoing palettes are drawn for the container's fill, so a bare capture would
  * be near-white on near-white.
  *
- * Only the default multi-attachment route is captured. With multiple attachments
- * switched off the container reaches CometChatFileBubble, which throws on the first
- * draw: the renderer passes the per-type style unmerged when no messageBubbleStyle is
- * supplied, leaving cornerRadius as an unset sentinel. Those baselines go in once that
- * is fixed.
+ * Both routes are captured: the default multi-attachment cards, and — with multiple
+ * attachments switched off — the single CometChatFileBubble the container falls back
+ * to. The latter used to throw on first draw when no messageBubbleStyle was supplied
+ * (ENG-39093); the `singleFileBubble_*` baselines pin that it now renders.
  */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -155,6 +154,20 @@ class CometChatFileBubbleScreenshotTest {
     @Test fun fiveFiles_outgoing_collapsedBehindTheToggle() = capture(content = bubble(5, OUTGOING))
 
     @Test fun fiveFiles_outgoing_dark() = capture(dark = true, content = bubble(5, OUTGOING))
+
+    // ── multiple attachments off: the single-file bubble (ENG-39093) ────────
+
+    @Test fun singleFileBubble_incoming() =
+        capture(content = bubble(1, INCOMING, multipleAttachments = false))
+
+    @Test fun singleFileBubble_outgoing() =
+        capture(content = bubble(1, OUTGOING, multipleAttachments = false))
+
+    @Test fun singleFileBubble_incoming_dark() =
+        capture(dark = true, content = bubble(1, INCOMING, multipleAttachments = false))
+
+    @Test fun singleFileBubble_outgoing_dark() =
+        capture(dark = true, content = bubble(1, OUTGOING, multipleAttachments = false))
 
     // ── caption, where the fill sits behind text too ────────────────────────
 

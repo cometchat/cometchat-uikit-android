@@ -92,8 +92,8 @@ class ChatsFragmentPreservationTest : FunSpec({
         ),
         PreservationRequirement(
             id = "3.2",
-            description = "CometChat.logout is called",
-            codePattern = "CometChat.logout(",
+            description = "CometChatUIKit.logout is called",
+            codePattern = "CometChatUIKit.logout(",
             fileType = "fragment"
         ),
         PreservationRequirement(
@@ -503,12 +503,12 @@ class ChatsFragmentPreservationTest : FunSpec({
     // PROPERTY 2.6: Logout Functionality
     // ========================================================================
 
-    test("Property 2.6: Logout should perform CometChat.logout and navigate to SplashActivity") {
+    test("Property 2.6: Logout should perform CometChatUIKit.logout and navigate to SplashActivity") {
         /**
          * **Validates: Requirement 3.2**
          * 
          * Verifies that the logout functionality:
-         * - Calls CometChat.logout()
+         * - Calls CometChatUIKit.logout() (which also logs out of the Calls SDK)
          * - Navigates to SplashActivity on success
          * - Clears the back stack
          * 
@@ -528,9 +528,9 @@ class ChatsFragmentPreservationTest : FunSpec({
             violations.add("performLogout() function does not exist")
         }
         
-        // Check CometChat.logout call
-        if (!content.contains("CometChat.logout(")) {
-            violations.add("CometChat.logout() is not called")
+        // Check CometChatUIKit.logout call
+        if (!content.contains("CometChatUIKit.logout(")) {
+            violations.add("CometChatUIKit.logout() is not called")
         }
         
         // Check navigation to SplashActivity
@@ -754,7 +754,7 @@ class ChatsFragmentPreservationTest : FunSpec({
          * Comprehensive test that verifies ALL preservation requirements:
          * - Avatar click shows popup menu
          * - Popup menu has logout and create conversation options
-         * - Logout performs CometChat.logout and navigates to SplashActivity
+         * - Logout performs CometChatUIKit.logout and navigates to SplashActivity
          * - Create conversation navigates to Users tab
          * - Conversation list click navigates to MessagesActivity
          * - createOverflowMenuView() returns null when SDK not initialized
@@ -792,7 +792,7 @@ class ChatsFragmentPreservationTest : FunSpec({
             println("  ✓ Avatar click shows popup menu")
             println("  ✓ Avatar has correct size (40dp) and displays user info")
             println("  ✓ Popup menu has logout and create conversation options")
-            println("  ✓ Logout performs CometChat.logout and navigates to SplashActivity")
+            println("  ✓ Logout performs CometChatUIKit.logout and navigates to SplashActivity")
             println("  ✓ Create conversation navigates to Users tab")
             println("  ✓ Conversation list click navigates to MessagesActivity")
             println("  ✓ createOverflowMenuView() returns null when SDK not initialized")

@@ -315,8 +315,9 @@ public class CometChatCallLogs @JvmOverloads constructor(
         }
 
         // Adapter call type icon click
+        // By default the call icon calls back, as on Flutter; a callback replaces that.
         callLogsAdapter.setOnCallTypeIconClick { view, position, callLog ->
-            onCallTypeIconClick?.invoke(callLog)
+            onCallTypeIconClick?.invoke(callLog) ?: viewModel?.initiateCall(callLog)
         }
 
         // Toolbar back press
@@ -404,6 +405,16 @@ public class CometChatCallLogs @JvmOverloads constructor(
             vm.scrollToTopEvent.collectLatest {
                 scrollToTop()
             }
+        }
+
+        // A call back placed from the list: open the outgoing call screen.
+        viewScope?.launch {
+            vm.initiatedCall.collect { call ->
+                com.cometchat.uikit.kotlin.calls.CometChatCallActivity.launchOutgoingCallScreen(context, call, null)
+            }
+        }
+        viewScope?.launch {
+            vm.callInitiationError.collect { e -> onError?.invoke(e) }
         }
     }
 

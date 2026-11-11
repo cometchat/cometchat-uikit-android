@@ -2,7 +2,7 @@
 <!--
     Bottom Navigation Menu for Home Screen
     
-    Contains four tabs: Chats, Calls, Users, and Groups.
+    Contains three tabs: Chats, Users, and Groups.
     
     Validates: Requirements 5.1
 -->
@@ -12,11 +12,6 @@
         android:id="@+id/nav_chats"
         android:icon="@drawable/ic_nav_chats"
         android:title="@string/tab_chats" />
-
-    <item
-        android:id="@+id/nav_calls"
-        android:icon="@drawable/ic_nav_calls"
-        android:title="@string/tab_calls" />
 
     <item
         android:id="@+id/nav_users"
