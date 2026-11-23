@@ -254,7 +254,11 @@ public class CometChatFilesBubble @JvmOverloads constructor(
             imageTintList = ColorStateList.valueOf(accentColor())
             setOnClickListener {
                 if (!attachment.fileUrl.isNullOrEmpty()) {
-                    Utils.downloadFile(context, attachment.fileUrl, attachment.fileName ?: System.currentTimeMillis().toString())
+                    val name = attachment.fileName ?: System.currentTimeMillis().toString()
+                    // Offline on (D-324): the local copy is saved with no network call; else today's download.
+                    if (!MediaUtils.downloadLocalAttachment(context, attachment, name)) {
+                        Utils.downloadFile(context, attachment.fileUrl, name)
+                    }
                 }
             }
         }
@@ -305,9 +309,22 @@ public class CometChatFilesBubble @JvmOverloads constructor(
         return card
     }
 
-    private fun openAttachment(attachment: Attachment) {
-        if (!attachment.fileUrl.isNullOrEmpty()) {
-            MediaUtils.openMediaInPlayer(context, attachment.fileUrl, attachment.fileMimeType)
+    @androidx.annotation.VisibleForTesting
+    internal fun openAttachment(attachment: Attachment) {
+        // Offline on with a local copy (D-330): open a cache copy through the kit's FileProvider —
+        // the SDK file sits in noBackupFilesDir, which no provider path covers. Else today's open;
+        // offline on, only an http(s) URL is opened, never a path from the message (BEH-MEDIA-21).
+        val local = com.cometchat.uikit.core.utils.MediaViewerSource.localFile(
+            context, com.cometchat.uikit.core.utils.MediaViewerSource.of(attachment)
+        )
+        if (local != null) {
+            val name = attachment.fileName?.takeIf { it.isNotEmpty() } ?: local.name
+            MediaUtils.openLocalCopy(context, local, name, attachment.fileMimeType)
+            return
+        }
+        val url = com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment)
+        if (url.isNotEmpty()) {
+            MediaUtils.openMediaInPlayer(context, url, attachment.fileMimeType)
         }
     }
 

@@ -57,6 +57,8 @@ dependencies {
     implementation(project(":chatuikit-compose"))
     implementation(libs.chatuikit.core.android)
     implementation(libs.chat.sdk.android)
+    // ENG-41592 (D86): SQLCipher engine so offline encryption(true) can open an encrypted cache.
+    implementation(libs.sqlcipher.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

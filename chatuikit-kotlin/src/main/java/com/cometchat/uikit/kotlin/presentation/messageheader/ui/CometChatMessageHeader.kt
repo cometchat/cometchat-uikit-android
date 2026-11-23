@@ -19,6 +19,7 @@ import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.TypingIndicator
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.factory.CometChatMessageHeaderViewModelFactory
+import com.cometchat.uikit.core.offline.OfflinePresence
 import com.cometchat.uikit.core.state.MessageHeaderUIState
 import com.cometchat.uikit.core.utils.AgentChatDetector
 import com.cometchat.uikit.core.utils.CallsUtils
@@ -31,6 +32,7 @@ import com.cometchat.uikit.kotlin.presentation.messageheader.style.CometChatMess
 import com.cometchat.uikit.kotlin.presentation.messageheader.utils.MessageHeaderViewHolderListener
 import com.cometchat.uikit.kotlin.presentation.shared.popupmenu.CometChatPopupMenu
 import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.StatusIndicator
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindOnPresenceChange
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.google.android.material.card.MaterialCardView
@@ -259,6 +261,11 @@ public class CometChatMessageHeader @JvmOverloads constructor(
         viewScope?.cancel()
         viewScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
+        // ENG-41551 A: a connection flip re-renders the user's presence (subtitle and dot).
+        viewScope?.rebindOnPresenceChange {
+            (viewModel?.uiState?.value as? MessageHeaderUIState.UserContent)?.let { updateUserUI(it.user) }
+        }
+
         viewScope?.launch {
             viewModel?.uiState?.collectLatest { state ->
                 when (state) {
@@ -356,7 +363,8 @@ public class CometChatMessageHeader @JvmOverloads constructor(
      */
     private fun updateUserUI(user: User) {
         this.user = user
-        binding.messageHeaderAvatarView.setAvatar(user.name, user.avatar)
+        // An id-only user (BEH-CONV-01) has no name yet (D-354).
+        binding.messageHeaderAvatarView.setAvatar(user.name ?: "", user.avatar)
         binding.tvMessageHeaderName.text = user.name
 
         if (subtitleViewListener == null) {
@@ -379,7 +387,8 @@ public class CometChatMessageHeader @JvmOverloads constructor(
      */
     private fun updateGroupUI(group: Group) {
         this.group = group
-        binding.messageHeaderAvatarView.setAvatar(group.name, group.icon)
+        // An id-only group (BEH-CONV-01) has no name yet (D-354).
+        binding.messageHeaderAvatarView.setAvatar(group.name ?: "", group.icon)
         binding.tvMessageHeaderName.text = group.name
 
         if (subtitleViewListener == null) {
@@ -395,6 +404,13 @@ public class CometChatMessageHeader @JvmOverloads constructor(
         if (subtitleViewListener == null) {
             if (userStatusVisibility == View.GONE) {
                 binding.tvMessageHeaderSubtitle.visibility = View.GONE
+            } else if (OfflinePresence.hideOnline()) {
+                // ENG-41551 A: offline on and not connected: no presence at all (no "Online",
+                // no last seen, no dot). The next connection flip re-renders this header. The text
+                // is cleared too, so a typing-ended re-show cannot bring the old presence back.
+                binding.tvMessageHeaderSubtitle.text = ""
+                binding.tvMessageHeaderSubtitle.visibility = View.GONE
+                binding.messageHeaderStatusIndicatorView.setStatusIndicator(StatusIndicator.OFFLINE)
             } else {
                 binding.tvMessageHeaderSubtitle.visibility = View.VISIBLE
                 if (user.status == CometChatConstants.USER_STATUS_ONLINE) {

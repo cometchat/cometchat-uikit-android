@@ -157,11 +157,13 @@ fun AppNavGraph(
 
                     when {
                         user != null -> {
+                            RouteEntities.hold(user, null)
                             navController.navigate(
                                 MessagesRoute(userId = user.uid, groupId = null)
                             )
                         }
                         group != null -> {
+                            RouteEntities.hold(null, group)
                             navController.navigate(
                                 MessagesRoute(userId = null, groupId = group.guid)
                             )
@@ -169,11 +171,13 @@ fun AppNavGraph(
                     }
                 },
                 onUserClick = { user ->
+                    RouteEntities.hold(user, null)
                     navController.navigate(
                         MessagesRoute(userId = user.uid, groupId = null)
                     )
                 },
                 onGroupClick = { group ->
+                    RouteEntities.hold(null, group)
                     navController.navigate(
                         MessagesRoute(userId = null, groupId = group.guid)
                     )
@@ -215,12 +219,15 @@ fun AppNavGraph(
                 parentMessageId = route.parentMessageId,
                 onBackPress = { navController.popBackStack() },
                 onUserDetailsClick = { user ->
+                    RouteEntities.hold(user, null)
                     navController.navigate(UserDetailsRoute(userId = user.uid))
                 },
                 onGroupDetailsClick = { group ->
+                    RouteEntities.hold(null, group)
                     navController.navigate(GroupDetailsRoute(groupId = group.guid))
                 },
                 onThreadClick = { message ->
+                    RouteEntities.holdForMessage(message, CometChat.getLoggedInUser()?.uid)
                     navController.navigate(ThreadRoute(parentMessageId = message.id.toLong()))
                 },
                 onChatHistoryClick = { user ->
@@ -297,7 +304,7 @@ fun AppNavGraph(
             // This app passes ids between destinations, so fetch the entity here.
             LaunchedEffect(route.userId, route.groupId) {
                 route.userId?.let { userId ->
-                    CometChat.getUser(userId, object : CometChat.CallbackListener<User>() {
+                    RouteEntities.getUser(userId, object : CometChat.CallbackListener<User>() {
                         override fun onSuccess(fetchedUser: User) {
                             user = fetchedUser
                         }
@@ -306,7 +313,7 @@ fun AppNavGraph(
                     })
                 }
                 route.groupId?.let { groupId ->
-                    CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
+                    RouteEntities.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
                         override fun onSuccess(fetchedGroup: Group) {
                             group = fetchedGroup
                         }
@@ -468,11 +475,13 @@ fun AppNavGraph(
                 onUserSelected = { user ->
                     // Navigate to messages with selected user
                     // Validates: Requirement 7.4
+                    RouteEntities.hold(user, null)
                     navController.navigate(MessagesRoute(userId = user.uid, groupId = null))
                 },
                 onGroupSelected = { group ->
                     // Navigate to messages with selected group
                     // Validates: Requirement 7.5
+                    RouteEntities.hold(null, group)
                     navController.navigate(MessagesRoute(userId = null, groupId = group.guid))
                 }
             )

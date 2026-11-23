@@ -115,17 +115,37 @@ object EntityResolver {
     /**
      * Resolves a BaseMessage from the CometChat SDK by message ID.
      *
+     * Two-phase read (BEH-READ-35): resumes with whichever phase lands first — the cached message
+     * when there is one, else the server's — exactly once. A later phase, or an offline error after
+     * the cached phase, is ignored. A server phase without a message resumes with a failure.
+     *
      * @param messageId The unique identifier of the message to resolve
      * @return Result containing the BaseMessage on success, or CometChatException on failure
      */
     suspend fun resolveMessage(messageId: Long): Result<BaseMessage> = suspendCancellableCoroutine { continuation ->
-        CometChat.getMessageDetails(messageId, object : CometChat.CallbackListener<BaseMessage>() {
-            override fun onSuccess(message: BaseMessage) {
-                continuation.resume(Result.success(message))
+        CometChat.getMessageDetails(messageId, object : CometChat.MessageDetailsListener() {
+            private var resumed = false
+
+            private fun resumeOnce(result: Result<BaseMessage>) {
+                if (resumed) return
+                resumed = true
+                if (continuation.isActive) continuation.resume(result)
+            }
+
+            override fun onCachedMessage(message: BaseMessage?) {
+                message?.let { resumeOnce(Result.success(it)) }
+            }
+
+            override fun onServerMessage(message: BaseMessage?) {
+                if (message != null) {
+                    resumeOnce(Result.success(message))
+                } else {
+                    onError(CometChatException("ERR_NO_VALUE", "The server returned no message"))
+                }
             }
 
             override fun onError(e: CometChatException) {
-                continuation.resume(Result.failure(e))
+                resumeOnce(Result.failure(e))
             }
         })
     }

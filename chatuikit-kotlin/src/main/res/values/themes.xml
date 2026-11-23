@@ -160,6 +160,12 @@
         <item name="cometChatAIAssistantChatHistoryStyle">@style/CometChatAIAssistantChatHistoryStyle</item>
         <item name="cometchatSearchStyle">@style/CometChatSearchStyle</item>
         <item name="cometChatFlagMessageStyle">@style/CometChatFlagMessageStyle</item>
+        <!-- Offline messaging tokens (ENG-41086): defaults from today's error and wait tokens. -->
+        <item name="cometchatOfflineFailedMessageTint">?attr/cometchatErrorColor</item>
+        <item name="cometchatOfflineFailedMessageIcon">@drawable/cometchat_ic_message_error</item>
+        <item name="cometchatOfflineNotSentTextAppearance">?attr/cometchatTextAppearanceCaption1Regular</item>
+        <item name="cometchatOfflineMediaPlaceholderTint">?attr/cometchatIconTintSecondary</item>
+        <item name="cometchatOfflineMediaPlaceholderIcon">@drawable/cometchat_ic_message_waiting</item>
     </style>
 
     <!-- ########################################## Start of Base Component Styles ########################################## -->

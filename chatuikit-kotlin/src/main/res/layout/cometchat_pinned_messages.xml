@@ -67,6 +67,7 @@
             android:src="@drawable/cometchat_ic_error" />
 
         <TextView
+            android:id="@+id/pinned_messages_error_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cometchat_margin_4"
@@ -75,6 +76,7 @@
             android:textColor="@color/cometchat_color_text_primary" />
 
         <TextView
+            android:id="@+id/pinned_messages_error_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cometchat_margin_2"

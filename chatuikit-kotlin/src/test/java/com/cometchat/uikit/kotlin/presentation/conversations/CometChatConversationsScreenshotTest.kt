@@ -86,13 +86,20 @@ class CometChatConversationsScreenshotTest {
     private companion object {
         private const val AVATAR_BASE_URL = "https://data-us.cometchat.io/assets/images/avatars"
 
-        // Fixed epoch timestamp (Jan 1, 2025 UTC) — deterministic across runs (for popup tests)
+        // Fixed epoch timestamp (Jan 1, 2025 UTC) — deterministic across runs. Base of every
+        // fixture stamp in this class, including NOW.
         private const val FIXED_TIMESTAMP = 1735689600L
     }
 
     // ==================== Timestamp Helpers ====================
 
-    private val NOW: Long get() = System.currentTimeMillis() / 1000
+    // Pinned to FIXED_TIMESTAMP, NOT the wall clock (ENG-39134). The conversation row renders the
+    // last message's sentAt, so these fixture stamps now reach the golden image — a wall-clock base
+    // would bake a literal "3:31 AM" / weekday name into the baseline and re-break it a minute or a
+    // day later. Every stamp derived below sits far enough in the past that CometChatDate's
+    // DAY_DATE_TIME always takes its "older → full date" branch, which depends only on this
+    // constant. Do not reintroduce System.currentTimeMillis() here.
+    private val NOW: Long get() = FIXED_TIMESTAMP
     private val FIVE_MINUTES_AGO: Long get() = NOW - (5 * 60)
     private val TWO_HOURS_AGO: Long get() = NOW - (2 * 60 * 60)
     private val YESTERDAY: Long get() = NOW - (24 * 60 * 60)

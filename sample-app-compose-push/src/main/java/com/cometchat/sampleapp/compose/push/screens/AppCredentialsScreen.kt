@@ -199,7 +199,7 @@ fun AppCredentialsScreen(
                 imeAction = ImeAction.Done
             )
         )
-        
+
         Spacer(modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.height(100.dp))
         

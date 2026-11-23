@@ -131,8 +131,10 @@ class SplashViewModel : ViewModel() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setEnableCalling(true)
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences.offlineConfig())
             .build()
-        
+
         CometChatUIKit.init(context, uiKitSettings, object : CometChat.CallbackListener<String>() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "UIKit initialization successful")

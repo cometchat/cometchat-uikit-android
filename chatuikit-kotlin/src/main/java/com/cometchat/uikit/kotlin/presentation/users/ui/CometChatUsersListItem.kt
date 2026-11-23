@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.offline.OfflinePresence
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatUsersListItemBinding
 import com.cometchat.uikit.kotlin.presentation.users.style.CometChatUsersListItemStyle
@@ -339,13 +340,11 @@ public class CometChatUsersListItem @JvmOverloads constructor(
             if (!hideUserStatus) {
                 binding.userStatusIndicator.visibility = View.VISIBLE
                 // Blocked users always show offline, matching original chatuikit implementation
-                val statusIndicator = if (Utils.isBlocked(u)) {
-                    StatusIndicator.OFFLINE
-                } else if (u.status == CometChatConstants.USER_STATUS_ONLINE) {
-                    StatusIndicator.ONLINE
-                } else {
-                    StatusIndicator.OFFLINE
-                }
+                val statusIndicator = usersListStatusIndicator(
+                    blocked = Utils.isBlocked(u),
+                    status = u.status,
+                    hideOnline = OfflinePresence.hideOnline()
+                )
                 binding.userStatusIndicator.setStatusIndicator(statusIndicator)
             } else {
                 binding.userStatusIndicator.visibility = View.GONE
@@ -399,3 +398,18 @@ public class CometChatUsersListItem @JvmOverloads constructor(
         }
     }
 }
+
+/**
+ * The status dot of a users-list row (ENG-41465). Blocked users always show offline.
+ * [hideOnline] is `OfflinePresence.hideOnline()`, read once per bind: while offline is on and the
+ * device is not connected, a cached "online" renders as offline. With [hideOnline] `false` this
+ * is exactly today's rule.
+ */
+internal fun usersListStatusIndicator(blocked: Boolean, status: String?, hideOnline: Boolean): StatusIndicator =
+    if (blocked) {
+        StatusIndicator.OFFLINE
+    } else if (!hideOnline && status == CometChatConstants.USER_STATUS_ONLINE) {
+        StatusIndicator.ONLINE
+    } else {
+        StatusIndicator.OFFLINE
+    }

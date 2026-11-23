@@ -2,10 +2,13 @@ package com.cometchat.sampleapp.compose.ui.messages
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Action
+import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
+import com.cometchat.chat.models.SyncOutcome
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatUserEvent
@@ -47,6 +50,18 @@ class MessagesViewModel : ViewModel() {
 
     companion object {
         private const val TAG = "MessagesViewModel"
+        private const val SYNC_LISTENER_ID = "MessagesViewModel_SyncListener"
+    }
+
+    /**
+     * The server's copy of the group this chat opened on. A search hit opens on the group the result
+     * carried; [initialize] is keyed on the guid and does not run again, so the fresh copy and its
+     * membership come in here. A different group, or one before [initialize], is ignored.
+     */
+    fun adoptServerGroup(fresh: Group) {
+        if (_group.value?.guid != fresh.guid) return
+        _group.value = fresh
+        _isGroupMember.value = fresh.isJoined
     }
 
     /**
@@ -137,7 +152,7 @@ class MessagesViewModel : ViewModel() {
     private fun addGroupListener() {
         val listenerID = "MessagesViewModel_GroupListener"
 
-        CometChat.addGroupListener(listenerID, object : CometChat.GroupListener() {
+        val groupListener = object : CometChat.GroupListener() {
             override fun onGroupMemberJoined(action: Action, joinedUser: User, joinedGroup: Group) {
                 if (joinedGroup.guid == _group.value?.guid) {
                     _group.value = joinedGroup
@@ -177,7 +192,34 @@ class MessagesViewModel : ViewModel() {
                     }
                 }
             }
+        }
+        CometChat.addGroupListener(listenerID, groupListener)
+
+        // Offline reconnect: a kick, ban, leave or join that happened while offline reaches the app
+        // only through the sync listener's onMessageSyncCompleted. Replay it through the same handler
+        // as the live event. Fires only when offline messaging is on.
+        CometChat.addSyncListener(SYNC_LISTENER_ID, object : CometChat.SyncListener() {
+            override fun onMessageSyncCompleted(messages: List<BaseMessage>, outcome: SyncOutcome) {
+                replaySweptGroupActions(messages, groupListener)
+            }
         })
+    }
+
+    /** Routes each swept group action for this group to the live [CometChat.GroupListener] callback. */
+    private fun replaySweptGroupActions(messages: List<BaseMessage>, listener: CometChat.GroupListener) {
+        val guid = _group.value?.guid ?: return
+        for (action in messages.filterIsInstance<Action>()) {
+            val group = action.actionFor as? Group ?: continue
+            if (group.guid != guid) continue
+            val on = action.actionOn as? User ?: continue
+            val by = action.actionBy as? User ?: on
+            when (action.action) {
+                CometChatConstants.ActionKeys.ACTION_KICKED -> listener.onGroupMemberKicked(action, on, by, group)
+                CometChatConstants.ActionKeys.ACTION_BANNED -> listener.onGroupMemberBanned(action, on, by, group)
+                CometChatConstants.ActionKeys.ACTION_LEFT -> listener.onGroupMemberLeft(action, on, group)
+                CometChatConstants.ActionKeys.ACTION_JOINED -> listener.onGroupMemberJoined(action, on, group)
+            }
+        }
     }
 
     /**
@@ -187,5 +229,6 @@ class MessagesViewModel : ViewModel() {
         super.onCleared()
         CometChat.removeUserListener("MessagesViewModel_UserListener")
         CometChat.removeGroupListener("MessagesViewModel_GroupListener")
+        CometChat.removeSyncListener(SYNC_LISTENER_ID)
     }
 }

@@ -90,6 +90,8 @@ class DefaultComponentAppFlowActivity : AppCompatActivity() {
                 .setAuthKey(appCredentials.AUTH_KEY)
                 .subscribePresenceForAllUsers()
                 .setEnableCalling(true)
+                // Offline + encryption, always on (D86, D92).
+                .setOfflineConfig(com.cometchat.sampleapp.kotlin.push.shared.AppPreferences.offlineConfig())
                 .build()
             CometChatUIKit.init(this, uiKitSettings, object : com.cometchat.chat.core.CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String?) {

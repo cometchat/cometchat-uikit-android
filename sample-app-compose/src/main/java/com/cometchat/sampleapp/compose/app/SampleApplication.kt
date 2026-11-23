@@ -132,6 +132,8 @@ class SampleApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setAutoEstablishSocketConnection(true)
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences(this).offlineConfig())
             .build()
 
         // Initialize the CometChat UIKit

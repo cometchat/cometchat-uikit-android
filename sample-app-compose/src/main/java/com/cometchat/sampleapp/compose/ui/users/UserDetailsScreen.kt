@@ -45,6 +45,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.R as UiKitR
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.AvatarStyle
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.CometChatAvatar
@@ -98,7 +99,7 @@ fun UserDetailsScreen(
     // Load user data
     LaunchedEffect(userId) {
         isLoading = true
-        CometChat.getUser(userId, object : CometChat.CallbackListener<User>() {
+        RouteEntities.getUser(userId, object : CometChat.CallbackListener<User>() {
             override fun onSuccess(fetchedUser: User) {
                 user = fetchedUser
                 isBlocked = fetchedUser.isBlockedByMe

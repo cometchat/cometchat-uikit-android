@@ -155,6 +155,19 @@
                 android:gravity="bottom"
                 android:orientation="vertical">
 
+                <!-- Offline: older page could not load (ENG-41087); tap to retry -->
+                <TextView
+                    android:id="@+id/offline_load_more_older"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/cometchat_margin_2"
+                    android:padding="@dimen/cometchat_padding_2"
+                    android:text="@string/cometchat_connect_to_load_more"
+                    android:textAppearance="?attr/cometchatTextAppearanceCaption1Medium"
+                    android:textColor="?attr/cometchatTextColorHighlight"
+                    android:visibility="gone" />
+
                 <!-- Top Pagination Loading Indicator -->
                 <ProgressBar
                     android:id="@+id/top_pagination_indicator"
@@ -184,7 +197,46 @@
                     android:layout_margin="@dimen/cometchat_margin_2"
                     android:visibility="gone" />
 
+                <!-- Offline: newer page could not load (ENG-41087); tap to retry -->
+                <TextView
+                    android:id="@+id/offline_load_more_newer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/cometchat_margin_2"
+                    android:padding="@dimen/cometchat_padding_2"
+                    android:text="@string/cometchat_connect_to_load_more"
+                    android:textAppearance="?attr/cometchatTextAppearanceCaption1Medium"
+                    android:textColor="?attr/cometchatTextColorHighlight"
+                    android:visibility="gone" />
+
             </LinearLayout>
+
+            <!-- Offline: the newest window was refreshed (ENG-41087); tap to jump to latest -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/offline_jump_to_latest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/cometchat_margin_2"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/cometchatBackgroundColor1"
+                app:cardCornerRadius="@dimen/cometchat_radius_max"
+                app:cardElevation="@dimen/cometchat_8dp"
+                app:strokeColor="?attr/cometchatStrokeColorLight"
+                app:strokeWidth="@dimen/cometchat_1dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/cometchat_padding_3"
+                    android:paddingVertical="@dimen/cometchat_padding_2"
+                    android:text="@string/cometchat_jump_to_latest"
+                    android:textAppearance="?attr/cometchatTextAppearanceCaption1Medium"
+                    android:textColor="?attr/cometchatTextColorHighlight" />
+
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- New Message Indicator -->
             <com.google.android.material.card.MaterialCardView

@@ -1,5 +1,6 @@
 package com.cometchat.sampleapp.compose.push.shared
 
+import com.cometchat.sampleapp.compose.push.navigation.EntityCache
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -119,6 +120,8 @@ class LoginViewModel : ViewModel() {
         CometChatUIKit.login(uid, object : CometChat.CallbackListener<User>() {
             override fun onSuccess(user: User?) {
                 Log.d(TAG, "Login successful for user: ${user?.uid}")
+                // A user switch: nothing held for the previous user may open a destination.
+                EntityCache.clear()
 
                 // Register the FCM token so the backend can deliver pushes to this user.
 

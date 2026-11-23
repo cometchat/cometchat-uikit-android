@@ -16,6 +16,9 @@ import androidx.annotation.StyleRes
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.OfflineMediaPlaceholder
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
 import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
@@ -56,6 +59,10 @@ public class CometChatFileBubble @JvmOverloads constructor(
     private var titleText: String = ""
     private var subTitleText: String = ""
     private var fileUrl: String = ""
+
+    /** Offline (G9): the SDK's local file for this attachment, or the attachment awaiting download. */
+    private var offlineLocalPath: String? = null
+    private var offlinePlaceholderAttachment: Attachment? = null
     private var onClick: OnClick? = null
     private var message: MediaMessage? = null
 
@@ -110,18 +117,38 @@ public class CometChatFileBubble @JvmOverloads constructor(
      * Handle the click event for the download icon.
      */
     private fun handleDownloadClick() {
+        // Offline placeholder (G9): a tap asks the SDK to download; MediaReady rebinds the row.
+        offlinePlaceholderAttachment?.let { pending ->
+            MediaSourceResolver.download(pending) { }
+            return
+        }
         if (onClick != null) {
             onClick?.onClick()
         } else {
             // Default download behavior
             if (fileUrl.isNotEmpty()) {
                 val defaultTitle = titleText.ifEmpty { System.currentTimeMillis().toString() }
-                Utils.downloadFile(context, fileUrl, defaultTitle)
+                // Offline on (D-324): the local copy is saved with no network call; else today's download.
+                if (!MediaUtils.downloadLocalAttachment(context, message?.attachment, defaultTitle)) {
+                    Utils.downloadFile(context, fileUrl, defaultTitle)
+                }
             }
         }
     }
 
-    private fun openFile() {
+    @androidx.annotation.VisibleForTesting
+    internal fun openFile() {
+        // Offline (G9, D-330): open the SDK's local copy when there is one — through a cache copy,
+        // since the SDK file sits in noBackupFilesDir, which no FileProvider path covers. Only a file
+        // inside the SDK's media folder is opened (BEH-MEDIA-21).
+        offlineLocalPath?.let { path ->
+            com.cometchat.uikit.core.utils.MediaViewerSource.localFile(context, path)?.let { local ->
+                val name = message?.attachment?.fileName?.takeIf { it.isNotEmpty() } ?: local.name
+                MediaUtils.openLocalCopy(context, local, name, message?.attachment?.fileMimeType)
+                return
+            }
+        }
+        if (offlinePlaceholderAttachment != null) return
         message?.let { msg ->
             val file = Utils.getFileFromLocalPath(msg)
             if (file != null && file.exists()) {
@@ -129,7 +156,10 @@ public class CometChatFileBubble @JvmOverloads constructor(
                 return
             }
             msg.attachment?.let { attachment ->
-                MediaUtils.openMediaInPlayer(context, attachment.fileUrl, attachment.fileMimeType)
+                // Offline on, an http(s) URL only, never a path from the message (BEH-MEDIA-21).
+                MediaUtils.openMediaInPlayer(
+                    context, com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment), attachment.fileMimeType
+                )
             }
         }
     }
@@ -260,7 +290,22 @@ public class CometChatFileBubble @JvmOverloads constructor(
             // Determine download icon visibility based on local file existence
             val shouldShowDownload = shouldShowDownloadIcon(mediaMessage)
             downloadIconImageView.visibility = if (shouldShowDownload) View.VISIBLE else View.GONE
+
+            // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+            val offlineSource = MediaSourceResolver.resolve(attachment)
+            offlineLocalPath = (offlineSource as? MediaSource.Local)?.path
+            offlinePlaceholderAttachment = if (offlineSource is MediaSource.Placeholder) attachment else null
+            when (offlineSource) {
+                is MediaSource.Local -> downloadIconImageView.visibility = View.GONE
+                is MediaSource.Placeholder -> {
+                    subtitleTextView.text = OfflineMediaPlaceholder.caption(context, offlineSource)
+                    downloadIconImageView.visibility = View.VISIBLE
+                }
+                else -> Unit
+            }
         } else {
+            offlineLocalPath = null
+            offlinePlaceholderAttachment = null
             // Handle file from local path - no download needed for local files
             mediaMessage.file?.let { file ->
                 val subTitleText = SimpleDateFormat(dateFormatterPattern).format(mediaMessage.sentAt * 1000) +
@@ -341,6 +386,8 @@ public class CometChatFileBubble @JvmOverloads constructor(
      * @param subtitleText The subtitle text.
      */
     public fun setFileUrl(fileUrl: String, titleText: String, subtitleText: String) {
+        offlineLocalPath = null
+        offlinePlaceholderAttachment = null
         setFileUrlInternal(fileUrl, titleText, subtitleText)
         if (fileUrl.isNotEmpty()) {
             downloadIconImageView.visibility = View.VISIBLE

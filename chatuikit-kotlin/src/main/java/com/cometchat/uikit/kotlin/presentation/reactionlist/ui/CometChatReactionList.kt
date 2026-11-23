@@ -305,6 +305,11 @@ public class CometChatReactionList @JvmOverloads constructor(
             }
         }
 
+        // D84 rule 5: offline on, a load that fails online while cached rows stay reports to onError.
+        viewScope?.launch {
+            vm.loadErrorWithRows.collect { onError?.invoke(it) }
+        }
+
         // Observe reaction headers
         viewScope?.launch {
             vm.reactionHeaders.collectLatest { headers ->
@@ -414,6 +419,9 @@ public class CometChatReactionList @JvmOverloads constructor(
             binding.layoutErrorState.removeAllViews()
             removeViewFromParent(customErrorView)
             binding.layoutErrorState.addView(customErrorView)
+        } else if (viewModel?.connectToLoad?.value == true) {
+            // D84 rule 3: offline with nothing shown: the kit's offline state, no Retry.
+            binding.tvErrorState.text = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_reactions)
         } else {
             val displayText = errorText ?: context.getString(R.string.cometchat_reaction_list_error)
             binding.tvErrorState.text = displayText
@@ -1085,6 +1093,8 @@ public class CometChatReactionList @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
+        // D83: a dismissed list never reads on reconnect (the ViewModel outlives the sheet).
+        viewModel?.cancelReconnectRefill()
         viewScope?.cancel()
         viewScope = null
         super.onDetachedFromWindow()

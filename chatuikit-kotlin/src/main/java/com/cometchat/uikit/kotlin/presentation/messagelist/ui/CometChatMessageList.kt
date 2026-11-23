@@ -25,6 +25,7 @@ import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.factory.CometChatMessageListViewModelFactory
+import com.cometchat.uikit.core.offline.OfflineUi
 import com.cometchat.uikit.core.state.MessageListUIState
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.viewmodel.CometChatMessageListViewModel
@@ -200,6 +201,10 @@ public class CometChatMessageList @JvmOverloads constructor(
     private var customViewContainer: FrameLayout? = null
     private var messageListLayout: RelativeLayout? = null
     private var topPaginationIndicator: ProgressBar? = null
+    // Offline reads (ENG-41087): "Connect to load more" edges and the "Jump to latest" pill.
+    private var offlineLoadMoreOlder: TextView? = null
+    private var offlineLoadMoreNewer: TextView? = null
+    private var offlineJumpToLatest: View? = null
     private var recyclerViewMessageList: RecyclerView? = null
     private var bottomPaginationIndicator: ProgressBar? = null
     private var newMessageIndicator: MaterialCardView? = null
@@ -211,6 +216,16 @@ public class CometChatMessageList @JvmOverloads constructor(
     // ========================================
 
     private val messageAdapter: MessageAdapter = MessageAdapter()
+
+    /** Offline send UI (W4, ENG-41089): the mode captured once for this list (G1). */
+    private val offlineSendUiOn: Boolean = com.cometchat.uikit.core.offline.OfflineUi.keyMode()
+
+    /** When true, offline notices (e.g. "Too many messages waiting to send") are not shown. */
+    private var hideOfflineNotices: Boolean = false
+
+    /** The running offline-notice collector, if any (W4). */
+    private var offlineNoticeJob: kotlinx.coroutines.Job? = null
+    private var offlineReadErrorJob: kotlinx.coroutines.Job? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
 
     // ========================================
@@ -486,6 +501,9 @@ public class CometChatMessageList @JvmOverloads constructor(
         newMessageIndicator = view.findViewById(R.id.new_message_indicator)
         newMessageBadge = view.findViewById(R.id.new_message_badge)
         newMessageArrow = view.findViewById(R.id.new_message_arrow)
+        offlineLoadMoreOlder = view.findViewById(R.id.offline_load_more_older)
+        offlineLoadMoreNewer = view.findViewById(R.id.offline_load_more_newer)
+        offlineJumpToLatest = view.findViewById(R.id.offline_jump_to_latest)
         
         // Start shimmer immediately since loading state is visible by default
         setupShimmer()
@@ -560,6 +578,12 @@ public class CometChatMessageList @JvmOverloads constructor(
             onItemLongClick?.invoke(message, position) ?: false
         }
         
+        // Offline send rows (W4): captions and tap-to-retry, ON path only.
+        messageAdapter.offlineSendUiOn = offlineSendUiOn
+        messageAdapter.onOfflineRetry = { message ->
+            viewModel?.handleMessageOptionClick(context, UIKitConstants.MessageOption.RETRY, message)
+        }
+
         // Set adapter long click callback for message options
         messageAdapter.onMessageLongClick = { options, boundMessage, factory, bubble ->
             // The row's listener closes over the message bound to it, which can be an older
@@ -567,8 +591,24 @@ public class CometChatMessageList @JvmOverloads constructor(
             // result; a subscription event writes it onto the list's objects). Build the sheet
             // from the list's current copy so the thread-subscription label is never stale.
             val message = viewModel?.currentMessage(boundMessage) ?: boundMessage
+            if (com.cometchat.uikit.core.offline.OfflineRowState.isUnsent(message, offlineSendUiOn)) {
+                // Offline (G4, G5): an unsent or failed row offers Retry, Delete and Copy only.
+                currentLongPressedMessage = message
+                val errorColor = CometChatTheme.getErrorColor(context)
+                val unsentOptions = MessageOptionsUtils.getUnsentMessageOptions(
+                    context, message, buildOptionVisibilityMap()
+                ).map { option ->
+                    if (option.id == UIKitConstants.MessageOption.DELETE && option.titleColor == 0) {
+                        option.copy(titleColor = errorColor, iconTintColor = errorColor)
+                    } else {
+                        option
+                    }
+                }
+                openMessageOptionBottomSheet(unsentOptions, message, bubble)
+                onItemLongClick?.invoke(message, messageAdapter.getMessages().indexOf(message))
+            }
             // Skip showing options for in-progress or deleted messages
-            if (message.id != 0L && message.sentAt != 0L && message.deletedAt == 0L) {
+            else if (message.id != 0L && message.sentAt != 0L && message.deletedAt == 0L) {
                 // Store the current message for callback invocation
                 currentLongPressedMessage = message
 
@@ -651,6 +691,14 @@ public class CometChatMessageList @JvmOverloads constructor(
     private fun setupClickListeners() {
         newMessageIndicator?.setOnClickListener {
             scrollToBottom()
+        }
+        // Offline reads (ENG-41087). These views stay GONE with offline off.
+        offlineLoadMoreOlder?.setOnClickListener { viewModel?.retryOfflineLoadMore() }
+        offlineLoadMoreNewer?.setOnClickListener { viewModel?.retryOfflineLoadMore() }
+        offlineJumpToLatest?.setOnClickListener {
+            offlineJumpToLatest?.visibility = View.GONE
+            viewModel?.consumeOfflineJumpToLatest()
+            scrollToLastItem()
         }
     }
 
@@ -792,6 +840,10 @@ public class CometChatMessageList @JvmOverloads constructor(
         if (isUserAtBottom) {
             newMessageCount = 0
             newMessageIndicator?.visibility = View.GONE
+            if (offlineJumpToLatest?.visibility == View.VISIBLE) {
+                offlineJumpToLatest?.visibility = View.GONE
+                viewModel?.consumeOfflineJumpToLatest()
+            }
         } else if (hasUserScrolled) {
             newMessageIndicator?.visibility = View.VISIBLE
             // Show badge only when there are new messages, hide it otherwise
@@ -818,6 +870,10 @@ public class CometChatMessageList @JvmOverloads constructor(
         val hasMorePrevious = vm.hasMorePreviousMessages.value
         val hasMoreNext = vm.hasMoreNewMessages.value
         val inProgress = vm.isInProgress.value
+        // Offline: an edge showing "Connect to load more" waits for a tap or reconnect, so neither
+        // a page read nor its spinner starts there (both flows stay false with offline off).
+        val olderBlocked = vm.offlineLoadMoreOlder.value
+        val newerBlocked = vm.offlineLoadMoreNewer.value
         
         // Only trigger pagination when:
         // 1. User is actively scrolling (touch scroll)
@@ -826,7 +882,7 @@ public class CometChatMessageList @JvmOverloads constructor(
         // 4. User has reached the extreme end of the list
         
         // Pagination - at TOP → load older messages
-        if (hasMorePrevious && isScrolling && !inProgress && 
+        if (hasMorePrevious && isScrolling && !inProgress && !olderBlocked &&
             (firstVisiblePosition == 0 || recyclerViewMessageList?.canScrollVertically(-1) == false)) {
             isPaginatingPrevious = true
             isScrolling = false
@@ -835,7 +891,7 @@ public class CometChatMessageList @JvmOverloads constructor(
         }
         
         // Pagination - at BOTTOM → load newer messages
-        if (hasMoreNext && isScrolling && !inProgress && 
+        if (hasMoreNext && isScrolling && !inProgress && !newerBlocked &&
             (lastVisiblePosition == totalItemCount - 1 || recyclerViewMessageList?.canScrollVertically(1) == false)) {
             isPaginatingNext = true
             isScrolling = false
@@ -1001,6 +1057,9 @@ public class CometChatMessageList @JvmOverloads constructor(
             }
         }
 
+        // Offline notices (W4): one line each, shown once; not collected when hidden.
+        restartOfflineNoticeCollector()
+
         // Observe delete confirmation requests from ViewModel
         lifecycleOwner.lifecycleScope.launch {
             vm.deleteConfirmationRequest.collectLatest { message ->
@@ -1022,6 +1081,40 @@ public class CometChatMessageList @JvmOverloads constructor(
             }
         }
         
+        // Offline reads (ENG-41087): the key mode is captured once per binding; the edge and
+        // pill flows stay false with offline off, so nothing below changes today's list.
+        messageAdapter.offlineKeyMode = OfflineUi.keyMode()
+        lifecycleOwner.lifecycleScope.launch {
+            vm.offlineLoadMoreOlder.collectLatest { blocked ->
+                offlineLoadMoreOlder?.visibility = if (blocked) View.VISIBLE else View.GONE
+            }
+        }
+        lifecycleOwner.lifecycleScope.launch {
+            vm.offlineLoadMoreNewer.collectLatest { blocked ->
+                offlineLoadMoreNewer?.visibility = if (blocked) View.VISIBLE else View.GONE
+            }
+        }
+        lifecycleOwner.lifecycleScope.launch {
+            vm.offlineJumpToLatest.collectLatest { refreshed ->
+                if (!refreshed) {
+                    offlineJumpToLatest?.visibility = View.GONE
+                } else if (isUserAtBottom) {
+                    // At the bottom: stay at the bottom of the refreshed window.
+                    vm.consumeOfflineJumpToLatest()
+                    scrollToLastItem()
+                } else {
+                    offlineJumpToLatest?.visibility = View.VISIBLE
+                }
+            }
+        }
+        // D83: a read that failed while rows stay on screen shows no error view, but the app's
+        // onError still hears it. With nothing shown the Error state reports it instead. One
+        // collector per binding, so a re-bound ViewModel never reports an error twice.
+        offlineReadErrorJob?.cancel()
+        offlineReadErrorJob = lifecycleOwner.lifecycleScope.launch {
+            vm.offlineReadError.collect { error -> onError?.invoke(error) }
+        }
+
         // Observe message sender fetched for message privately
         lifecycleOwner.lifecycleScope.launch {
             vm.messageSenderFetched.collect { user ->
@@ -1120,8 +1213,13 @@ public class CometChatMessageList @JvmOverloads constructor(
 
     private fun handleMessagesUpdate(messages: List<BaseMessage>) {
         val previousCount = messageAdapter.itemCount
+        // Capture the bottom message's collision-free identity BEFORE setMessages so we can tell
+        // an append (new message at the bottom) from a prepend (older page from pagination).
+        // Plain id collides for optimistic own sends (all id == 0 until ack), so use the
+        // id-or-muid composite. See bottomMessageIdentity.
+        val previousLastId = bottomMessageIdentity(messageAdapter.getMessages().lastOrNull())
         val wasAtBottom = isUserAtBottom || previousCount == 0
-        
+
         messageAdapter.setMessages(messages)
         
         // Clear sticky header cache to ensure headers are redrawn with correct styles
@@ -1148,26 +1246,29 @@ public class CometChatMessageList @JvmOverloads constructor(
             return
         }
 
-        // Auto-scroll to bottom when new messages are added and user was at bottom
-        if (newCount > previousCount && wasAtBottom) {
-            if (scrollToBottomOnNewMessage) {
-                // Always scroll to bottom when scrollToBottomOnNewMessage is enabled
-                scrollToLastItem()
-            } else {
-                // Only scroll if user is within 5 items of the bottom
-                val lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition()
-                if (previousCount == 0 || (previousCount - 1) - lastVisiblePosition < 5) {
-                    scrollToLastItem()
-                }
-            }
-        } else if (newCount > previousCount) {
-            // Even if wasAtBottom is false (stale due to keyboard/reply-preview resize),
-            // always scroll to bottom for the logged-in user's own messages
-            val lastMessage = messages.lastOrNull()
-            val loggedInUserId = CometChat.getLoggedInUser()?.uid
-            if (lastMessage != null && loggedInUserId != null && lastMessage.sender?.uid == loggedInUserId) {
-                scrollToLastItem()
-            }
+        // Auto-scroll to bottom only for a genuine append (new message at the bottom).
+        // A prepend (older page from pagination) grows the count but leaves the bottom
+        // message unchanged, so it must NOT scroll — otherwise a fling up that triggers the
+        // older-page fetch snaps the list back to the bottom. See shouldScrollToBottomOnUpdate.
+        val lastMessage = messages.lastOrNull()
+        val newLastId = bottomMessageIdentity(lastMessage)
+        val loggedInUserId = CometChat.getLoggedInUser()?.uid
+        val lastIsOwn = lastMessage != null && loggedInUserId != null &&
+            lastMessage.sender?.uid == loggedInUserId
+        val lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition()
+
+        if (shouldScrollToBottomOnUpdate(
+                previousCount = previousCount,
+                newCount = newCount,
+                previousLastId = previousLastId,
+                newLastId = newLastId,
+                wasAtBottom = wasAtBottom,
+                scrollToBottomOnNewMessage = scrollToBottomOnNewMessage,
+                lastIsOwn = lastIsOwn,
+                lastVisiblePos = lastVisiblePosition
+            )
+        ) {
+            scrollToLastItem()
         }
     }
 
@@ -1509,10 +1610,41 @@ public class CometChatMessageList @JvmOverloads constructor(
             errorStateView?.visibility = View.GONE
         } else {
             customViewContainer?.visibility = View.GONE
+            // D84 rule 3: offline with nothing on screen is the kit's offline state
+            // ("Connect to load messages", no Retry). Never true with offline off.
+            val offline = viewModel?.isOfflineConnectError(MessageListUIState.Error(error)) == true
+            applyOfflineErrorNotice(offline)
             errorStateView?.visibility = View.VISIBLE
         }
-        
+
         onError?.invoke(error)
+    }
+
+    // Offline: the error state's title/subtitle before the offline state replaced them; null while
+    // the offline state is not shown.
+    private var defaultErrorTitle: CharSequence? = null
+    private var defaultErrorSubtitleVisibility: Int = View.VISIBLE
+
+    /**
+     * Shows the error state as the offline state (D84 rule 3: "Connect to load messages", no
+     * subtitle) when [offline], else puts back what the offline state replaced. With the offline
+     * state never shown (always, offline off) it touches nothing.
+     */
+    private fun applyOfflineErrorNotice(offline: Boolean) {
+        val title = errorTitle ?: return
+        if (offline) {
+            if (defaultErrorTitle == null) {
+                defaultErrorTitle = title.text
+                defaultErrorSubtitleVisibility = errorSubtitle?.visibility ?: View.VISIBLE
+            }
+            title.text = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_messages)
+            errorSubtitle?.visibility = View.GONE
+        } else {
+            val shownTitle = defaultErrorTitle ?: return
+            title.text = shownTitle
+            errorSubtitle?.visibility = defaultErrorSubtitleVisibility
+            defaultErrorTitle = null
+        }
     }
 
     private fun updateEmptyStateContent() {
@@ -1808,6 +1940,43 @@ public class CometChatMessageList @JvmOverloads constructor(
      *
      * @param style The style to apply
      */
+    /**
+     * Sets the style of the caption under an unsent message ("Not sent yet" / "Not sent. Tap to
+     * retry"), shown when offline messaging is on. Defaults to the theme's offline tokens.
+     */
+    public fun setOfflineRowStyle(style: com.cometchat.uikit.kotlin.presentation.messagelist.style.CometChatOfflineRowStyle) {
+        messageAdapter.offlineRowStyle = style
+        messageAdapter.notifyDataSetChanged()
+    }
+
+    /**
+     * Hides the one-line offline notices this list shows (for example "Too many messages waiting to
+     * send"). Default `false`. Takes effect at once, before or after the list is attached: hiding
+     * stops collecting (a pending notice waits for a list that shows notices), showing resumes.
+     */
+    public fun setHideOfflineNotices(hide: Boolean) {
+        hideOfflineNotices = hide
+        restartOfflineNoticeCollector()
+    }
+
+    /** Collects [CometChatMessageListViewModel.offlineNotices] while shown (W4); offline on only. */
+    private fun restartOfflineNoticeCollector() {
+        offlineNoticeJob?.cancel()
+        offlineNoticeJob = null
+        if (!offlineSendUiOn || hideOfflineNotices) return
+        val vm = viewModel ?: return
+        val owner = findViewTreeLifecycleOwner() ?: return
+        offlineNoticeJob = owner.lifecycleScope.launch {
+            vm.offlineNotices.collect { notice ->
+                Toast.makeText(
+                    context,
+                    com.cometchat.uikit.core.offline.OfflineNoticeText.resolve(context, notice),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     public fun setStyle(style: CometChatMessageListStyle) {
         this.style = style
         applyStyle()
@@ -4118,6 +4287,8 @@ public class CometChatMessageList @JvmOverloads constructor(
     private fun performPinSaveAction(optionId: String, message: BaseMessage) {
         val listener = object : com.cometchat.chat.core.CometChat.CallbackListener<BaseMessage>() {
             override fun onSuccess(result: BaseMessage?) {
+                // G11 (T4): the row and the pin/save kit events update from onSuccess, offline on or off.
+                viewModel?.onOwnPinSaveSuccess(optionId, message, result)
                 val toastRes = when (optionId) {
                     UIKitConstants.MessageOption.PIN -> R.string.cometchat_message_pinned
                     UIKitConstants.MessageOption.UNPIN -> R.string.cometchat_message_unpinned
@@ -4209,7 +4380,13 @@ public class CometChatMessageList @JvmOverloads constructor(
      *
      * @param message The [BaseMessage] to share.
      */
-    private fun shareMessage(message: BaseMessage) {
+    @androidx.annotation.VisibleForTesting
+    internal fun shareMessage(message: BaseMessage) {
+        // Offline on (D-324): a media message whose file is on the device is shared from that copy
+        // through the kit's FileProvider, with no network call. Otherwise today's share below.
+        if (message is com.cometchat.chat.models.MediaMessage &&
+            MediaUtils.shareLocalAttachment(context, message.attachment)
+        ) return
         when {
             message is com.cometchat.chat.models.TextMessage -> {
                 // Share text message with formatted text (similar to copy)
@@ -4246,6 +4423,9 @@ public class CometChatMessageList @JvmOverloads constructor(
                 // Share image message via Glide bitmap download
                 val attachment = message.attachment ?: return
                 val fileUrl = attachment.fileUrl ?: return
+                // Offline on, only an http(s) URL is fetched and shared, never a path from the
+                // message (BEH-MEDIA-21). Offline off openableUrl is the fileUrl itself: unchanged.
+                if (com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment) != fileUrl) return
                 val mediaName = attachment.fileName ?: "shared_image"
                 val mimeType = attachment.fileMimeType ?: "image/*"
                 
@@ -4293,6 +4473,9 @@ public class CometChatMessageList @JvmOverloads constructor(
                 // Share other media types (video, audio, files) via file download
                 val attachment = message.attachment ?: return
                 val fileUrl = attachment.fileUrl ?: return
+                // Offline on, only an http(s) URL is fetched and shared, never a path from the
+                // message (BEH-MEDIA-21). Offline off openableUrl is the fileUrl itself: unchanged.
+                if (com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment) != fileUrl) return
                 val fileName = "${message.id}${attachment.fileName ?: "media_file"}"
                 val mimeType = attachment.fileMimeType ?: "*/*"
                 
@@ -4461,15 +4644,13 @@ public class CometChatMessageList @JvmOverloads constructor(
         popup.setMessageAlignment(messageAlignment)
 
         // Quick reactions visibility conditions
-        val moderationStatus = getModerationStatusString(message)
-        if (message.category == UIKitConstants.MessageCategory.INTERACTIVE
-            || getMessageReactionOptionVisibility() != View.VISIBLE
-            || moderationStatus == UIKitConstants.ModerationConstants.DISAPPROVED
-        ) {
-            popup.setQuickReactionsVisibility(View.GONE)
-        } else {
-            popup.setQuickReactionsVisibility(View.VISIBLE)
-        }
+        val visible = quickReactionsVisible(
+            message,
+            reactionOptionVisible = getMessageReactionOptionVisibility() == View.VISIBLE,
+            moderationStatus = getModerationStatusString(message),
+            offlineSendUiOn = offlineSendUiOn
+        )
+        popup.setQuickReactionsVisibility(if (visible) View.VISIBLE else View.GONE)
 
         // Emoji picker click
         popup.setEmojiPickerClickListener {
@@ -4845,3 +5026,19 @@ public class CometChatMessageList @JvmOverloads constructor(
     internal fun getAdapter(): MessageAdapter = messageAdapter
     public fun getViewModel(): CometChatMessageListViewModel? = viewModel
 }
+
+/**
+ * Whether the long-press sheet shows quick reactions. Today's rules (not interactive, the reaction
+ * option visible, not disapproved), plus, with offline on only, none on an unsent row (no server
+ * id, G5). With offline off ([offlineSendUiOn] false) this is exactly today's condition.
+ */
+internal fun quickReactionsVisible(
+    message: BaseMessage,
+    reactionOptionVisible: Boolean,
+    moderationStatus: String?,
+    offlineSendUiOn: Boolean
+): Boolean =
+    message.category != UIKitConstants.MessageCategory.INTERACTIVE &&
+        reactionOptionVisible &&
+        moderationStatus != UIKitConstants.ModerationConstants.DISAPPROVED &&
+        !(offlineSendUiOn && message.id <= 0L)

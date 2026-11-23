@@ -27,6 +27,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.messagecomposer.ui.CometChatMessageComposer
 import com.cometchat.uikit.compose.presentation.messagelist.ui.CometChatMessageList
 import com.cometchat.uikit.compose.presentation.threadheader.ui.CometChatThreadHeader
@@ -75,13 +76,37 @@ fun ThreadMessagesScreen(
     // Load parent message
     LaunchedEffect(parentMessageId) {
         isLoading = true
-        CometChat.getMessageDetails(parentMessageId, object : CometChat.CallbackListener<BaseMessage>() {
-            override fun onSuccess(message: BaseMessage) {
+        // Two-phase read (BEH-READ-35): the first phase to land (cached, else server) sets the parent
+        // and resolves the user/group once; the server's parent then replaces a cached one. An
+        // offline error after the cached phase keeps the thread open on the cached parent.
+        CometChat.getMessageDetails(parentMessageId, object : CometChat.MessageDetailsListener() {
+            private var parentResolved = false
+
+            override fun onCachedMessage(message: BaseMessage?) {
+                message?.let { onParent(it) }
+            }
+
+            override fun onServerMessage(message: BaseMessage?) {
+                // A server phase without a parent ends like an error.
+                if (message != null) {
+                    onParent(message)
+                } else {
+                    onError(CometChatException("ERR_NO_VALUE", "The server returned no message"))
+                }
+            }
+
+            private fun onParent(message: BaseMessage) {
                 parentMessage = message
-                // Load receiver based on message type
+                if (parentResolved) return
+                parentResolved = true
+                // Load receiver based on message type: the copy the calling screen held, else the server's
                 when (message.receiverType) {
                     CometChatConstants.RECEIVER_TYPE_USER -> {
-                        CometChat.getUser(message.receiverUid, object : CometChat.CallbackListener<User>() {
+                        // The other person in the 1:1 chat: the receiver, or the sender when the
+                        // parent came from them (then the receiver is the logged-in user).
+                        val loggedInUid = CometChat.getLoggedInUser()?.uid
+                        val peerUid = if (message.receiverUid == loggedInUid) message.sender?.uid ?: message.receiverUid else message.receiverUid
+                        RouteEntities.getUser(peerUid, object : CometChat.CallbackListener<User>() {
                             override fun onSuccess(fetchedUser: User) {
                                 user = fetchedUser
                                 isLoading = false
@@ -93,7 +118,7 @@ fun ThreadMessagesScreen(
                         })
                     }
                     CometChatConstants.RECEIVER_TYPE_GROUP -> {
-                        CometChat.getGroup(message.receiverUid, object : CometChat.CallbackListener<Group>() {
+                        RouteEntities.getGroup(message.receiverUid, object : CometChat.CallbackListener<Group>() {
                             override fun onSuccess(fetchedGroup: Group) {
                                 group = fetchedGroup
                                 isLoading = false
@@ -111,6 +136,7 @@ fun ThreadMessagesScreen(
             }
 
             override fun onError(e: CometChatException) {
+                if (parentResolved) return
                 isLoading = false
             }
         })

@@ -439,6 +439,11 @@ public class CometChatGroups @JvmOverloads constructor(
             }
         }
 
+        // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+        viewScope?.launch {
+            vm.rowsKeptError.collect { onError?.invoke(it) }
+        }
+
         // Observe selected groups
         viewScope?.launch {
             vm.selectedGroups.collectLatest { selected ->
@@ -454,6 +459,7 @@ public class CometChatGroups @JvmOverloads constructor(
             }
         }
     }
+
 
     private fun handleStateChange(state: GroupsUIState) {
         hideAllStates()
@@ -502,6 +508,15 @@ public class CometChatGroups @JvmOverloads constructor(
 
     private fun handleEmptyState() {
         binding.shimmerEffectFrame.stopShimmer()
+        // D84 rule 7: an offline keyword search reads "Connect to search".
+        if (viewModel?.connectToSearch?.value == true) {
+            applyConnectNotice(
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search,
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle
+            )
+        } else {
+            applyConnectNotice(null)
+        }
         if (emptyStateVisibility == View.VISIBLE) {
             if (customEmptyView != null) {
                 binding.customLayout.removeAllViews()
@@ -515,6 +530,46 @@ public class CometChatGroups @JvmOverloads constructor(
         onEmpty?.invoke()
     }
 
+    // Offline: the empty state's title/subtitle before a connect notice replaced them; null while
+    // no notice is shown.
+    private var defaultEmptyTitle: CharSequence? = null
+    private var defaultEmptySubtitle: CharSequence? = null
+    private var defaultEmptySubtitleVisibility: Int = View.VISIBLE
+
+    /**
+     * Swaps the default empty state's text to [titleRes] for the offline states (D84): "Connect to
+     * search" for an offline keyword read, "Connect to load groups" for the list offline with
+     * nothing on screen (no "create or join" subtitle). `null` puts back what a notice replaced;
+     * with no notice shown (always, offline off) it touches nothing. A custom view is left alone.
+     * [subtitleRes], when given, replaces the subtitle and shows it: "Connect to search" carries
+     * "Search needs an internet connection." (D84). Without it the subtitle is hidden.
+     */
+    private fun applyConnectNotice(titleRes: Int?, subtitleRes: Int? = null) {
+        val title = binding.tvEmptyGroupsTitle
+        val subtitle = binding.tvEmptyGroupsSubtitle
+        if (titleRes != null) {
+            if (defaultEmptyTitle == null) {
+                defaultEmptyTitle = title.text
+                defaultEmptySubtitle = subtitle.text
+                defaultEmptySubtitleVisibility = subtitle.visibility
+            }
+            title.text = context.getString(titleRes)
+            if (subtitleRes != null) {
+                subtitle.text = context.getString(subtitleRes)
+                subtitle.visibility = View.VISIBLE
+            } else {
+                subtitle.visibility = View.GONE
+            }
+        } else {
+            val shownTitle = defaultEmptyTitle ?: return
+            title.text = shownTitle
+            subtitle.text = defaultEmptySubtitle
+            subtitle.visibility = defaultEmptySubtitleVisibility
+            defaultEmptyTitle = null
+            defaultEmptySubtitle = null
+        }
+    }
+
     private fun handleErrorState(exception: CometChatException? = null) {
         binding.shimmerEffectFrame.stopShimmer()
         if (errorStateVisibility == View.VISIBLE) {
@@ -522,6 +577,10 @@ public class CometChatGroups @JvmOverloads constructor(
                 binding.customLayout.removeAllViews()
                 binding.customLayout.addView(customErrorView)
                 binding.customLayout.visibility = View.VISIBLE
+            } else if (viewModel?.connectToLoad?.value == true) {
+                // D84 rule 3: offline with nothing on screen: the kit's offline state, no Retry.
+                applyConnectNotice(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_groups)
+                binding.emptyStateView.visibility = View.VISIBLE
             } else {
                 binding.errorStateView.visibility = View.VISIBLE
             }

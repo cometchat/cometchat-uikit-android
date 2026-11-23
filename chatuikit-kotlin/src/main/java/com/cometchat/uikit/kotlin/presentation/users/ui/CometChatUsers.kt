@@ -1,5 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.users.ui
 
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindAllRows
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindOnPresenceChange
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -474,6 +476,9 @@ public class CometChatUsers @JvmOverloads constructor(
         viewScope?.cancel()
         viewScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+        // ENG-41551 A: a connection flip re-binds the rows, so presence is re-read.
+        viewScope?.rebindOnPresenceChange { rebindAllRows(usersAdapter) }
+
         viewModel?.let { vm ->
             viewScope?.launch {
                 vm.uiState.collectLatest { state ->
@@ -487,6 +492,11 @@ public class CometChatUsers @JvmOverloads constructor(
                 }
             }
 
+            // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+            viewScope?.launch {
+                vm.rowsKeptError.collect { onError?.invoke(it) }
+            }
+
             viewScope?.launch {
                 vm.selectedUsers.collectLatest { selected ->
                     usersAdapter.selectUsers(selected)
@@ -498,6 +508,7 @@ public class CometChatUsers @JvmOverloads constructor(
             }
         }
     }
+
 
     private fun handleUIState(state: UsersUIState) {
         when (state) {
@@ -545,6 +556,15 @@ public class CometChatUsers @JvmOverloads constructor(
         binding.recyclerviewUsersList.visibility = View.GONE
         binding.errorStateView.visibility = View.GONE
 
+        // D84 rule 7: an offline keyword search reads "Connect to search".
+        if (viewModel?.connectToSearch?.value == true) {
+            applyConnectNotice(
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search,
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle
+            )
+        } else {
+            applyConnectNotice(null)
+        }
         if (emptyStateVisibility == View.VISIBLE) {
             if (customEmptyView != null) {
                 binding.customLayout.removeAllViews()
@@ -569,12 +589,57 @@ public class CometChatUsers @JvmOverloads constructor(
                 binding.customLayout.removeAllViews()
                 binding.customLayout.addView(customErrorView)
                 binding.customLayout.visibility = View.VISIBLE
+            } else if (viewModel?.connectToLoad?.value == true) {
+                // D84 rule 3: offline with nothing on screen: the kit's offline state, no Retry.
+                applyConnectNotice(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_users)
+                binding.errorStateView.visibility = View.GONE
+                binding.emptyStateView.visibility = View.VISIBLE
             } else {
                 binding.errorStateView.visibility = View.VISIBLE
             }
         }
 
         onError?.invoke(exception)
+    }
+
+    // Offline: the empty state's title/subtitle before a connect notice replaced them; null while
+    // no notice is shown.
+    private var defaultEmptyTitle: CharSequence? = null
+    private var defaultEmptySubtitle: CharSequence? = null
+    private var defaultEmptySubtitleVisibility: Int = View.VISIBLE
+
+    /**
+     * Swaps the default empty state's text to [titleRes] for the offline states (D84): "Connect to
+     * search" for an offline keyword search, "Connect to load users" for the list (a presence
+     * filter included) offline with nothing on screen. `null` puts back what a notice replaced; with no notice shown
+     * (always, offline off) it touches nothing. A custom view is left alone.
+     * [subtitleRes], when given, replaces the subtitle and shows it: "Connect to search" carries
+     * "Search needs an internet connection." (D84). Without it the subtitle is hidden.
+     */
+    private fun applyConnectNotice(titleRes: Int?, subtitleRes: Int? = null) {
+        val title = binding.tvEmptyUsersTitle
+        val subtitle = binding.tvEmptyUsersSubtitle
+        if (titleRes != null) {
+            if (defaultEmptyTitle == null) {
+                defaultEmptyTitle = title.text
+                defaultEmptySubtitle = subtitle.text
+                defaultEmptySubtitleVisibility = subtitle.visibility
+            }
+            title.text = context.getString(titleRes)
+            if (subtitleRes != null) {
+                subtitle.text = context.getString(subtitleRes)
+                subtitle.visibility = View.VISIBLE
+            } else {
+                subtitle.visibility = View.GONE
+            }
+        } else {
+            val shownTitle = defaultEmptyTitle ?: return
+            title.text = shownTitle
+            subtitle.text = defaultEmptySubtitle
+            subtitle.visibility = defaultEmptySubtitleVisibility
+            defaultEmptyTitle = null
+            defaultEmptySubtitle = null
+        }
     }
 
     /**

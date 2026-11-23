@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.groupmembers.ui.CometChatGroupMembers
 import com.cometchat.uikit.compose.theme.CometChatTheme
 
@@ -38,7 +39,7 @@ fun GroupMembersScreen(
 
     // Fetch group data
     LaunchedEffect(groupId) {
-        CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
+        RouteEntities.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
             override fun onSuccess(fetchedGroup: Group) {
                 group = fetchedGroup
             }

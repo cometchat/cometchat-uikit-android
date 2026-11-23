@@ -127,7 +127,7 @@ class CometChatAIAssistantChatHistoryScreenshotTest {
                     else -> Unit // still in flight
                 }
                 Unit
-            }.`when`(request).fetchPrevious(Mockito.any<CometChat.CallbackListener<List<BaseMessage>>>())
+            }.`when`(request).fetchPrevious(Mockito.any<com.cometchat.chat.core.CometChat.CallbackListener<List<com.cometchat.chat.models.BaseMessage>>>())
         }
     }
 

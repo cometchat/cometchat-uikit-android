@@ -1,6 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.shared.messagebubble.imagesbubble
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.LruCache
 import android.view.Gravity
@@ -12,7 +13,14 @@ import android.widget.TextView
 import androidx.gridlayout.widget.GridLayout
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import androidx.annotation.VisibleForTesting
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestListener
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.MediaLoadRecoveryListener
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.OfflineMediaPlaceholder
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.cometchat.chat.models.Attachment
@@ -22,6 +30,7 @@ import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.imagebubble.CometChatImageBubbleStyle
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
+import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.google.android.material.card.MaterialCardView
 
@@ -214,7 +223,9 @@ open public class CometChatImagesBubble @JvmOverloads constructor(
         // A broken (kind-mismatched) first tile has no decodable media — skip detection and keep
         // the wide-top layout.
         val expectedKind = if (renderAsVideo) MultiAttachmentUtils.KIND_VIDEO else MultiAttachmentUtils.KIND_IMAGE
-        val firstUrl = (messageThumbnailUrl ?: attachments[0].fileUrl)
+        // Offline (G9): a local first file is measured from disk.
+        val firstLocal = (MediaSourceResolver.resolve(attachments[0]) as? MediaSource.Local)?.path
+        val firstUrl = (firstLocal ?: messageThumbnailUrl ?: attachments[0].fileUrl)
             ?.takeIf { MultiAttachmentUtils.kindOf(attachments[0]) == expectedKind }
         val cached = firstUrl?.let { portraitCache.get(it) }
         renderThree(cached ?: false)
@@ -267,8 +278,14 @@ open public class CometChatImagesBubble @JvmOverloads constructor(
         // renderer routes it to the viewer's "No preview available" page.
         val expectedKind = if (renderAsVideo) MultiAttachmentUtils.KIND_VIDEO else MultiAttachmentUtils.KIND_IMAGE
         val isBroken = MultiAttachmentUtils.kindOf(attachment) != expectedKind
+        // Offline (G9, BEH-MEDIA-13): local path → URL → placeholder. Null when offline is off, and
+        // the tile keeps today's code. MediaReady and a reconnect rebind the row, which re-resolves.
+        val source = if (isBroken) null else MediaSourceResolver.resolve(attachment)
+        val placeholder = source as? MediaSource.Placeholder
 
-        if (isBroken) {
+        if (placeholder != null) {
+            card.addView(offlinePlaceholderTile(placeholder))
+        } else if (isBroken) {
             card.addView(ImageView(context).apply {
                 layoutParams = FrameLayout.LayoutParams(dp(36), dp(44), Gravity.CENTER)
                 scaleType = ImageView.ScaleType.FIT_CENTER
@@ -286,12 +303,10 @@ open public class CometChatImagesBubble @JvmOverloads constructor(
             // Video tiles decorate with a play badge + duration in the subclass hook.
             decorateTile(card, imageView, attachment)
 
-            // The Thumbnail Generation extension's url_medium is generated from the message's first
-            // attachment — use it for tile 0 (expected thumbnail source), full fileUrl elsewhere.
-            val model = if (index == 0) messageThumbnailUrl ?: attachment.fileUrl else attachment.fileUrl
-            Glide.with(context).load(model)
-                .placeholder(R.drawable.cometchat_image_placeholder)
-                .into(imageView)
+            val model = gridTileModel(source, index, messageThumbnailUrl, attachment.fileUrl)
+            // Offline (G9, BEH-MEDIA-13): a failed URL tile tries the file URL once, then asks the
+            // SDK to download once. Null when offline is off or the tile is not a URL: today's load.
+            loadTile(imageView, model, MediaLoadRecovery.forSource(source, attachment))
         }
 
         if (overlayMore > 0) {
@@ -310,11 +325,54 @@ open public class CometChatImagesBubble @JvmOverloads constructor(
 
         card.setOnClickListener {
             if (overlayMore > 0) onMoreClick?.invoke(lastAttachments)
+            // A placeholder tile asks the SDK to download (online only); MediaReady rebinds the row.
+            else if (placeholder != null) MediaSourceResolver.download(attachment) { }
             else onMediaClick?.invoke(index, attachment)
         }
         card.setOnLongClickListener { v -> Utils.performAdapterClick(v); true }
         return card
     }
+
+    /** Loads one grid tile; [recovery] is set only for a URL tile with offline on. */
+    private fun loadTile(imageView: ImageView, model: String?, recovery: MediaLoadRecovery?) {
+        var request = Glide.with(context).load(model)
+            .placeholder(R.drawable.cometchat_image_placeholder)
+        if (recovery != null) request = request.addListener(tileRecoveryListener(imageView, recovery))
+        request.into(imageView)
+    }
+
+    /** The grid tile's recovery hook: a next URL reloads the same tile with the same recovery. */
+    @VisibleForTesting
+    internal fun tileRecoveryListener(imageView: ImageView, recovery: MediaLoadRecovery): RequestListener<Drawable> =
+        MediaLoadRecoveryListener(imageView, recovery) { next -> loadTile(imageView, next, recovery) }
+
+    /** The offline placeholder inside one grid tile (G9): an icon, then `name · size` and "available when online". */
+    private fun offlinePlaceholderTile(placeholder: MediaSource.Placeholder): View =
+        LinearLayout(context).apply {
+            orientation = VERTICAL
+            gravity = Gravity.CENTER
+            tag = OFFLINE_PLACEHOLDER_TILE_TAG
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            setPadding(dp(6), dp(6), dp(6), dp(6))
+            addView(ImageView(context).apply {
+                layoutParams = LayoutParams(dp(32), dp(32))
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                setImageResource(R.drawable.cometchat_image_placeholder)
+            })
+            addView(TextView(context).apply {
+                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                    topMargin = dp(4)
+                }
+                gravity = Gravity.CENTER
+                maxLines = 3
+                ellipsize = TextUtils.TruncateAt.END
+                setTextAppearance(CometChatTheme.getTextAppearanceCaption2Regular(context))
+                setTextColor(CometChatTheme.getTextColorSecondary(context))
+                text = OfflineMediaPlaceholder.caption(context, placeholder)
+            })
+        }
 
     private var lastAttachments: List<Attachment> = emptyList()
 
@@ -325,6 +383,19 @@ open public class CometChatImagesBubble @JvmOverloads constructor(
 
     public companion object {
         private const val MAX_VISIBLE = 4
+
+        /** Tag of an offline placeholder tile's content (G9). */
+        internal const val OFFLINE_PLACEHOLDER_TILE_TAG = "cometchat_grid_tile_offline_placeholder"
+
+        /**
+         * The tile's Glide model: the local file when the resolver found one (G9), otherwise
+         * today's order. The Thumbnail Generation extension's url_medium is generated from the
+         * message's first attachment, so it stands in for tile 0 only; the full fileUrl is used
+         * elsewhere. [source] is null when offline is off.
+         */
+        internal fun gridTileModel(source: MediaSource?, index: Int, thumbnailUrl: String?, fileUrl: String?): String? =
+            (source as? MediaSource.Local)?.path
+                ?: if (index == 0) thumbnailUrl ?: fileUrl else fileUrl
 
         /** Max first-image orientation entries kept (cheap booleans, but bounded to avoid unbounded growth). */
         private const val PORTRAIT_CACHE_MAX = 256

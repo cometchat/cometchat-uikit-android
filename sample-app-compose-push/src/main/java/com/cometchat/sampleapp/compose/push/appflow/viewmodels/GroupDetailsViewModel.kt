@@ -54,15 +54,30 @@ class GroupDetailsViewModel : ViewModel() {
     fun initialize(group: Group, lastMessage: BaseMessage?) {
         _group.value = group
         _lastMessage.value = lastMessage
-        _isMember.value = group.isJoined
-        
+
         // Determine user's role in the group
+        applyRoles(group)
+        
+        addGroupListener()
+    }
+
+    /**
+     * The server's copy of the group this screen opened on: the route opens Group Info on the
+     * group the chat held, then refreshes it from the server. The fresh copy comes in here, with
+     * the scope and membership derived from it. A different group is ignored.
+     */
+    fun adoptServerGroup(fresh: Group) {
+        if (_group.value?.guid != fresh.guid) return
+        _group.value = fresh
+        applyRoles(fresh)
+    }
+
+    private fun applyRoles(group: Group) {
+        _isMember.value = group.isJoined
         val loggedInUser = CometChat.getLoggedInUser()
         _isOwner.value = group.owner == loggedInUser?.uid
         _isAdmin.value = group.scope == CometChatConstants.SCOPE_ADMIN
         _isModerator.value = group.scope == CometChatConstants.SCOPE_MODERATOR
-        
-        addGroupListener()
     }
     
     /**

@@ -8,6 +8,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.compose.app.SampleApplication
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.sampleapp.compose.utils.AppConstants
 import com.cometchat.sampleapp.compose.utils.AppPreferences
 import com.cometchat.uikit.core.CometChatUIKit
@@ -208,6 +209,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
         CometChatUIKit.login(uid, object : CometChat.CallbackListener<User>() {
             override fun onSuccess(user: User?) {
+                // A new session: never open on the previous user's held objects.
+                RouteEntities.clear()
                 Log.d(TAG, "Login successful for user: ${user?.uid}")
                 appPreferences.saveLoggedInUserUid(uid)
                 CometChat.connect(object : CometChat.CallbackListener<String?>() {

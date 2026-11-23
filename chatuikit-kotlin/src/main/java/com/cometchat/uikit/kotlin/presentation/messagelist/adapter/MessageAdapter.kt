@@ -20,7 +20,7 @@ import com.cometchat.chat.models.Reaction
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatAIStreamService
 import com.cometchat.uikit.core.constants.UIKitConstants
-import com.cometchat.uikit.core.domain.model.StreamMessage
+import com.cometchat.uikit.core.offline.OfflineUi
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.CometChatDate
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.DatePattern
@@ -169,6 +169,12 @@ internal class MessageAdapter @JvmOverloads constructor(
      * Internal context storage. Set from constructor or from first ViewHolder creation.
      */
     private var _context: Context? = context
+
+    /**
+     * The offline key mode for this binding (ENG-41087), captured once by the list when it binds
+     * its ViewModel ([OfflineUi.keyMode]). False keeps today's diff identity exactly.
+     */
+    internal var offlineKeyMode: Boolean = false
 
     /**
      * Gets the context, either from constructor or from first ViewHolder creation.
@@ -1107,6 +1113,9 @@ internal class MessageAdapter @JvmOverloads constructor(
                 // Note: setOnMessagePreviewClickListener is now called BEFORE bindViews()
                 // to ensure the listener is available when InternalContentRenderer.bindReplyView() is called
             }
+
+            // Offline send caption (W4): ON path only; a no-op with offline off.
+            bindOfflineCaption(rowRoot, messageBubble, message)
         }
     }
 
@@ -1649,9 +1658,10 @@ internal class MessageAdapter @JvmOverloads constructor(
      * This enables efficient RecyclerView updates by only notifying changes
      * for items that have actually changed.
      */
-    private class MessageDiffCallback(
+    internal class MessageDiffCallback(
         private val oldList: List<BaseMessage>,
-        private val newList: List<BaseMessage>
+        private val newList: List<BaseMessage>,
+        private val offlineKeyMode: Boolean = false
     ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldList.size
@@ -1661,38 +1671,13 @@ internal class MessageAdapter @JvmOverloads constructor(
         /**
          * Checks if two items represent the same message.
          *
-         * StreamMessage placeholders use reference equality because they
-         * carry id=0 which would collide with other temporary messages.
-         * For all other messages, identity is based on message ID.
+         * Offline off: today's rule, unchanged (StreamMessage placeholders by muid, else by
+         * reference; never the same as a non-stream; otherwise by message ID) — reproduced verbatim
+         * by [OfflineUi.isSameItem]. Offline on (ENG-41087): the offline render key, so an own
+         * message keeps its row across its ack instead of remounting.
          */
-        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
-            val old = oldList[oldPos]
-            val new = newList[newPos]
-
-            // StreamMessage is a local placeholder with id=0.
-            // When muid is set (e.g. "stream_335813"), use it for identity —
-            // this correctly tracks multiple concurrent StreamMessages.
-            // When muid is not set, fall back to reference equality.
-            // A StreamMessage is never "the same" as a non-StreamMessage
-            // (the replacement is handled as an insert+remove pair).
-            val oldIsStream = old is StreamMessage
-            val newIsStream = new is StreamMessage
-            if (oldIsStream && newIsStream) {
-                val oldMuid = old.muid
-                val newMuid = new.muid
-                return if (!oldMuid.isNullOrEmpty() && !newMuid.isNullOrEmpty()) {
-                    oldMuid == newMuid
-                } else {
-                    old === new
-                }
-            }
-            if (oldIsStream || newIsStream) {
-                // One is StreamMessage, the other is not — never the same item
-                return false
-            }
-
-            return old.id == new.id
-        }
+        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
+            OfflineUi.isSameItem(oldList[oldPos], newList[newPos], offlineKeyMode)
 
         /**
          * Checks if the contents of two items are the same.
@@ -1723,7 +1708,7 @@ internal class MessageAdapter @JvmOverloads constructor(
      * @param newMessages The new list of messages
      */
     fun setMessageList(newMessages: List<BaseMessage>) {
-        val diffCallback = MessageDiffCallback(messages, newMessages)
+        val diffCallback = MessageDiffCallback(messages, newMessages, offlineKeyMode)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         messages = newMessages.toMutableList()
         diffResult.dispatchUpdatesTo(this)
@@ -1958,4 +1943,84 @@ internal class MessageAdapter @JvmOverloads constructor(
     fun setStatusInfoViewProvider(provider: Any?) { statusInfoViewProvider = provider }
     fun setThreadViewProvider(provider: Any?) { threadViewProvider = provider }
     fun setFooterViewProvider(provider: Any?) { footerViewProvider = provider }
+
+    // ========================================
+    // Offline send rows (W4, ENG-41089). Inert unless [offlineSendUiOn].
+    // ========================================
+
+    /** The offline mode the list captured once (`OfflineUi.keyMode()`); false keeps today's rows. */
+    var offlineSendUiOn: Boolean = false
+
+    /** Caption style for unsent rows; null resolves the theme default on first use. */
+    var offlineRowStyle: com.cometchat.uikit.kotlin.presentation.messagelist.style.CometChatOfflineRowStyle? = null
+
+    /** Retry an unsent row (failed caption or failed receipt tapped). */
+    var onOfflineRetry: ((BaseMessage) -> Unit)? = null
+
+    /**
+     * Shows "Not sent yet" / "Not sent. Tap to retry" under an own unsent row (G3, G4), and makes
+     * the failed caption and the failed receipt retry on tap. Nothing changes with offline off.
+     */
+    private fun bindOfflineCaption(rowRoot: LinearLayout, bubble: CometChatMessageBubble, message: BaseMessage) {
+        if (!offlineSendUiOn) return
+        val caption = com.cometchat.uikit.core.offline.OfflineRowState.caption(message, true)
+        var label = rowRoot.findViewWithTag<android.widget.TextView>(OFFLINE_CAPTION_TAG)
+        val statusInfo = bubble.getStatusInfoView()
+        if (caption == com.cometchat.uikit.core.offline.OfflineRowState.Caption.NONE) {
+            label?.visibility = View.GONE
+            label?.setOnClickListener(null)
+            statusInfo?.setOnClickListener(null)
+            statusInfo?.isClickable = false
+            return
+        }
+        val ctx = rowRoot.context
+        val style = offlineRowStyle
+            ?: com.cometchat.uikit.kotlin.presentation.messagelist.style.CometChatOfflineRowStyle.default(ctx)
+                .also { offlineRowStyle = it }
+        if (label == null) {
+            label = android.widget.TextView(ctx).apply {
+                tag = OFFLINE_CAPTION_TAG
+                val pad = (4 * resources.displayMetrics.density).toInt()
+                setPadding(pad * 2, pad, pad * 2, 0)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { gravity = Gravity.END }
+            }
+            rowRoot.addView(label)
+        }
+        val failed = caption == com.cometchat.uikit.core.offline.OfflineRowState.Caption.NOT_SENT_TAP_TO_RETRY
+        if (style.textAppearance != 0) label.setTextAppearance(style.textAppearance)
+        val color = if (failed) style.failedTextColor else style.notSentTextColor
+        if (color != 0) label.setTextColor(color)
+        val text = ctx.getString(
+            if (failed) com.cometchat.uikit.core.R.string.cometchat_message_not_sent_tap_to_retry
+            else com.cometchat.uikit.core.R.string.cometchat_message_not_sent_yet
+        )
+        label.text = text
+        label.contentDescription = text
+        label.visibility = View.VISIBLE
+        if (failed) {
+            val retry = View.OnClickListener { onOfflineRetry?.invoke(message) }
+            label.setOnClickListener(retry)
+            statusInfo?.setOnClickListener(retry)
+            // Screen readers announce the action as "Retry".
+            val retryLabel = ctx.getString(com.cometchat.uikit.core.R.string.cometchat_offline_retry)
+            androidx.core.view.ViewCompat.replaceAccessibilityAction(
+                label,
+                androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
+                retryLabel,
+                null
+            )
+        } else {
+            label.setOnClickListener(null)
+            label.isClickable = false
+            statusInfo?.setOnClickListener(null)
+            statusInfo?.isClickable = false
+        }
+    }
+
 }
+
+/** Tag of the offline caption view a message row adds under its bubble (W4). */
+private const val OFFLINE_CAPTION_TAG = "cometchat_offline_row_caption"

@@ -1,6 +1,7 @@
 package com.cometchat.sampleapp.compose.push.appflow.tabs
 
 import android.util.Log
+import com.cometchat.sampleapp.compose.push.navigation.EntityCache
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,6 +88,8 @@ fun ChatsTab(
                             CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                                 override fun onSuccess(p0: String?) {
                                     Log.d("ChatsTab", "Logout successful")
+                                    // The next user must not open on this user's held objects.
+                                    EntityCache.clear()
                                     // Navigate to Login screen and clear back stack
                                     onLogout()
                                 }

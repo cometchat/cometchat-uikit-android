@@ -45,6 +45,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.sampleapp.compose.R
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.AvatarStyle
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.compose.presentation.shared.dialog.CometChatDialog
@@ -102,7 +103,7 @@ fun GroupDetailsScreen(
     // Load group data
     LaunchedEffect(groupId) {
         isLoading = true
-        CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
+        RouteEntities.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
             override fun onSuccess(fetchedGroup: Group) {
                 group = fetchedGroup
                 val loggedInUser = CometChat.getLoggedInUser()

@@ -4,9 +4,9 @@ dokka = "2.0.0"
 lintApi = "31.9.1"  # AGP + 23
 binaryCompatibilityValidator = "0.16.3"
 cardsAndroid = "1.0.0"
-chatuikitComposeAndroid = "6.2.0"
-chatuikitCoreAndroid = "6.2.0"
-chatuikitKotlinAndroid = "6.2.0"
+chatuikitComposeAndroid = "6.3.0"
+chatuikitCoreAndroid = "6.3.0"
+chatuikitKotlinAndroid = "6.3.0"
 coreTesting = "2.2.0"
 espressoContrib = "3.7.0"
 junitVintageEngine = "6.1.1"
@@ -22,7 +22,8 @@ espressoCore = "3.6.1"
 kotlinxCoroutinesTest = "1.10.2"
 material = "1.12.0"
 constraintlayout = "2.2.0"
-chatSdkAndroid = "5.1.1"
+chatSdkAndroid = "5.1.2"
+sqlcipherAndroid = "4.13.0"
 callsSdkAndroid = "5.1.0"
 mockitoCore = "5.21.0"
 mockitoKotlin = "6.1.0"
@@ -109,6 +110,7 @@ activity = { group = "androidx.activity", name = "activity", version = "1.9.3" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 chat-sdk-android = { group = "com.cometchat", name = "chat-sdk-android", version.ref = "chatSdkAndroid" }
 calls-sdk-android = { group = "com.cometchat", name = "calls-sdk-android", version.ref = "callsSdkAndroid" }
+sqlcipher-android = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlcipherAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoCore" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }

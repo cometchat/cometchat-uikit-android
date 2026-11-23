@@ -36,6 +36,7 @@ import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.compose.R
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.conversations.ui.CometChatConversations
 import com.cometchat.uikit.compose.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.compose.theme.CometChatTheme
@@ -266,6 +267,8 @@ private fun UserAvatarMenu(
                                 CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
                                     override fun onSuccess(result: String?) {
                                         Log.d("ConversationsScreen", "Logout successful")
+                                        // The next user must not open on this user's held objects.
+                                        RouteEntities.clear()
                                         // Navigate to Login screen and clear back stack
                                         onLogout()
                                     }

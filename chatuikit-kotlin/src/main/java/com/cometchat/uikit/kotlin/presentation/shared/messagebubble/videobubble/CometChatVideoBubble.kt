@@ -18,6 +18,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.StyleRes
+import androidx.annotation.VisibleForTesting
 import androidx.gridlayout.widget.GridLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -29,6 +30,11 @@ import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSourceResolver
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.MediaLoadRecoveryListener
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.OfflineMediaPlaceholder
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
@@ -66,6 +72,9 @@ public class CometChatVideoBubble @JvmOverloads constructor(
         private const val MAX_VISIBLE_ITEMS = 4
         private const val GRID_SPACING_DP = 2
     }
+
+    /** The attachment whose offline placeholder is shown (G9), or null. */
+    private var offlinePlaceholderAttachment: Attachment? = null
 
     // Views from XML layout
     private lateinit var videoContainerCard: MaterialCardView
@@ -222,6 +231,12 @@ public class CometChatVideoBubble @JvmOverloads constructor(
     }
 
     private fun invokeClick() {
+        // Offline placeholder (G9): a tap asks the SDK to download; MediaReady rebinds the row.
+        val pending = offlinePlaceholderAttachment
+        if (pending != null) {
+            MediaSourceResolver.download(pending) { }
+            return
+        }
         if (onClick != null) {
             onClick?.onClick()
         } else if (attachments.isNotEmpty() && onVideoClick != null) {
@@ -487,6 +502,15 @@ public class CometChatVideoBubble @JvmOverloads constructor(
     // Single Video Display
     // ========================================
 
+    /**
+     * The single video poster's URL recovery for the current bind (G9, BEH-MEDIA-13), or null. A
+     * posted reload runs only while it is still the current one, so a rebind never shows another
+     * message.
+     */
+    @VisibleForTesting
+    internal var urlRecovery: MediaLoadRecovery? = null
+        private set
+
     private fun showSingleVideo(localFile: File?, attachment: Attachment?) {
         gridContainer.visibility = View.GONE
         (videoContainerCard.parent?.parent as? View)?.visibility = View.VISIBLE
@@ -497,8 +521,25 @@ public class CometChatVideoBubble @JvmOverloads constructor(
         this.videoUrl = url
         this.file = localFile
 
+        // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+        val offlineSource = if (localFile == null) MediaSourceResolver.resolve(attachment) else null
+        // A failed poster URL tries the file URL once, then asks the SDK to download once
+        // (BEH-MEDIA-13). Null when offline is off or the source is not a URL: today's load.
+        urlRecovery = MediaLoadRecovery.forSource(offlineSource, attachment)
+        OfflineMediaPlaceholder.bind(videoContainerCard, offlineSource as? MediaSource.Placeholder)
+        offlinePlaceholderAttachment = if (offlineSource is MediaSource.Placeholder) attachment else null
+        if (offlineSource is MediaSource.Placeholder) {
+            progressBar.visibility = View.GONE
+            playButtonLayout.visibility = View.GONE
+            videoImageView.setImageResource(R.drawable.cometchat_image_placeholder)
+            return
+        }
+        if (offlineSource is MediaSource.Local) this.file = File(offlineSource.path)
+
         // Try to get local file from metadata if not provided (for in-progress uploads)
-        val effectiveLocalFile = localFile ?: mediaMessage?.let { getLocalFileFromMetadata(it) }
+        val effectiveLocalFile = localFile
+            ?: (offlineSource as? MediaSource.Local)?.let { File(it.path) }
+            ?: mediaMessage?.let { getLocalFileFromMetadata(it) }
 
         // Priority: 1. Local file (provided or from metadata), 2. Thumbnail URL from metadata, 3. Video file URL
         if (effectiveLocalFile != null && effectiveLocalFile.exists()) {
@@ -507,9 +548,9 @@ public class CometChatVideoBubble @JvmOverloads constructor(
             // Try to get thumbnail URL from metadata first
             val thumbnailUrl = mediaMessage?.let { extractThumbnailUrlFromMetadata(it) }
             if (!thumbnailUrl.isNullOrEmpty()) {
-                loadThumbnailFromUrl(thumbnailUrl, videoImageView, progressBar, playButtonLayout)
+                loadThumbnailFromUrl(thumbnailUrl, videoImageView, progressBar, playButtonLayout, urlRecovery)
             } else if (url.isNotEmpty()) {
-                loadThumbnailFromUrl(url, videoImageView, progressBar, playButtonLayout)
+                loadThumbnailFromUrl(url, videoImageView, progressBar, playButtonLayout, urlRecovery)
             } else {
                 progressBar.visibility = View.GONE
                 playButtonLayout.visibility = View.VISIBLE
@@ -525,6 +566,8 @@ public class CometChatVideoBubble @JvmOverloads constructor(
      * @param videoUrl The URL of the video
      */
     public fun setVideoUrl(file: File?, videoUrl: String) {
+        offlinePlaceholderAttachment = null
+        OfflineMediaPlaceholder.bind(videoContainerCard, null)
         this.videoUrl = videoUrl
         this.file = file
         loadThumbnailFromFileOrUrl(file, videoUrl)
@@ -769,9 +812,15 @@ public class CometChatVideoBubble @JvmOverloads constructor(
     // Thumbnail Loading with Glide
     // ========================================
 
-    private fun loadThumbnailFromUrl(url: String, imageView: ImageView, progressBar: ProgressBar, playOverlay: View) {
+    private fun loadThumbnailFromUrl(
+        url: String,
+        imageView: ImageView,
+        progressBar: ProgressBar,
+        playOverlay: View,
+        recovery: MediaLoadRecovery? = null
+    ) {
         CometChatLogger.d(TAG, "Loading video thumbnail from URL: $url")
-        Glide.with(imageView)
+        var request = Glide.with(imageView)
             .asBitmap()
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
@@ -779,8 +828,21 @@ public class CometChatVideoBubble @JvmOverloads constructor(
             .error(R.drawable.cometchat_image_placeholder)
             .skipMemoryCache(false)
             .addListener(createThumbnailListener(progressBar, playOverlay))
-            .into(imageView)
+        if (recovery != null) request = request.addListener(posterRecoveryListener(imageView, progressBar, playOverlay, recovery))
+        request.into(imageView)
     }
+
+    /** The poster's URL recovery hook (G9): a next URL reloads the same view with the same recovery. */
+    @VisibleForTesting
+    internal fun posterRecoveryListener(
+        imageView: ImageView,
+        progressBar: ProgressBar,
+        playOverlay: View,
+        recovery: MediaLoadRecovery
+    ): RequestListener<Bitmap> =
+        MediaLoadRecoveryListener(imageView, recovery) { next ->
+            if (urlRecovery === recovery) loadThumbnailFromUrl(next, imageView, progressBar, playOverlay, recovery)
+        }
 
     private fun loadThumbnailFromFile(file: File, imageView: ImageView, progressBar: ProgressBar, playOverlay: View) {
         CometChatLogger.d(TAG, "Loading video thumbnail from file: ${file.absolutePath}")
@@ -896,10 +958,13 @@ public class CometChatVideoBubble @JvmOverloads constructor(
         }
 
         // Build the full list of videos so the in-app player can swipe through the whole message.
+        // Offline on (D-324, BEH-MEDIA-18): each video's local copy first, then its URL; today's URL
+        // otherwise. A video with neither is left out, as an empty URL is today.
         val videoItems: List<Triple<String, String, String>> = when {
             attachments.isNotEmpty() -> attachments
-                .filter { !it.fileUrl.isNullOrEmpty() }
-                .map { Triple(it.fileUrl!!, it.fileName ?: "", it.fileMimeType ?: "video/*") }
+                .map { it to com.cometchat.uikit.core.utils.MediaViewerSource.of(it) }
+                .filter { (_, source) -> source.isNotEmpty() }
+                .map { (it, source) -> Triple(source, it.fileName ?: "", it.fileMimeType ?: "video/*") }
             !videoUrl.isNullOrEmpty() -> listOf(Triple(videoUrl!!, "", "video/*"))
             else -> emptyList()
         }

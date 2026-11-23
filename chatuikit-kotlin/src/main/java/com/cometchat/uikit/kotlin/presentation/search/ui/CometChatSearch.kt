@@ -1,5 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.search.ui
 
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindAllRows
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindOnPresenceChange
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
@@ -38,6 +40,7 @@ import com.cometchat.uikit.core.constants.SearchScope
 import com.cometchat.uikit.core.factory.CometChatSearchViewModelFactory
 import com.cometchat.uikit.core.state.SearchUIState
 import com.cometchat.uikit.core.viewmodel.CometChatSearchViewModel
+import com.cometchat.uikit.core.R as CoreR
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatSearchBinding
@@ -1297,11 +1300,19 @@ public class CometChatSearch @JvmOverloads constructor(
         viewScope?.cancel()
         viewScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+        // ENG-41551 A: a connection flip re-binds the conversation rows, so presence is re-read.
+        viewScope?.rebindOnPresenceChange { rebindAllRows(conversationsAdapter) }
+
         // Observe UI state
         viewScope?.launch {
             vm.uiState.collectLatest { state ->
                 handleStateChange(state)
             }
+        }
+
+        // D84 rule 5: a search request failed online while results stay on screen; onError still fires.
+        viewScope?.launch {
+            vm.rowsKeptError.collect { onError?.invoke(it) }
         }
 
         // Observe conversations
@@ -1438,6 +1449,17 @@ public class CometChatSearch @JvmOverloads constructor(
      */
     private fun handleEmptyState() {
         binding.shimmerEffectFrame.stopShimmer()
+        // D84 rule 7: an offline search with no saved match reads "Connect to search" rather than
+        // "No results" (no onError). Never true with offline messaging off, so today's texts stay.
+        val connectToSearch = viewModel?.showConnectToSearch?.value == true
+        val title = context.getString(
+            if (connectToSearch) CoreR.string.cometchat_connect_to_search_messages else R.string.cometchat_no_results
+        )
+        binding.tvEmptyStateTitle.text = title
+        binding.tvEmptyStateSubtitle.text = context.getString(
+            if (connectToSearch) CoreR.string.cometchat_connect_to_search_messages_subtitle
+            else R.string.cometchat_no_matches_found
+        )
         if (!hideEmptyState) {
             if (customEmptyView != null) {
                 binding.customLayout.removeAllViews()
@@ -1447,7 +1469,7 @@ public class CometChatSearch @JvmOverloads constructor(
                 binding.emptyStateView.visibility = VISIBLE
             }
         }
-        announceForAccessibility(context.getString(R.string.cometchat_no_results))
+        announceForAccessibility(title)
         onEmpty?.invoke()
     }
 

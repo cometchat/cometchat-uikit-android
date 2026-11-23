@@ -660,6 +660,156 @@ public object MediaUtils {
             throw e
         }
     }
+
+    // ---- Viewer sources (D-324, BEH-MEDIA-18) -------------------------------------------------
+    // A viewer source is what [MediaViewerSource.of] produced: a local `file://` copy, a URL, or "".
+    // A local copy is used without any network call; anything else runs today's path unchanged.
+
+    private val backgroundRunner: (() -> Unit) -> Unit = { work -> Thread(work).start() }
+
+    /**
+     * Download for a viewer [source]: a local copy is copied into Downloads (no network);
+     * otherwise today's [downloadFile].
+     */
+    internal fun downloadViewerSource(
+        context: Context,
+        source: String,
+        fileName: String,
+        mimeType: String?,
+        runInBackground: (() -> Unit) -> Unit = backgroundRunner
+    ) {
+        if (!saveLocalCopy(context, source, fileName, mimeType, runInBackground)) {
+            downloadFile(context = context, url = source, fileName = fileName, extension = "")
+        }
+    }
+
+    /**
+     * Share for a viewer [source]: a local copy is shared through the kit's FileProvider (no
+     * network); otherwise today's [downloadFileAndShare].
+     */
+    internal fun shareViewerSource(
+        context: Context,
+        source: String,
+        fileName: String,
+        mimeType: String,
+        runInBackground: (() -> Unit) -> Unit = backgroundRunner
+    ) {
+        if (!shareLocalCopy(context, source, fileName, mimeType, runInBackground)) {
+            downloadFileAndShare(context = context, fileUrl = source, fileName = fileName, mimeType = mimeType)
+        }
+    }
+
+    /**
+     * Download button of a file or audio bubble (D-324): saves [attachment]'s local copy into
+     * Downloads with no network call. @return false when there is none (offline off, or no local
+     * copy) — the caller then runs today's download.
+     */
+    internal fun downloadLocalAttachment(
+        context: Context,
+        attachment: com.cometchat.chat.models.Attachment?,
+        fileName: String,
+        runInBackground: (() -> Unit) -> Unit = backgroundRunner
+    ): Boolean = attachment != null && saveLocalCopy(
+        context, com.cometchat.uikit.core.utils.MediaViewerSource.of(attachment), fileName,
+        attachment.fileMimeType, runInBackground
+    )
+
+    /**
+     * Share option of the message long-press menu (D-324): shares [attachment]'s local copy through
+     * the kit's FileProvider with no network call. @return false when there is none — the caller
+     * then runs today's share.
+     */
+    internal fun shareLocalAttachment(
+        context: Context,
+        attachment: com.cometchat.chat.models.Attachment?,
+        runInBackground: (() -> Unit) -> Unit = backgroundRunner
+    ): Boolean = attachment != null && shareLocalCopy(
+        context, com.cometchat.uikit.core.utils.MediaViewerSource.of(attachment),
+        attachment.fileName.orEmpty(), attachment.fileMimeType.orEmpty(), runInBackground
+    )
+
+    /**
+     * Opens a file bubble's local copy [local] (D-330). The SDK keeps it in `noBackupFilesDir`,
+     * which no FileProvider path covers, so it is copied off the main thread into the kit's cache
+     * as [fileName] and that copy is opened like [openFile] (content URI + read grant; an unhandled
+     * type is logged, as today), typed with [mimeType] when known. The SDK file is only read.
+     */
+    internal fun openLocalCopy(
+        context: Context,
+        local: File,
+        fileName: String,
+        mimeType: String? = null,
+        runInBackground: (() -> Unit) -> Unit = backgroundRunner
+    ) {
+        runInBackground {
+            val copy = runCatching {
+                com.cometchat.uikit.core.utils.MediaViewerSource.copyForShare(context.applicationContext, local, fileName)
+            }.onFailure { CometChatLogger.e(TAG, "Error preparing the local copy to open: ${it.message}") }.getOrNull()
+            if (copy != null) {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    try {
+                        val uri = FileProvider.getUriForFile(context, context.cometchatFileProviderAuthority, copy)
+                        val type = mimeType?.takeIf { it.isNotEmpty() }
+                            ?: context.contentResolver.getType(uri)
+                            ?: getMimeType(copy.name)
+                        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            setDataAndType(uri, type)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        })
+                    } catch (e: Exception) {
+                        CometChatLogger.e(TAG, "Error opening the local copy: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    /** Saves the local copy behind [source] into Downloads, off the main thread. @return false when there is none. */
+    private fun saveLocalCopy(
+        context: Context,
+        source: String,
+        fileName: String,
+        mimeType: String?,
+        runInBackground: (() -> Unit) -> Unit
+    ): Boolean {
+        val local = com.cometchat.uikit.core.utils.MediaViewerSource.localFile(context, source) ?: return false
+        val app = context.applicationContext
+        android.widget.Toast.makeText(context, R.string.cometchat_downloading, android.widget.Toast.LENGTH_SHORT).show()
+        runInBackground {
+            val saved = com.cometchat.uikit.core.utils.MediaViewerSource.saveToDownloads(app, local, fileName, mimeType)
+            if (!saved) {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    android.widget.Toast.makeText(app, R.string.cometchat_file_download_failed, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        return true
+    }
+
+    /**
+     * Shares the local copy behind [source] as a FileProvider `content://` URI (never a `file://`
+     * URI), copying it off the main thread. @return false when there is none.
+     */
+    private fun shareLocalCopy(
+        context: Context,
+        source: String,
+        fileName: String,
+        mimeType: String,
+        runInBackground: (() -> Unit) -> Unit
+    ): Boolean {
+        val local = com.cometchat.uikit.core.utils.MediaViewerSource.localFile(context, source) ?: return false
+        runInBackground {
+            val copy = runCatching {
+                com.cometchat.uikit.core.utils.MediaViewerSource.copyForShare(context.applicationContext, local, fileName)
+            }.onFailure { CometChatLogger.e(TAG, "Error preparing the local copy to share: ${it.message}") }.getOrNull()
+            if (copy != null) {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    runCatching { shareFile(context, copy, mimeType.ifEmpty { "*/*" }) }
+                }
+            }
+        }
+        return true
+    }
 }
 
 /**

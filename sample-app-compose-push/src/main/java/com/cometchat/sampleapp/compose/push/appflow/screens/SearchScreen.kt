@@ -9,6 +9,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.push.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.search.ui.CometChatSearch
 
 /**
@@ -40,10 +41,18 @@ fun SearchScreen(
         guid = groupId,
         onBackPress = onBackPress,
         onConversationClick = { conversation: Conversation ->
-            // Extract user or group from conversation and navigate
+            // Extract user or group from conversation and navigate. The chat opens on the object
+            // the result carries, then refreshes it (ENG-41559 item 4); offline the server-only
+            // lookup by id failed and the chat popped back.
             when (val conversationWith = conversation.conversationWith) {
-                is User -> onNavigateToMessages(conversationWith.uid, null, null)
-                is Group -> onNavigateToMessages(null, conversationWith.guid, null)
+                is User -> {
+                    RouteEntities.hold(conversationWith, null)
+                    onNavigateToMessages(conversationWith.uid, null, null)
+                }
+                is Group -> {
+                    RouteEntities.hold(null, conversationWith)
+                    onNavigateToMessages(null, conversationWith.guid, null)
+                }
             }
         },
         onMessageClick = { message: BaseMessage ->
@@ -56,7 +65,9 @@ fun SearchScreen(
                 return@CometChatSearch
             }
 
-            // Navigate to conversation containing this message and scroll to it
+            // Navigate to conversation containing this message and scroll to it, opening on the
+            // user/group already held or the one the message carries (ENG-41559 item 4).
+            RouteEntities.holdForMessage(message, com.cometchat.uikit.core.CometChatUIKit.getLoggedInUser()?.uid)
             val receiverType = message.receiverType
             val receiverId = message.receiverUid
             when (receiverType) {

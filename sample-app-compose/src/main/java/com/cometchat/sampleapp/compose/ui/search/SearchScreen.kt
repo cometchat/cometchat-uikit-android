@@ -9,6 +9,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.search.ui.CometChatSearch
 
 /**
@@ -42,13 +43,21 @@ fun SearchScreen(
         onConversationClick = { conversation: Conversation ->
             // Extract user or group from conversation and navigate
             when (val conversationWith = conversation.conversationWith) {
-                is User -> onNavigateToMessages(conversationWith.uid, null, null)
-                is Group -> onNavigateToMessages(null, conversationWith.guid, null)
+                is User -> {
+                    RouteEntities.hold(conversationWith, null)
+                    onNavigateToMessages(conversationWith.uid, null, null)
+                }
+                is Group -> {
+                    RouteEntities.hold(null, conversationWith)
+                    onNavigateToMessages(null, conversationWith.guid, null)
+                }
             }
         },
         onMessageClick = { message: BaseMessage ->
             val messageId = message.id.toLong()
             val parentMessageId = message.parentMessageId
+            // The destination opens on the user/group the hit carries, then refreshes it.
+            RouteEntities.holdForMessage(message, com.cometchat.uikit.core.CometChatUIKit.getLoggedInUser()?.uid)
 
             // If message is a thread reply, navigate to thread with goToMessageId (matching Java)
             if (parentMessageId > 0) {

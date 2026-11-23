@@ -195,8 +195,23 @@ class MessagesActivity : AppCompatActivity() {
         if (parentId <= 0) return
         notificationParentMessageId = 0
 
-        CometChat.getMessageDetails(parentId, object : CometChat.CallbackListener<BaseMessage>() {
-            override fun onSuccess(parentMessage: BaseMessage) {
+        // Two-phase read (BEH-READ-35): open the thread from whichever phase lands first — the cached
+        // parent when there is one, else the server's — and only once. A later phase or an offline
+        // error after the cached phase is ignored.
+        CometChat.getMessageDetails(parentId, object : CometChat.MessageDetailsListener() {
+            private var opened = false
+
+            override fun onCachedMessage(parentMessage: BaseMessage?) {
+                parentMessage?.let { openThread(it) }
+            }
+
+            override fun onServerMessage(parentMessage: BaseMessage?) {
+                parentMessage?.let { openThread(it) }
+            }
+
+            private fun openThread(parentMessage: BaseMessage) {
+                if (opened) return
+                opened = true
                 if (isFinishing || isDestroyed) return
                 val intent = Intent(this@MessagesActivity, ThreadMessageActivity::class.java).apply {
                     putExtra(ThreadMessageActivity.EXTRA_PARENT_MESSAGE, parentMessage)
@@ -212,6 +227,7 @@ class MessagesActivity : AppCompatActivity() {
             }
 
             override fun onError(e: CometChatException) {
+                if (opened) return
                 // Leave the user on the conversation rather than dead-ending on a failed fetch.
                 Log.e(TAG, "Could not open thread for parent $parentId: ${e.message}")
             }

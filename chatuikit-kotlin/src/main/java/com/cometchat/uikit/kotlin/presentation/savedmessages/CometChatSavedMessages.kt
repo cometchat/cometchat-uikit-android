@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -41,7 +42,21 @@ public class CometChatSavedMessages @JvmOverloads constructor(
     private val toolbar: CometChatToolbar
     private val emptyView: View
     private val errorView: View
+    private val errorTitle: TextView
+    private val errorSubtitle: TextView
     private val recyclerView: RecyclerView
+
+    /**
+     * The error view reads "Connect to load messages" with no subtitle while [offline] (D84 rule 3:
+     * the load ran offline with nothing shown), else today's error text. Offline off: always today's.
+     */
+    private fun applyOfflineErrorText(offline: Boolean) {
+        errorTitle.setText(
+            if (offline) com.cometchat.uikit.core.R.string.cometchat_connect_to_load_messages
+            else R.string.cometchat_error_conversations_title
+        )
+        errorSubtitle.visibility = if (offline) View.GONE else View.VISIBLE
+    }
 
     private val viewModel: CometChatSavedMessagesViewModel =
         CometChatSavedMessagesViewModelFactory().create(CometChatSavedMessagesViewModel::class.java)
@@ -63,6 +78,8 @@ public class CometChatSavedMessages @JvmOverloads constructor(
         toolbar = findViewById(R.id.saved_messages_toolbar)
         emptyView = findViewById(R.id.saved_messages_empty)
         errorView = findViewById(R.id.saved_messages_error)
+        errorTitle = findViewById(R.id.saved_messages_error_title)
+        errorSubtitle = findViewById(R.id.saved_messages_error_subtitle)
         recyclerView = findViewById(R.id.saved_messages_recycler)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
@@ -141,6 +158,8 @@ public class CometChatSavedMessages @JvmOverloads constructor(
                 // The ViewModel reserves Error for load failures, so a healthy list is never
                 // replaced by this state.
                 emptyView.visibility = if (state is PinnedSavedListUIState.Empty) View.VISIBLE else View.GONE
+                // D84 rule 3: offline with nothing shown, the error view is the offline state.
+                if (state is PinnedSavedListUIState.Error) applyOfflineErrorText(viewModel.connectToLoad.value)
                 errorView.visibility = if (state is PinnedSavedListUIState.Error) View.VISIBLE else View.GONE
                 recyclerView.visibility =
                     if (state is PinnedSavedListUIState.Empty || state is PinnedSavedListUIState.Error) View.GONE

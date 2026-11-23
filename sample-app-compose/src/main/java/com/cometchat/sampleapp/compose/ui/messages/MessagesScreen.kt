@@ -36,6 +36,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messagecomposer.ui.CometChatMessageComposer
 import com.cometchat.uikit.compose.presentation.messageheader.ui.CometChatMessageHeader
@@ -105,6 +106,10 @@ fun MessagesScreen(
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    // The same instance MessagesContent uses (scoped to this destination). A group opened on a held
+    // copy (e.g. a search hit) takes the server's copy through it, so membership follows the server.
+    val messagesViewModel: MessagesViewModel = viewModel()
+
     // Fetch user or group based on provided IDs
     LaunchedEffect(userId, groupId) {
         android.util.Log.d("SearchNav", "MessagesScreen: userId=$userId, groupId=$groupId, messageId=$messageId")
@@ -113,7 +118,7 @@ fun MessagesScreen(
 
         when {
             userId != null -> {
-                CometChat.getUser(userId, object : CometChat.CallbackListener<User>() {
+                RouteEntities.getUser(userId, object : CometChat.CallbackListener<User>() {
                     override fun onSuccess(fetchedUser: User) {
                         user = fetchedUser
                         group = null
@@ -127,11 +132,14 @@ fun MessagesScreen(
                 })
             }
             groupId != null -> {
-                CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
+                RouteEntities.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
                     override fun onSuccess(fetchedGroup: Group) {
                         group = fetchedGroup
                         user = null
                         isLoading = false
+                        // The server's copy (second answer) updates membership; the first answer
+                        // arrives before initialize and is ignored.
+                        messagesViewModel.adoptServerGroup(fetchedGroup)
                     }
 
                     override fun onError(e: CometChatException) {

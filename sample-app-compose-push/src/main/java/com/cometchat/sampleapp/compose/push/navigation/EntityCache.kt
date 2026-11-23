@@ -66,4 +66,17 @@ object EntityCache {
     fun removeGroup(guid: String) {
         groupCache.remove(guid)
     }
+
+    // ── Session ─────────────────────────────────────────────────────────
+
+    /**
+     * Drops every held entity. Called on logout and on login (a user switch), so a destination
+     * opened after a re-login, e.g. from a notification, never reads the previous user's objects
+     * (ENG-41559).
+     */
+    fun clear() {
+        callLogCache.clear()
+        userCache.clear()
+        groupCache.clear()
+    }
 }

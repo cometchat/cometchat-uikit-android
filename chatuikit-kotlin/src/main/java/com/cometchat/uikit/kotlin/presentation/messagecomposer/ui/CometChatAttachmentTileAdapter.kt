@@ -20,6 +20,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachm
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.cometchat.uikit.core.models.AttachmentUploadStatus
 import com.cometchat.uikit.core.models.AttachmentUploadTile
+import com.cometchat.uikit.core.models.isCopyMissing
 
 /**
  * Renders the composer attachment tray: one [CometChatAttachmentTile]-style row item per staged
@@ -168,8 +169,11 @@ internal class CometChatAttachmentTileAdapter(
                 tile.category == CometChatConstants.MESSAGE_TYPE_VIDEO
             val isAudio = tile.category == CometChatConstants.MESSAGE_TYPE_AUDIO
             val uploading = tile.status == AttachmentUploadStatus.UPLOADING
-            val failed = tile.status == AttachmentUploadStatus.FAILED
-            val rejected = tile.status == AttachmentUploadStatus.REJECTED
+            // D-306 / BEH-UPLOAD-14: a restored file whose local copy is missing is not retryable. It
+            // renders as a terminal error (error glyph, no retry tap) and offers remove only.
+            val copyMissing = tile.isCopyMissing
+            val failed = tile.status == AttachmentUploadStatus.FAILED && !copyMissing
+            val rejected = tile.status == AttachmentUploadStatus.REJECTED || copyMissing
             val done = tile.status == AttachmentUploadStatus.DONE
 
             mediaCard.visibility = if (isMedia) View.VISIBLE else View.GONE
@@ -235,6 +239,9 @@ internal class CometChatAttachmentTileAdapter(
             if (isError) {
                 bindErrorBadge(mediaErrorBadge, ivMediaErrorIcon, errorColor, failed)
             }
+            // BEH-UPLOAD-14: a restored tile without its durable copy has no thumbnail; say why.
+            mediaCard.contentDescription =
+                if (tile.isCopyMissing) ctx.getString(R.string.cometchat_attachment_copy_missing) else null
 
             val isVideo = tile.category == CometChatConstants.MESSAGE_TYPE_VIDEO
             playBadge.visibility = if (done && isVideo) View.VISIBLE else View.GONE
@@ -302,6 +309,7 @@ internal class CometChatAttachmentTileAdapter(
             tvFileName.text = tile.name
             tvFileName.setTextColor(CometChatTheme.getTextColorPrimary(ctx))
             tvFileMeta.text = when {
+                tile.isCopyMissing -> ctx.getString(R.string.cometchat_attachment_copy_missing)
                 failed -> ctx.getString(R.string.cometchat_attachment_tap_to_retry)
                 rejected -> ctx.getString(R.string.cometchat_attachment_upload_failed)
                 else -> fileMetaLabel(tile)
@@ -349,6 +357,7 @@ internal class CometChatAttachmentTileAdapter(
             bindAudioPlayback(tile, isError, done)
 
             tvAudioTime.text = when {
+                tile.isCopyMissing -> ctx.getString(R.string.cometchat_attachment_copy_missing)
                 failed -> ctx.getString(R.string.cometchat_attachment_tap_to_retry)
                 rejected -> ctx.getString(R.string.cometchat_attachment_upload_failed)
                 else -> formatDuration(currentAudioPositionMillis(tile)) + "/" + formatDuration(audioTotalMillis)
@@ -359,8 +368,9 @@ internal class CometChatAttachmentTileAdapter(
 
             // The card itself retries on failure / explains a rejection — playback lives on the
             // play button.
-            audioCard.isClickable = failed || rejected
+            audioCard.isClickable = (failed || rejected) && !tile.isCopyMissing
             when {
+                tile.isCopyMissing -> audioCard.setOnClickListener(null).also { audioCard.isClickable = false }
                 failed -> audioCard.setOnClickListener { onRetry(tile) }
                 rejected -> audioCard.setOnClickListener { onRejected(tile) }
                 else -> audioCard.setOnClickListener(null)
@@ -548,8 +558,10 @@ internal class CometChatAttachmentTileAdapter(
             failed: Boolean,
             rejected: Boolean
         ) {
-            card.isClickable = done || failed || rejected
+            card.isClickable = (done || failed || rejected) && !tile.isCopyMissing
             when {
+                // D-306: remove only. setOnClickListener(null) re-enables clickable, so clear it after.
+                tile.isCopyMissing -> card.setOnClickListener(null).also { card.isClickable = false }
                 failed -> card.setOnClickListener { onRetry(tile) }
                 rejected -> card.setOnClickListener { onRejected(tile) }
                 done -> card.setOnClickListener { onClick(tile) }

@@ -25,6 +25,7 @@ import com.cometchat.chat.models.TextMessage
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
+import com.cometchat.uikit.core.utils.MediaViewerSource
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.avatar.CometChatAvatar
 import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.CometChatDate
@@ -372,15 +373,13 @@ internal object InternalContentRenderer {
                             .filter { MultiAttachmentUtils.kindOf(it) == MultiAttachmentUtils.KIND_VIDEO }
                         view.setOnMediaClickListener { _, attachment ->
                             if (MultiAttachmentUtils.kindOf(attachment) == MultiAttachmentUtils.KIND_VIDEO) {
-                                MediaUtils.openMediaInPlayer(view.context, attachment.fileUrl, attachment.fileMimeType)
+                                openVideoInPlayer(view.context, attachment)
                             } else {
                                 openImagesPreview(view.context, listOf(attachment), 0)
                             }
                         }
                         view.setOnMoreClickListener {
-                            gridVideos.firstOrNull()?.let {
-                                MediaUtils.openMediaInPlayer(view.context, it.fileUrl, it.fileMimeType)
-                            }
+                            gridVideos.firstOrNull()?.let { openVideoInPlayer(view.context, it) }
                         }
                     }
                     is CometChatVideoBubble -> {
@@ -1361,16 +1360,41 @@ internal object InternalContentRenderer {
      * Opens the fullscreen image viewer over [attachments], starting at [startIndex] with swipe
      * navigation through the rest (multi-attachment grid preview).
      */
-    private fun openImagesPreview(context: Context, attachments: List<Attachment>, startIndex: Int) {
+    @androidx.annotation.VisibleForTesting
+    internal fun openImagesPreview(context: Context, attachments: List<Attachment>, startIndex: Int) {
         if (attachments.isEmpty()) return
         context.startActivity(
             CometChatImageViewerActivity.createIntent(
                 context,
-                attachments.map { it.fileUrl.orEmpty() },
+                // Offline on (D-324, BEH-MEDIA-18): the local copy first, then the URL; today's URL otherwise.
+                attachments.map { MediaViewerSource.of(it) },
                 attachments.map { it.fileMimeType.orEmpty() },
                 attachments.map { it.fileName.orEmpty() },
                 startIndex.coerceIn(0, attachments.lastIndex)
             )
         )
+    }
+
+    /**
+     * Plays a grid video tile. Offline on with a local copy (D-324): the in-app player reads that
+     * copy in-process — the SDK keeps media in `noBackupFilesDir`, which no FileProvider path
+     * exposes, so it is never handed to another app. Otherwise today's external player on the URL
+     * (offline on, an http(s) URL only: BEH-MEDIA-21).
+     */
+    @androidx.annotation.VisibleForTesting
+    internal fun openVideoInPlayer(context: Context, attachment: Attachment) {
+        val source = MediaViewerSource.of(attachment)
+        if (MediaViewerSource.localFile(context, source) != null) {
+            context.startActivity(
+                com.cometchat.uikit.kotlin.presentation.shared.mediaviewer.CometChatVideoViewerActivity.createIntent(
+                    context,
+                    listOf(source),
+                    listOf(attachment.fileName.orEmpty()),
+                    listOf(attachment.fileMimeType?.takeIf { it.isNotEmpty() } ?: "video/*")
+                )
+            )
+            return
+        }
+        MediaUtils.openMediaInPlayer(context, MediaViewerSource.openableUrl(attachment), attachment.fileMimeType)
     }
 }

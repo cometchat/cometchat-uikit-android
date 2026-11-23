@@ -23,6 +23,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.cometchat.uikit.core.utils.CometChatLogger
+import com.cometchat.uikit.core.utils.MediaViewerSource
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -140,11 +141,12 @@ public class CometChatImageViewerActivity : AppCompatActivity() {
         val currentPos = adapter?.currentPos ?: 0
         // Save directly to the device (Downloads); no share sheet. The filename already carries
         // its extension, so pass an empty extension to avoid duplicating it.
-        MediaUtils.downloadFile(
+        // A local copy (offline on, D-324) is saved without a network call; otherwise today's path.
+        MediaUtils.downloadViewerSource(
             context = this,
-            url = urls!![currentPos],
+            source = urls!![currentPos],
             fileName = filenames!![currentPos],
-            extension = ""
+            mimeType = mimeTypes?.getOrNull(currentPos)
         )
     }
 
@@ -154,9 +156,9 @@ public class CometChatImageViewerActivity : AppCompatActivity() {
             return
         }
         val currentPos = adapter?.currentPos ?: 0
-        MediaUtils.downloadFileAndShare(
+        MediaUtils.shareViewerSource(
             context = this,
-            fileUrl = urls!![currentPos],
+            source = urls!![currentPos],
             fileName = filenames!![currentPos],
             mimeType = mimeTypes!![currentPos]
         )
@@ -262,7 +264,12 @@ public class CometChatImageViewerActivity : AppCompatActivity() {
                     val url = urls.getOrElse(position) { "" }
                     val name = filenames?.getOrElse(position) { "" }.orEmpty()
                     if (url.isNotEmpty()) {
-                        MediaUtils.downloadFile(context = context, url = url, fileName = name, extension = "")
+                        MediaUtils.downloadViewerSource(
+                            context = context,
+                            source = url,
+                            fileName = name,
+                            mimeType = mimeTypes.getOrNull(position)
+                        )
                     }
                 }
             }
@@ -290,6 +297,14 @@ public class CometChatImageViewerActivity : AppCompatActivity() {
                         target: Target<Drawable>,
                         isFirstResource: Boolean
                     ): Boolean {
+                        // Offline on (D-324): a page with no reachable source shows the placeholder
+                        // instead of an endless spinner. Offline off keeps today's behaviour.
+                        if (MediaViewerSource.isOfflineOn()) {
+                            toggleProgressBarVisibility(View.GONE)
+                            image.setImageResource(R.drawable.cometchat_image_placeholder)
+                            startPostponedEnterTransition()
+                            return true // handled: Glide must not clear the placeholder
+                        }
                         startPostponedEnterTransition()
                         return false
                     }

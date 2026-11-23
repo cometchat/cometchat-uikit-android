@@ -152,7 +152,13 @@ public class CometChatVideoViewerActivity : AppCompatActivity() {
         }
         // Save directly to the device (Downloads); no share sheet. The filename already carries
         // its extension, so pass an empty extension to avoid duplicating it.
-        MediaUtils.downloadFile(context = this, url = url, fileName = name, extension = "")
+        // A local copy (offline on, D-324) is saved without a network call; otherwise today's path.
+        MediaUtils.downloadViewerSource(
+            context = this,
+            source = url,
+            fileName = name,
+            mimeType = mimeTypes.getOrNull(currentPos)
+        )
     }
 
     private fun shareMessage() {
@@ -163,7 +169,7 @@ public class CometChatVideoViewerActivity : AppCompatActivity() {
             CometChatLogger.e(TAG, "Cannot share video, url or filename or mimeType is null")
             return
         }
-        MediaUtils.downloadFileAndShare(context = this, fileUrl = url, fileName = name, mimeType = mime)
+        MediaUtils.shareViewerSource(context = this, source = url, fileName = name, mimeType = mime)
     }
 
     override fun onSupportNavigateUp(): Boolean {

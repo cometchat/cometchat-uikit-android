@@ -17,6 +17,7 @@ import com.cometchat.chat.core.NotificationFeedRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.NotificationFeedItem
 import com.cometchat.uikit.core.factory.CometChatNotificationFeedViewModelFactory
+import com.cometchat.uikit.core.offline.OfflineUi
 import com.cometchat.uikit.core.state.NotificationFeedUIState
 import com.cometchat.uikit.core.viewmodel.CometChatNotificationFeedViewModel
 import com.cometchat.uikit.kotlin.R
@@ -54,6 +55,9 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
     // ViewModel
     private var viewModel: CometChatNotificationFeedViewModel? = null
 
+    /** Offline mode captured once when the ViewModel is bound ([init]); false until then. */
+    private var offlineOn = false
+
     // Views
     private lateinit var toolbarTitle: TextView
     private lateinit var backButton: ImageButton
@@ -64,6 +68,8 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
     private lateinit var emptyView: View
     private lateinit var errorView: View
     private lateinit var retryButton: View
+    private lateinit var errorTitleView: TextView
+    private lateinit var errorSubtitleView: TextView
 
     // Adapters
     private var feedAdapter: NotificationFeedAdapter? = null
@@ -257,6 +263,7 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
             setPadding(0, (16 * density).toInt(), 0, 0)
         }
         errorLayout.addView(errorTitle)
+        errorTitleView = errorTitle
 
         // Error subtitle
         val errorSubtitle = TextView(context).apply {
@@ -267,6 +274,7 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
             setPadding((32 * density).toInt(), (8 * density).toInt(), (32 * density).toInt(), 0)
         }
         errorLayout.addView(errorSubtitle)
+        errorSubtitleView = errorSubtitle
 
         // Retry button — primary bg, white text, rounded
         retryButton = TextView(context).apply {
@@ -374,6 +382,10 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
                 val totalItemCount = layoutManager.itemCount
                 val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
                 if (lastVisibleItem >= totalItemCount - 3) {
+                    // Offline on, a failed page (not-connected included) waits for the retry
+                    // footer: the footer's own layout pass calls onScrolled, which would otherwise
+                    // re-fire the read in a loop while offline. Offline off: unchanged.
+                    if (offlineOn && viewModel?.isPaginationError?.value == true) return
                     viewModel?.fetchNextPage()
                 }
             }
@@ -390,6 +402,7 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
             categoriesRequestBuilder = categoriesRequestBuilder
         )
         viewModel = ViewModelProvider(owner, factory)[CometChatNotificationFeedViewModel::class.java]
+        offlineOn = OfflineUi.keyMode()
 
         // Start observing
         if (owner is LifecycleOwner) {
@@ -412,6 +425,11 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
                     is NotificationFeedUIState.Content -> showContentState(state)
                 }
             }
+        }
+
+        // D84 rule 5: offline on, a load that fails online while cached rows stay reports to onError.
+        coroutineScope?.launch {
+            viewModel?.loadErrorWithRows?.collect { onError?.invoke(it) }
         }
 
         coroutineScope?.launch {
@@ -471,6 +489,16 @@ public class CometChatNotificationFeed @JvmOverloads constructor(
         loadingView.visibility = View.GONE
         swipeRefreshLayout.visibility = View.GONE
         emptyView.visibility = View.GONE
+        // D84 rule 3: offline with nothing shown, the error view is the offline state
+        // ("Connect to load notifications", no subtitle, no Retry). Offline off: today's view.
+        val offline = viewModel?.connectToLoad?.value == true
+        errorTitleView.text = if (offline) {
+            context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_notifications)
+        } else {
+            "Oops!"
+        }
+        errorSubtitleView.visibility = if (offline) View.GONE else View.VISIBLE
+        retryButton.visibility = if (offline) View.GONE else View.VISIBLE
         errorView.visibility = View.VISIBLE
     }
 

@@ -35,7 +35,9 @@ data class MessagesRoute(
     val groupId: String? = null,
     val goToMessageId: Long? = null,
     val lastMessageId: Long? = null,
-    val parentMessageId: Long? = null
+    val parentMessageId: Long? = null,
+    /** Refresh a held user/group from the server after opening on it (a search hit, ENG-41559). */
+    val refreshEntity: Boolean = false
 )
 
 /**

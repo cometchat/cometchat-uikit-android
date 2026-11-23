@@ -36,6 +36,7 @@ import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.compose.presentation.users.ui.CometChatUsers
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.core.CometChatUIKit
@@ -72,7 +73,7 @@ fun AddMembersScreen(
     // Load group data
     LaunchedEffect(groupId) {
         isLoadingGroup = true
-        CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
+        RouteEntities.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
             override fun onSuccess(fetchedGroup: Group) {
                 group = fetchedGroup
                 isLoadingGroup = false

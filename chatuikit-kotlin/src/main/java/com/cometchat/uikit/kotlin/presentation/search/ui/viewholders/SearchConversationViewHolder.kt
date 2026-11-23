@@ -13,6 +13,7 @@ import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.offline.OfflinePresence
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatSearchConversationItemBinding
 import com.cometchat.uikit.kotlin.presentation.conversations.utils.ConversationUtils
@@ -465,7 +466,7 @@ internal class SearchConversationViewHolder(
         binding.tvConversationsTitle.text = user.name
 
         // Set status indicator (matching reference: check blocked status before showing ONLINE)
-        if (!hideUserStatus && user.status == CometChatConstants.USER_STATUS_ONLINE) {
+        if (searchUserShowsOnline(user.status, hideUserStatus, OfflinePresence.hideOnline())) {
             if (!Utils.isBlocked(user)) {
                 binding.conversationsStatusAndTypeIndicator.visibility = View.VISIBLE
                 binding.conversationsStatusAndTypeIndicator.setStatusIndicator(StatusIndicator.ONLINE)
@@ -573,3 +574,12 @@ internal class SearchConversationViewHolder(
         }
     }
 }
+
+/**
+ * Whether a 1:1 search-result row may show the online dot (ENG-41465); the blocked check stays
+ * with the caller. [hideOnline] is `OfflinePresence.hideOnline()`, read once per bind: while
+ * offline is on and the device is not connected, a cached "online" renders as offline. With
+ * [hideOnline] `false` this is exactly today's rule.
+ */
+internal fun searchUserShowsOnline(status: String?, hideUserStatus: Boolean, hideOnline: Boolean): Boolean =
+    !hideUserStatus && !hideOnline && status == CometChatConstants.USER_STATUS_ONLINE

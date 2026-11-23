@@ -54,6 +54,9 @@ android {
     
     // Enable JUnit 5 for Kotest property-based testing
     testOptions {
+        // JVM unit tests touch CometChat, whose static init calls android.os.Looper; let the
+        // android.jar stubs return defaults instead of throwing (ENG-41641).
+        unitTests.isReturnDefaultValues = true
         unitTests.all {
             it.useJUnitPlatform()
         }
@@ -89,6 +92,8 @@ dependencies {
 
     // CometChat SDKs
     implementation(libs.chat.sdk.android)
+    // SQLCipher engine so offline encryption(true) can open an encrypted cache.
+    implementation(libs.sqlcipher.android)
 
     // AndroidX Core
     implementation(libs.androidx.core.ktx)

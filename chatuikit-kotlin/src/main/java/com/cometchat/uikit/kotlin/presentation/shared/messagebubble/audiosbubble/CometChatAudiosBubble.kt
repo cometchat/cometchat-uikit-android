@@ -28,6 +28,7 @@ import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.audiobubble.
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.audiobubble.CometChatAudioBubbleStyle
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
+import com.cometchat.uikit.kotlin.shared.resources.utils.MediaUtils
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
 import com.google.android.material.card.MaterialCardView
@@ -280,7 +281,11 @@ public class CometChatAudiosBubble @JvmOverloads constructor(
         holder.downloadIcon.setOnClickListener {
             val url = holder.attachment.fileUrl
             if (!url.isNullOrEmpty()) {
-                Utils.downloadFile(context, url, holder.attachment.fileName ?: System.currentTimeMillis().toString())
+                val name = holder.attachment.fileName ?: System.currentTimeMillis().toString()
+                // Offline on (D-324): the local copy is saved with no network call; else today's download.
+                if (!MediaUtils.downloadLocalAttachment(context, holder.attachment, name)) {
+                    Utils.downloadFile(context, url, name)
+                }
             }
         }
 
@@ -320,7 +325,8 @@ public class CometChatAudiosBubble @JvmOverloads constructor(
             context.startActivity(
                 CometChatImageViewerActivity.createIntent(
                     context,
-                    listOf(attachment.fileUrl.orEmpty()),
+                    // Offline on (D-324): the local copy first, so the page's Download needs no network.
+                    listOf(com.cometchat.uikit.core.utils.MediaViewerSource.of(attachment)),
                     listOf(attachment.fileMimeType.orEmpty()),
                     listOf(attachment.fileName.orEmpty())
                 )
@@ -359,7 +365,11 @@ public class CometChatAudiosBubble @JvmOverloads constructor(
             setOnClickListener {
                 val url = attachment.fileUrl
                 if (!url.isNullOrEmpty()) {
-                    Utils.downloadFile(context, url, attachment.fileName ?: System.currentTimeMillis().toString())
+                    val name = attachment.fileName ?: System.currentTimeMillis().toString()
+                    // Offline on (D-324): the local copy is saved with no network call; else today's download.
+                    if (!MediaUtils.downloadLocalAttachment(context, attachment, name)) {
+                        Utils.downloadFile(context, url, name)
+                    }
                 }
             }
         }

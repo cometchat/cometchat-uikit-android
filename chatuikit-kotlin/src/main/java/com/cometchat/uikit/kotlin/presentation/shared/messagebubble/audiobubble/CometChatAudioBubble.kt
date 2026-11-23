@@ -21,6 +21,9 @@ import com.cometchat.uikit.core.utils.AudioBubbleStateManager
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.core.utils.PlayState
 import com.cometchat.uikit.core.utils.WaveformUtils
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.OfflineMediaPlaceholder
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
@@ -81,6 +84,10 @@ public class CometChatAudioBubble @JvmOverloads constructor(
     private var textFormatters: List<CometChatTextFormatter> = emptyList()
     private var messageAlignment = UIKitConstants.MessageBubbleAlignment.LEFT
     private var fileName: String = ""
+
+    /** Offline (G9): the SDK's local file for this attachment, or the attachment awaiting download. */
+    private var offlineLocalPath: String? = null
+    private var offlinePlaceholderAttachment: com.cometchat.chat.models.Attachment? = null
     private var onClick: OnClick? = null
     private val handler = Handler(Looper.getMainLooper())
     private var pollingRunnable: Runnable? = null
@@ -276,6 +283,15 @@ public class CometChatAudioBubble @JvmOverloads constructor(
         val fileSize = attachment?.fileSize ?: 0
         subtitleTextView.text = if (fileSize > 0) formatFileSize(fileSize) else "00:00 / 00:00"
 
+        // Offline (G9): play the local file when there is one; never downloaded and unreachable →
+        // "available when online", and a tap asks the SDK to download. Null when offline is off.
+        val offlineSource = MediaSourceResolver.resolve(attachment)
+        offlineLocalPath = (offlineSource as? MediaSource.Local)?.path
+        offlinePlaceholderAttachment = if (offlineSource is MediaSource.Placeholder) attachment else null
+        if (offlineSource is MediaSource.Placeholder) {
+            subtitleTextView.text = OfflineMediaPlaceholder.caption(context, offlineSource)
+        }
+
         val caption = mediaMessage.caption
         if (caption.isNullOrEmpty()) {
             captionTextView.visibility = View.GONE
@@ -306,6 +322,8 @@ public class CometChatAudioBubble @JvmOverloads constructor(
      */
     public fun setAudioUrl(audioUrl: String?, subtitleText: String) {
         resetVisualState()
+        offlineLocalPath = null
+        offlinePlaceholderAttachment = null
         this.audioUrl = audioUrl
         this.fileName = "audio_${audioUrl.hashCode()}.m4a"
         this.messageId = audioUrl.hashCode()
@@ -336,6 +354,16 @@ public class CometChatAudioBubble @JvmOverloads constructor(
             ps.play()
             showPauseState()
             startPolling()
+            return
+        }
+
+        // Offline (G9): download through the SDK from a placeholder; play the SDK's local file.
+        offlinePlaceholderAttachment?.let { pending ->
+            MediaSourceResolver.download(pending) { }
+            return
+        }
+        offlineLocalPath?.takeIf { File(it).exists() }?.let { path ->
+            initAndPlay(path)
             return
         }
 
@@ -370,7 +398,8 @@ public class CometChatAudioBubble @JvmOverloads constructor(
         playbackState = ps
         ps.initFromFile(filePath, onError = {
             // Evict the file — a truncated cache entry would otherwise fail on every replay.
-            File(filePath).delete()
+            // The SDK's own offline copy (G9) is never deleted by the kit.
+            if (filePath != offlineLocalPath) File(filePath).delete()
             handler.post { showIdleState() }
         }) {
             handler.post {

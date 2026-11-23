@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.core.CometChat
+import com.cometchat.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.sampleapp.compose.utils.AppPreferences
@@ -145,6 +146,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         CometChatUIKit.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "CometChat logout successful")
+                // The next user must not open on this user's held objects.
+                RouteEntities.clear()
                 // Clear session from preferences
                 appPreferences.clearSession()
                 _logoutState.value = LogoutState.Success

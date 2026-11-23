@@ -10,6 +10,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.cometchat.chat.models.Attachment
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.imagesbubble.CometChatImagesBubble
 import com.google.android.material.card.MaterialCardView
@@ -64,7 +66,9 @@ public class CometChatVideosBubble @JvmOverloads constructor(
             visibility = View.GONE
         }
         card.addView(durationView)
-        loadDurationAsync(attachment.fileUrl, durationView)
+        // Offline (G9): a local file gives the duration without the network. Null offline off.
+        val localPath = (MediaSourceResolver.resolve(attachment) as? MediaSource.Local)?.path
+        loadDurationAsync(localPath ?: attachment.fileUrl, durationView)
     }
 
     private fun loadDurationAsync(url: String?, target: TextView) {
@@ -75,7 +79,9 @@ public class CometChatVideosBubble @JvmOverloads constructor(
                 // Release in finally so a throwing setDataSource() (common for slow/expired remote
                 // URLs) doesn't leak the native retriever.
                 try {
-                    retriever.setDataSource(url, HashMap<String, String>())
+                    // A local file (offline, G9) is read by path; a URL keeps today's call.
+                    if (url.startsWith("/")) retriever.setDataSource(url)
+                    else retriever.setDataSource(url, HashMap<String, String>())
                     retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
                 } finally {
                     retriever.release()

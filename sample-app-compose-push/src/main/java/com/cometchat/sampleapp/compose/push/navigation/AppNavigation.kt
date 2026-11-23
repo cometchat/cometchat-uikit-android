@@ -43,6 +43,9 @@ import com.cometchat.sampleapp.compose.push.appflow.screens.AddMembersScreen
 import com.cometchat.sampleapp.compose.push.appflow.screens.CallDetailsScreen
 import com.cometchat.sampleapp.compose.push.appflow.screens.ChatHistoryScreen
 import com.cometchat.sampleapp.compose.push.appflow.screens.GroupDetailsScreen
+import com.cometchat.sampleapp.compose.push.appflow.viewmodels.GroupDetailsViewModel
+import com.cometchat.sampleapp.compose.push.appflow.viewmodels.MessagesViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cometchat.sampleapp.compose.push.appflow.screens.MessagesScreen
 import com.cometchat.sampleapp.compose.push.appflow.screens.NewChatScreen
 import com.cometchat.sampleapp.compose.push.appflow.screens.SearchScreen
@@ -242,6 +245,20 @@ fun AppNavigation(
             var group by remember { mutableStateOf(cachedGroup) }
             var isLoading by remember { mutableStateOf(cachedUser == null && cachedGroup == null && (route.userId != null || route.groupId != null)) }
             var error by remember { mutableStateOf<String?>(null) }
+
+            // A search hit opens on the user/group the result carried (ENG-41559 item 4), then takes
+            // the server's copy, as a cache miss always did; offline the held copy stays.
+            val messagesViewModel: MessagesViewModel = viewModel()
+            LaunchedEffect(route.userId, route.groupId) {
+                if (!route.refreshEntity) return@LaunchedEffect
+                if (cachedUser != null) route.userId?.let { uid -> RouteEntities.refreshUser(uid, { fresh -> user = fresh }) }
+                if (cachedGroup != null) route.groupId?.let { guid ->
+                    RouteEntities.refreshGroup(guid, { fresh ->
+                        group = fresh
+                        messagesViewModel.adoptServerGroup(fresh)
+                    })
+                }
+            }
             
             // Only fetch from API if cache miss
             if (isLoading) {
@@ -291,18 +308,23 @@ fun AppNavigation(
                         parentMessageId = route.parentMessageId,
                         onBackPress = { navController.popBackStack() },
                         onNavigateToUserDetails = { userId, lastMessageId ->
+                            // The details screen opens on the user this screen holds (ENG-41553).
+                            RouteEntities.hold(user, group)
                             navController.navigate(UserDetailsRoute(
                                 userId = userId,
                                 lastMessageId = lastMessageId
                             ))
                         },
                         onNavigateToGroupDetails = { groupId, lastMessageId ->
+                            RouteEntities.hold(user, group)
                             navController.navigate(GroupDetailsRoute(
                                 groupId = groupId,
                                 lastMessageId = lastMessageId
                             ))
                         },
                         onNavigateToThread = { parentMessageId, userId, groupId ->
+                            // The thread opens on the user/group this screen holds (ENG-41524).
+                            RouteEntities.hold(user, group)
                             navController.navigate(ThreadMessageRoute(
                                 parentMessageId = parentMessageId,
                                 userId = userId,
@@ -310,6 +332,8 @@ fun AppNavigation(
                             ))
                         },
                         onNavigateToSearch = { userId, groupId ->
+                            // A search hit reopens this chat or one of its threads by id.
+                            RouteEntities.hold(user, group)
                             navController.navigate(SearchRoute(
                                 userId = userId,
                                 groupId = groupId
@@ -412,20 +436,28 @@ fun AppNavigation(
             var isLoading by remember { mutableStateOf(true) }
             var error by remember { mutableStateOf<String?>(null) }
             
-            // Resolve user from ID
+            // Resolve the user the calling screen held, else the server's (ENG-41553)
             LaunchedEffect(route.userId) {
                 isLoading = true
                 error = null
                 
-                CometChat.getUser(route.userId, object : CometChat.CallbackListener<User>() {
+                RouteEntities.getUser(route.userId, object : CometChat.CallbackListener<User>() {
                     override fun onSuccess(fetchedUser: User) {
                         user = fetchedUser
                         
                         // Resolve last message if provided
                         route.lastMessageId?.let { messageId ->
-                            CometChat.getMessageDetails(messageId, object : CometChat.CallbackListener<BaseMessage>() {
-                                override fun onSuccess(message: BaseMessage) {
+                            // Two-phase read (BEH-READ-35): the cached message shows the
+                            // screen at once and the server's replaces it. An offline error
+                            // after the cached phase keeps the cached message.
+                            CometChat.getMessageDetails(messageId, object : CometChat.MessageDetailsListener() {
+                                override fun onCachedMessage(message: BaseMessage?) {
+                                    if (message == null) return
                                     lastMessage = message
+                                    isLoading = false
+                                }
+                                override fun onServerMessage(message: BaseMessage?) {
+                                    if (message != null) lastMessage = message
                                     isLoading = false
                                 }
                                 override fun onError(e: CometChatException) {
@@ -441,7 +473,7 @@ fun AppNavigation(
                         error = e.message
                         isLoading = false
                     }
-                })
+                }, onRefreshed = { fresh -> user = fresh })
             }
             
             when {
@@ -471,26 +503,37 @@ fun AppNavigation(
 
         composable<GroupDetailsRoute> { backStackEntry ->
             val route: GroupDetailsRoute = backStackEntry.toRoute()
+            // The same instance GroupDetailsScreen gets (scoped to this back-stack entry): the
+            // server refresh replaces the held group there.
+            val groupDetailsViewModel: GroupDetailsViewModel = viewModel()
             
             var group by remember { mutableStateOf<Group?>(null) }
             var lastMessage by remember { mutableStateOf<BaseMessage?>(null) }
             var isLoading by remember { mutableStateOf(true) }
             var error by remember { mutableStateOf<String?>(null) }
             
-            // Resolve group from ID
+            // Resolve the group the calling screen held, else the server's (ENG-41553)
             LaunchedEffect(route.groupId) {
                 isLoading = true
                 error = null
                 
-                CometChat.getGroup(route.groupId, object : CometChat.CallbackListener<Group>() {
+                RouteEntities.getGroup(route.groupId, object : CometChat.CallbackListener<Group>() {
                     override fun onSuccess(fetchedGroup: Group) {
                         group = fetchedGroup
                         
                         // Resolve last message if provided
                         route.lastMessageId?.let { messageId ->
-                            CometChat.getMessageDetails(messageId, object : CometChat.CallbackListener<BaseMessage>() {
-                                override fun onSuccess(message: BaseMessage) {
+                            // Two-phase read (BEH-READ-35): the cached message shows the
+                            // screen at once and the server's replaces it. An offline error
+                            // after the cached phase keeps the cached message.
+                            CometChat.getMessageDetails(messageId, object : CometChat.MessageDetailsListener() {
+                                override fun onCachedMessage(message: BaseMessage?) {
+                                    if (message == null) return
                                     lastMessage = message
+                                    isLoading = false
+                                }
+                                override fun onServerMessage(message: BaseMessage?) {
+                                    if (message != null) lastMessage = message
                                     isLoading = false
                                 }
                                 override fun onError(e: CometChatException) {
@@ -506,6 +549,9 @@ fun AppNavigation(
                         error = e.message
                         isLoading = false
                     }
+                }, onRefreshed = { fresh ->
+                    group = fresh
+                    groupDetailsViewModel.adoptServerGroup(fresh)
                 })
             }
             
@@ -531,6 +577,7 @@ fun AppNavigation(
                             navController.popBackStack<AppFlowHomeRoute>(inclusive = false)
                         },
                         onNavigateToAddMembers = { groupId ->
+                            RouteEntities.hold(null, group)
                             navController.navigate(AddMembersRoute(groupId = groupId))
                         },
                         onNavigateToPinnedMessages = {
@@ -549,12 +596,12 @@ fun AppNavigation(
             var isLoading by remember { mutableStateOf(true) }
             var error by remember { mutableStateOf<String?>(null) }
             
-            // Resolve group from ID
+            // Resolve the group Group Info held, else the server's (ENG-41553)
             LaunchedEffect(route.groupId) {
                 isLoading = true
                 error = null
                 
-                CometChat.getGroup(route.groupId, object : CometChat.CallbackListener<Group>() {
+                RouteEntities.getGroup(route.groupId, object : CometChat.CallbackListener<Group>() {
                     override fun onSuccess(fetchedGroup: Group) {
                         group = fetchedGroup
                         isLoading = false
@@ -563,7 +610,7 @@ fun AppNavigation(
                         error = e.message
                         isLoading = false
                     }
-                })
+                }, onRefreshed = { fresh -> group = fresh })
             }
             
             when {
@@ -634,16 +681,38 @@ fun AppNavigation(
                 isLoading = true
                 error = null
                 
-                // First resolve the parent message
-                CometChat.getMessageDetails(route.parentMessageId, object : CometChat.CallbackListener<BaseMessage>() {
-                    override fun onSuccess(message: BaseMessage) {
+                // First resolve the parent message. Two-phase read (BEH-READ-35): the first phase
+                // to land (cached, else server) sets the parent and resolves the user/group once;
+                // the server's parent then replaces a cached one. An offline error after the
+                // cached phase keeps the thread open on the cached parent.
+                CometChat.getMessageDetails(route.parentMessageId, object : CometChat.MessageDetailsListener() {
+                    private var parentResolved = false
+
+                    override fun onCachedMessage(message: BaseMessage?) {
+                        message?.let { onParent(it) }
+                    }
+
+                    override fun onServerMessage(message: BaseMessage?) {
+                        // A server phase without a parent ends like an error, so the route never
+                        // waits on the loader forever.
+                        if (message != null) {
+                            onParent(message)
+                        } else {
+                            onError(CometChatException("ERR_NO_VALUE", "The server returned no message"))
+                        }
+                    }
+
+                    private fun onParent(message: BaseMessage) {
                         parentMessage = message
-                        
-                        // Then resolve user or group
+                        if (parentResolved) return
+                        parentResolved = true
+
+                        // Then the user or group the calling screen held, else the server's
+                        // (ENG-41524: offline a server-only re-fetch popped the thread).
                         var entityResolved = false
                         
                         route.userId?.let { uid ->
-                            CometChat.getUser(uid, object : CometChat.CallbackListener<User>() {
+                            RouteEntities.getUser(uid, object : CometChat.CallbackListener<User>() {
                                 override fun onSuccess(fetchedUser: User) {
                                     user = fetchedUser
                                     isLoading = false
@@ -652,12 +721,12 @@ fun AppNavigation(
                                     error = e.message
                                     isLoading = false
                                 }
-                            })
+                            }, onRefreshed = { fresh -> user = fresh })
                             entityResolved = true
                         }
                         
                         route.groupId?.let { guid ->
-                            CometChat.getGroup(guid, object : CometChat.CallbackListener<Group>() {
+                            RouteEntities.getGroup(guid, object : CometChat.CallbackListener<Group>() {
                                 override fun onSuccess(fetchedGroup: Group) {
                                     group = fetchedGroup
                                     isLoading = false
@@ -666,7 +735,7 @@ fun AppNavigation(
                                     error = e.message
                                     isLoading = false
                                 }
-                            })
+                            }, onRefreshed = { fresh -> group = fresh })
                             entityResolved = true
                         }
                         
@@ -675,6 +744,7 @@ fun AppNavigation(
                         }
                     }
                     override fun onError(e: CometChatException) {
+                        if (parentResolved) return
                         error = e.message
                         isLoading = false
                     }
@@ -711,7 +781,8 @@ fun AppNavigation(
                     navController.navigate(MessagesRoute(
                         userId = userId,
                         groupId = groupId,
-                        goToMessageId = messageId
+                        goToMessageId = messageId,
+                        refreshEntity = true
                     )) {
                         // Pop search from back stack to match sample-app behavior
                         popUpTo<SearchRoute> { inclusive = true }

@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.annotation.StyleRes
+import androidx.annotation.VisibleForTesting
 import androidx.gridlayout.widget.GridLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -31,6 +32,11 @@ import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSourceResolver
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.MediaLoadRecoveryListener
+import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.OfflineMediaPlaceholder
 import com.cometchat.uikit.kotlin.presentation.shared.messagebubble.multiattachment.MultiAttachmentUtils
 import com.cometchat.uikit.kotlin.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.kotlin.shared.interfaces.OnClick
@@ -91,6 +97,9 @@ public class CometChatImageBubble @JvmOverloads constructor(
     private var textFormatters: List<CometChatTextFormatter> = emptyList()
     private var messageAlignment = UIKitConstants.MessageBubbleAlignment.LEFT
     private var attachments: List<Attachment> = emptyList()
+
+    /** The attachment whose offline placeholder is shown (G9), or null. */
+    private var offlinePlaceholderAttachment: Attachment? = null
     private var onClick: OnClick? = null
     private var onImageClick: ((Int, Attachment) -> Unit)? = null
     private var onMoreClick: ((List<Attachment>) -> Unit)? = null
@@ -159,6 +168,12 @@ public class CometChatImageBubble @JvmOverloads constructor(
 
         // Set up click listeners
         singleImageView.setOnClickListener {
+            // Offline placeholder (G9): a tap asks the SDK to download; MediaReady rebinds the row.
+            val pending = offlinePlaceholderAttachment
+            if (pending != null) {
+                MediaSourceResolver.download(pending) { }
+                return@setOnClickListener
+            }
             if (onClick != null) {
                 onClick?.onClick()
             } else {
@@ -425,15 +440,40 @@ public class CometChatImageBubble @JvmOverloads constructor(
     // Single Image Display
     // ========================================
 
+    /**
+     * The single image's URL recovery for the current bind (G9, BEH-MEDIA-13), or null. A posted
+     * reload runs only while it is still the current one, so a rebind never shows another message.
+     */
+    @VisibleForTesting
+    internal var urlRecovery: MediaLoadRecovery? = null
+        private set
+
     private fun showSingleImage(localFile: File?, attachment: Attachment?) {
         gridContainer.visibility = View.GONE
         singleImageContainer.visibility = View.VISIBLE
         singleProgressBar.visibility = View.VISIBLE
 
-        val url = attachment?.fileUrl ?: ""
-        
+        var url = attachment?.fileUrl ?: ""
+
+        // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+        val offlineSource = if (localFile == null) MediaSourceResolver.resolve(attachment) else null
+        // A failed URL tries the file URL once, then asks the SDK to download once (BEH-MEDIA-13).
+        // Null when offline is off or the source is not a URL: today's load.
+        urlRecovery = MediaLoadRecovery.forSource(offlineSource, attachment)
+        OfflineMediaPlaceholder.bind(singleImageContainer, offlineSource as? MediaSource.Placeholder)
+        offlinePlaceholderAttachment = if (offlineSource is MediaSource.Placeholder) attachment else null
+        if (offlineSource is MediaSource.Placeholder) {
+            singleProgressBar.visibility = View.GONE
+            singleImageView.setImageResource(R.drawable.cometchat_image_placeholder)
+            return
+        }
+        if (offlineSource is MediaSource.Remote) url = offlineSource.url
+        val recovery = urlRecovery
+
         // Try to get local file from metadata if not provided (for in-progress uploads)
-        val effectiveLocalFile = localFile ?: mediaMessage?.let { getLocalFileFromMetadata(it) }
+        val effectiveLocalFile = localFile
+            ?: (offlineSource as? MediaSource.Local)?.let { File(it.path) }
+            ?: mediaMessage?.let { getLocalFileFromMetadata(it) }
         
         val isGif = attachment?.fileExtension?.equals("gif", ignoreCase = true) == true ||
                     Utils.isGifFile(effectiveLocalFile)
@@ -451,16 +491,16 @@ public class CometChatImageBubble @JvmOverloads constructor(
             if (!thumbnailUrl.isNullOrEmpty()) {
                 // Use thumbnail URL from metadata (handles both images and videos with generated thumbnails)
                 if (isGif) {
-                    loadGifFromUrl(thumbnailUrl, singleImageView, singleProgressBar)
+                    loadGifFromUrl(thumbnailUrl, singleImageView, singleProgressBar, recovery)
                 } else {
-                    loadBitmapFromUrl(thumbnailUrl, singleImageView, singleProgressBar)
+                    loadBitmapFromUrl(thumbnailUrl, singleImageView, singleProgressBar, recovery)
                 }
             } else if (url.isNotEmpty()) {
                 // Fall back to image file URL
                 if (isGif) {
-                    loadGifFromUrl(url, singleImageView, singleProgressBar)
+                    loadGifFromUrl(url, singleImageView, singleProgressBar, recovery)
                 } else {
-                    loadBitmapFromUrl(url, singleImageView, singleProgressBar)
+                    loadBitmapFromUrl(url, singleImageView, singleProgressBar, recovery)
                 }
             } else {
                 singleProgressBar.visibility = View.GONE
@@ -629,9 +669,14 @@ public class CometChatImageBubble @JvmOverloads constructor(
     // Image Loading with Glide
     // ========================================
 
-    private fun loadBitmapFromUrl(url: String, imageView: ImageView, progressBar: ProgressBar) {
+    private fun loadBitmapFromUrl(
+        url: String,
+        imageView: ImageView,
+        progressBar: ProgressBar,
+        recovery: MediaLoadRecovery? = null
+    ) {
         CometChatLogger.d(TAG, "Loading bitmap from URL: $url")
-        Glide.with(imageView)
+        var request = Glide.with(imageView)
             .asBitmap()
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
@@ -639,8 +684,20 @@ public class CometChatImageBubble @JvmOverloads constructor(
             .error(R.drawable.cometchat_image_placeholder)
             .skipMemoryCache(false)
             .addListener(createBitmapListener(progressBar))
-            .into(imageView)
+        if (recovery != null) request = request.addListener(bitmapRecoveryListener(imageView, progressBar, recovery))
+        request.into(imageView)
     }
+
+    /** The URL recovery hook (G9): a next URL reloads the same view with the same recovery. */
+    @VisibleForTesting
+    internal fun bitmapRecoveryListener(
+        imageView: ImageView,
+        progressBar: ProgressBar,
+        recovery: MediaLoadRecovery
+    ): RequestListener<Bitmap> =
+        MediaLoadRecoveryListener(imageView, recovery) { next ->
+            if (urlRecovery === recovery) loadBitmapFromUrl(next, imageView, progressBar, recovery)
+        }
 
     private fun loadBitmapFromFile(file: File, imageView: ImageView, progressBar: ProgressBar) {
         CometChatLogger.d(TAG, "Loading bitmap from file: ${file.absolutePath}")
@@ -655,8 +712,13 @@ public class CometChatImageBubble @JvmOverloads constructor(
             .into(imageView)
     }
 
-    private fun loadGifFromUrl(url: String, imageView: ImageView, progressBar: ProgressBar) {
-        Glide.with(context)
+    private fun loadGifFromUrl(
+        url: String,
+        imageView: ImageView,
+        progressBar: ProgressBar,
+        recovery: MediaLoadRecovery? = null
+    ) {
+        var request = Glide.with(context)
             .asGif()
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
@@ -664,7 +726,12 @@ public class CometChatImageBubble @JvmOverloads constructor(
             .error(R.drawable.cometchat_image_placeholder)
             .skipMemoryCache(false)
             .addListener(createGifListener(progressBar))
-            .into(imageView)
+        if (recovery != null) {
+            request = request.addListener(MediaLoadRecoveryListener(imageView, recovery) { next ->
+                if (urlRecovery === recovery) loadGifFromUrl(next, imageView, progressBar, recovery)
+            })
+        }
+        request.into(imageView)
     }
 
     private fun loadGifFromFile(file: File, imageView: ImageView, progressBar: ProgressBar) {
@@ -804,7 +871,8 @@ public class CometChatImageBubble @JvmOverloads constructor(
             return
         }
 
-        val urls = attachments.map { it.fileUrl ?: "" }
+        // Offline on (D-324, BEH-MEDIA-18): the local copy first, then the URL; today's URL otherwise.
+        val urls = attachments.map { com.cometchat.uikit.core.utils.MediaViewerSource.of(it) }
         val mimeTypes = attachments.map { it.fileMimeType ?: "" }
         val fileNames = attachments.map { it.fileName ?: "" }
 
