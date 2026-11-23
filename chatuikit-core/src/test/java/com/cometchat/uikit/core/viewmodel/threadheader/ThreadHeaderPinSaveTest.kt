@@ -7,6 +7,8 @@ import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
+import com.cometchat.uikit.core.events.CometChatEvents
+import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.viewmodel.CometChatThreadHeaderViewModel
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -153,5 +155,67 @@ class ThreadHeaderPinSaveTest : FunSpec({
 
         held.isSaved shouldBe false
         (vm.parentMessageListStateFlow.value.single() === held) shouldBe false
+    }
+
+    // ---- ENG-41486 (D-327, G11): kit events, since SDK 5.1.2 sends no own echo ----
+
+    /** A VM collecting kit events; the bus delivers on its own thread, so callers poll. */
+    fun kitEventViewModel(): CometChatThreadHeaderViewModel =
+        CometChatThreadHeaderViewModel(enableListeners = true).apply { addLocalEventListeners() }
+
+    fun awaitUntil(condition: () -> Boolean) {
+        val deadline = System.currentTimeMillis() + 2_000
+        while (!condition() && System.currentTimeMillis() < deadline) Thread.sleep(10)
+    }
+
+    test("an unpin from the pinned panel (kit event) clears the header's pin") {
+        val vm = kitEventViewModel()
+        vm.setParentMessage(parent(pinnedAt = 1700000000L, pinnedBy = "me"))
+
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageUnpinned(TextMessage("", "", "").apply { id = 100L }))
+        awaitUntil { !vm.parentMessageListStateFlow.value.single().isPinned }
+
+        val shown = vm.parentMessageListStateFlow.value.single()
+        shown.isPinned shouldBe false
+        shown.pinnedBy shouldBe null
+        vm.removeListener()
+    }
+
+    test("an unsave from the saved panel (kit event) clears the header's save") {
+        val vm = kitEventViewModel()
+        vm.setParentMessage(parent(savedAt = 1700000000L))
+
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageUnsaved(parent()))
+        awaitUntil { !vm.parentMessageListStateFlow.value.single().isSaved }
+
+        vm.parentMessageListStateFlow.value.single().isSaved shouldBe false
+        vm.removeListener()
+    }
+
+    test("a pin/save made on a message list (kit event) reaches the header") {
+        val vm = kitEventViewModel()
+        vm.setParentMessage(parent())
+
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessagePinned(parent(pinnedAt = 1700000001L, pinnedBy = "me")))
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageSaved(parent(savedAt = 1700000002L)))
+        awaitUntil { vm.parentMessageListStateFlow.value.single().let { it.isPinned && it.isSaved } }
+
+        val shown = vm.parentMessageListStateFlow.value.single()
+        shown.pinnedBy shouldBe "me"
+        shown.isSaved shouldBe true
+        vm.removeListener()
+    }
+
+    test("a kit event the header already shows, or for another message, is a no-op") {
+        val vm = kitEventViewModel()
+        vm.setParentMessage(parent(savedAt = 1700000000L))
+        val before = vm.parentMessageListStateFlow.value.single()
+
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessageSaved(parent(savedAt = 1700000000L)))
+        CometChatEvents.emitMessageEvent(CometChatMessageEvent.MessagePinned(parent(id = 999L, pinnedAt = 1700000001L)))
+        Thread.sleep(300)
+
+        (vm.parentMessageListStateFlow.value.single() === before) shouldBe true
+        vm.removeListener()
     }
 })

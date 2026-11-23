@@ -34,6 +34,10 @@ import com.cometchat.uikit.kotlin.presentation.shared.baseelements.date.DatePatt
 import com.cometchat.uikit.kotlin.presentation.shared.receipts.CometChatReceipt
 import com.cometchat.uikit.kotlin.presentation.shared.receipts.CometChatReceiptStyle
 import com.cometchat.uikit.kotlin.presentation.shared.receipts.MessageReceiptUtils
+import com.cometchat.uikit.core.offline.ConversationPreviewMark
+import com.cometchat.uikit.core.offline.OfflinePresence
+import com.cometchat.uikit.core.offline.MessageSendState
+import com.cometchat.uikit.kotlin.presentation.shared.receipts.ReceiptStatus
 import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.CometChatStatusIndicatorStyle
 import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.StatusIndicator
 import com.cometchat.uikit.kotlin.presentation.shared.typingindicator.CometChatTypingIndicatorStyle
@@ -880,21 +884,22 @@ public class CometChatConversationListItem @JvmOverloads constructor(
         conversation?.let { conv ->
             when (val conversationWith = conv.conversationWith) {
                 is User -> {
-                    binding.conversationsAvatar.setAvatar(conversationWith.name, conversationWith.avatar)
+                    // An id-only peer (BEH-CONV-01) has no name yet: initials from "" (D-354).
+                    binding.conversationsAvatar.setAvatar(conversationWith.name ?: "", conversationWith.avatar)
                     if (!hideUserStatus) {
                         binding.conversationsStatusAndTypeIndicator.visibility = VISIBLE
-                        val statusIndicator = if (conversationWith.status == CometChatConstants.USER_STATUS_ONLINE) {
-                            StatusIndicator.ONLINE
-                        } else {
-                            StatusIndicator.OFFLINE
-                        }
+                        val statusIndicator = conversationUserStatusIndicator(
+                            status = conversationWith.status,
+                            hideOnline = OfflinePresence.hideOnline()
+                        )
                         binding.conversationsStatusAndTypeIndicator.setStatusIndicator(statusIndicator)
                     } else {
                         binding.conversationsStatusAndTypeIndicator.visibility = GONE
                     }
                 }
                 is Group -> {
-                    binding.conversationsAvatar.setAvatar(conversationWith.name, conversationWith.icon)
+                    // An id-only group (BEH-CONV-01) has no name yet: initials from "" (D-354).
+                    binding.conversationsAvatar.setAvatar(conversationWith.name ?: "", conversationWith.icon)
                     binding.conversationsStatusAndTypeIndicator.visibility = GONE
                 }
             }
@@ -951,7 +956,13 @@ public class CometChatConversationListItem @JvmOverloads constructor(
                 // Show receipt for outgoing messages (matching Java hideReceipt logic)
                 if (!hideReceipts && !MessageReceiptUtils.shouldHideReceipt(lastMessage)) {
                     receiptView?.visibility = VISIBLE
-                    receiptView?.setReceipt(lastMessage)
+                    // An own unsent preview shows its sending/failed mark (offline, ENG-41088);
+                    // every other message renders as today.
+                    when (ConversationPreviewMark.of(lastMessage)) {
+                        MessageSendState.SENDING -> receiptView?.setReceipt(ReceiptStatus.IN_PROGRESS)
+                        MessageSendState.FAILED -> receiptView?.setReceipt(ReceiptStatus.ERROR)
+                        else -> receiptView?.setReceipt(lastMessage)
+                    }
                 } else {
                     receiptView?.visibility = GONE
                 }
@@ -1018,9 +1029,12 @@ public class CometChatConversationListItem @JvmOverloads constructor(
         if (customTrailingView != null) return
 
         conversation?.let { conv ->
-            // Date - use conversation's updatedAt timestamp (not last message's sentAt)
-            // This ensures date is always shown, even for new conversations without messages
-            val timestamp = conv.updatedAt
+            // Date - the last message's sentAt (ENG-39134). conv.updatedAt is the server's LWW sync
+            // cursor, not a message clock: the local send/receive bump never writes it, and the server
+            // never bumps a group's updatedAt on a message - so rendering it shows a stale time.
+            // Falling back to updatedAt when there is no last message, or none carrying a usable
+            // sentAt, ensures a date is still shown for a new conversation without messages.
+            val timestamp = conv.lastMessage?.sentAt?.takeIf { it > 0 } ?: conv.updatedAt
             if (timestamp > 0) {
                 dateView?.setDate(timestamp, DatePattern.DAY_DATE_TIME)
                 dateView?.visibility = VISIBLE
@@ -1087,3 +1101,16 @@ public class CometChatConversationListItem @JvmOverloads constructor(
     }
 
 }
+
+/**
+ * The status dot of a 1:1 conversation row (ENG-41465). [hideOnline] is
+ * `OfflinePresence.hideOnline()`, read once per bind: while offline is on and the device is not
+ * connected, a cached "online" renders as offline. With [hideOnline] `false` this is exactly
+ * today's rule.
+ */
+internal fun conversationUserStatusIndicator(status: String?, hideOnline: Boolean): StatusIndicator =
+    if (!hideOnline && status == CometChatConstants.USER_STATUS_ONLINE) {
+        StatusIndicator.ONLINE
+    } else {
+        StatusIndicator.OFFLINE
+    }

@@ -21,7 +21,7 @@ import org.mockito.kotlin.whenever
  *
  * The Impl bridges the CometChat SDK callback API to suspend/`Result`. We build
  * the REAL Impl (not a stand-in) and drive both SDK seams:
- *  - `fetchReactions` → `request.fetchNext(callback)` (instance),
+ *  - `fetchReactions` → `request.fetchNext(ReactionFetchListener)` (instance, server phase),
  *  - `removeReaction` → `CometChat.removeReaction(id, emoji, callback)` (static, via mockStatic),
  * exercising both the onSuccess and onError continuations.
  *
@@ -42,12 +42,12 @@ class ReactionListDataSourceImplTest : FunSpec({
         cometChatMock.close()
     }
 
-    test("fetchReactions resumes with success when the request invokes onSuccess") {
+    test("fetchReactions resumes with success when the request invokes onServerReactions") {
         runTest {
             val request = mock<ReactionsRequest>()
             val reactions = listOf(mock<Reaction>(), mock<Reaction>())
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Reaction>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<Reaction>>>(0).onSuccess(reactions)
+            whenever(request.fetchNext(any<CometChat.ReactionFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.ReactionFetchListener>(0).onServerReactions(reactions)
                 null
             }
 
@@ -62,8 +62,8 @@ class ReactionListDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<ReactionsRequest>()
             val error = MockFactory.createCometChatException("ERR_FETCH", "boom")
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Reaction>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<Reaction>>>(0).onError(error)
+            whenever(request.fetchNext(any<CometChat.ReactionFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.ReactionFetchListener>(0).onError(error)
                 null
             }
 

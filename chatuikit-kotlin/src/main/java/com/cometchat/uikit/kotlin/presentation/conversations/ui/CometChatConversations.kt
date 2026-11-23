@@ -1,5 +1,7 @@
 package com.cometchat.uikit.kotlin.presentation.conversations.ui
 
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindAllRows
+import com.cometchat.uikit.kotlin.presentation.shared.statusindicator.rebindOnPresenceChange
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -21,6 +23,7 @@ import com.cometchat.chat.core.ConversationsRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Conversation
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.offline.OfflineNotice
 import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
 import com.cometchat.uikit.core.resources.soundmanager.Sound
 import com.cometchat.uikit.core.viewmodel.CometChatConversationsViewModel
@@ -28,6 +31,7 @@ import com.cometchat.uikit.core.factory.CometChatConversationsViewModelFactory
 import com.cometchat.uikit.core.state.UIState
 import com.cometchat.uikit.core.state.DeleteState
 import com.cometchat.uikit.kotlin.R
+import com.cometchat.uikit.core.R as CoreR
 import com.cometchat.uikit.kotlin.theme.cometchatThemedContext
 import com.cometchat.uikit.kotlin.databinding.CometchatConversationsListViewBinding
 import com.cometchat.uikit.kotlin.presentation.conversations.style.CometChatConversationsStyle
@@ -47,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -107,6 +112,10 @@ public class CometChatConversations @JvmOverloads constructor(
 
     // Coroutine scope for collecting flows
     private var viewScope: CoroutineScope? = null
+
+    // Offline notices (ENG-41088): shown as a toast unless hidden
+    private var hideOfflineNotices: Boolean = false
+    private var offlineNoticesJob: Job? = null
 
     // Selection state
     private val selectedConversations = HashMap<Conversation, Boolean>()
@@ -513,12 +522,20 @@ public class CometChatConversations @JvmOverloads constructor(
         // Create coroutine scope for collecting flows
         viewScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+        // ENG-41551 A: a connection flip re-binds the rows, so presence is re-read.
+        viewScope?.rebindOnPresenceChange { rebindAllRows(conversationsAdapter) }
+
         // Observe conversations
         viewScope?.launch {
             vm.conversations.collectLatest { conversations ->
                 conversationsAdapter.setList(conversations)
                 onLoad?.invoke(conversations)
             }
+        }
+
+        // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+        viewScope?.launch {
+            vm.rowsKeptError.collect { onError?.invoke(it) }
         }
 
         // Observe UI state
@@ -566,12 +583,27 @@ public class CometChatConversations @JvmOverloads constructor(
                 scrollToTop()
             }
         }
+
+        observeOfflineNotices()
+    }
+
+    /**
+     * Renders the ViewModel's offline notices as a toast (ENG-41088). Not collected while
+     * [hideOfflineNotices] is set, so a hidden list never takes a notice another list would show.
+     */
+    private fun observeOfflineNotices() {
+        offlineNoticesJob?.cancel()
+        offlineNoticesJob = null
+        val vm = viewModel ?: return
+        if (hideOfflineNotices) return
+        offlineNoticesJob = viewScope?.launch {
+            vm.offlineNotices.collect { notice ->
+                Toast.makeText(context, offlineNoticeText(context, notice), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 
-    /**
-     * Handles UI state changes.
-     */
     private fun handleStateChange(state: UIState) {
         hideAllStates()
 
@@ -636,6 +668,15 @@ public class CometChatConversations @JvmOverloads constructor(
      */
     private fun handleEmptyState() {
         binding.shimmerEffectFrame.stopShimmer()
+        // D84 rule 7: an offline `searchKeyword` list reads "Connect to search".
+        if (viewModel?.connectToSearch?.value == true) {
+            applyConnectNotice(
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search,
+                com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle
+            )
+        } else {
+            applyConnectNotice(null)
+        }
         if (emptyStateVisibility == VISIBLE) {
             if (customEmptyView != null) {
                 binding.customLayout.removeAllViews()
@@ -650,6 +691,46 @@ public class CometChatConversations @JvmOverloads constructor(
         onEmpty?.invoke()
     }
 
+    // Offline: the empty state's title/subtitle before a connect notice replaced them; null while
+    // no notice is shown.
+    private var defaultEmptyTitle: CharSequence? = null
+    private var defaultEmptySubtitle: CharSequence? = null
+    private var defaultEmptySubtitleVisibility: Int = VISIBLE
+
+    /**
+     * Swaps the default empty state's text to [titleRes] for the offline states (D84): "Connect to
+     * search" for an offline `searchKeyword` list, "Connect to load chats" for the list offline with
+     * nothing on screen. `null` puts back what a notice replaced; with no notice shown (always,
+     * offline off) it touches nothing. A custom view is left alone.
+     * [subtitleRes], when given, replaces the subtitle and shows it: "Connect to search" carries
+     * "Search needs an internet connection." (D84). Without it the subtitle is hidden.
+     */
+    private fun applyConnectNotice(titleRes: Int?, subtitleRes: Int? = null) {
+        val title = binding.tvEmptyConversationsTitle
+        val subtitle = binding.tvEmptyConversationsSubtitle
+        if (titleRes != null) {
+            if (defaultEmptyTitle == null) {
+                defaultEmptyTitle = title.text
+                defaultEmptySubtitle = subtitle.text
+                defaultEmptySubtitleVisibility = subtitle.visibility
+            }
+            title.text = context.getString(titleRes)
+            if (subtitleRes != null) {
+                subtitle.text = context.getString(subtitleRes)
+                subtitle.visibility = VISIBLE
+            } else {
+                subtitle.visibility = GONE
+            }
+        } else {
+            val shownTitle = defaultEmptyTitle ?: return
+            title.text = shownTitle
+            subtitle.text = defaultEmptySubtitle
+            subtitle.visibility = defaultEmptySubtitleVisibility
+            defaultEmptyTitle = null
+            defaultEmptySubtitle = null
+        }
+    }
+
     /**
      * Handles error state.
      */
@@ -660,6 +741,10 @@ public class CometChatConversations @JvmOverloads constructor(
                 binding.customLayout.removeAllViews()
                 binding.customLayout.addView(customErrorView)
                 binding.customLayout.visibility = VISIBLE
+            } else if (viewModel?.connectToLoad?.value == true) {
+                // D84 rule 3: offline with nothing on screen: the kit's offline state, no Retry.
+                applyConnectNotice(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_chats)
+                binding.emptyStateView.visibility = VISIBLE
             } else {
                 binding.errorStateView.visibility = VISIBLE
             }
@@ -1369,6 +1454,18 @@ public class CometChatConversations @JvmOverloads constructor(
     }
 
     /**
+     * Hides or shows the one-line offline notices (for example "1 unsent message was removed").
+     * Defaults to false (notices are shown).
+     *
+     * @param hide true to hide offline notices
+     */
+    public fun setHideOfflineNotices(hide: Boolean) {
+        if (hideOfflineNotices == hide) return
+        hideOfflineNotices = hide
+        if (viewScope != null) observeOfflineNotices()
+    }
+
+    /**
      * Hides or shows the error state.
      * When hidden, the error state view will not be displayed when an error occurs.
      * 
@@ -1928,4 +2025,17 @@ public class CometChatConversations @JvmOverloads constructor(
         viewScope?.cancel()
         viewScope = null
     }
+}
+
+/** The text of one offline notice, from the strings shipped in every locale (ENG-41086). */
+private fun offlineNoticeText(context: Context, notice: OfflineNotice): String = when (notice) {
+    is OfflineNotice.QueueFull -> context.getString(CoreR.string.cometchat_queue_full)
+    is OfflineNotice.FileTooLargeOffline -> context.getString(CoreR.string.cometchat_file_too_large_offline)
+    is OfflineNotice.SendingTryAgain -> context.getString(CoreR.string.cometchat_sending_try_again)
+    is OfflineNotice.UnsentRemoved -> context.getString(CoreR.string.cometchat_unsent_message_removed)
+    is OfflineNotice.MessagesNotSent ->
+        context.resources.getQuantityString(CoreR.plurals.cometchat_messages_not_sent, notice.count, notice.count)
+    is OfflineNotice.UnsentLost ->
+        context.resources.getQuantityString(CoreR.plurals.cometchat_unsent_messages_lost, notice.count, notice.count)
+    is OfflineNotice.UnsentMaybeLost -> context.getString(CoreR.string.cometchat_unsent_messages_maybe_lost)
 }

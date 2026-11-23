@@ -1,5 +1,7 @@
 package com.cometchat.uikit.core.data.datasource
 
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.toList
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.GroupsRequest
 import com.cometchat.chat.exceptions.CometChatException
@@ -46,8 +48,8 @@ class GroupsDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupsRequest>()
             val groups = listOf(mock<Group>(), mock<Group>(), mock<Group>())
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onSuccess(groups)
+            whenever(request.fetchNext(any<CometChat.GroupFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.GroupFetchListener>(0).onServerGroups(groups)
                 null
             }
 
@@ -59,8 +61,8 @@ class GroupsDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupsRequest>()
             val error = MockFactory.createCometChatException("ERR_FETCH", "Network error")
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onError(error)
+            whenever(request.fetchNext(any<CometChat.GroupFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.GroupFetchListener>(0).onError(error)
                 null
             }
 
@@ -101,13 +103,31 @@ class GroupsDataSourceImplTest : FunSpec({
             runTest {
                 val request = mock<GroupsRequest>()
                 val groups = (1..count).map { mock<Group>() }
-                whenever(request.fetchNext(any<CometChat.CallbackListener<List<Group>>>())).thenAnswer { inv ->
-                    inv.getArgument<CometChat.CallbackListener<List<Group>>>(0).onSuccess(groups)
+                whenever(request.fetchNext(any<CometChat.GroupFetchListener>())).thenAnswer { inv ->
+                    inv.getArgument<CometChat.GroupFetchListener>(0).onServerGroups(groups)
                     null
                 }
 
                 dataSource.fetchGroups(request).size shouldBe count
             }
+        }
+    }
+
+    test("fetchGroupsTwoPhase emits the cached phase then the error and completes (ENG-41132)") {
+        runTest {
+            val request = mock<GroupsRequest>()
+            val cached = listOf(mock<Group>())
+            val error = CometChatException("ERROR_INTERNET_UNAVAILABLE", "offline")
+            whenever(request.fetchNext(any<CometChat.GroupFetchListener>())).thenAnswer { inv ->
+                val callback = inv.getArgument<CometChat.GroupFetchListener>(0)
+                callback.onCachedGroups(cached)
+                callback.onError(error)
+                null
+            }
+            dataSource.fetchGroupsTwoPhase(request).toList() shouldBe listOf(
+                TwoPhaseResult.Cached(cached),
+                TwoPhaseResult.Error(error)
+            )
         }
     }
 })

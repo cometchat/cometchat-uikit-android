@@ -1,5 +1,7 @@
 package com.cometchat.uikit.core.data.datasource
 
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.toList
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.UsersRequest
 import com.cometchat.chat.exceptions.CometChatException
@@ -33,10 +35,11 @@ class UsersDataSourceImplTest : FunSpec({
             val expectedUsers = MockFactory.createUsers(3)
 
             // Simulate SDK success callback
-            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.UserFetchListener>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
-                val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
-                callback.onSuccess(expectedUsers)
+                val callback = invocation.getArgument<CometChat.UserFetchListener>(0)
+                callback.onCachedUsers(listOf(mock())) // the cached phase is ignored
+                callback.onServerUsers(expectedUsers)
             }
 
             val result = dataSource.fetchUsers(mockRequest)
@@ -52,9 +55,9 @@ class UsersDataSourceImplTest : FunSpec({
             val expectedException = MockFactory.createCometChatException("ERR_FETCH", "Network error")
 
             // Simulate SDK error callback
-            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.UserFetchListener>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
-                val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
+                val callback = invocation.getArgument<CometChat.UserFetchListener>(0)
                 callback.onError(expectedException)
             }
 
@@ -71,15 +74,33 @@ class UsersDataSourceImplTest : FunSpec({
         runTest {
             val mockRequest = mock<UsersRequest>()
 
-            whenever(mockRequest.fetchNext(any<CometChat.CallbackListener<List<User>>>())).thenAnswer { invocation ->
+            whenever(mockRequest.fetchNext(any<CometChat.UserFetchListener>())).thenAnswer { invocation ->
                 @Suppress("UNCHECKED_CAST")
-                val callback = invocation.getArgument<CometChat.CallbackListener<List<User>>>(0)
-                callback.onSuccess(emptyList())
+                val callback = invocation.getArgument<CometChat.UserFetchListener>(0)
+                callback.onServerUsers(emptyList())
             }
 
             val result = dataSource.fetchUsers(mockRequest)
 
             result shouldBe emptyList()
+        }
+    }
+
+    test("fetchUsersTwoPhase emits the cached then the server phase and completes (ENG-41132)") {
+        runTest {
+            val mockRequest = mock<UsersRequest>()
+            val cachedUsers = listOf(mock<User>())
+            val serverUsers = listOf(mock<User>(), mock<User>())
+            whenever(mockRequest.fetchNext(any<CometChat.UserFetchListener>())).thenAnswer { invocation ->
+                val callback = invocation.getArgument<CometChat.UserFetchListener>(0)
+                callback.onCachedUsers(cachedUsers)
+                callback.onServerUsers(serverUsers)
+                null
+            }
+            dataSource.fetchUsersTwoPhase(mockRequest).toList() shouldBe listOf(
+                TwoPhaseResult.Cached(cachedUsers),
+                TwoPhaseResult.Server(serverUsers)
+            )
         }
     }
 })

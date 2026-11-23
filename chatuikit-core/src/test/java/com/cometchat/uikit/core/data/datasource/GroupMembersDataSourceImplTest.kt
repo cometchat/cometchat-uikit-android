@@ -1,5 +1,7 @@
 package com.cometchat.uikit.core.data.datasource
 
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.toList
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.GroupMembersRequest
 import com.cometchat.chat.exceptions.CometChatException
@@ -44,9 +46,9 @@ class GroupMembersDataSourceImplTest : FunSpec({
     test("fetchGroupMembers returns members and reports hasMore") {
         runTest {
             val request = mock<GroupMembersRequest>()
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<GroupMember>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<GroupMember>>>(0)
-                    .onSuccess(listOf(mock<GroupMember>(), mock<GroupMember>()))
+            whenever(request.fetchNext(any<CometChat.GroupMemberFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.GroupMemberFetchListener>(0)
+                    .onServerGroupMembers(listOf(mock<GroupMember>(), mock<GroupMember>()))
                 null
             }
             Mockito.mockConstruction(GroupMembersRequest.GroupMembersRequestBuilder::class.java) { builder, _ ->
@@ -66,8 +68,8 @@ class GroupMembersDataSourceImplTest : FunSpec({
         runTest {
             val request = mock<GroupMembersRequest>()
             val error = MockFactory.createCometChatException("ERR_MEMBERS", "boom")
-            whenever(request.fetchNext(any<CometChat.CallbackListener<List<GroupMember>>>())).thenAnswer { inv ->
-                inv.getArgument<CometChat.CallbackListener<List<GroupMember>>>(0).onError(error)
+            whenever(request.fetchNext(any<CometChat.GroupMemberFetchListener>())).thenAnswer { inv ->
+                inv.getArgument<CometChat.GroupMemberFetchListener>(0).onError(error)
                 null
             }
             Mockito.mockConstruction(GroupMembersRequest.GroupMembersRequestBuilder::class.java) { builder, _ ->
@@ -137,5 +139,29 @@ class GroupMembersDataSourceImplTest : FunSpec({
         dataSource.hasMoreMembers() shouldBe true
         dataSource.resetRequest()
         dataSource.hasMoreMembers() shouldBe true
+    }
+
+    test("fetchGroupMembersTwoPhase emits cached then server; hasMore changes on the server phase only (ENG-41132)") {
+        runTest {
+            val request = mock<GroupMembersRequest>()
+            val cached = listOf(mock<GroupMember>())
+            whenever(request.fetchNext(any<CometChat.GroupMemberFetchListener>())).thenAnswer { inv ->
+                val callback = inv.getArgument<CometChat.GroupMemberFetchListener>(0)
+                callback.onCachedGroupMembers(cached)
+                callback.onServerGroupMembers(emptyList())
+                null
+            }
+            Mockito.mockConstruction(GroupMembersRequest.GroupMembersRequestBuilder::class.java) { builder, _ ->
+                whenever(builder.setLimit(any())).thenReturn(builder)
+                whenever(builder.setSearchKeyword(any())).thenReturn(builder)
+                whenever(builder.build()).thenReturn(request)
+            }.use {
+                dataSource.fetchGroupMembersTwoPhase("g1", 10, null).toList() shouldBe listOf(
+                    TwoPhaseResult.Cached(cached),
+                    TwoPhaseResult.Server(emptyList())
+                )
+                dataSource.hasMoreMembers() shouldBe false
+            }
+        }
     }
 })

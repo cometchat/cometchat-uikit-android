@@ -13,6 +13,7 @@ import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.offline.OfflinePresence
 import com.cometchat.uikit.kotlin.R
 import com.cometchat.uikit.kotlin.databinding.CometchatGroupMemberListItemBinding
 import com.cometchat.uikit.kotlin.presentation.groupmembers.style.CometChatGroupMembersStyle
@@ -533,8 +534,12 @@ internal class GroupMembersAdapter(
                 binding.cometchatMemberAvatar.setAvatar(member.name, member.avatar)
 
                 // Status indicator
-                if (member.status.equals(CometChatConstants.USER_STATUS_ONLINE, ignoreCase = true)
-                    && !isBlocked(member) && !hideUserStatus
+                if (memberStatusShowsOnline(
+                        status = member.status,
+                        blocked = isBlocked(member),
+                        hideUserStatus = hideUserStatus,
+                        hideOnline = OfflinePresence.hideOnline()
+                    )
                 ) {
                     binding.cometchatMemberStatusIndicator.setStatusIndicator(StatusIndicator.ONLINE)
                     binding.cometchatMemberStatusIndicator.visibility = View.VISIBLE
@@ -686,3 +691,17 @@ internal class GroupMembersAdapter(
 
     // endregion
 }
+
+/**
+ * Whether a group-member row shows the online dot (ENG-41465). [hideOnline] is
+ * `OfflinePresence.hideOnline()`, read once per bind: while offline is on and the device is not
+ * connected, a cached "online" renders as offline. With [hideOnline] `false` this is exactly
+ * today's rule (case-insensitive "online", not blocked, status not hidden).
+ */
+internal fun memberStatusShowsOnline(
+    status: String?,
+    blocked: Boolean,
+    hideUserStatus: Boolean,
+    hideOnline: Boolean
+): Boolean = status.equals(CometChatConstants.USER_STATUS_ONLINE, ignoreCase = true) &&
+    !blocked && !hideUserStatus && !hideOnline

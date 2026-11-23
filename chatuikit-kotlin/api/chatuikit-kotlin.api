@@ -1468,6 +1468,9 @@ public final class com/cometchat/uikit/kotlin/databinding/CometchatMessageListBi
 	public final field newMessageArrow Landroid/widget/ImageView;
 	public final field newMessageBadge Lcom/cometchat/uikit/kotlin/presentation/shared/baseelements/badgecount/CometChatBadgeCount;
 	public final field newMessageIndicator Lcom/google/android/material/card/MaterialCardView;
+	public final field offlineJumpToLatest Lcom/google/android/material/card/MaterialCardView;
+	public final field offlineLoadMoreNewer Landroid/widget/TextView;
+	public final field offlineLoadMoreOlder Landroid/widget/TextView;
 	public final field parentLayout Landroid/widget/LinearLayout;
 	public final field recyclerviewMessageList Landroidx/recyclerview/widget/RecyclerView;
 	public final field shimmerEffectFrame Lcom/cometchat/uikit/kotlin/presentation/shared/shimmer/CometChatShimmerFrameLayout;
@@ -1629,6 +1632,8 @@ public final class com/cometchat/uikit/kotlin/databinding/CometchatPinnedMessage
 public final class com/cometchat/uikit/kotlin/databinding/CometchatPinnedMessagesBinding : androidx/viewbinding/ViewBinding {
 	public final field pinnedMessagesEmpty Landroid/widget/LinearLayout;
 	public final field pinnedMessagesError Landroid/widget/LinearLayout;
+	public final field pinnedMessagesErrorSubtitle Landroid/widget/TextView;
+	public final field pinnedMessagesErrorTitle Landroid/widget/TextView;
 	public final field pinnedMessagesRecycler Landroidx/recyclerview/widget/RecyclerView;
 	public final field pinnedMessagesToolbar Lcom/cometchat/uikit/kotlin/presentation/shared/toolbar/CometChatToolbar;
 	public static fun bind (Landroid/view/View;)Lcom/cometchat/uikit/kotlin/databinding/CometchatPinnedMessagesBinding;
@@ -1831,6 +1836,8 @@ public final class com/cometchat/uikit/kotlin/databinding/CometchatSavedMessageI
 public final class com/cometchat/uikit/kotlin/databinding/CometchatSavedMessagesBinding : androidx/viewbinding/ViewBinding {
 	public final field savedMessagesEmpty Landroid/widget/LinearLayout;
 	public final field savedMessagesError Landroid/widget/LinearLayout;
+	public final field savedMessagesErrorSubtitle Landroid/widget/TextView;
+	public final field savedMessagesErrorTitle Landroid/widget/TextView;
 	public final field savedMessagesRecycler Landroidx/recyclerview/widget/RecyclerView;
 	public final field savedMessagesToolbar Lcom/cometchat/uikit/kotlin/presentation/shared/toolbar/CometChatToolbar;
 	public static fun bind (Landroid/view/View;)Lcom/cometchat/uikit/kotlin/databinding/CometchatSavedMessagesBinding;
@@ -3273,6 +3280,7 @@ public final class com/cometchat/uikit/kotlin/presentation/conversations/ui/Come
 	public final fun setHideEmptyState (Z)V
 	public final fun setHideErrorState (Z)V
 	public final fun setHideLoadingState (Z)V
+	public final fun setHideOfflineNotices (Z)V
 	public final fun setItemView (Lcom/cometchat/uikit/kotlin/presentation/conversations/utils/ConversationsViewHolderListener;)V
 	public final fun setLeadingView (Lcom/cometchat/uikit/kotlin/presentation/conversations/utils/ConversationsViewHolderListener;)V
 	public final fun setLoadingStateVisibility (I)V
@@ -5185,6 +5193,29 @@ public final class com/cometchat/uikit/kotlin/presentation/messagelist/style/Com
 	public final fun fromTypedArray (Landroid/content/Context;Landroid/content/res/TypedArray;)Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatMessageListStyle;
 }
 
+public final class com/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle {
+	public static final field Companion Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle$Companion;
+	public fun <init> ()V
+	public fun <init> (III)V
+	public synthetic fun <init> (IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;IIIILjava/lang/Object;)Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;
+	public static final fun default (Landroid/content/Context;)Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFailedTextColor ()I
+	public final fun getNotSentTextColor ()I
+	public final fun getTextAppearance ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle$Companion {
+	public final fun default (Landroid/content/Context;)Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;
+}
+
 public final class com/cometchat/uikit/kotlin/presentation/messagelist/ui/CometChatMessageList : android/widget/FrameLayout {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
@@ -5301,6 +5332,7 @@ public final class com/cometchat/uikit/kotlin/presentation/messagelist/ui/CometC
 	public final fun setHideErrorState (Z)V
 	public final fun setHideGroupActionMessages (Z)V
 	public final fun setHideLoadingState (Z)V
+	public final fun setHideOfflineNotices (Z)V
 	public final fun setHideReceipts (Z)V
 	public final fun setLeadingViewProvider (Lcom/cometchat/uikit/kotlin/presentation/messagelist/BubbleViewProvider;)V
 	public final fun setLeftBubbleMargin (IIII)V
@@ -5316,6 +5348,7 @@ public final class com/cometchat/uikit/kotlin/presentation/messagelist/ui/CometC
 	public final fun setMessagesRequestBuilder (Lcom/cometchat/chat/core/MessagesRequest$MessagesRequestBuilder;)V
 	public final fun setMessagesTypes (Ljava/util/List;)V
 	public final fun setNewMessageIndicatorView (Landroid/view/View;)V
+	public final fun setOfflineRowStyle (Lcom/cometchat/uikit/kotlin/presentation/messagelist/style/CometChatOfflineRowStyle;)V
 	public final fun setOnAddMoreReactionsClick (Lkotlin/jvm/functions/Function1;)V
 	public final fun setOnEmpty (Lkotlin/jvm/functions/Function0;)V
 	public final fun setOnError (Lkotlin/jvm/functions/Function1;)V

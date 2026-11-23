@@ -69,10 +69,10 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
         val queue = ArrayDeque(pages.toList())
         val req = mock<MessagesRequest>()
         doAnswer { invocation ->
-            val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
-            cb.onSuccess(queue.removeFirstOrNull() ?: emptyList())
+            val cb = invocation.getArgument<CometChat.MessageFetchListener>(0)
+            cb.onServerMessages(queue.removeFirstOrNull() ?: emptyList())
             null
-        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+        }.whenever(req).fetchNext(any<CometChat.MessageFetchListener>())
         return req
     }
 
@@ -80,10 +80,10 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
     fun requestFailing(exception: CometChatException): MessagesRequest {
         val req = mock<MessagesRequest>()
         doAnswer { invocation ->
-            val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
+            val cb = invocation.getArgument<CometChat.MessageFetchListener>(0)
             cb.onError(exception)
             null
-        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+        }.whenever(req).fetchNext(any<CometChat.MessageFetchListener>())
         return req
     }
 
@@ -161,7 +161,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             vm.count.value shouldBe 5
             vm.uiState.value shouldBe PinnedSavedListUIState.Content
             // 2 content pages + 1 terminating empty page
-            verify(currentRequest, times(3)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+            verify(currentRequest, times(3)).fetchNext(any<CometChat.MessageFetchListener>())
         }
     }
 
@@ -177,7 +177,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
 
             // 30+30+30+30 = 120 ≥ cap, so the 5th page is never requested.
             vm.count.value shouldBe 120
-            verify(currentRequest, times(4)).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+            verify(currentRequest, times(4)).fetchNext(any<CometChat.MessageFetchListener>())
         }
     }
 
@@ -214,12 +214,12 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
     test("switching conversation mid-load discards the stale load (ENG-38060 regression)") {
         runTest(testDispatcher) {
             // Conversation A's paging never calls back — it is still in flight when we switch.
-            val stalledCallbacks = mutableListOf<CometChat.CallbackListener<List<BaseMessage>>>()
+            val stalledCallbacks = mutableListOf<CometChat.MessageFetchListener>()
             val stalledRequest = mock<MessagesRequest>()
             doAnswer { invocation ->
                 stalledCallbacks.add(invocation.getArgument(0))
                 null
-            }.whenever(stalledRequest).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+            }.whenever(stalledRequest).fetchNext(any<CometChat.MessageFetchListener>())
 
             currentRequest = stalledRequest
             val vm = CometChatPinnedMessagesViewModel(enableListeners = false)
@@ -232,7 +232,7 @@ class CometChatPinnedMessagesViewModelTest : FunSpec({
             vm.messages.value.map { it.id } shouldBe listOf(7L, 8L)
 
             // A's page lands late — it must not be published under B's header.
-            stalledCallbacks.forEach { it.onSuccess(messagesOf(1, 2, 3)) }
+            stalledCallbacks.forEach { it.onServerMessages(messagesOf(1, 2, 3)) }
 
             vm.messages.value.map { it.id } shouldBe listOf(7L, 8L)
             vm.count.value shouldBe 2
