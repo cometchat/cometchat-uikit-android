@@ -18,5 +18,23 @@
     <string name="cometchat_translate" translatable="true">翻譯</string>
     <string name="cometchat_unpin" translatable="true">取消釘選訊息</string>
     <string name="cometchat_unsave" translatable="true">取消儲存訊息</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">尚未傳送</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">未傳送。輕觸以重試</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">已移除 1 則未傳送的訊息</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">未傳送的訊息可能已遺失</string>
+    <string name="cometchat_queue_full" translatable="true">等待傳送的訊息過多</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">檔案太大，無法離線傳送</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">連線以載入更多</string>
+    <string name="cometchat_media_available_when_online" translatable="true">恢復連線後即可查看媒體</string>
+    <string name="cometchat_jump_to_latest" translatable="true">跳至最新</string>
+    <string name="cometchat_sending_try_again" translatable="true">正在傳送… 請稍後再試</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="other">%d 則訊息未傳送</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="other">%d 則未傳送的訊息已遺失</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">重試</string>
     <string name="cometchat_call_no_internet" translatable="true">沒有網路連線。請檢查連線後再試一次。</string>
 </resources>

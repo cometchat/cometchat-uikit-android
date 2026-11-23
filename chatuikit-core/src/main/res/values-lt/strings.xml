@@ -18,5 +18,29 @@
     <string name="cometchat_translate" translatable="true">Versti</string>
     <string name="cometchat_unpin" translatable="true">Atsegti žinutę</string>
     <string name="cometchat_unsave" translatable="true">Pašalinti žinutę iš išsaugotų</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Dar neišsiųsta</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Neišsiųsta. Palieskite, kad bandytumėte dar kartą</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">Pašalinta 1 neišsiųsta žinutė</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Neišsiųstos žinutės galėjo būti prarastos</string>
+    <string name="cometchat_queue_full" translatable="true">Per daug žinučių laukia išsiuntimo</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Failas per didelis siųsti neprisijungus</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Prisijunkite, kad įkeltumėte daugiau</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Medija bus pasiekiama, kai vėl prisijungsite</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Pereiti prie naujausių</string>
+    <string name="cometchat_sending_try_again" translatable="true">Siunčiama… bandykite dar kartą po akimirkos</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d žinutė neišsiųsta</item>
+        <item quantity="few">%d žinutės neišsiųstos</item>
+        <item quantity="many">%d žinutės neišsiųsta</item>
+        <item quantity="other">%d žinučių neišsiųsta</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">Prarasta %d neišsiųsta žinutė</item>
+        <item quantity="few">Prarastos %d neišsiųstos žinutės</item>
+        <item quantity="many">Prarasta %d neišsiųstos žinutės</item>
+        <item quantity="other">Prarasta %d neišsiųstų žinučių</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Bandyti iš naujo</string>
     <string name="cometchat_call_no_internet" translatable="true">Nėra interneto ryšio. Patikrinkite ryšį ir bandykite dar kartą.</string>
 </resources>

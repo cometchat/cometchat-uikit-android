@@ -11,6 +11,9 @@ import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatMessageEvent
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineListSession
+import com.cometchat.uikit.core.offline.OfflinePagedMerge
 import com.cometchat.uikit.core.state.ChatHistoryUIState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -77,6 +80,22 @@ open public class CometChatAIAssistantChatHistoryViewModel(
     private var listenerTag: String? = null
     private var messageEventsJob: Job? = null
 
+    /**
+     * Bumped only by a session end or cache reset (G8), so a read already in flight drops its
+     * result. Never moves with offline off, where reads behave as today.
+     */
+    private var historyGen = 0L
+
+    // G8: session end and cache reset (ENG-41568). Started only with offline on.
+    private val offlineSession = OfflineListSession(
+        onSessionEnded = { clearForOfflineSession() },
+        onCacheReset = { onOfflineCacheReset() }
+    )
+
+    init {
+        if (enableListeners && OfflineGate.isOn()) offlineSession.start(viewModelScope)
+    }
+
     // --- Public Methods ---
 
     /**
@@ -121,13 +140,35 @@ open public class CometChatAIAssistantChatHistoryViewModel(
             _uiState.value = ChatHistoryUIState.Loading
         }
 
-        messagesRequest?.fetchPrevious(object : CometChat.CallbackListener<List<BaseMessage>>() {
-            override fun onSuccess(fetchedMessages: List<BaseMessage>) {
-                val hasResults = fetchedMessages.isNotEmpty()
+        // One SDK 5.1.0 two-phase read. Offline off: no cached phase, so this is today's flow.
+        // Offline on: the cached page is the first paint and the server page replaces it in place,
+        // deduped by id (OfflinePagedMerge); only the server phase moves hasMore, so an empty
+        // cached page never ends the list. [_isInProgress] serialises reads; the request is built once
+        // (initializeMessagesRequest) and rebuilt only on a session end or cache reset (G8), which
+        // also bumps [historyGen] so the read in flight then drops its result.
+        val offlineOn = OfflineGate.isOn()
+        val gen = historyGen
+        var window: Set<Any> = emptySet()
+        messagesRequest?.fetchPrevious(object : CometChat.MessageFetchListener() {
+            override fun onCachedMessages(messages: List<BaseMessage>) {
+                if (!offlineOn || gen != historyGen) return
+                val merged = OfflinePagedMerge.applyCached(messageArrayList.toList(), messages.reversed(), ::messageKey)
+                window = merged.window
+                if (merged.added > 0) showMerged(merged.rows, merged.added)
+            }
+
+            override fun onServerMessages(messages: List<BaseMessage>) {
+                if (gen != historyGen) return
+                val hasResults = messages.isNotEmpty()
                 _hasMore.value = hasResults
 
-                if (hasResults) {
-                    val reversed = fetchedMessages.reversed()
+                if (offlineOn) {
+                    val merged = OfflinePagedMerge.applyServer(
+                        messageArrayList.toList(), messages.reversed(), window, ::messageKey
+                    )
+                    showMerged(merged.rows, merged.added)
+                } else if (hasResults) {
+                    val reversed = messages.reversed()
                     messageArrayList.addAll(reversed)
                     _messages.value = ArrayList(messageArrayList)
                     _messagesRangeChanged.tryEmit(reversed.size)
@@ -143,11 +184,36 @@ open public class CometChatAIAssistantChatHistoryViewModel(
             }
 
             override fun onError(exception: CometChatException) {
+                if (gen != historyGen) return
                 _isInProgress.value = false
-                _uiState.value = ChatHistoryUIState.Error(exception)
+                if (!offlineOn) {
+                    _uiState.value = ChatHistoryUIState.Error(exception)
+                    return
+                }
+                // Offline on: never an error screen over rows already shown. With nothing shown,
+                // AI history is online only (D32-R2c), so any error, not-connected included, is
+                // today's error state.
+                _uiState.value = if (messageArrayList.isNotEmpty()) {
+                    ChatHistoryUIState.Content(ArrayList(messageArrayList))
+                } else {
+                    ChatHistoryUIState.Error(exception)
+                }
             }
         })
     }
+
+    /** Replaces the list with [rows] (offline on); emits the range only for a net growth. */
+    private fun showMerged(rows: List<BaseMessage>, added: Int) {
+        messageArrayList.clear()
+        messageArrayList.addAll(rows)
+        _messages.value = ArrayList(messageArrayList)
+        if (added > 0) _messagesRangeChanged.tryEmit(added)
+        if (messageArrayList.isNotEmpty()) {
+            _uiState.value = ChatHistoryUIState.Content(ArrayList(messageArrayList))
+        }
+    }
+
+    private fun messageKey(message: BaseMessage): Any = message.id
 
     /**
      * Deletes a chat history message via the CometChat SDK.
@@ -243,6 +309,32 @@ open public class CometChatAIAssistantChatHistoryViewModel(
     }
 
     // --- Private Methods ---
+
+    /**
+     * Clears the history for a session change (logout or a switch to a different uid), before the
+     * next frame (G8). Bumps [historyGen], so a read already in flight drops its result, empties the
+     * rows and resets paging: the request is rebuilt from the same builder, so the next fetch starts
+     * from page one. Offline on only (the hub drives it).
+     */
+    private fun clearForOfflineSession() {
+        historyGen++
+        messageArrayList.clear()
+        _messages.value = emptyList()
+        _hasMore.value = true
+        _isInProgress.value = false
+        if (messagesRequest != null) messagesRequest = messageRequestBuilder?.build()
+        _uiState.value = ChatHistoryUIState.Loading
+    }
+
+    /**
+     * The offline cache was reset (G8): clear as for a session end, then read the first page once
+     * if the history had a user or group. A failure over cached rows keeps them and reports nothing
+     * (D84 rule 5).
+     */
+    private fun onOfflineCacheReset() {
+        clearForOfflineSession()
+        fetchMessages()
+    }
 
     /**
      * Initializes the MessagesRequest with the appropriate UID or GUID filter.

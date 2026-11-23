@@ -10,8 +10,17 @@ import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.data.datasource.MessageListDataSource
 import com.cometchat.uikit.core.data.datasource.MessageListDataSourceImpl
+import com.cometchat.uikit.core.data.datasource.MessageListTwoPhaseDataSource
 import com.cometchat.uikit.core.domain.model.SurroundingMessagesResult
 import com.cometchat.uikit.core.domain.repository.MessageListRepository
+import com.cometchat.uikit.core.domain.repository.MessageListTwoPhaseRepository
+import com.cometchat.uikit.core.offline.MessageListAnchoredReads
+import com.cometchat.uikit.core.offline.SettledRead
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Repository implementation for message list operations.
@@ -22,7 +31,7 @@ import com.cometchat.uikit.core.domain.repository.MessageListRepository
  */
 public class MessageListRepositoryImpl(
     private val dataSource: MessageListDataSource = MessageListDataSourceImpl()
-) : MessageListRepository {
+) : MessageListRepository, MessageListTwoPhaseRepository {
     
     private var messagesRequest: MessagesRequest? = null
     private var messagesRequestBuilder: MessagesRequest.MessagesRequestBuilder? = null
@@ -125,6 +134,98 @@ public class MessageListRepositoryImpl(
         }
     }
     
+    /**
+     * Two-phase twin of [fetchPreviousMessages] (G2). Uses the data source's two-phase read when it
+     * has one; a custom data source without it gets a single server phase from today's call.
+     * `hasMore` changes only on the server phase — a cached page never ends history (BEH-READ-09b).
+     */
+    override fun fetchPreviousTwoPhase(): Flow<TwoPhaseResult<BaseMessage>> {
+        val request = messagesRequest
+            ?: return flowOf(TwoPhaseResult.Error(CometChatException("ERROR", "MessagesRequest not configured")))
+        val source = dataSource
+        val phases = if (source is MessageListTwoPhaseDataSource) {
+            source.fetchPreviousTwoPhase(request)
+        } else {
+            singleServerPhase { dataSource.fetchPreviousMessages(request) }
+        }
+        return phases.onEach { if (it is TwoPhaseResult.Server) hasMore = it.rows.isNotEmpty() }
+    }
+
+    /** Two-phase twin of [fetchNextMessages] (G2), from the same `fromMessageId`. */
+    override fun fetchNextTwoPhase(fromMessageId: Long): Flow<TwoPhaseResult<BaseMessage>> {
+        val builder = messagesRequestBuilder
+            ?: return flowOf(TwoPhaseResult.Error(CometChatException("ERROR", "MessagesRequestBuilder not configured")))
+        val nextRequest = builder.setMessageId(fromMessageId).build()
+        val source = dataSource
+        return if (source is MessageListTwoPhaseDataSource) {
+            source.fetchNextTwoPhase(nextRequest)
+        } else {
+            singleServerPhase { dataSource.fetchNextMessages(nextRequest) }
+        }
+    }
+
+    private fun singleServerPhase(fetch: suspend () -> List<BaseMessage>): Flow<TwoPhaseResult<BaseMessage>> = flow {
+        val result = try {
+            TwoPhaseResult.Server(fetch())
+        } catch (e: CometChatException) {
+            TwoPhaseResult.Error(e)
+        } catch (e: Exception) {
+            TwoPhaseResult.Error(CometChatException("ERROR", e.message ?: "fetch failed"))
+        }
+        emit(result)
+    }
+
+    /**
+     * The chat-open jump reads (D60), for [com.cometchat.uikit.core.offline.MessageListOfflineReads]
+     * only. The conversation and target settle on the server value, else (offline) the cached copy (the
+     * default data source only; a custom one answers server-only, as today). The anchored pages
+     * use a request whose message id this kit sets (BEH-READ-29) with the configured filters, and
+     * leave this repository's own pagination state alone.
+     */
+    internal fun anchoredReads(): MessageListAnchoredReads = object : MessageListAnchoredReads {
+        override suspend fun getConversation(id: String, type: String): Result<SettledRead<Conversation>> =
+            try {
+                val source = dataSource
+                Result.success(
+                    if (source is MessageListDataSourceImpl) source.getConversationCachedAllowed(id, type)
+                    else SettledRead(source.getConversation(id, type), fromServer = true)
+                )
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getMessage(messageId: Long): Result<BaseMessage> =
+            try {
+                val source = dataSource
+                Result.success(
+                    if (source is MessageListDataSourceImpl) source.getMessageCachedAllowed(messageId)
+                    else source.getMessage(messageId)
+                )
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override fun fetchPreviousAnchored(messageId: Long): Flow<TwoPhaseResult<BaseMessage>> {
+            val request = anchoredRequest(messageId) ?: return notConfigured()
+            val source = dataSource
+            return if (source is MessageListTwoPhaseDataSource) source.fetchPreviousTwoPhase(request)
+            else singleServerPhase { source.fetchPreviousMessages(request) }
+        }
+
+        override fun fetchNextAnchored(messageId: Long): Flow<TwoPhaseResult<BaseMessage>> {
+            val request = anchoredRequest(messageId) ?: return notConfigured()
+            val source = dataSource
+            return if (source is MessageListTwoPhaseDataSource) source.fetchNextTwoPhase(request)
+            else singleServerPhase { source.fetchNextMessages(request) }
+        }
+
+        private fun anchoredRequest(messageId: Long): MessagesRequest? =
+            messagesRequestBuilder?.setMessageId(messageId)?.build()
+
+        private fun notConfigured(): Flow<TwoPhaseResult<BaseMessage>> =
+            flowOf(TwoPhaseResult.Error(CometChatException("ERROR", "MessagesRequestBuilder not configured")))
+    }
+
     override suspend fun fetchNextMessages(fromMessageId: Long): Result<List<BaseMessage>> {
         val builder = messagesRequestBuilder
             ?: return Result.failure(CometChatException("ERROR", "MessagesRequestBuilder not configured"))

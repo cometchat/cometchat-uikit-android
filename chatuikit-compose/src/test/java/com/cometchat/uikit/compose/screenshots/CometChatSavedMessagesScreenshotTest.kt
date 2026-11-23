@@ -132,7 +132,7 @@ class CometChatSavedMessagesScreenshotTest {
             val cb = invocation.getArgument<CometChat.CallbackListener<List<BaseMessage>>>(0)
             cb.onSuccess(queue.removeFirstOrNull() ?: emptyList())
             null
-        }.whenever(req).fetchNext(any<CometChat.CallbackListener<List<BaseMessage>>>())
+        }.whenever(req).fetchNext(any<com.cometchat.chat.core.CometChat.CallbackListener<List<com.cometchat.chat.models.BaseMessage>>>())
         return req
     }
 

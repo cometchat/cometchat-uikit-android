@@ -40,13 +40,14 @@ open public class SearchGroupMembersUseCase {
     private suspend fun fetchMembers(
         request: GroupMembersRequest
     ): List<GroupMember> = suspendCancellableCoroutine { continuation ->
-        request.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
-            override fun onSuccess(members: List<GroupMember>) {
-                continuation.resume(members)
+        // The SDK's two-phase listener; only the server phase answers (the cached phase is ignored).
+        request.fetchNext(object : CometChat.GroupMemberFetchListener() {
+            override fun onServerGroupMembers(members: List<GroupMember>) {
+                if (continuation.isActive) continuation.resume(members)
             }
 
             override fun onError(exception: CometChatException) {
-                continuation.resumeWithException(exception)
+                if (continuation.isActive) continuation.resumeWithException(exception)
             }
         })
     }

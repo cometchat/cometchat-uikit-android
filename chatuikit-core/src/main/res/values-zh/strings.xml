@@ -18,5 +18,23 @@
     <string name="cometchat_translate" translatable="true">翻译</string>
     <string name="cometchat_unpin" translatable="true">取消置顶消息</string>
     <string name="cometchat_unsave" translatable="true">取消保存消息</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">尚未发送</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">未发送。点按以重试</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">已移除 1 条未发送的消息</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">未发送的消息可能已丢失</string>
+    <string name="cometchat_queue_full" translatable="true">等待发送的消息过多</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">文件过大，无法离线发送</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">连接网络以加载更多</string>
+    <string name="cometchat_media_available_when_online" translatable="true">恢复联网后即可查看媒体</string>
+    <string name="cometchat_jump_to_latest" translatable="true">跳到最新</string>
+    <string name="cometchat_sending_try_again" translatable="true">正在发送… 请稍后重试</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="other">%d 条消息未发送</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="other">%d 条未发送的消息已丢失</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">重试</string>
     <string name="cometchat_call_no_internet" translatable="true">无网络连接。请检查网络连接后重试。</string>
 </resources>

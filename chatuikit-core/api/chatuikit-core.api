@@ -77,13 +77,14 @@ public final class com/cometchat/uikit/core/CometChatUIKit {
 
 public final class com/cometchat/uikit/core/UIKitSettings {
 	public static final field Companion Lcom/cometchat/uikit/core/UIKitSettings$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/Object;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/Object;ZLcom/cometchat/chat/core/OfflineConfig;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAppId ()Ljava/lang/String;
 	public final fun getAuthKey ()Ljava/lang/String;
 	public final fun getAutoEstablishSocketConnection ()Z
 	public final fun getCallSettingsBuilder ()Ljava/lang/Object;
 	public final fun getEnableCalling ()Z
 	public final fun getEnableThreadSubscription ()Z
+	public final fun getOfflineConfig ()Lcom/cometchat/chat/core/OfflineConfig;
 	public final fun getOverrideAdminHost ()Ljava/lang/String;
 	public final fun getOverrideCallsHost ()Ljava/lang/String;
 	public final fun getOverrideClientHost ()Ljava/lang/String;
@@ -107,6 +108,7 @@ public final class com/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder {
 	public final fun setCallSettingsBuilder (Ljava/lang/Object;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setEnableCalling (Z)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setEnableThreadSubscription (Z)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
+	public final fun setOfflineConfig (Lcom/cometchat/chat/core/OfflineConfig;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setRegion (Ljava/lang/String;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun setRoles (Ljava/util/List;)Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
 	public final fun subscribePresenceForAllUsers ()Lcom/cometchat/uikit/core/UIKitSettings$UIKitSettingsBuilder;
@@ -498,6 +500,7 @@ public final class com/cometchat/uikit/core/constants/UIKitConstants$MessageOpti
 	public static final field REPLY_PRIVATELY Ljava/lang/String;
 	public static final field REPLY_TO_MESSAGE Ljava/lang/String;
 	public static final field REPORT Ljava/lang/String;
+	public static final field RETRY Ljava/lang/String;
 	public static final field SAVE Ljava/lang/String;
 	public static final field SHARE Ljava/lang/String;
 	public static final field THREAD_SUBSCRIPTION Ljava/lang/String;
@@ -773,11 +776,16 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/Convers
 	public abstract fun markAsDelivered (Lcom/cometchat/chat/models/BaseMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/datasource/ConversationListDataSourceImpl : com/cometchat/uikit/core/data/datasource/ConversationListDataSource {
+public final class com/cometchat/uikit/core/data/datasource/ConversationListDataSourceImpl : com/cometchat/uikit/core/data/datasource/ConversationListDataSource, com/cometchat/uikit/core/data/datasource/ConversationListTwoPhaseDataSource {
 	public fun <init> ()V
 	public fun deleteConversation (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun fetchConversations (Lcom/cometchat/chat/core/ConversationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchNextTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun markAsDelivered (Lcom/cometchat/chat/models/BaseMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/cometchat/uikit/core/data/datasource/ConversationListTwoPhaseDataSource {
+	public abstract fun fetchNextTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/data/datasource/GroupMembersDataSource {
@@ -789,15 +797,20 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/GroupMe
 	public abstract fun resetRequest ()V
 }
 
-public final class com/cometchat/uikit/core/data/datasource/GroupMembersDataSourceImpl : com/cometchat/uikit/core/data/datasource/GroupMembersDataSource {
+public final class com/cometchat/uikit/core/data/datasource/GroupMembersDataSourceImpl : com/cometchat/uikit/core/data/datasource/GroupMembersDataSource, com/cometchat/uikit/core/data/datasource/GroupMembersTwoPhaseDataSource {
 	public fun <init> (Lcom/cometchat/chat/core/GroupMembersRequest$GroupMembersRequestBuilder;)V
 	public fun banGroupMember (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun changeMemberScope (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun fetchGroupMembers (Ljava/lang/String;ILjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchGroupMembersTwoPhase (Ljava/lang/String;ILjava/lang/String;)Lkotlinx/coroutines/flow/Flow;
 	public fun hasMoreMembers ()Z
 	public fun kickGroupMember (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun resetRequest ()V
 	public final fun resetRequestBuilder (Lcom/cometchat/chat/core/GroupMembersRequest$GroupMembersRequestBuilder;)V
+}
+
+public abstract interface class com/cometchat/uikit/core/data/datasource/GroupMembersTwoPhaseDataSource {
+	public abstract fun fetchGroupMembersTwoPhase (Ljava/lang/String;ILjava/lang/String;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/data/datasource/GroupsDataSource {
@@ -805,10 +818,15 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/GroupsD
 	public abstract fun joinGroup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/datasource/GroupsDataSourceImpl : com/cometchat/uikit/core/data/datasource/GroupsDataSource {
+public final class com/cometchat/uikit/core/data/datasource/GroupsDataSourceImpl : com/cometchat/uikit/core/data/datasource/GroupsDataSource, com/cometchat/uikit/core/data/datasource/GroupsTwoPhaseDataSource {
 	public fun <init> ()V
 	public fun fetchGroups (Lcom/cometchat/chat/core/GroupsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchGroupsTwoPhase (Lcom/cometchat/chat/core/GroupsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun joinGroup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/cometchat/uikit/core/data/datasource/GroupsTwoPhaseDataSource {
+	public abstract fun fetchGroupsTwoPhase (Lcom/cometchat/chat/core/GroupsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/data/datasource/MessageComposerDataSource {
@@ -841,6 +859,11 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/Message
 	public abstract fun removeReaction (JLjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public abstract interface class com/cometchat/uikit/core/data/datasource/MessageListTwoPhaseDataSource {
+	public abstract fun fetchNextTwoPhase (Lcom/cometchat/chat/core/MessagesRequest;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun fetchPreviousTwoPhase (Lcom/cometchat/chat/core/MessagesRequest;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public final class com/cometchat/uikit/core/data/datasource/MessageReceiptEventListener {
 	public fun <init> ()V
 	public final fun deliveredEvents ()Lkotlinx/coroutines/flow/Flow;
@@ -861,9 +884,18 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/Reactio
 	public abstract fun removeReaction-0E7RQCE (JLjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public abstract interface class com/cometchat/uikit/core/data/datasource/ReactionListTwoPhaseDataSource {
+	public abstract fun fetchReactionsTwoPhase (Lcom/cometchat/chat/core/ReactionsRequest;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public abstract interface class com/cometchat/uikit/core/data/datasource/SearchDataSource {
 	public abstract fun fetchConversations (Lcom/cometchat/chat/core/ConversationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun fetchMessages (Lcom/cometchat/chat/core/MessagesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/cometchat/uikit/core/data/datasource/SearchTwoPhaseDataSource {
+	public abstract fun fetchConversationsTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun fetchMessagesTwoPhase (Lcom/cometchat/chat/core/MessagesRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/data/datasource/StickerDataSource {
@@ -874,9 +906,14 @@ public abstract interface class com/cometchat/uikit/core/data/datasource/UsersDa
 	public abstract fun fetchUsers (Lcom/cometchat/chat/core/UsersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/datasource/UsersDataSourceImpl : com/cometchat/uikit/core/data/datasource/UsersDataSource {
+public final class com/cometchat/uikit/core/data/datasource/UsersDataSourceImpl : com/cometchat/uikit/core/data/datasource/UsersDataSource, com/cometchat/uikit/core/data/datasource/UsersTwoPhaseDataSource {
 	public fun <init> ()V
 	public fun fetchUsers (Lcom/cometchat/chat/core/UsersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchUsersTwoPhase (Lcom/cometchat/chat/core/UsersRequest;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public abstract interface class com/cometchat/uikit/core/data/datasource/UsersTwoPhaseDataSource {
+	public abstract fun fetchUsersTwoPhase (Lcom/cometchat/chat/core/UsersRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public final class com/cometchat/uikit/core/data/repository/CallButtonsRepositoryImpl : com/cometchat/uikit/core/domain/repository/CallButtonsRepository {
@@ -892,27 +929,30 @@ public final class com/cometchat/uikit/core/data/repository/CallLogsRepositoryIm
 	public fun hasMoreCallLogs ()Z
 }
 
-public final class com/cometchat/uikit/core/data/repository/ConversationListRepositoryImpl : com/cometchat/uikit/core/domain/repository/ConversationListRepository {
+public final class com/cometchat/uikit/core/data/repository/ConversationListRepositoryImpl : com/cometchat/uikit/core/domain/repository/ConversationListRepository, com/cometchat/uikit/core/domain/repository/ConversationListTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/ConversationListDataSource;)V
 	public fun deleteConversation-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchNextTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun getConversations-gIAlu-s (Lcom/cometchat/chat/core/ConversationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun hasMoreConversations ()Z
 	public fun markAsDelivered-gIAlu-s (Lcom/cometchat/chat/models/Conversation;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/repository/GroupMembersRepositoryImpl : com/cometchat/uikit/core/domain/repository/GroupMembersRepository {
+public final class com/cometchat/uikit/core/data/repository/GroupMembersRepositoryImpl : com/cometchat/uikit/core/domain/repository/GroupMembersRepository, com/cometchat/uikit/core/domain/repository/GroupMembersTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/GroupMembersDataSource;)V
 	public fun banMember-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun changeMemberScope-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun fetchGroupMembers-BWLJW6A (Ljava/lang/String;ILjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchGroupMembersTwoPhase (Ljava/lang/String;ILjava/lang/String;)Lkotlinx/coroutines/flow/Flow;
 	public fun hasMore ()Z
 	public fun kickMember-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun resetRequest ()V
 }
 
-public final class com/cometchat/uikit/core/data/repository/GroupsRepositoryImpl : com/cometchat/uikit/core/domain/repository/GroupsRepository {
+public final class com/cometchat/uikit/core/data/repository/GroupsRepositoryImpl : com/cometchat/uikit/core/domain/repository/GroupsRepository, com/cometchat/uikit/core/domain/repository/GroupsTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/GroupsDataSource;)V
 	public fun fetchGroups-gIAlu-s (Lcom/cometchat/chat/core/GroupsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchGroupsTwoPhase (Lcom/cometchat/chat/core/GroupsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun hasMoreGroups ()Z
 	public fun joinGroup-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -937,7 +977,7 @@ public final class com/cometchat/uikit/core/data/repository/MessageInformationRe
 	public fun fetchReceipts-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/repository/MessageListRepositoryImpl : com/cometchat/uikit/core/domain/repository/MessageListRepository {
+public final class com/cometchat/uikit/core/data/repository/MessageListRepositoryImpl : com/cometchat/uikit/core/domain/repository/MessageListRepository, com/cometchat/uikit/core/domain/repository/MessageListTwoPhaseRepository {
 	public fun <init> ()V
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/MessageListDataSource;)V
 	public synthetic fun <init> (Lcom/cometchat/uikit/core/data/datasource/MessageListDataSource;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -947,7 +987,9 @@ public final class com/cometchat/uikit/core/data/repository/MessageListRepositor
 	public fun deleteMessage-gIAlu-s (Lcom/cometchat/chat/models/BaseMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun fetchActionMessages-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun fetchNextMessages-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchNextTwoPhase (J)Lkotlinx/coroutines/flow/Flow;
 	public fun fetchPreviousMessages-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchPreviousTwoPhase ()Lkotlinx/coroutines/flow/Flow;
 	public fun fetchSurroundingMessages-gIAlu-s (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun flagMessage-BWLJW6A (JLjava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getConversation-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -970,16 +1012,19 @@ public final class com/cometchat/uikit/core/data/repository/PollRepositoryImpl :
 	public fun createPoll-hUnOzRk (Ljava/lang/String;Lorg/json/JSONArray;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/repository/ReactionListRepositoryImpl : com/cometchat/uikit/core/domain/repository/ReactionListRepository {
+public final class com/cometchat/uikit/core/data/repository/ReactionListRepositoryImpl : com/cometchat/uikit/core/domain/repository/ReactionListRepository, com/cometchat/uikit/core/domain/repository/ReactionListTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/ReactionListDataSource;)V
 	public fun fetchReactions-gIAlu-s (Lcom/cometchat/chat/core/ReactionsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun fetchReactionsTwoPhase (Lcom/cometchat/chat/core/ReactionsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun removeReaction-0E7RQCE (JLjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/repository/SearchRepositoryImpl : com/cometchat/uikit/core/domain/repository/SearchRepository {
+public final class com/cometchat/uikit/core/data/repository/SearchRepositoryImpl : com/cometchat/uikit/core/domain/repository/SearchRepository, com/cometchat/uikit/core/domain/repository/SearchTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/SearchDataSource;)V
 	public fun getConversations-gIAlu-s (Lcom/cometchat/chat/core/ConversationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getConversationsTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun getMessages-gIAlu-s (Lcom/cometchat/chat/core/MessagesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getMessagesTwoPhase (Lcom/cometchat/chat/core/MessagesRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun hasMoreConversations ()Z
 	public fun hasMoreMessages ()Z
 }
@@ -989,9 +1034,10 @@ public final class com/cometchat/uikit/core/data/repository/StickerRepositoryImp
 	public fun getStickers-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/cometchat/uikit/core/data/repository/UsersRepositoryImpl : com/cometchat/uikit/core/domain/repository/UsersRepository {
+public final class com/cometchat/uikit/core/data/repository/UsersRepositoryImpl : com/cometchat/uikit/core/domain/repository/UsersRepository, com/cometchat/uikit/core/domain/repository/UsersTwoPhaseRepository {
 	public fun <init> (Lcom/cometchat/uikit/core/data/datasource/UsersDataSource;)V
 	public fun getUsers-gIAlu-s (Lcom/cometchat/chat/core/UsersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getUsersTwoPhase (Lcom/cometchat/chat/core/UsersRequest;)Lkotlinx/coroutines/flow/Flow;
 	public fun hasMoreUsers ()Z
 }
 
@@ -1220,6 +1266,10 @@ public abstract interface class com/cometchat/uikit/core/domain/repository/Conve
 	public abstract fun markAsDelivered-gIAlu-s (Lcom/cometchat/chat/models/Conversation;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public abstract interface class com/cometchat/uikit/core/domain/repository/ConversationListTwoPhaseRepository {
+	public abstract fun fetchNextTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public abstract interface class com/cometchat/uikit/core/domain/repository/GroupMembersRepository {
 	public abstract fun banMember-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun changeMemberScope-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1227,6 +1277,10 @@ public abstract interface class com/cometchat/uikit/core/domain/repository/Group
 	public abstract fun hasMore ()Z
 	public abstract fun kickMember-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun resetRequest ()V
+}
+
+public abstract interface class com/cometchat/uikit/core/domain/repository/GroupMembersTwoPhaseRepository {
+	public abstract fun fetchGroupMembersTwoPhase (Ljava/lang/String;ILjava/lang/String;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/domain/repository/GroupsRepository {
@@ -1237,6 +1291,10 @@ public abstract interface class com/cometchat/uikit/core/domain/repository/Group
 
 public final class com/cometchat/uikit/core/domain/repository/GroupsRepository$DefaultImpls {
 	public static synthetic fun joinGroup-BWLJW6A$default (Lcom/cometchat/uikit/core/domain/repository/GroupsRepository;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/cometchat/uikit/core/domain/repository/GroupsTwoPhaseRepository {
+	public abstract fun fetchGroupsTwoPhase (Lcom/cometchat/chat/core/GroupsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/domain/repository/MessageComposerRepository {
@@ -1286,6 +1344,11 @@ public final class com/cometchat/uikit/core/domain/repository/MessageListReposit
 	public static fun getEffectiveMessagesTypes (Lcom/cometchat/uikit/core/domain/repository/MessageListRepository;)Ljava/util/List;
 }
 
+public abstract interface class com/cometchat/uikit/core/domain/repository/MessageListTwoPhaseRepository {
+	public abstract fun fetchNextTwoPhase (J)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun fetchPreviousTwoPhase ()Lkotlinx/coroutines/flow/Flow;
+}
+
 public abstract interface class com/cometchat/uikit/core/domain/repository/PollRepository {
 	public abstract fun createPoll-hUnOzRk (Ljava/lang/String;Lorg/json/JSONArray;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -1299,11 +1362,20 @@ public abstract interface class com/cometchat/uikit/core/domain/repository/React
 	public abstract fun removeReaction-0E7RQCE (JLjava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public abstract interface class com/cometchat/uikit/core/domain/repository/ReactionListTwoPhaseRepository {
+	public abstract fun fetchReactionsTwoPhase (Lcom/cometchat/chat/core/ReactionsRequest;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public abstract interface class com/cometchat/uikit/core/domain/repository/SearchRepository {
 	public abstract fun getConversations-gIAlu-s (Lcom/cometchat/chat/core/ConversationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getMessages-gIAlu-s (Lcom/cometchat/chat/core/MessagesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun hasMoreConversations ()Z
 	public abstract fun hasMoreMessages ()Z
+}
+
+public abstract interface class com/cometchat/uikit/core/domain/repository/SearchTwoPhaseRepository {
+	public abstract fun getConversationsTwoPhase (Lcom/cometchat/chat/core/ConversationsRequest;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getMessagesTwoPhase (Lcom/cometchat/chat/core/MessagesRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/cometchat/uikit/core/domain/repository/StickerRepository {
@@ -1313,6 +1385,10 @@ public abstract interface class com/cometchat/uikit/core/domain/repository/Stick
 public abstract interface class com/cometchat/uikit/core/domain/repository/UsersRepository {
 	public abstract fun getUsers-gIAlu-s (Lcom/cometchat/chat/core/UsersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun hasMoreUsers ()Z
+}
+
+public abstract interface class com/cometchat/uikit/core/domain/repository/UsersTwoPhaseRepository {
+	public abstract fun getUsersTwoPhase (Lcom/cometchat/chat/core/UsersRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public class com/cometchat/uikit/core/domain/usecase/BanGroupMemberUseCase {
@@ -1376,6 +1452,7 @@ public class com/cometchat/uikit/core/domain/usecase/FetchMessagesUseCase {
 public class com/cometchat/uikit/core/domain/usecase/FetchReactionsUseCase {
 	public fun <init> (Lcom/cometchat/uikit/core/domain/repository/ReactionListRepository;)V
 	public fun invoke-gIAlu-s (Lcom/cometchat/chat/core/ReactionsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun twoPhaseOrNull (Lcom/cometchat/chat/core/ReactionsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public class com/cometchat/uikit/core/domain/usecase/FetchUsersUseCase {
@@ -1618,6 +1695,7 @@ public final class com/cometchat/uikit/core/events/CometChatEvents {
 	public final fun emitConversationEvent (Lcom/cometchat/uikit/core/events/CometChatConversationEvent;)V
 	public final fun emitGroupEvent (Lcom/cometchat/uikit/core/events/CometChatGroupEvent;)V
 	public final fun emitMessageEvent (Lcom/cometchat/uikit/core/events/CometChatMessageEvent;)V
+	public final fun emitOfflineEvent (Lcom/cometchat/uikit/core/events/CometChatOfflineEvent;)V
 	public final fun emitThreadEvent (Lcom/cometchat/uikit/core/events/CometChatThreadEvent;)V
 	public final fun emitUIEvent (Lcom/cometchat/uikit/core/events/CometChatUIEvent;)V
 	public final fun emitUserEvent (Lcom/cometchat/uikit/core/events/CometChatUserEvent;)V
@@ -1625,6 +1703,7 @@ public final class com/cometchat/uikit/core/events/CometChatEvents {
 	public final fun getConversationEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getGroupEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getMessageEvents ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getOfflineEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getThreadEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getUiEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getUserEvents ()Lkotlinx/coroutines/flow/SharedFlow;
@@ -2074,6 +2153,37 @@ public final class com/cometchat/uikit/core/events/CometChatMessageEvent$TypingS
 	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/events/CometChatMessageEvent$TypingStarted;Lcom/cometchat/chat/models/TypingIndicator;ILjava/lang/Object;)Lcom/cometchat/uikit/core/events/CometChatMessageEvent$TypingStarted;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getIndicator ()Lcom/cometchat/chat/models/TypingIndicator;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/cometchat/uikit/core/events/CometChatOfflineEvent {
+}
+
+public final class com/cometchat/uikit/core/events/CometChatOfflineEvent$MessageSendStateChanged : com/cometchat/uikit/core/events/CometChatOfflineEvent {
+	public fun <init> (Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/uikit/core/offline/MessageSendState;Lcom/cometchat/chat/models/MessageFailureReason;)V
+	public final fun component1 ()Lcom/cometchat/chat/models/BaseMessage;
+	public final fun component2 ()Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public final fun component3 ()Lcom/cometchat/chat/models/MessageFailureReason;
+	public final fun copy (Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/uikit/core/offline/MessageSendState;Lcom/cometchat/chat/models/MessageFailureReason;)Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$MessageSendStateChanged;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$MessageSendStateChanged;Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/uikit/core/offline/MessageSendState;Lcom/cometchat/chat/models/MessageFailureReason;ILjava/lang/Object;)Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$MessageSendStateChanged;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMessage ()Lcom/cometchat/chat/models/BaseMessage;
+	public final fun getReason ()Lcom/cometchat/chat/models/MessageFailureReason;
+	public final fun getState ()Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/events/CometChatOfflineEvent$OfflineCacheReset : com/cometchat/uikit/core/events/CometChatOfflineEvent {
+	public fun <init> (Lcom/cometchat/chat/models/OfflineCacheResetReason;I)V
+	public final fun component1 ()Lcom/cometchat/chat/models/OfflineCacheResetReason;
+	public final fun component2 ()I
+	public final fun copy (Lcom/cometchat/chat/models/OfflineCacheResetReason;I)Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$OfflineCacheReset;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$OfflineCacheReset;Lcom/cometchat/chat/models/OfflineCacheResetReason;IILjava/lang/Object;)Lcom/cometchat/uikit/core/events/CometChatOfflineEvent$OfflineCacheReset;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPendingMessagesLost ()I
+	public final fun getReason ()Lcom/cometchat/chat/models/OfflineCacheResetReason;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -3145,7 +3255,9 @@ public final class com/cometchat/uikit/core/models/AttachmentUploadTile {
 }
 
 public final class com/cometchat/uikit/core/models/AttachmentUploadTileKt {
+	public static final field ERROR_ATTACHMENT_COPY_MISSING Ljava/lang/String;
 	public static final fun defaultAttachmentCategory (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun isCopyMissing (Lcom/cometchat/uikit/core/models/AttachmentUploadTile;)Z
 }
 
 public abstract class com/cometchat/uikit/core/models/OngoingCallEvent {
@@ -3311,6 +3423,159 @@ public final class com/cometchat/uikit/core/models/VoterInfo {
 	public final fun getUid ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/ConversationPreviewMark {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/ConversationPreviewMark;
+	public static final fun of (Lcom/cometchat/chat/models/BaseMessage;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+}
+
+public final class com/cometchat/uikit/core/offline/MessageSendState : java/lang/Enum {
+	public static final field Companion Lcom/cometchat/uikit/core/offline/MessageSendState$Companion;
+	public static final field FAILED Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static final field SENDING Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static final field SENT Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static final fun fromStatus (Lcom/cometchat/chat/models/MessageStatus;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static final fun of (Lcom/cometchat/chat/models/BaseMessage;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static fun valueOf (Ljava/lang/String;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public static fun values ()[Lcom/cometchat/uikit/core/offline/MessageSendState;
+}
+
+public final class com/cometchat/uikit/core/offline/MessageSendState$Companion {
+	public final fun fromStatus (Lcom/cometchat/chat/models/MessageStatus;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+	public final fun of (Lcom/cometchat/chat/models/BaseMessage;)Lcom/cometchat/uikit/core/offline/MessageSendState;
+}
+
+public abstract class com/cometchat/uikit/core/offline/OfflineNotice {
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$FileTooLargeOffline : com/cometchat/uikit/core/offline/OfflineNotice {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineNotice$FileTooLargeOffline;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$MessagesNotSent : com/cometchat/uikit/core/offline/OfflineNotice {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/cometchat/uikit/core/offline/OfflineNotice$MessagesNotSent;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/OfflineNotice$MessagesNotSent;IILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/OfflineNotice$MessagesNotSent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$QueueFull : com/cometchat/uikit/core/offline/OfflineNotice {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineNotice$QueueFull;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$SendingTryAgain : com/cometchat/uikit/core/offline/OfflineNotice {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineNotice$SendingTryAgain;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$UnsentLost : com/cometchat/uikit/core/offline/OfflineNotice {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentLost;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentLost;IILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentLost;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$UnsentMaybeLost : com/cometchat/uikit/core/offline/OfflineNotice {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentMaybeLost;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNotice$UnsentRemoved : com/cometchat/uikit/core/offline/OfflineNotice {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentRemoved;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentRemoved;Ljava/lang/String;ILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/OfflineNotice$UnsentRemoved;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineNoticeText {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineNoticeText;
+	public static final fun resolve (Landroid/content/Context;Lcom/cometchat/uikit/core/offline/OfflineNotice;)Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflinePresence {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflinePresence;
+	public static final fun hideOnline ()Z
+	public static final fun presenceChanges ()Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun shownStatus (Ljava/lang/String;Z)Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineRowState {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineRowState;
+	public static final fun caption (Lcom/cometchat/chat/models/BaseMessage;Z)Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+	public static final fun isFailed (Lcom/cometchat/chat/models/BaseMessage;)Z
+	public static final fun isUnsent (Lcom/cometchat/chat/models/BaseMessage;Z)Z
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineRowState$Caption : java/lang/Enum {
+	public static final field NONE Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+	public static final field NOT_SENT_TAP_TO_RETRY Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+	public static final field NOT_SENT_YET Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+	public static fun values ()[Lcom/cometchat/uikit/core/offline/OfflineRowState$Caption;
+}
+
+public final class com/cometchat/uikit/core/offline/OfflineUi {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/offline/OfflineUi;
+	public static final fun isSameItem (Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/chat/models/BaseMessage;Z)Z
+	public static final fun keyMode ()Z
+	public static final fun renderKey (Lcom/cometchat/chat/models/BaseMessage;Z)Ljava/lang/Object;
+}
+
+public abstract class com/cometchat/uikit/core/offline/TwoPhaseResult {
+}
+
+public final class com/cometchat/uikit/core/offline/TwoPhaseResult$Cached : com/cometchat/uikit/core/offline/TwoPhaseResult {
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Cached;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Cached;Ljava/util/List;ILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Cached;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRows ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/TwoPhaseResult$Error : com/cometchat/uikit/core/offline/TwoPhaseResult {
+	public fun <init> (Lcom/cometchat/chat/exceptions/CometChatException;)V
+	public final fun component1 ()Lcom/cometchat/chat/exceptions/CometChatException;
+	public final fun copy (Lcom/cometchat/chat/exceptions/CometChatException;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Error;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Error;Lcom/cometchat/chat/exceptions/CometChatException;ILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getException ()Lcom/cometchat/chat/exceptions/CometChatException;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/TwoPhaseResult$Server : com/cometchat/uikit/core/offline/TwoPhaseResult {
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Server;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Server;Ljava/util/List;ILjava/lang/Object;)Lcom/cometchat/uikit/core/offline/TwoPhaseResult$Server;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRows ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/offline/TwoPhaseSuggestionFetch {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getAcceptsCached ()Z
+	public final fun keepRowsOnError (Lcom/cometchat/chat/exceptions/CometChatException;)Z
+	public final fun onCached (Ljava/util/List;Ljava/util/List;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public final fun onServer (Ljava/util/List;Ljava/util/List;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
 }
 
 public final class com/cometchat/uikit/core/resources/localise/CometChatLocalize {
@@ -4790,6 +5055,74 @@ public final class com/cometchat/uikit/core/utils/MediaDurationUtilsKt {
 	public static final fun extractMediaDurationMillis (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Long;
 }
 
+public final class com/cometchat/uikit/core/utils/MediaLoadRecovery {
+	public static final field Companion Lcom/cometchat/uikit/core/utils/MediaLoadRecovery$Companion;
+	public static final fun forSource (Lcom/cometchat/uikit/core/utils/MediaSource;Lcom/cometchat/chat/models/Attachment;)Lcom/cometchat/uikit/core/utils/MediaLoadRecovery;
+	public final fun onFileUrlFailed ()V
+	public final fun onLoadFailed (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/MediaLoadRecovery$Companion {
+	public final fun forSource (Lcom/cometchat/uikit/core/utils/MediaSource;Lcom/cometchat/chat/models/Attachment;)Lcom/cometchat/uikit/core/utils/MediaLoadRecovery;
+}
+
+public abstract class com/cometchat/uikit/core/utils/MediaSource {
+}
+
+public final class com/cometchat/uikit/core/utils/MediaSource$Local : com/cometchat/uikit/core/utils/MediaSource {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/cometchat/uikit/core/utils/MediaSource$Local;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/utils/MediaSource$Local;Ljava/lang/String;ILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/MediaSource$Local;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPath ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/MediaSource$Placeholder : com/cometchat/uikit/core/utils/MediaSource {
+	public fun <init> (Ljava/lang/String;I)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun copy (Ljava/lang/String;I)Lcom/cometchat/uikit/core/utils/MediaSource$Placeholder;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/utils/MediaSource$Placeholder;Ljava/lang/String;IILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/MediaSource$Placeholder;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFileName ()Ljava/lang/String;
+	public final fun getFileSize ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/MediaSource$Remote : com/cometchat/uikit/core/utils/MediaSource {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/cometchat/uikit/core/utils/MediaSource$Remote;
+	public static synthetic fun copy$default (Lcom/cometchat/uikit/core/utils/MediaSource$Remote;Ljava/lang/String;ILjava/lang/Object;)Lcom/cometchat/uikit/core/utils/MediaSource$Remote;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/core/utils/MediaSourceResolver {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/MediaSourceResolver;
+	public static final fun attachmentKey (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun download (Lcom/cometchat/chat/models/Attachment;Lkotlin/jvm/functions/Function1;)V
+	public static final fun getConnectionEpoch ()Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun resolve (Lcom/cometchat/chat/models/Attachment;)Lcom/cometchat/uikit/core/utils/MediaSource;
+}
+
+public final class com/cometchat/uikit/core/utils/MediaViewerSource {
+	public static final field INSTANCE Lcom/cometchat/uikit/core/utils/MediaViewerSource;
+	public static final fun copyForShare (Landroid/content/Context;Ljava/io/File;Ljava/lang/String;)Ljava/io/File;
+	public static final fun isOfflineOn ()Z
+	public static final fun localFile (Landroid/content/Context;Ljava/lang/String;)Ljava/io/File;
+	public static final fun localFile (Ljava/lang/String;)Ljava/io/File;
+	public static final fun of (Lcom/cometchat/chat/models/Attachment;)Ljava/lang/String;
+	public static final fun openableUrl (Lcom/cometchat/chat/models/Attachment;)Ljava/lang/String;
+	public static final fun saveToDownloads (Landroid/content/Context;Ljava/io/File;Ljava/lang/String;Ljava/lang/String;)Z
+}
+
 public final class com/cometchat/uikit/core/utils/MessageListDefaultsKt {
 	public static final fun getDefaultMessagesCategories ()Ljava/util/List;
 	public static final fun getDefaultMessagesTypes ()Ljava/util/List;
@@ -4843,6 +5176,9 @@ public final class com/cometchat/uikit/core/utils/MessageOptionsUtils {
 	public static synthetic fun getDefaultMessageOptions$default (Lcom/cometchat/uikit/core/utils/MessageOptionsUtils;Landroid/content/Context;Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/chat/models/User;Lcom/cometchat/chat/models/Group;ZLjava/lang/Boolean;ILjava/lang/Object;)Ljava/util/List;
 	public final fun getDefaultOptionIds (Ljava/lang/String;Ljava/lang/String;)Ljava/util/List;
 	public final fun getFilteredMessageOptions (Ljava/util/List;Ljava/util/Map;)Ljava/util/List;
+	public final fun getUnsentMessageOptions (Landroid/content/Context;Lcom/cometchat/chat/models/BaseMessage;)Ljava/util/List;
+	public final fun getUnsentMessageOptions (Landroid/content/Context;Lcom/cometchat/chat/models/BaseMessage;Ljava/util/Map;)Ljava/util/List;
+	public static synthetic fun getUnsentMessageOptions$default (Lcom/cometchat/uikit/core/utils/MessageOptionsUtils;Landroid/content/Context;Lcom/cometchat/chat/models/BaseMessage;Ljava/util/Map;ILjava/lang/Object;)Ljava/util/List;
 	public final fun isMeetingMessage (Lcom/cometchat/chat/models/BaseMessage;)Z
 	public final fun isMeetingMessage (Ljava/lang/String;Ljava/lang/String;)Z
 	public final fun isThreadSubscriptionEligible (Ljava/lang/String;)Z
@@ -4853,6 +5189,7 @@ public final class com/cometchat/uikit/core/utils/MessageOptionsUtils {
 	public final fun reply (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
 	public final fun replyInThread (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
 	public final fun report (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
+	public final fun retry (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
 	public final fun save (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
 	public final fun share (Landroid/content/Context;)Lcom/cometchat/uikit/core/domain/model/CometChatMessageOption;
 	public final fun threadRootId (Lcom/cometchat/chat/models/BaseMessage;)J
@@ -5022,13 +5359,17 @@ public class com/cometchat/uikit/core/viewmodel/CometChatConversationsViewModel 
 	public final fun clearSelection ()V
 	public final fun deleteConversation (Lcom/cometchat/chat/models/Conversation;)V
 	public final fun fetchConversations ()V
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToSearch ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getConversations ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getDeleteState ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getItemAt (I)Lcom/cometchat/chat/models/Conversation;
 	public synthetic fun getItemAt (I)Ljava/lang/Object;
 	public fun getItemCount ()I
 	public fun getItems ()Ljava/util/List;
+	public final fun getOfflineNotices ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getPlaySoundEvent ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getRowsKeptError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getScrollToTopEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getSelectedConversations ()Ljava/util/List;
 	public final fun getSelectedConversations ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5098,6 +5439,8 @@ public class com/cometchat/uikit/core/viewmodel/CometChatGroupMembersViewModel :
 	public fun deselectMember (Lcom/cometchat/chat/models/GroupMember;)V
 	public fun dismissDialog ()V
 	public fun fetchGroupMembers ()V
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToSearch ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getDialogState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getEvents ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getHasMore ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5106,6 +5449,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatGroupMembersViewModel :
 	public fun getItemCount ()I
 	public fun getItems ()Ljava/util/List;
 	public final fun getMembers ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getRowsKeptError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getSelectedMembers ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun isLoading ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5143,6 +5487,8 @@ public class com/cometchat/uikit/core/viewmodel/CometChatGroupsViewModel : andro
 	public final fun clearSelection ()V
 	public final fun deselectGroup (Lcom/cometchat/chat/models/Group;)V
 	public final fun fetchGroups ()V
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToSearch ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getGroupCreatedEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getGroupJoinedEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getGroups ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5150,6 +5496,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatGroupsViewModel : andro
 	public synthetic fun getItemAt (I)Ljava/lang/Object;
 	public fun getItemCount ()I
 	public fun getItems ()Ljava/util/List;
+	public final fun getRowsKeptError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getScrollToTopEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getSelectedGroups ()Ljava/util/List;
 	public final fun getSelectedGroups ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5418,6 +5765,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public fun clearItems ()V
 	public final fun clearScrollToMessage ()V
 	public final fun clearSmartReplies ()V
+	public final fun consumeOfflineJumpToLatest ()V
 	public final fun currentMessage (Lcom/cometchat/chat/models/BaseMessage;)Lcom/cometchat/chat/models/BaseMessage;
 	public final fun deleteMessage (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun dismissConversationSummary ()V
@@ -5459,6 +5807,11 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public final fun getMessageTranslated ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getMessageUpdated ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getMessages ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getOfflineJumpToLatest ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getOfflineLoadMoreNewer ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getOfflineLoadMoreOlder ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getOfflineNotices ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getOfflineReadError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getOnError ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getParentMessage ()Lcom/cometchat/chat/models/BaseMessage;
 	public final fun getParentMessageId ()J
@@ -5482,6 +5835,8 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public final fun initSoundManager (Landroid/content/Context;)V
 	public final fun isAgentChat ()Z
 	public final fun isInProgress ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun isOfflineConnectError (Lcom/cometchat/uikit/core/state/MessageListUIState$Error;)Z
+	public final fun isOfflineOn ()Z
 	public final fun isThreaded ()Z
 	public final fun markAsDelivered (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun markConversationRead ()V
@@ -5494,6 +5849,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	protected fun onCleared ()V
 	public final fun onMessageEdit (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun onMessageReply (Lcom/cometchat/chat/models/BaseMessage;)V
+	public final fun onOwnPinSaveSuccess (Ljava/lang/String;Lcom/cometchat/chat/models/BaseMessage;Lcom/cometchat/chat/models/BaseMessage;)V
 	protected final fun reconcilePinSaveOnReplace (Lcom/cometchat/chat/models/BaseMessage;)Lcom/cometchat/chat/models/BaseMessage;
 	public fun removeItem (Lcom/cometchat/chat/models/BaseMessage;)Z
 	public synthetic fun removeItem (Ljava/lang/Object;)Z
@@ -5505,6 +5861,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel : 
 	public final fun resetFlagState ()V
 	public final fun resetUnreadCount ()V
 	public final fun resolveMessageOptions (Lcom/cometchat/chat/models/BaseMessage;Ljava/util/List;)Ljava/util/List;
+	public final fun retryOfflineLoadMore ()V
 	public final fun setCustomSoundForMessages (I)V
 	public final fun setDisableReactions (Z)V
 	public final fun setDisableReceipt (Z)V
@@ -5553,6 +5910,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatNotificationFeedViewMod
 	public final fun getActiveCategory ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getCategories ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getCategoryUnreadCounts ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getFeedItems ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getFilterChips ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getHasMorePages ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5560,6 +5918,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatNotificationFeedViewMod
 	public synthetic fun getItemAt (I)Ljava/lang/Object;
 	public fun getItemCount ()I
 	public fun getItems ()Ljava/util/List;
+	public final fun getLoadErrorWithRows ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getNewItemEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getTotalUnreadCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5650,6 +6009,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatPinnedMessagesViewModel
 	public final fun configure (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun delete (Lcom/cometchat/chat/models/BaseMessage;)V
 	public final fun getActionResult ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getMessages ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5682,11 +6042,14 @@ public class com/cometchat/uikit/core/viewmodel/CometChatReactionListViewModel :
 	public static final field Companion Lcom/cometchat/uikit/core/viewmodel/CometChatReactionListViewModel$Companion;
 	public fun <init> (Lcom/cometchat/uikit/core/domain/usecase/FetchReactionsUseCase;Lcom/cometchat/uikit/core/domain/usecase/RemoveReactionUseCase;Z)V
 	public synthetic fun <init> (Lcom/cometchat/uikit/core/domain/usecase/FetchReactionsUseCase;Lcom/cometchat/uikit/core/domain/usecase/RemoveReactionUseCase;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun cancelReconnectRefill ()V
 	public final fun clearCache ()V
 	public final fun fetchReactedUsers (Ljava/lang/String;Lcom/cometchat/chat/core/ReactionsRequest$ReactionsRequestBuilder;)V
 	public static synthetic fun fetchReactedUsers$default (Lcom/cometchat/uikit/core/viewmodel/CometChatReactionListViewModel;Ljava/lang/String;Lcom/cometchat/chat/core/ReactionsRequest$ReactionsRequestBuilder;ILjava/lang/Object;)V
 	public final fun getActiveTabIndex ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getBaseMessage ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getLoadErrorWithRows ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getReactedUsers ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getReactionHeaders ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getSelectedReaction ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5706,6 +6069,7 @@ public class com/cometchat/uikit/core/viewmodel/CometChatSavedMessagesViewModel 
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getMessages ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
@@ -5732,8 +6096,10 @@ public class com/cometchat/uikit/core/viewmodel/CometChatSearchViewModel : andro
 	public final fun getHasMoreConversations ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getHasMoreMessages ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getMessages ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getRowsKeptError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getSearchMode (Ljava/lang/String;Ljava/util/Set;)Lcom/cometchat/uikit/core/constants/SearchMode;
 	public final fun getSelectedFilters ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getShowConnectToSearch ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getVisibleFilters ()Lkotlinx/coroutines/flow/StateFlow;
 	protected fun onCleared ()V
@@ -5811,10 +6177,13 @@ public class com/cometchat/uikit/core/viewmodel/CometChatUsersViewModel : androi
 	public fun clearItems ()V
 	public final fun clearSelection ()V
 	public final fun fetchUsers ()V
+	public final fun getConnectToLoad ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getConnectToSearch ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getItemAt (I)Lcom/cometchat/chat/models/User;
 	public synthetic fun getItemAt (I)Ljava/lang/Object;
 	public fun getItemCount ()I
 	public fun getItems ()Ljava/util/List;
+	public final fun getRowsKeptError ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getScrollToTopEvent ()Lkotlinx/coroutines/flow/SharedFlow;
 	public final fun getSelectedUsers ()Ljava/util/List;
 	public final fun getSelectedUsers ()Lkotlinx/coroutines/flow/StateFlow;

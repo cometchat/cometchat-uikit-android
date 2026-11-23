@@ -18,5 +18,23 @@
     <string name="cometchat_translate" translatable="true">Terjemah</string>
     <string name="cometchat_unpin" translatable="true">Nyahsemat Mesej</string>
     <string name="cometchat_unsave" translatable="true">Nyahsimpan Mesej</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Belum dihantar</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Tidak dihantar. Ketik untuk cuba lagi</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 mesej yang tidak dihantar telah dialih keluar</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Mesej yang tidak dihantar mungkin telah hilang</string>
+    <string name="cometchat_queue_full" translatable="true">Terlalu banyak mesej menunggu untuk dihantar</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Fail terlalu besar untuk dihantar di luar talian</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Sambung untuk memuatkan lagi</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Media akan tersedia apabila anda kembali dalam talian</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Lompat ke terkini</string>
+    <string name="cometchat_sending_try_again" translatable="true">Menghantar… cuba lagi sebentar nanti</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="other">%d mesej tidak dihantar</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="other">%d mesej yang tidak dihantar telah hilang</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Cuba lagi</string>
     <string name="cometchat_call_no_internet" translatable="true">Tiada sambungan internet. Semak sambungan anda dan cuba lagi.</string>
 </resources>

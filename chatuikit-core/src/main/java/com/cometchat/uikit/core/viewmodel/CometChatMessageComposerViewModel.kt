@@ -10,6 +10,11 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.SettingsRepo
 import com.cometchat.chat.core.UploadFileRequest
 import com.cometchat.chat.exceptions.CometChatException
+import com.cometchat.uikit.core.offline.MessageSendState
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineHub
+import com.cometchat.uikit.core.offline.OfflineHubEvent
+import com.cometchat.uikit.core.offline.OfflineSend
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.CustomMessage
@@ -19,12 +24,16 @@ import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.TypingIndicator
 import com.cometchat.chat.models.User
 import com.cometchat.chat.upload.UploadFileItem
+import com.cometchat.chat.upload.UploadFileItemStatus
 import com.cometchat.chat.upload.UploadFileListener
 import com.cometchat.chat.upload.UploadResult
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.models.AttachmentSource
 import com.cometchat.uikit.core.models.AttachmentUploadStatus
 import com.cometchat.uikit.core.models.AttachmentUploadTile
+import com.cometchat.uikit.core.models.ERROR_ATTACHMENT_COPY_MISSING
+import com.cometchat.uikit.core.models.defaultAttachmentCategory
+import com.cometchat.uikit.core.models.isCopyMissing
 import com.cometchat.uikit.core.models.StagedAttachmentInput
 import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
 import com.cometchat.uikit.core.resources.soundmanager.Sound
@@ -46,7 +55,13 @@ import com.cometchat.uikit.core.domain.model.StreamingState
 import com.cometchat.uikit.core.utils.CometChatLogger
 import org.json.JSONObject
 import java.util.UUID
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -233,6 +248,59 @@ open public class CometChatMessageComposerViewModel(
     private val _errorEvent = MutableSharedFlow<CometChatException>()
     public val errorEvent: SharedFlow<CometChatException> = _errorEvent.asSharedFlow()
 
+    // ---- Offline send (W4, ENG-41089). Inert while offline is off. ----
+
+    /** The offline mode, captured once when this ViewModel binds (G1). */
+    internal val offlineSendOn: Boolean = OfflineGate.isOn()
+
+    /** Whether the offline hub reported one send pending (W4). */
+    private class OfflinePending {
+        @Volatile
+        var seen: Boolean = false
+    }
+
+    /**
+     * ON path only: runs [send] and calls [onPending] once, as soon as the offline hub reports this
+     * message pending (G3), recording it in [pending].
+     *
+     * With offline on the SDK reports pending for every send, and the result can come much later
+     * (on reconnect, possibly hours), when the composer holds another reply or draft. So after
+     * pending the callers suppress only what the user sees in the composer — the reply-preview
+     * clear, the Success/Error state, `errorEvent` and `ReplyToMessage` — and still run the rest:
+     * on ack the agent-chat thread id and the public `sentMessage`, on a final failure
+     * `setAIGenerating(false)`.
+     */
+    private suspend fun <T> sendWithOfflinePending(
+        message: BaseMessage,
+        pending: OfflinePending,
+        onPending: () -> Unit,
+        send: suspend () -> Result<T>
+    ): Result<T> = coroutineScope {
+        val watcher = launch(start = CoroutineStart.UNDISPATCHED) {
+            OfflineHub.events.filterIsInstance<OfflineHubEvent.SendState>().first {
+                it.state == MessageSendState.SENDING && (it.message === message ||
+                    (!message.muid.isNullOrEmpty() && it.message.muid == message.muid))
+            }
+            pending.seen = true
+            onPending()
+        }
+        try {
+            send()
+        } finally {
+            watcher.cancel()
+        }
+    }
+
+    /** Pending clears the composer: the reply preview goes and the send button is ready again. */
+    private fun clearComposerOnPending() {
+        _replyMessage.value = null
+        if (!isAgentChat) _uiState.value = MessageComposerUIState.Idle
+    }
+
+    /** A logout or removed-message rejection is a quiet row removal, never an error (G12). */
+    private fun isQuietSendRejection(e: Throwable): Boolean =
+        offlineSendOn && OfflineSend.isQuietRejection(e)
+
     // ==================== Attachment Option Visibility State ====================
 
     /**
@@ -367,6 +435,20 @@ open public class CometChatMessageComposerViewModel(
     /** Shared listener for every upload batch; routes SDK callbacks to tiles by `fileId`. */
     private val mediaUploadListener: UploadFileListener by lazy { createUploadFileListener() }
 
+    /**
+     * BEH-UPLOAD-14: the pending tray restore. Each receiver/parent change cancels and re-posts it,
+     * so exactly one restore runs, after the composer's configuration frame, on the final triple.
+     */
+    private var trayRestoreJob: Job? = null
+
+    /**
+     * Restored files the SDK still reports QUEUED/UPLOADING. Their upload events go to the
+     * listener of the composer that started them (per-call listeners), so this composer reads
+     * their state back from the request until each one settles.
+     */
+    private val restoredInFlightIds = mutableSetOf<String>()
+    private var restoredSyncRequest: UploadFileRequest? = null
+    private var restoredSyncJob: Job? = null
     /** Whether to suppress the sound played when the local user sends a message. */
     private var disableSoundForMessages: Boolean = false
 
@@ -397,7 +479,7 @@ open public class CometChatMessageComposerViewModel(
      */
     public fun setUser(user: User) {
         if (receiverId != user.uid || receiverType != UIKitConstants.ReceiverType.USER) {
-            clearAttachments()
+            retargetAttachments()
         }
         _user.value = user
         _group.value = null
@@ -415,7 +497,7 @@ open public class CometChatMessageComposerViewModel(
      */
     public fun setGroup(group: Group) {
         if (receiverId != group.guid || receiverType != UIKitConstants.ReceiverType.GROUP) {
-            clearAttachments()
+            retargetAttachments()
         }
         _group.value = group
         _user.value = null
@@ -430,13 +512,14 @@ open public class CometChatMessageComposerViewModel(
      *
      * Changing the thread target resets any staged attachment batch — the SDK upload
      * request captures `parentMessageId` at creation (it is sent with every presign),
-     * so a batch staged for one thread must not leak into another.
+     * so a batch staged for one thread must not leak into another (see [retargetAttachments]
+     * for how offline mode keeps the previous batch for its own thread, BEH-UPLOAD-14).
      *
      * @param id The parent message ID
      */
     public fun setParentMessageId(id: Long) {
         if (parentMessageId != id) {
-            clearAttachments()
+            retargetAttachments()
         }
         parentMessageId = id
         updateIdMap()
@@ -1066,11 +1149,16 @@ open public class CometChatMessageComposerViewModel(
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
-            sendTextMessageUseCase(message)
+            // ON path: after pending, only what the user sees in the composer is suppressed.
+            val offlinePending = OfflinePending()
+            (if (offlineSendOn) sendWithOfflinePending(message, offlinePending, ::clearComposerOnPending) { sendTextMessageUseCase(message) }
+                else sendTextMessageUseCase(message))
                 .onSuccess { sentMsg ->
                     _sentMessage.value = sentMsg
-                    _replyMessage.value = null
-                    _uiState.value = MessageComposerUIState.Success(sentMsg)
+                    if (!offlinePending.seen) {
+                        _replyMessage.value = null
+                        _uiState.value = MessageComposerUIState.Success(sentMsg)
+                    }
 
                     // Handle AI agent chat — update parentMessageId for threading
                     if (isAgentChat) {
@@ -1078,14 +1166,16 @@ open public class CometChatMessageComposerViewModel(
                             parentMessageId = sentMsg.id.toLong()
                             updateIdMap()
                         }
-                    } else {
+                    } else if (!offlinePending.seen) {
                         _uiState.value = MessageComposerUIState.Idle
                     }
-                    
+
                     // Emit reply success event if was replying
-                    CometChatEvents.emitMessageEvent(
-                        CometChatMessageEvent.ReplyToMessage(sentMsg, MessageStatus.SUCCESS)
-                    )
+                    if (!offlinePending.seen) {
+                        CometChatEvents.emitMessageEvent(
+                            CometChatMessageEvent.ReplyToMessage(sentMsg, MessageStatus.SUCCESS)
+                        )
+                    }
                 }
                 .onFailure { e ->
                     // Reset AI generating state on failure so the composer
@@ -1093,6 +1183,7 @@ open public class CometChatMessageComposerViewModel(
                     if (isAgentChat) {
                         setAIGenerating(false)
                     }
+                    if (offlinePending.seen || isQuietSendRejection(e)) return@onFailure
                     val exception = if (e is CometChatException) e 
                         else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
                     _errorEvent.emit(exception)
@@ -1128,11 +1219,16 @@ open public class CometChatMessageComposerViewModel(
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
-            sendTextMessageUseCase(message)
+            // ON path: after pending, only what the user sees in the composer is suppressed.
+            val offlinePending = OfflinePending()
+            (if (offlineSendOn) sendWithOfflinePending(message, offlinePending, ::clearComposerOnPending) { sendTextMessageUseCase(message) }
+                else sendTextMessageUseCase(message))
                 .onSuccess { sentMsg ->
                     _sentMessage.value = sentMsg
-                    _replyMessage.value = null
-                    _uiState.value = MessageComposerUIState.Success(sentMsg)
+                    if (!offlinePending.seen) {
+                        _replyMessage.value = null
+                        _uiState.value = MessageComposerUIState.Success(sentMsg)
+                    }
 
                     // Handle AI agent chat — update parentMessageId for threading
                     if (isAgentChat) {
@@ -1140,14 +1236,16 @@ open public class CometChatMessageComposerViewModel(
                             parentMessageId = sentMsg.id.toLong()
                             updateIdMap()
                         }
-                    } else {
+                    } else if (!offlinePending.seen) {
                         _uiState.value = MessageComposerUIState.Idle
                     }
-                    
+
                     // Emit reply success event if was replying
-                    CometChatEvents.emitMessageEvent(
-                        CometChatMessageEvent.ReplyToMessage(sentMsg, MessageStatus.SUCCESS)
-                    )
+                    if (!offlinePending.seen) {
+                        CometChatEvents.emitMessageEvent(
+                            CometChatMessageEvent.ReplyToMessage(sentMsg, MessageStatus.SUCCESS)
+                        )
+                    }
                 }
                 .onFailure { e ->
                     // Reset AI generating state on failure so the composer
@@ -1155,6 +1253,7 @@ open public class CometChatMessageComposerViewModel(
                     if (isAgentChat) {
                         setAIGenerating(false)
                     }
+                    if (offlinePending.seen || isQuietSendRejection(e)) return@onFailure
                     val exception = if (e is CometChatException) e 
                         else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
                     _errorEvent.emit(exception)
@@ -1207,19 +1306,24 @@ open public class CometChatMessageComposerViewModel(
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
-            sendMediaMessageUseCase(message)
+            // ON path: after pending, only what the user sees in the composer is suppressed.
+            val offlinePending = OfflinePending()
+            (if (offlineSendOn) sendWithOfflinePending(message, offlinePending, ::clearComposerOnPending) { sendMediaMessageUseCase(message) }
+                else sendMediaMessageUseCase(message))
                 .onSuccess { sentMsg ->
                     _sentMessage.value = sentMsg
+                    if (offlinePending.seen) return@onSuccess
                     _replyMessage.value = null
                     _uiState.value = MessageComposerUIState.Success(sentMsg)
                     _uiState.value = MessageComposerUIState.Idle
-                    
+
                     // Emit reply success event if was replying
                     CometChatEvents.emitMessageEvent(
                         CometChatMessageEvent.ReplyToMessage(sentMsg, MessageStatus.SUCCESS)
                     )
                 }
                 .onFailure { e ->
+                    if (offlinePending.seen || isQuietSendRejection(e)) return@onFailure
                     val exception = if (e is CometChatException) e 
                         else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
                     _errorEvent.emit(exception)
@@ -1313,21 +1417,24 @@ open public class CometChatMessageComposerViewModel(
      * not retryable and are ignored.
      */
     public fun retryAttachment(tile: AttachmentUploadTile) {
+        // D-306 / BEH-UPLOAD-14: a restored file whose local copy is missing is not retryable on
+        // any platform; the tray offers remove only, so the SDK retry is never called for it.
+        if (tile.isCopyMissing) return
         val request = uploadFileRequest ?: return
+        // BEH-UPLOAD-14 file-presence discriminator: the picked File survives in memory only for a
+        // live (same-session) tile. A tile restored after an app-kill has none, so it retries by id
+        // from the SDK's durable copy instead. Offline-off never restores, so this branch is never
+        // taken there and the live path below stays exactly as it was.
+        val file = stagedFilesById[tile.fileId]
+        if (file == null) {
+            retryRestoredAttachment(request, tile)
+            return
+        }
         updateTile(tile.fileId) {
             it.copy(status = AttachmentUploadStatus.UPLOADING, percent = 0, loaded = 0L, error = null)
         }
-        // No dedicated retry in the SDK: re-uploading under the SAME fileId replaces
-        // the failed entry with a fresh one (re-presigns automatically) and its
-        // events land on this same tile.
-        val file = stagedFilesById[tile.fileId]
-        if (file == null) {
-            updateTile(tile.fileId) {
-                it.copy(status = AttachmentUploadStatus.FAILED,
-                    error = CometChatException("RETRY_ERROR", "Original file no longer available"))
-            }
-            return
-        }
+        // Live tile: re-uploading under the SAME fileId replaces the failed entry with a fresh one
+        // (re-presigns automatically) and its events land on this same tile.
         runCatching { request.uploadAttachment(tile.fileId, file, mediaUploadListener) }
             .onFailure { e ->
                 val exception = if (e is CometChatException) e
@@ -1340,11 +1447,228 @@ open public class CometChatMessageComposerViewModel(
      * Clears the tray, cancelling any in-flight uploads. Called on send and when switching chats.
      */
     public fun clearAttachments() {
+        // An explicit teardown wins over a restore still waiting for its frame (BEH-UPLOAD-14).
+        trayRestoreJob?.cancel()
+        trayRestoreJob = null
+        stopRestoredSync()
         // clearAll() aborts any in-flight uploads and releases the batch from SDK memory.
         runCatching { uploadFileRequest?.clearAll() }
         uploadFileRequest = null
         stagedFilesById.clear()
         _attachmentTiles.value = emptyList()
+    }
+
+    // ==================== Tray restore (BEH-UPLOAD-14) ====================
+
+    /**
+     * Called by [setUser], [setGroup] and [setParentMessageId] when the
+     * `(receiverId, receiverType, parentMessageId)` triple changes.
+     *
+     * Teardown is mode-gated: with offline on, the previous triple's batch is **detached** (tray
+     * cleared, request dropped) so it survives for its own triple to restore later. With offline
+     * off it is destroyed with [clearAttachments], exactly as before. Either way a restore is then
+     * scheduled for the new triple.
+     */
+    private fun retargetAttachments() {
+        if (OfflineGate.isOn()) detachAttachments() else clearAttachments()
+        scheduleTrayRestore()
+    }
+
+    /** Clears the tray and drops the request reference without destroying the SDK batch. */
+    private fun detachAttachments() {
+        stopRestoredSync()
+        uploadFileRequest = null
+        stagedFilesById.clear()
+        _attachmentTiles.value = emptyList()
+    }
+
+    /**
+     * Posts the restore past the configuration frame (`setUser`/`setGroup` → `setParentMessageId`
+     * arrive back to back) and coalesces repeat calls, so one restore runs, on the final triple.
+     * A thread composer therefore never looks up the main batch with `parentMessageId 0`.
+     */
+    private fun scheduleTrayRestore() {
+        trayRestoreJob?.cancel()
+        trayRestoreJob = viewModelScope.launch(Dispatchers.Main) { restoreTray() }
+    }
+
+    /**
+     * Rebuilds the tray from the SDK batch persisted for the current triple. The lookup is
+     * unconditional: the SDK returns `null` with offline off or when no batch exists, which leaves
+     * the tray empty exactly as before. A lookup failure is swallowed (better empty than a broken
+     * chat open). Never replaces a live tray. Nothing is uploaded here.
+     */
+    private fun restoreTray() {
+        trayRestoreJob = null
+        if (!hasReceiver()) return
+        if (uploadFileRequest != null || _attachmentTiles.value.isNotEmpty()) return
+        val parent = if (parentMessageId > 0) parentMessageId else 0L
+        val request = runCatching {
+            CometChat.getExistingUploadFileRequest(receiverId, receiverType, parent)
+        }.getOrNull() ?: return
+        val items = runCatching { request.items }.getOrNull().orEmpty()
+        uploadFileRequest = request
+        stagedFileIdSeq = nextFileIdSeq(request.batchId, items)
+        val tiles = items.filter { it.fileId != null }.distinctBy { it.fileId }.map { restoredTile(it) }
+        _attachmentTiles.value = tiles
+        watchRestoredInFlight(
+            request,
+            tiles.filter { it.status == AttachmentUploadStatus.UPLOADING }.map { it.fileId }
+        )
+    }
+
+    /**
+     * Follows restored files that are still uploading in this process (a chat reopened while its
+     * upload runs): reads their state back from [request] every [RESTORED_SYNC_INTERVAL_MS] until
+     * each one is UPLOADED, FAILED, REJECTED or removed. Stops when the request is dropped. If a file
+     * is still in flight after [RESTORED_SYNC_MAX_TICKS] reads it is shown as FAILED; a retry then
+     * re-reads the SDK state first, so the tile never stays wrong.
+     */
+    private fun watchRestoredInFlight(request: UploadFileRequest, fileIds: List<String>) {
+        if (fileIds.isEmpty()) return
+        if (restoredSyncRequest !== request) {
+            restoredInFlightIds.clear()
+            restoredSyncRequest = request
+        }
+        restoredInFlightIds += fileIds
+        restoredSyncJob?.cancel()
+        restoredSyncJob = viewModelScope.launch {
+            repeat(RESTORED_SYNC_MAX_TICKS) {
+                delay(RESTORED_SYNC_INTERVAL_MS)
+                if (uploadFileRequest !== request) {
+                    restoredInFlightIds.clear()
+                    return@launch
+                }
+                syncRestoredInFlight(request)
+                if (restoredInFlightIds.isEmpty()) return@launch
+            }
+            restoredInFlightIds.forEach { id ->
+                updateTile(id) {
+                    if (it.status == AttachmentUploadStatus.UPLOADING) it.copy(status = AttachmentUploadStatus.FAILED)
+                    else it
+                }
+            }
+            restoredInFlightIds.clear()
+        }
+    }
+
+    /** Applies the SDK's current state to every followed file that has settled. */
+    private fun syncRestoredInFlight(request: UploadFileRequest) {
+        val items = runCatching { request.items }.getOrNull() ?: return
+        val byId = items.filter { it.fileId != null }.associateBy { it.fileId }
+        val inTray = _attachmentTiles.value.map { it.fileId }.toSet()
+        for (id in restoredInFlightIds.toList()) {
+            val item = byId[id]
+            if (item == null || id !in inTray) {
+                restoredInFlightIds.remove(id)
+                continue
+            }
+            if (item.state == UploadFileItemStatus.State.QUEUED || item.state == UploadFileItemStatus.State.UPLOADING) {
+                continue
+            }
+            updateTile(id) { restoredTile(item) }
+            restoredInFlightIds.remove(id)
+        }
+    }
+
+    private fun stopRestoredSync() {
+        restoredSyncJob?.cancel()
+        restoredSyncJob = null
+        restoredSyncRequest = null
+        restoredInFlightIds.clear()
+    }
+
+    /**
+     * Next app-minted fileId sequence for a restored batch, past every restored `<batchId>_<n>` id,
+     * so files added after a restore never collide with restored ones.
+     */
+    private fun nextFileIdSeq(batchId: String?, items: List<UploadFileItemStatus>): Int {
+        val prefix = "${batchId}_"
+        val maxSeq = items.mapNotNull { item ->
+            item.fileId?.takeIf { it.startsWith(prefix) }?.removePrefix(prefix)?.toIntOrNull()
+        }.maxOrNull() ?: -1
+        return maxOf(maxSeq + 1, items.size)
+    }
+
+    /**
+     * Maps one restored SDK item to a tile: `UPLOADED → DONE` (the only state that carries the
+     * attachment), `REJECTED → REJECTED` (terminal), `FAILED → FAILED` (retryable; a file whose
+     * durable copy is missing is flagged [isCopyMissing] and is remove-only, D-306). `QUEUED`/`UPLOADING` → `UPLOADING`: after an app-kill the SDK
+     * already reports a mid-flight file as `FAILED` (BEH-UPLOAD-06), so these only appear when a chat
+     * is reopened in the same process while its upload still runs (followed by
+     * [watchRestoredInFlight]). The preview is the durable copy; the category is derived from the
+     * mime type because the picker origin is not persisted.
+     */
+    private fun restoredTile(item: UploadFileItemStatus): AttachmentUploadTile {
+        val mime = item.mimeType ?: ""
+        val status = when (item.state) {
+            UploadFileItemStatus.State.UPLOADED -> AttachmentUploadStatus.DONE
+            UploadFileItemStatus.State.REJECTED -> AttachmentUploadStatus.REJECTED
+            UploadFileItemStatus.State.QUEUED,
+            UploadFileItemStatus.State.UPLOADING -> AttachmentUploadStatus.UPLOADING
+            else -> AttachmentUploadStatus.FAILED
+        }
+        val done = status == AttachmentUploadStatus.DONE
+        val error = when {
+            done -> null
+            status == AttachmentUploadStatus.FAILED && item.localCopyPath == null -> CometChatException(
+                ERROR_ATTACHMENT_COPY_MISSING,
+                item.error?.message ?: "The file's local copy could not be saved"
+            )
+            else -> item.error
+        }
+        return AttachmentUploadTile(
+            fileId = item.fileId,
+            name = item.name ?: "",
+            size = item.size,
+            mimeType = mime,
+            category = defaultAttachmentCategory(mime),
+            percent = if (done) 100 else 0,
+            loaded = if (done) item.size else 0L,
+            total = item.size,
+            status = status,
+            localUri = item.localCopyPath,
+            attachment = if (done) item.attachment else null,
+            error = error
+        )
+    }
+
+    /**
+     * Retries a restored tile by id from the SDK's durable copy (BEH-UPLOAD-09), passing the
+     * composer's own listener on the call. Only a FAILED tile is retryable; a REJECTED tile never is.
+     *
+     * The SDK item is read first, because the tile can be stale (the upload may have finished or
+     * still be running under another composer's listener): `UPLOADED` → the tile becomes DONE with
+     * its attachment; `REJECTED` → rejected; `QUEUED`/`UPLOADING` → the tile shows uploading and is
+     * followed until it settles. Only a file the SDK reports `FAILED` is retried, and the tile flips
+     * to UPLOADING only when the SDK then reports it re-queued; otherwise it stays as it was instead
+     * of spinning forever. A copy-missing tile never gets here ([retryAttachment] returns first).
+     */
+    private fun retryRestoredAttachment(request: UploadFileRequest, tile: AttachmentUploadTile) {
+        if (tile.status != AttachmentUploadStatus.FAILED) return
+        runCatching {
+            val before = request.items?.firstOrNull { it.fileId == tile.fileId } ?: return
+            when (before.state) {
+                UploadFileItemStatus.State.FAILED -> {
+                    request.retryAttachment(tile.fileId, mediaUploadListener)
+                    val after = request.items?.firstOrNull { it.fileId == tile.fileId }?.state
+                    if (after == UploadFileItemStatus.State.QUEUED || after == UploadFileItemStatus.State.UPLOADING) {
+                        updateTile(tile.fileId) {
+                            it.copy(status = AttachmentUploadStatus.UPLOADING, percent = 0, loaded = 0L, error = null)
+                        }
+                    }
+                }
+                UploadFileItemStatus.State.QUEUED, UploadFileItemStatus.State.UPLOADING -> {
+                    updateTile(tile.fileId) { restoredTile(before) }
+                    watchRestoredInFlight(request, listOf(tile.fileId))
+                }
+                else -> updateTile(tile.fileId) { restoredTile(before) }
+            }
+        }.onFailure { e ->
+            val exception = if (e is CometChatException) e
+                else CometChatException("RETRY_ERROR", e.message ?: "Failed to retry upload")
+            updateTile(tile.fileId) { it.copy(status = AttachmentUploadStatus.FAILED, error = exception) }
+        }
     }
 
     /**
@@ -1415,6 +1739,27 @@ open public class CometChatMessageComposerViewModel(
             var failure: CometChatException? = null
             // Send sequentially so batchIndex order matches delivery/sentAt order.
             for (message in messages) {
+                if (offlineSendOn) {
+                    // ON path (W4): every file gets its own pending row. The next file starts once
+                    // this one is pending (the outbox keeps the order) or settled.
+                    val handedOff = CompletableDeferred<Unit>()
+                    launch {
+                        // After pending only the public sentMessage is set (see sendWithOfflinePending).
+                        val offlinePending = OfflinePending()
+                        sendWithOfflinePending(message, offlinePending, { handedOff.complete(Unit) }) { sendMediaMessageUseCase(message) }
+                            .onSuccess { sentMsg -> _sentMessage.value = sentMsg }
+                            .onFailure { e ->
+                                if (!offlinePending.seen && !isQuietSendRejection(e)) {
+                                    val exception = if (e is CometChatException) e
+                                        else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
+                                    _errorEvent.emit(exception)
+                                }
+                            }
+                        handedOff.complete(Unit)
+                    }
+                    handedOff.await()
+                    continue
+                }
                 sendMediaMessageUseCase(message)
                     .onSuccess { sentMsg ->
                         lastSent = sentMsg
@@ -1468,6 +1813,12 @@ open public class CometChatMessageComposerViewModel(
          * only [setParentMessageId] hits this — without a receiver the message has nowhere to go.
          */
         public const val ERROR_NO_RECEIVER: String = "ERR_NO_RECEIVER"
+
+        /** BEH-UPLOAD-14: how often a restored, still-uploading file's state is read back. */
+        private const val RESTORED_SYNC_INTERVAL_MS: Long = 500L
+
+        /** BEH-UPLOAD-14: read-backs before a restored in-flight file is shown as FAILED (30 min). */
+        private const val RESTORED_SYNC_MAX_TICKS: Int = 3600
     }
 
     /**
@@ -1581,13 +1932,18 @@ open public class CometChatMessageComposerViewModel(
         viewModelScope.launch {
             _uiState.value = MessageComposerUIState.Sending
 
-            sendCustomMessageUseCase(message)
+            // ON path: after pending, only what the user sees in the composer is suppressed.
+            val offlinePending = OfflinePending()
+            (if (offlineSendOn) sendWithOfflinePending(message, offlinePending, ::clearComposerOnPending) { sendCustomMessageUseCase(message) }
+                else sendCustomMessageUseCase(message))
                 .onSuccess { sentMsg ->
                     _sentMessage.value = sentMsg
+                    if (offlinePending.seen) return@onSuccess
                     _uiState.value = MessageComposerUIState.Success(sentMsg)
                     _uiState.value = MessageComposerUIState.Idle
                 }
                 .onFailure { e ->
+                    if (offlinePending.seen || isQuietSendRejection(e)) return@onFailure
                     val exception = if (e is CometChatException) e 
                         else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
                     _errorEvent.emit(exception)
@@ -1660,9 +2016,13 @@ open public class CometChatMessageComposerViewModel(
 
                 _uiState.value = MessageComposerUIState.Sending
 
-                sendCustomMessageUseCase(customMessage)
+                // ON path: after pending, only what the user sees in the composer is suppressed.
+                val offlinePending = OfflinePending()
+                (if (offlineSendOn) sendWithOfflinePending(customMessage, offlinePending, ::clearComposerOnPending) { sendCustomMessageUseCase(customMessage) }
+                else sendCustomMessageUseCase(customMessage))
                     .onSuccess { sentMsg ->
                         _sentMessage.value = sentMsg
+                        if (offlinePending.seen) return@onSuccess
                         _replyMessage.value = null
                         _uiState.value = MessageComposerUIState.Success(sentMsg)
                         _uiState.value = MessageComposerUIState.Idle
@@ -1673,6 +2033,7 @@ open public class CometChatMessageComposerViewModel(
                         )
                     }
                     .onFailure { e ->
+                        if (offlinePending.seen || isQuietSendRejection(e)) return@onFailure
                         val exception = if (e is CometChatException) e
                             else CometChatException("SEND_ERROR", e.message ?: "Unknown error")
                         _errorEvent.emit(exception)

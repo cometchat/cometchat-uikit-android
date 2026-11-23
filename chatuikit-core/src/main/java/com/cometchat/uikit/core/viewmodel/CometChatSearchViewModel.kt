@@ -16,10 +16,20 @@ import com.cometchat.uikit.core.constants.SearchScope
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.usecase.FetchConversationsUseCase
 import com.cometchat.uikit.core.domain.usecase.FetchMessagesUseCase
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineListReconcile
+import com.cometchat.uikit.core.offline.OfflineListSession
+import com.cometchat.uikit.core.offline.OfflineReconnectRefill
+import com.cometchat.uikit.core.offline.SearchOffline
+import com.cometchat.uikit.core.offline.TwoPhaseResult
 import com.cometchat.uikit.core.state.SearchUIState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -106,6 +116,89 @@ open public class CometChatSearchViewModel(
     // Last error for error state
     private var lastException: CometChatException? = null
 
+    private val _rowsKeptError = Channel<CometChatException>(8, BufferOverflow.DROP_OLDEST)
+
+    /**
+     * A search request failed online while results stay on screen (D84 rule 5, offline on only): the
+     * view fires `onError` without showing its error state. Each failure is buffered until a view
+     * collects it and is delivered once (a rotation does not repeat it). A not-connected failure
+     * over results reports nothing (D84 rule 2). With nothing on screen the failure is
+     * [SearchUIState.Error] instead. A search the kit re-runs by itself on reconnect never reports
+     * here. Never emits with offline messaging off.
+     */
+    public val rowsKeptError: Flow<CometChatException> = _rowsKeptError.receiveAsFlow()
+
+    // Offline (W7). A keyword has no cache (BEH-SNAP-04): offline, a search with no saved match
+    // shows the "Connect to search" empty state instead of an error (D84 rule 7).
+    private val _showConnectToSearch = MutableStateFlow(false)
+
+    /**
+     * True while the current [SearchUIState.Empty] means "connect to search": offline messaging is
+     * on, the search could not reach the server, and nothing saved matched (D84 rule 7, no
+     * `onError`). Always set before [uiState] moves to [SearchUIState.Empty], and false in every
+     * other state. Never true with offline messaging off.
+     */
+    public val showConnectToSearch: StateFlow<Boolean> = _showConnectToSearch.asStateFlow()
+
+    // D84 rule 8: a search showing "Connect to search" (or an error because it ran offline) runs
+    // again, once, when the connection returns. Registers its listener on the first arm only (never
+    // with offline off).
+    private val reconnectRefill = OfflineReconnectRefill("CometChatSearch") {
+        val state = _uiState.value
+        val offlineMiss = state is SearchUIState.Error || (state is SearchUIState.Empty && _showConnectToSearch.value)
+        if (offlineMiss && (lastSearchText.isNotEmpty() || lastFilters.isNotEmpty())) {
+            search(lastSearchText, lastFilters, quiet = true)
+        }
+    }
+
+    // The current search was started by the kit (the reconnect re-run): a failure while results
+    // are on screen reports nothing (D84 rule 5). Set when the search executes.
+    private var searchQuiet = false
+
+    // The offline flag of the current search, read once in performSearch (G1).
+    private var searchOfflineOn = false
+
+    // A request of the current search failed online with offline on (D84 rule 5: fired when rows stay).
+    private var offlineReadError: CometChatException? = null
+
+    /**
+     * The search generation. Bumped whenever the results a reply was fetched for stop being the
+     * ones on screen (a new search, its execution after the debounce, [clear]); a two-phase reply
+     * from another generation is dropped untouched. Only read and written on the main thread.
+     */
+    private var searchGen = 0L
+
+    /**
+     * Bumped only by a session end or cache reset (G8), so a plain (non two-phase) read already in
+     * flight drops its result. Never moves with offline off, where those reads behave as today.
+     */
+    private var offlineSessionGen = 0L
+
+    // G8: session end and cache reset (ENG-41568). Started only with offline on.
+    private val offlineSession = OfflineListSession(
+        onSessionEnded = { clearForOfflineSession() },
+        onCacheReset = { onOfflineCacheReset() }
+    )
+
+    init {
+        if (OfflineGate.isOn()) offlineSession.start(viewModelScope)
+    }
+
+    /** A keyword request of the current search failed with not-connected while offline was on. */
+    private var offlineKeywordFailed = false
+
+    /**
+     * A request of the current search failed with an error other than not-connected. Then the
+     * search is not an offline miss: it takes the normal error path (D84 rule 7 needs every failure
+     * to be not-connected).
+     */
+    private var onlineRequestFailed = false
+
+    /** Records a request failure for the D84 offline-miss decision. */
+    private fun noteFailure(error: CometChatException?) {
+        if (!SearchOffline.isNotConnected(error)) onlineRequestFailed = true
+    }
+
     /**
      * Initiates a search for conversations and/or messages based on the search text and filters.
      * Implements 450ms debounce for text input, but executes immediately for filter changes.
@@ -114,6 +207,11 @@ open public class CometChatSearchViewModel(
      * @param filters The set of selected filters
      */
     public fun searchConversationsAndMessages(searchText: String, filters: Set<SearchFilter>) {
+        search(searchText, filters, quiet = false)
+    }
+
+    /** [searchConversationsAndMessages]; [quiet] for a search the kit re-runs by itself. */
+    private fun search(searchText: String, filters: Set<SearchFilter>, quiet: Boolean) {
         if (searchText.isEmpty() && filters.isEmpty()) {
             clear()
             _uiState.value = SearchUIState.Initial
@@ -122,12 +220,14 @@ open public class CometChatSearchViewModel(
 
         // Skip re-execution if same search text and filters, and we already have results
         // This preserves expanded "See More" results across configuration changes
-        if (searchText == lastSearchText && filters == lastFilters &&
+        // An offline "Connect to search" is not a result: the same search runs again (D84 rule 8).
+        if (searchText == lastSearchText && filters == lastFilters && !_showConnectToSearch.value &&
             (_uiState.value is SearchUIState.Content || _uiState.value is SearchUIState.Empty)) {
             return
         }
 
         searchJob?.cancel()
+        searchGen++
 
         val isFilterChange = _selectedFilters.value != filters
         _selectedFilters.value = filters
@@ -138,11 +238,15 @@ open public class CometChatSearchViewModel(
                 delay(DEBOUNCE_DELAY_MS)
             }
 
+            // A page fetched during the debounce belongs to the old results: drop it.
+            searchGen++
+            _showConnectToSearch.value = false
             _uiState.value = SearchUIState.Loading
             clearLists()
 
             lastSearchText = searchText
             lastFilters = filters
+            searchQuiet = quiet
 
             val searchMode = getSearchMode(searchText, filters)
             performSearch(searchText, filters, searchMode)
@@ -158,23 +262,27 @@ open public class CometChatSearchViewModel(
         searchMode: SearchMode
     ) {
         resetRequestStates()
+        // Read the offline flag once for this search (G1) and thread it down both reads.
+        val gen = searchGen
+        val offlineOn = OfflineGate.isOn()
+        searchOfflineOn = offlineOn
 
         when (searchMode) {
             SearchMode.BOTH -> {
                 isConversationRequestPending = true
                 isMessageRequestPending = true
                 coroutineScope {
-                    launch { fetchConversations(searchText, filters) }
-                    launch { fetchMessages(searchText, filters) }
+                    launch { fetchConversations(searchText, filters, gen, offlineOn) }
+                    launch { fetchMessages(searchText, filters, gen, offlineOn) }
                 }
             }
             SearchMode.CONVERSATIONS -> {
                 isConversationRequestPending = true
-                fetchConversations(searchText, filters)
+                fetchConversations(searchText, filters, gen, offlineOn)
             }
             SearchMode.MESSAGES -> {
                 isMessageRequestPending = true
-                fetchMessages(searchText, filters)
+                fetchMessages(searchText, filters, gen, offlineOn)
             }
             SearchMode.NONE -> {
                 _uiState.value = SearchUIState.Empty
@@ -231,7 +339,12 @@ open public class CometChatSearchViewModel(
     /**
      * Fetches conversations based on search text and filters.
      */
-    private suspend fun fetchConversations(searchText: String, filters: Set<SearchFilter>) {
+    private suspend fun fetchConversations(
+        searchText: String,
+        filters: Set<SearchFilter>,
+        gen: Long,
+        offlineOn: Boolean
+    ) {
         // Use the integrator-supplied builder when one was set, so setConversationsRequestBuilder
         // actually scopes the search. Previously both branches constructed a fresh default builder,
         // which silently discarded the caller's.
@@ -240,8 +353,24 @@ open public class CometChatSearchViewModel(
         configureConversationRequest(builder, searchText, filters)
         currentConversationsRequest = builder.build()
 
+        val twoPhase = fetchConversationsUseCase.twoPhaseRepository
+        if (twoPhase != null) {
+            currentConversationsRequest?.let { request ->
+                collectConversations(
+                    twoPhase.getConversationsTwoPhase(request),
+                    ReadOp(gen, offlineOn, hasConversationKeyword(searchText), page = false),
+                    unreadOnly = filters.contains(SearchFilter.UNREAD)
+                )
+            }
+            return
+        }
+
         currentConversationsRequest?.let { request ->
-            fetchConversationsUseCase(request)
+            val session = offlineSessionGen
+            val result = fetchConversationsUseCase(request)
+            // G8: dropped after a session end or cache reset (offline on only).
+            if (session != offlineSessionGen) return
+            result
                 .onSuccess { conversations ->
                     // Filter out conversations with no last message when UNREAD filter is active
                     // The SDK returns joined groups with system-only "unread" counts (join notifications)
@@ -261,6 +390,7 @@ open public class CometChatSearchViewModel(
                     isConversationRequestPending = false
                     conversationRequestFailed = true
                     lastException = e as? CometChatException
+                    noteFailure(e as? CometChatException)
                     updateFinalStateIfCompleted()
                 }
         }
@@ -269,15 +399,35 @@ open public class CometChatSearchViewModel(
     /**
      * Fetches messages based on search text and filters.
      */
-    private suspend fun fetchMessages(searchText: String, filters: Set<SearchFilter>) {
+    private suspend fun fetchMessages(
+        searchText: String,
+        filters: Set<SearchFilter>,
+        gen: Long,
+        offlineOn: Boolean
+    ) {
         // Use the integrator-supplied builder when one was set — see fetchConversations above.
         val builder = messagesRequestBuilder ?: MessagesRequest.MessagesRequestBuilder()
 
         configureMessageRequest(builder, searchText, filters)
         currentMessagesRequest = builder.build()
 
+        val twoPhase = fetchMessagesUseCase.twoPhaseRepository
+        if (twoPhase != null) {
+            currentMessagesRequest?.let { request ->
+                collectMessages(
+                    twoPhase.getMessagesTwoPhase(request),
+                    ReadOp(gen, offlineOn, hasMessageKeyword(searchText), page = false)
+                )
+            }
+            return
+        }
+
         currentMessagesRequest?.let { request ->
-            fetchMessagesUseCase(request)
+            val session = offlineSessionGen
+            val result = fetchMessagesUseCase(request)
+            // G8: dropped after a session end or cache reset (offline on only).
+            if (session != offlineSessionGen) return
+            result
                 .onSuccess { messages ->
                     // Reverse messages for chronological display
                     _messages.value = _messages.value + messages.reversed()
@@ -290,6 +440,7 @@ open public class CometChatSearchViewModel(
                     isMessageRequestPending = false
                     messageRequestFailed = true
                     lastException = e as? CometChatException
+                    noteFailure(e as? CometChatException)
                     updateFinalStateIfCompleted()
                 }
         }
@@ -443,16 +594,36 @@ open public class CometChatSearchViewModel(
     private fun updateFinalStateIfCompleted() {
         if (isConversationRequestPending || isMessageRequestPending) return
 
+        val nothingShown = _conversations.value.isEmpty() && _messages.value.isEmpty()
+        val bothFailed = conversationRequestFailed && messageRequestFailed
+        // D84 rule 7: an offline search with no saved match on screen is "Connect to search" (an
+        // offline state, no onError): a keyword that could not reach the server, or both requests
+        // failed — and every failure was not-connected. Any other failure takes the normal path.
+        val connectToSearch = searchOfflineOn && nothingShown && !onlineRequestFailed &&
+            (offlineKeywordFailed || bothFailed)
+        _showConnectToSearch.value = connectToSearch
         _uiState.value = when {
-            conversationRequestFailed && messageRequestFailed -> {
+            connectToSearch -> SearchUIState.Empty
+            bothFailed -> {
                 SearchUIState.Error(lastException ?: CometChatException(
                     "SEARCH_ERROR",
                     "Search failed",
                     "Both conversation and message search failed"
                 ))
             }
-            _conversations.value.isEmpty() && _messages.value.isEmpty() -> SearchUIState.Empty
+            nothingShown -> SearchUIState.Empty
             else -> SearchUIState.Content
+        }
+        if (searchOfflineOn) {
+            val state = _uiState.value
+            if (connectToSearch || (state is SearchUIState.Error && SearchOffline.isNotConnected(state.exception))) {
+                // D84 rule 8: read again, once, on reconnect.
+                reconnectRefill.arm()
+            } else {
+                reconnectRefill.disarm()
+                // D84 rule 5: results stay on screen; an online failure still reaches onError.
+                if (state is SearchUIState.Content && !searchQuiet) offlineReadError?.let { _rowsKeptError.trySend(it) }
+            }
         }
     }
 
@@ -465,6 +636,9 @@ open public class CometChatSearchViewModel(
         conversationRequestFailed = false
         messageRequestFailed = false
         lastException = null
+        offlineKeywordFailed = false
+        onlineRequestFailed = false
+        offlineReadError = null
     }
 
     /**
@@ -472,12 +646,28 @@ open public class CometChatSearchViewModel(
      */
     public fun fetchMoreConversations() {
         if (!_hasMoreConversations.value || isConversationRequestPending) return
+        val gen = searchGen
 
         viewModelScope.launch {
             isConversationRequestPending = true
 
+            val twoPhase = fetchConversationsUseCase.twoPhaseRepository
+            val pageRequest = currentConversationsRequest
+            if (twoPhase != null && pageRequest != null) {
+                collectConversations(
+                    twoPhase.getConversationsTwoPhase(pageRequest),
+                    ReadOp(gen, OfflineGate.isOn(), hasConversationKeyword(lastSearchText), page = true),
+                    unreadOnly = _selectedFilters.value.contains(SearchFilter.UNREAD)
+                )
+                return@launch
+            }
+
             currentConversationsRequest?.let { request ->
-                fetchConversationsUseCase(request)
+                val session = offlineSessionGen
+                val result = fetchConversationsUseCase(request)
+                // G8: dropped after a session end or cache reset (offline on only).
+                if (session != offlineSessionGen) return@launch
+                result
                     .onSuccess { conversations ->
                         // Filter out conversations with no last message when UNREAD filter is active
                         val filteredConversations = if (_selectedFilters.value.contains(SearchFilter.UNREAD)) {
@@ -503,12 +693,27 @@ open public class CometChatSearchViewModel(
      */
     public fun fetchMoreMessages() {
         if (!_hasMoreMessages.value || isMessageRequestPending) return
+        val gen = searchGen
 
         viewModelScope.launch {
             isMessageRequestPending = true
 
+            val twoPhase = fetchMessagesUseCase.twoPhaseRepository
+            val pageRequest = currentMessagesRequest
+            if (twoPhase != null && pageRequest != null) {
+                collectMessages(
+                    twoPhase.getMessagesTwoPhase(pageRequest),
+                    ReadOp(gen, OfflineGate.isOn(), hasMessageKeyword(lastSearchText), page = true)
+                )
+                return@launch
+            }
+
             currentMessagesRequest?.let { request ->
-                fetchMessagesUseCase(request)
+                val session = offlineSessionGen
+                val result = fetchMessagesUseCase(request)
+                // G8: dropped after a session end or cache reset (offline on only).
+                if (session != offlineSessionGen) return@launch
+                result
                     .onSuccess { messages ->
                         // Reverse messages for chronological display
                         _messages.value = _messages.value + messages.reversed()
@@ -661,6 +866,9 @@ open public class CometChatSearchViewModel(
      */
     public fun clear() {
         searchJob?.cancel()
+        searchGen++
+        _showConnectToSearch.value = false
+        reconnectRefill.disarm()
         clearLists()
         _selectedFilters.value = emptySet()
         _visibleFilters.value = SearchFilter.entries.toList()
@@ -669,6 +877,41 @@ open public class CometChatSearchViewModel(
         currentMessagesRequest = null
         lastSearchText = ""
         lastFilters = emptySet()
+    }
+
+    /**
+     * Clears both result sets (conversations and messages) for a session change (logout or a switch
+     * to a different uid), before the next frame (G8). Bumps [searchGen] and [offlineSessionGen], so
+     * a search or "see more" page already in flight drops its result, cancels a pending search,
+     * empties both lists and resets paging and requests. The screen goes back to
+     * [SearchUIState.Initial] (nothing searched); the selected filter chips are kept. Offline on only
+     * (the hub drives it).
+     */
+    private fun clearForOfflineSession() {
+        searchJob?.cancel()
+        searchGen++
+        offlineSessionGen++
+        _showConnectToSearch.value = false
+        reconnectRefill.disarm()
+        clearLists()
+        resetRequestStates()
+        currentConversationsRequest = null
+        currentMessagesRequest = null
+        lastSearchText = ""
+        lastFilters = emptySet()
+        _uiState.value = SearchUIState.Initial
+    }
+
+    /**
+     * The offline cache was reset (G8): clear as for a session end, then run the search on screen
+     * again, once, from page one. The kit starts it, so a failure over results stays quiet (D84
+     * rule 5). Nothing runs if nothing was searched.
+     */
+    private fun onOfflineCacheReset() {
+        val text = lastSearchText
+        val filters = lastFilters
+        clearForOfflineSession()
+        if (text.isNotEmpty() || filters.isNotEmpty()) search(text, filters, quiet = true)
     }
 
     /**
@@ -681,8 +924,131 @@ open public class CometChatSearchViewModel(
         _hasMoreMessages.value = true
     }
 
+    // ==================== Two-phase reads (W7) ====================
+
+    /**
+     * One two-phase read: its search generation, the offline flag read once for it (G1), whether
+     * its request carries a keyword (server only, BEH-SNAP-04), and whether it is a "see more" page.
+     */
+    private class ReadOp(val gen: Long, val offlineOn: Boolean, val hasKeyword: Boolean, val page: Boolean)
+
+    private fun hasConversationKeyword(searchText: String): Boolean =
+        searchText.isNotEmpty() && searchScopes.contains(SearchScope.CONVERSATIONS)
+
+    private fun hasMessageKeyword(searchText: String): Boolean =
+        searchText.isNotEmpty() && searchScopes.contains(SearchScope.MESSAGES)
+
+    private suspend fun collectConversations(
+        phases: Flow<TwoPhaseResult<Conversation>>,
+        op: ReadOp,
+        unreadOnly: Boolean
+    ) {
+        // Today's transform: with UNREAD, drop joined groups that have no real last message.
+        val transform: (List<Conversation>) -> List<Conversation> =
+            if (unreadOnly) { rows -> rows.filter { it.lastMessage != null } } else { rows -> rows }
+        collectTwoPhase(
+            phases, op, _conversations, _hasMoreConversations, SearchOffline.conversationSpec, transform,
+            hasMore = { fetchConversationsUseCase.hasMore() }
+        ) { failed, error, offlineKeyword ->
+            isConversationRequestPending = false
+            if (!op.page) {
+                conversationRequestFailed = failed
+                if (failed) { lastException = error; noteFailure(error) }
+                if (offlineKeyword) offlineKeywordFailed = true
+                updateFinalStateIfCompleted()
+            }
+        }
+    }
+
+    private suspend fun collectMessages(phases: Flow<TwoPhaseResult<BaseMessage>>, op: ReadOp) {
+        // Today's transform: a fetchPrevious page is oldest-first; the screen shows newest-first.
+        collectTwoPhase(
+            phases, op, _messages, _hasMoreMessages, SearchOffline.messageSpec, { it.reversed() },
+            hasMore = { fetchMessagesUseCase.hasMore() }
+        ) { failed, error, offlineKeyword ->
+            isMessageRequestPending = false
+            if (!op.page) {
+                messageRequestFailed = failed
+                if (failed) { lastException = error; noteFailure(error) }
+                if (offlineKeyword) offlineKeywordFailed = true
+                updateFinalStateIfCompleted()
+            }
+        }
+    }
+
+    /**
+     * Applies one two-phase read to [rows] (README §3.9 "Search" / "Message filters without a
+     * keyword"; BEH-SNAP-04, AC-10.1/10.2/10.3):
+     * - A reply from another [searchGen] is dropped untouched.
+     * - **Offline off**: only the server phase arrives; it is appended exactly as today.
+     * - **Keyword** (offline on): server only — the cached phase is ignored, the server page is
+     *   appended without repeats; a not-connected error with nothing found is "Connect to search" (D84).
+     * - **No keyword** (offline on): the cached page paints first, the server page reconciles it
+     *   by id ([OfflineListReconcile]); a not-connected error after the cached phase means the
+     *   search was answered from the cache — not a failure.
+     *
+     * [onDone] runs once, on the server phase or the error: `(failed, error, offlineKeyword)`.
+     */
+    private suspend fun <T, ID : Comparable<ID>> collectTwoPhase(
+        phases: Flow<TwoPhaseResult<T>>,
+        op: ReadOp,
+        rows: MutableStateFlow<List<T>>,
+        hasMoreFlow: MutableStateFlow<Boolean>,
+        spec: OfflineListReconcile.Spec<T, ID>,
+        transform: (List<T>) -> List<T>,
+        hasMore: () -> Boolean,
+        onDone: (failed: Boolean, error: CometChatException?, offlineKeyword: Boolean) -> Unit
+    ) {
+        val reconciled = op.offlineOn && !op.hasKeyword
+        var cachedKeys: Set<Any> = emptySet()
+        var cachedDelivered = false
+        phases.collect { phase ->
+            if (op.gen != searchGen) return@collect
+            when (phase) {
+                is TwoPhaseResult.Cached -> {
+                    if (!reconciled) return@collect
+                    val out = OfflineListReconcile.reconcile(
+                        rows.value, op.gen,
+                        OfflineListReconcile.Op(op.gen, OfflineListReconcile.Phase.CACHED, transform(phase.rows)),
+                        spec, hasMoreFlow.value
+                    )
+                    cachedKeys = out.cachedKeys
+                    cachedDelivered = true
+                    rows.value = out.rows
+                    // Fast first paint; the final state still waits for every request to finish.
+                    if (!op.page && out.rows.isNotEmpty()) _uiState.value = SearchUIState.Content
+                }
+                is TwoPhaseResult.Server -> {
+                    val page = transform(phase.rows)
+                    rows.value = when {
+                        !op.offlineOn -> rows.value + page
+                        op.hasKeyword -> SearchOffline.appendDistinct(rows.value, page, spec.keyOf)
+                        else -> OfflineListReconcile.reconcile(
+                            rows.value, op.gen,
+                            OfflineListReconcile.Op(op.gen, OfflineListReconcile.Phase.SERVER, page, cachedKeys),
+                            spec, hasMoreFlow.value
+                        ).rows
+                    }
+                    hasMoreFlow.value = hasMore()
+                    onDone(false, null, false)
+                }
+                is TwoPhaseResult.Error -> {
+                    val notConnected = op.offlineOn && SearchOffline.isNotConnected(phase.exception)
+                    // D84 rules 2 and 5: only an online failure is reported over results kept on screen.
+                    if (op.offlineOn && !op.page && !notConnected) offlineReadError = phase.exception
+                    if (notConnected && cachedDelivered) {
+                        onDone(false, null, false)
+                    } else {
+                        onDone(true, phase.exception, notConnected && op.hasKeyword)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         searchJob?.cancel()
+        reconnectRefill.release()
     }
 }

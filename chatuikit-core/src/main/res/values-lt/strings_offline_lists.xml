@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">Prisijunkite, kad galėtumėte ieškoti</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">Paieškai reikia interneto ryšio.</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">Prisijunkite, kad įkeltumėte naudotojus</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">Prisijunkite, kad įkeltumėte grupes</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">Prisijunkite, kad įkeltumėte pokalbius</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">Prisijunkite, kad įkeltumėte narius</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">Prisijunkite, kad įkeltumėte žinutes</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">Prisijunkite, kad įkeltumėte reakcijas</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">Prisijunkite, kad įkeltumėte pranešimus</string>
+</resources>

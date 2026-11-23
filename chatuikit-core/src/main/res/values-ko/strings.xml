@@ -18,5 +18,23 @@
     <string name="cometchat_translate" translatable="true">번역</string>
     <string name="cometchat_unpin" translatable="true">메시지 고정 해제</string>
     <string name="cometchat_unsave" translatable="true">메시지 저장 해제</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">아직 전송되지 않음</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">전송되지 않았습니다. 탭하여 다시 시도</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">전송되지 않은 메시지 1개가 삭제되었습니다</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">전송되지 않은 메시지가 손실되었을 수 있습니다</string>
+    <string name="cometchat_queue_full" translatable="true">전송 대기 중인 메시지가 너무 많습니다</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">파일이 너무 커서 오프라인으로 보낼 수 없습니다</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">연결하여 더 불러오기</string>
+    <string name="cometchat_media_available_when_online" translatable="true">다시 온라인 상태가 되면 미디어를 볼 수 있습니다</string>
+    <string name="cometchat_jump_to_latest" translatable="true">최신 메시지로 이동</string>
+    <string name="cometchat_sending_try_again" translatable="true">전송 중… 잠시 후 다시 시도하세요</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="other">메시지 %d개가 전송되지 않았습니다</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="other">전송되지 않은 메시지 %d개가 손실되었습니다</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">다시 시도</string>
     <string name="cometchat_call_no_internet" translatable="true">인터넷에 연결되어 있지 않습니다. 연결을 확인한 후 다시 시도하세요.</string>
 </resources>

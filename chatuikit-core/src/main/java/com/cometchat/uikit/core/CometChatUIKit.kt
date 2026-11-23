@@ -18,6 +18,9 @@ import com.cometchat.chat.models.MediaMessage
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.events.CometChatEvents
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineHub
+import com.cometchat.uikit.core.offline.OfflineSend
 import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
@@ -122,6 +125,8 @@ public object CometChatUIKit {
             settings.region?.let { appSettingsBuilder.setRegion(it) }
             settings.overrideAdminHost?.let { appSettingsBuilder.overrideAdminHost(it) }
             settings.overrideClientHost?.let { appSettingsBuilder.overrideClientHost(it) }
+            // G14: pass the offline config straight through to the SDK. Absent → offline off.
+            settings.offlineConfig?.let { appSettingsBuilder.setOfflineConfig(it) }
         }
 
         val appSettings = appSettingsBuilder.build()
@@ -135,6 +140,11 @@ public object CometChatUIKit {
             object : CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String) {
                     CometChat.setSource("uikit-v6", "android", "kotlin")
+
+                    // Start the offline hub once, after SDK init succeeds (idempotent; inert while
+                    // offline is off). Never tied to a ViewModel, never removed on logout.
+                    OfflineHub.start()
+                    OfflineHub.noteSession(CometChat.getLoggedInUser()?.uid)
 
                     // Auto-initialize CometChatCalls if enableCalling is true.
                     // The Calls SDK is a compileOnly dependency: a calling app adds
@@ -259,6 +269,12 @@ public object CometChatUIKit {
             object : CometChat.CallbackListener<String>() {
                 override fun onSuccess(result: String) {
                     CometChat.setSource("uikit-v6", "android", "kotlin")
+
+                    // Start the offline hub once, after SDK init succeeds (idempotent; inert while
+                    // offline is off). The SDK's initFromSettings reads the offline config from
+                    // cometchat-settings.json itself.
+                    OfflineHub.start()
+                    OfflineHub.noteSession(CometChat.getLoggedInUser()?.uid)
 
                     // 4. Auto-initialize CometChatCalls if enableCalling is true.
                     //    fromSettings = true routes the Calls SDK through its own
@@ -491,6 +507,9 @@ public object CometChatUIKit {
                 authKey,
                 object : CometChat.CallbackListener<User>() {
                     override fun onSuccess(user: User) {
+                        // A login as a different uid ends the previous session and bumps gen; the
+                        // same uid (token refresh) does not clear. Inert while offline is off.
+                        OfflineHub.noteSession(user.uid)
                         if (authenticationSettings?.enableCalling == true && isCallsSDKInitialized) {
                             loginCometChatCalls(user, callbackListener)
                         } else {
@@ -524,6 +543,9 @@ public object CometChatUIKit {
                 authToken,
                 object : CometChat.CallbackListener<User>() {
                     override fun onSuccess(user: User) {
+                        // Same session rule as login(uid): a different uid ends the previous
+                        // session and bumps gen; the same uid does not clear.
+                        OfflineHub.noteSession(user.uid)
                         if (authenticationSettings?.enableCalling == true && isCallsSDKInitialized) {
                             loginCometChatCalls(user, callbackListener)
                         } else {
@@ -612,6 +634,9 @@ public object CometChatUIKit {
     private fun logoutChat(callbackListener: CometChat.CallbackListener<String>?) {
         CometChat.logout(object : CometChat.CallbackListener<String>() {
             override fun onSuccess(successMessage: String) {
+                // End the offline session: bump gen so in-flight events are dropped, and clear the
+                // hub's per-send dedupe. SDK listener registrations are kept (survive logout).
+                OfflineHub.onLogout()
                 // Cleanup the events bridge on logou
                 if (authenticationSettings?.enableCalling == true && isCallsSDKInitialized) {
                     CometChatCalls.logout(object : CometChatCalls.CallbackListener<String>() {
@@ -669,6 +694,9 @@ public object CometChatUIKit {
         textMessage: TextMessage,
         callbackListener: CometChat.CallbackListener<TextMessage>?
     ) {
+        // Offline send seam (W4). With offline off this is skipped entirely and today's path runs;
+        // with offline on, OfflineSend handles the send and returns true.
+        if (OfflineGate.isOn() && OfflineSend.interceptTextMessage(textMessage, callbackListener)) return
         if (textMessage.sender == null) {
             textMessage.sender = CometChat.getLoggedInUser()
         }
@@ -723,6 +751,10 @@ public object CometChatUIKit {
         mediaMessage: MediaMessage,
         callbackListener: CometChat.CallbackListener<MediaMessage>?
     ) {
+        // Offline send seam (W4). With offline off this is skipped entirely and today's path runs;
+        // with offline on, OfflineSend handles the send and returns true.
+        if (OfflineGate.isOn() && OfflineSend.interceptMediaMessage(mediaMessage, callbackListener)) return
+
         CometChatLogger.d(
             "CometChatUIKit",
             "sendMediaMessage: file=${mediaMessage.file?.absolutePath}, fileSize=${mediaMessage.file?.length()}, type=${mediaMessage.type}"
@@ -782,6 +814,9 @@ public object CometChatUIKit {
         customMessage: CustomMessage,
         callbackListener: CometChat.CallbackListener<CustomMessage>?
     ) {
+        // Offline send seam (W4). With offline off this is skipped entirely and today's path runs;
+        // with offline on, OfflineSend handles the send and returns true.
+        if (OfflineGate.isOn() && OfflineSend.interceptCustomMessage(customMessage, callbackListener)) return
         if (customMessage.sender == null) {
             customMessage.sender = CometChat.getLoggedInUser()
         }

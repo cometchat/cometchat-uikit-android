@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline search (ENG-41133) -->
+    <string name="cometchat_connect_to_search_messages" translatable="true">اتصل للبحث</string>
+    <string name="cometchat_connect_to_search_messages_subtitle" translatable="true">يحتاج البحث إلى اتصال بالإنترنت.</string>
+</resources>

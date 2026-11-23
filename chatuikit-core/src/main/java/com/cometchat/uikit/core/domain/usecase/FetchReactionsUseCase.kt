@@ -1,8 +1,12 @@
 package com.cometchat.uikit.core.domain.usecase
 
+import androidx.annotation.RestrictTo
 import com.cometchat.chat.core.ReactionsRequest
 import com.cometchat.chat.models.Reaction
 import com.cometchat.uikit.core.domain.repository.ReactionListRepository
+import com.cometchat.uikit.core.domain.repository.ReactionListTwoPhaseRepository
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Use case for fetching reactions for a message.
@@ -29,5 +33,18 @@ open public class FetchReactionsUseCase(
      */
     open suspend operator public fun invoke(request: ReactionsRequest): Result<List<Reaction>> {
         return repository.fetchReactions(request)
+    }
+
+    /**
+     * The two-phase (cached → server) read for the same [request] (G2), or `null` when this use
+     * case cannot offer one — then the caller keeps today's [invoke]. `null` when:
+     * - this is a subclass, which may override [invoke] (its override must keep being honoured);
+     * - the repository does not implement [ReactionListTwoPhaseRepository].
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public fun twoPhaseOrNull(request: ReactionsRequest): Flow<TwoPhaseResult<Reaction>>? {
+        if (javaClass != FetchReactionsUseCase::class.java) return null
+        val twoPhase = repository as? ReactionListTwoPhaseRepository ?: return null
+        return twoPhase.fetchReactionsTwoPhase(request)
     }
 }

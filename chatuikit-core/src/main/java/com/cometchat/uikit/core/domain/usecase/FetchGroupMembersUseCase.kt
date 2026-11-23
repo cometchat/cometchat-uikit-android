@@ -2,6 +2,7 @@ package com.cometchat.uikit.core.domain.usecase
 
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
+import com.cometchat.uikit.core.domain.repository.GroupMembersTwoPhaseRepository
 
 /**
  * Use case for fetching group members.
@@ -38,4 +39,13 @@ open public class FetchGroupMembersUseCase(
      * Call this when the search keyword changes or when refreshing.
      */
     open public fun resetRequest(): Unit = repository.resetRequest()
+
+    /**
+     * The repository's two-phase read (BEH-SNAP-03), module-internal so the ViewModel can reach it
+     * without widening a public signature. Null — today's single-phase path through [invoke] — when
+     * the repository does not implement [GroupMembersTwoPhaseRepository], or when this use case is a subclass
+     * (a customer override of [invoke] keeps running).
+     */
+    internal val twoPhaseRepository: GroupMembersTwoPhaseRepository?
+        get() = if (javaClass == FetchGroupMembersUseCase::class.java) repository as? GroupMembersTwoPhaseRepository else null
 }

@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">Çevir</string>
     <string name="cometchat_unpin" translatable="true">Mesajın Sabitlemesini Kaldır</string>
     <string name="cometchat_unsave" translatable="true">Mesajın Kaydını Kaldır</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Henüz gönderilmedi</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Gönderilmedi. Yeniden denemek için dokunun</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">Gönderilmemiş 1 mesaj kaldırıldı</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Gönderilmemiş mesajlar kaybolmuş olabilir</string>
+    <string name="cometchat_queue_full" translatable="true">Gönderilmeyi bekleyen çok fazla mesaj var</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Dosya çevrimdışı göndermek için çok büyük</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Daha fazlasını yüklemek için bağlanın</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Medya, tekrar çevrimiçi olduğunuzda kullanılabilir olacak</string>
+    <string name="cometchat_jump_to_latest" translatable="true">En yeniye git</string>
+    <string name="cometchat_sending_try_again" translatable="true">Gönderiliyor… birazdan tekrar deneyin</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d mesaj gönderilmedi</item>
+        <item quantity="other">%d mesaj gönderilmedi</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">Gönderilmemiş %d mesaj kayboldu</item>
+        <item quantity="other">Gönderilmemiş %d mesaj kayboldu</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Yeniden Dene</string>
     <string name="cometchat_call_no_internet" translatable="true">İnternet bağlantısı yok. Bağlantınızı kontrol edip tekrar deneyin.</string>
 </resources>

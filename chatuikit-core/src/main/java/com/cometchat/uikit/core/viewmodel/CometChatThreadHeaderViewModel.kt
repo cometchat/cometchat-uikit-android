@@ -8,12 +8,17 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.CustomMessage
 import com.cometchat.chat.models.MediaMessage
+import com.cometchat.chat.models.MessageStatus as SdkMessageStatus
 import com.cometchat.chat.models.MessageReceipt
 import com.cometchat.chat.models.ReactionEvent
 import com.cometchat.chat.models.TextMessage
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
+import com.cometchat.uikit.core.offline.MessageSendState
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineHub
+import com.cometchat.uikit.core.offline.OfflineHubEvent
 import com.cometchat.uikit.core.utils.PinSaveUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -171,6 +176,9 @@ open public class CometChatThreadHeaderViewModel(
      */
     public fun setParentMessage(parentMessage: BaseMessage?) {
         if (parentMessage != null) {
+            // A new snapshot (same thread or another): its stored count already carries every delta
+            // the SDK applied before it was read, so nothing seen on the old one carries over.
+            clearOfflineReplyDeltas()
             this._parentMessage = parentMessage
             _replyCountStateFlow.value = parentMessage.replyCount
             messageList.clear()
@@ -193,6 +201,110 @@ open public class CometChatThreadHeaderViewModel(
      */
     protected fun incrementParentMessageReplyCount() {
         _replyCountStateFlow.value = _replyCountStateFlow.value + 1
+    }
+
+    // ==================== Offline reply overlay (BEH-MUT-10) ====================
+
+    /**
+     * The offline mode captured when this header was created. Every overlay branch below is behind
+     * it, so with offline off the header counts exactly as before.
+     */
+    internal val offlineOn: Boolean = OfflineGate.isOn()
+
+    /**
+     * Own replies to the parent whose send events this header has seen since its parent snapshot,
+     * by localMessageId. Only a reply first seen as queued adds to the count.
+     */
+    private val seenOfflineReplies: HashSet<String> = HashSet()
+
+    /** Own replies already taken back after a device delete, so a repeat event takes nothing. */
+    private val removedOfflineReplies: HashSet<String> = HashSet()
+
+    /** Collects the offline hub's send events; only started when [offlineOn]. */
+    private var offlineHubJob: Job? = null
+
+    /** The hub session generation this header counts in; an event from another one is dropped. */
+    private var offlineHubGen: Long = -1L
+
+    /**
+     * The displayed count is the parent's stored count, and the SDK keeps the user's own unsent
+     * replies in that stored count (BEH-MUT-10): +1 when a reply enters the outbox, −1 when the
+     * user deletes it from the device, nothing when it sends. A parent read after the reply was
+     * queued already includes it. So the header applies only the deltas the SDK applies after this
+     * header's snapshot was taken:
+     * - +1 when a reply is first seen as queued (SENDING with an unfailed message; a Retry reports
+     *   SENDING with the row's FAILED copy and the SDK adds nothing for it);
+     * - −1 once when the kit's Delete removes it from the device ([OfflineHubEvent.ThreadReplyDeleted]
+     *   with `discarded`), whether or not this header counted it;
+     * - nothing on SENT, on an eviction (QUEUE_OVERFLOW) or a purge (DISCARDED): the SDK leaves the
+     *   stored count as it is and the reconnect sweep heals it.
+     */
+    internal fun onOfflineHubEvent(event: OfflineHubEvent) {
+        if (event is OfflineHubEvent.SessionEnded) {
+            if (event.gen > offlineHubGen) {
+                offlineHubGen = event.gen
+                clearOfflineReplyDeltas()
+            }
+            return
+        }
+        if (event.gen != offlineHubGen) return
+        when (event) {
+            is OfflineHubEvent.SendState -> {
+                if (!isReplyToParent(event.message)) return
+                val localId = event.localMessageId.ifEmpty { event.message.localMessageId.orEmpty() }
+                if (localId.isEmpty()) return
+                val firstSighting = seenOfflineReplies.add(localId)
+                if (firstSighting && event.state == MessageSendState.SENDING &&
+                    event.message.status != SdkMessageStatus.FAILED
+                ) {
+                    incrementParentMessageReplyCount()
+                }
+            }
+            is OfflineHubEvent.ThreadReplyDeleted -> {
+                if (!event.discarded || !isReplyToParent(event.message)) return
+                if (event.localMessageId.isEmpty() || !removedOfflineReplies.add(event.localMessageId)) return
+                seenOfflineReplies.add(event.localMessageId)
+                _replyCountStateFlow.value = maxOf(0, _replyCountStateFlow.value - 1)
+            }
+            else -> Unit
+        }
+    }
+
+    /**
+     * The legacy `MessageSent(SUCCESS)` for a reply on the offline path. Returns true when the
+     * overlay owns it: the SDK counted the reply when it was queued, so the ack adds nothing.
+     * False sends it down today's path: offline turned off since this header was created means the
+     * send took today's path, and a reply without a localMessageId never entered the outbox.
+     */
+    private fun handleOfflineReplySent(message: BaseMessage): Boolean {
+        if (!offlineOn || !OfflineGate.isOn()) return false
+        val localId = message.localMessageId
+        if (localId.isNullOrEmpty()) return false
+        seenOfflineReplies.add(localId)
+        return true
+    }
+
+    private fun isReplyToParent(message: BaseMessage): Boolean {
+        val parent = _parentMessage ?: return false
+        return message.parentMessageId > 0 && message.parentMessageId == parent.id
+    }
+
+    private fun clearOfflineReplyDeltas() {
+        seenOfflineReplies.clear()
+        removedOfflineReplies.clear()
+    }
+
+    private fun startOfflineHub() {
+        if (!offlineOn) return
+        offlineHubJob?.cancel()
+        val gen = OfflineHub.gen
+        if (gen != offlineHubGen) {
+            offlineHubGen = gen
+            clearOfflineReplyDeltas()
+        }
+        offlineHubJob = viewModelScope.launch {
+            OfflineHub.events.collect { event -> onOfflineHubEvent(event) }
+        }
     }
 
     // ==================== Update Methods ====================
@@ -251,6 +363,31 @@ open public class CometChatThreadHeaderViewModel(
         if (messageList.isNotEmpty()) {
             messageList[0] = updated
             _parentMessageListStateFlow.value = messageList.toList()
+        }
+    }
+
+    /**
+     * A pin/save kit event (D-327, G11, BEH-FLAG-04). SDK 5.1.2 sends no own echo, so this is how a
+     * pin/save of the parent from a message list, or an unpin/unsave from the pinned or saved panel,
+     * reaches the header. A no-op when the parent already shows the state; the header never emits.
+     */
+    private fun handleParentPinSaveKitEvent(message: BaseMessage, isPin: Boolean, state: Boolean) {
+        val parent = _parentMessage ?: return
+        if (message.id != parent.id) return
+        val current = if (isPin) parent.isPinned else parent.isSaved
+        // A pin by someone else onto a pinned parent changes who pinned it — not a no-op.
+        val pinnerChanged = isPin && state && message.pinnedBy != null && message.pinnedBy != parent.pinnedBy
+        if (current == state && !pinnerChanged) return
+        applyParentPinSaveChange(message) { updated ->
+            when {
+                isPin && state -> {
+                    updated.pinnedAt = if (message.pinnedAt > 0) message.pinnedAt else System.currentTimeMillis() / 1000
+                    message.pinnedBy?.let { updated.pinnedBy = it }
+                }
+                isPin -> { updated.pinnedAt = 0; updated.pinnedBy = null }
+                state -> updated.savedAt = if (message.savedAt > 0) message.savedAt else System.currentTimeMillis() / 1000
+                else -> updated.savedAt = 0
+            }
         }
     }
 
@@ -399,10 +536,15 @@ open public class CometChatThreadHeaderViewModel(
                     is CometChatMessageEvent.MessageDeleted -> {
                         handleMessageDeleted(event.message)
                     }
+                    is CometChatMessageEvent.MessagePinned -> handleParentPinSaveKitEvent(event.message, isPin = true, state = true)
+                    is CometChatMessageEvent.MessageUnpinned -> handleParentPinSaveKitEvent(event.message, isPin = true, state = false)
+                    is CometChatMessageEvent.MessageSaved -> handleParentPinSaveKitEvent(event.message, isPin = false, state = true)
+                    is CometChatMessageEvent.MessageUnsaved -> handleParentPinSaveKitEvent(event.message, isPin = false, state = false)
                     else -> { /* Ignore other message events */ }
                 }
             }
         }
+        startOfflineHub()
     }
 
     /**
@@ -414,6 +556,8 @@ open public class CometChatThreadHeaderViewModel(
         }
         messageEventsJob?.cancel()
         messageEventsJob = null
+        offlineHubJob?.cancel()
+        offlineHubJob = null
     }
 
     // ==================== Event Handlers ====================
@@ -443,6 +587,7 @@ open public class CometChatThreadHeaderViewModel(
     private fun handleUIMessageSent(message: BaseMessage) {
         _parentMessage?.let { parent ->
             if (message.parentMessageId > 0 && message.parentMessageId == parent.id) {
+                if (handleOfflineReplySent(message)) return@let
                 incrementParentMessageReplyCount()
             }
         }

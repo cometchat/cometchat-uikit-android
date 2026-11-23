@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">Översätt</string>
     <string name="cometchat_unpin" translatable="true">Lossa meddelande</string>
     <string name="cometchat_unsave" translatable="true">Ta bort meddelande från sparade</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Inte skickat än</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Inte skickat. Tryck för att försöka igen</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 oskickat meddelande har tagits bort</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Oskickade meddelanden kan ha gått förlorade</string>
+    <string name="cometchat_queue_full" translatable="true">För många meddelanden väntar på att skickas</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Filen är för stor för att skickas offline</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Anslut för att läsa in fler</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Media blir tillgängligt när du är online igen</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Gå till senaste</string>
+    <string name="cometchat_sending_try_again" translatable="true">Skickar… försök igen om en stund</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d meddelande skickades inte</item>
+        <item quantity="other">%d meddelanden skickades inte</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d oskickat meddelande gick förlorat</item>
+        <item quantity="other">%d oskickade meddelanden gick förlorade</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Försök igen</string>
     <string name="cometchat_call_no_internet" translatable="true">Ingen internetanslutning. Kontrollera anslutningen och försök igen.</string>
 </resources>

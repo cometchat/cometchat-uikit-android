@@ -2,6 +2,7 @@ package com.cometchat.uikit.core.viewmodel
 
 import android.content.Context
 import androidx.annotation.RawRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cometchat.chat.constants.CometChatConstants
@@ -24,6 +25,14 @@ import com.cometchat.chat.models.TypingIndicator
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.domain.repository.ConversationListTwoPhaseRepository
+import com.cometchat.uikit.core.offline.ConversationDetailsOnce
+import com.cometchat.uikit.core.offline.ConversationListOffline
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineHub
+import com.cometchat.uikit.core.offline.OfflineHubEvent
+import com.cometchat.uikit.core.offline.OfflineNotice
+import com.cometchat.uikit.core.offline.OfflineNoticeRelay
 
 import com.cometchat.uikit.core.resources.soundmanager.CometChatSoundManager
 import com.cometchat.uikit.core.resources.soundmanager.Sound
@@ -45,6 +54,10 @@ import com.cometchat.uikit.core.utils.CometChatLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,18 +86,96 @@ open public class CometChatConversationsViewModel(
 ) : ViewModel(), ListOperations<Conversation> {
     
     // UI State
-    private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
+    internal val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     public val uiState: StateFlow<UIState> = _uiState.asStateFlow()
     
     // Conversations list
-    private val _conversations = MutableStateFlow<List<Conversation>>(emptyList())
+    internal val _conversations = MutableStateFlow<List<Conversation>>(emptyList())
     public val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
+
+    // ========================================
+    // Offline foundations (ENG-41086). Inert while offline is off — every branch guarded by
+    // [offlineOn], so the OFF path is byte-identical to today.
+    // ========================================
+
+    /** The offline read mode, captured once when this ViewModel binds (G1). */
+    internal val offlineOn: Boolean = OfflineGate.isOn()
+
+    /** List generation, bumped on a session change so stale reads/events are dropped (G8). */
+    internal var offlineListGen: Long = 0L
+        private set
+
+    private var offlineHubJob: Job? = null
+    private var offlineNoticeJob: Job? = null
+
+    /**
+     * The hub session generation this list accepts events from. Adopted when the hub collector
+     * starts and on each newer `SessionEnded`; any other event with a different gen is dropped (G8).
+     */
+    private var offlineHubGen: Long = OfflineHub.gen
+
+    /** Test seam: the last hub event this list routed (stale-gen events never get here). */
+    @VisibleForTesting
+    internal var lastRoutedHubEvent: OfflineHubEvent? = null
+        private set
+
+    /** The repository's two-phase read, when it has one (G2); null keeps today's path. For W3. */
+    internal val twoPhaseRepository: ConversationListTwoPhaseRepository?
+        get() = getConversationListUseCase.twoPhaseRepository
+
+    private val offlineNoticeRelay = OfflineNoticeRelay()
+
+    /**
+     * One-line transient offline notices (G8). Merges this list's own notices
+     * ([raiseOfflineNotice]) with the hub's list-less notices; a notice waits until the UI
+     * subscribes, so none is lost while nothing collects. Nothing emits in W1.
+     */
+    public val offlineNotices: SharedFlow<OfflineNotice> = offlineNoticeRelay.notices
+
+    /** Queue a notice for this list (W3/W5). Delivered once the UI collects [offlineNotices]. */
+    internal fun raiseOfflineNotice(notice: OfflineNotice) = offlineNoticeRelay.raise(notice)
+
+    internal val _rowsKeptError = Channel<CometChatException>(8, BufferOverflow.DROP_OLDEST)
+
+    /**
+     * A read failed online while rows stay on screen (D84 rule 5, offline on only): the list keeps
+     * them and the view fires `onError` without showing its error state. Each failure is buffered
+     * until a view collects it and is delivered once (a view that starts later still gets it; a
+     * rotation does not repeat it). Only a window load the user or app starts reports here (first
+     * page, refresh, keyword search), never a load-more page and never a read the kit starts by
+     * itself (reconnect re-read, sweep resync, a created group). A not-connected failure over rows
+     * reports nothing (D84 rule 2). With nothing on screen the failure is [UIState.Error] instead.
+     * Never emits with offline messaging off.
+     */
+    public val rowsKeptError: Flow<CometChatException> = _rowsKeptError.receiveAsFlow()
+
+    internal val _connectToSearch = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [UIState.Empty] because a `searchKeyword` list was read offline with
+     * nothing on screen (D84 rule 7): the empty state reads "Connect to search", with no `onError`.
+     * Always false with offline messaging off.
+     */
+    public val connectToSearch: StateFlow<Boolean> = _connectToSearch.asStateFlow()
+
+    internal val _connectToLoad = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [UIState.Error] because the list was read offline with nothing on
+     * screen (D84 rule 3): the kit shows its offline state ("Connect to load chats", no Retry)
+     * unless the app set an error view, which shows instead; `onError` fires once through the Error
+     * state. The list reloads by itself on reconnect. Always false with offline messaging off.
+     */
+    public val connectToLoad: StateFlow<Boolean> = _connectToLoad.asStateFlow()
+
+    /** W3 (ENG-41088): this list's offline read/sync/preview/pin state. Untouched while offline is off. */
+    internal val offlineConversationState = ConversationListOffline.State()
     
     // Fetching state - prevents concurrent fetches
-    private var isFetching = false
+    internal var isFetching = false
     
     // Has more data flag - tracks if there are more conversations to fetch
-    private var hasMoreData = true
+    internal var hasMoreData = true
     
     // List operations delegate - handles internal list manipulation
     private val listDelegate = ListOperationsDelegate(
@@ -116,12 +207,13 @@ open public class CometChatConversationsViewModel(
     public val playSoundEvent: SharedFlow<Boolean> = _playSoundEvent.asSharedFlow()
     
     // Scroll to top event - emits when list should scroll to top (new message received)
-    private val _scrollToTopEvent = MutableSharedFlow<Unit>()
+    internal val _scrollToTopEvent = MutableSharedFlow<Unit>()
     public val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
     
     // Configuration
-    private var conversationsRequest: ConversationsRequest? = null
-    private var conversationsRequestBuilder: ConversationsRequest.ConversationsRequestBuilder? = null
+    internal var conversationsRequest: ConversationsRequest? = null
+    internal var conversationsRequestBuilder: ConversationsRequest.ConversationsRequestBuilder? = null
+        private set
     private var disableReceipt = false
     private var disableSoundForMessages = false
     @RawRes private var customSoundForMessage: Int = 0
@@ -149,6 +241,9 @@ open public class CometChatConversationsViewModel(
      * Prevents concurrent fetches using isFetching flag.
      */
     public fun fetchConversations() {
+        // Offline read seam (W3). OFF path untouched; in W1 the seam returns false and today's
+        // single-phase fetch runs.
+        if (offlineOn && ConversationListOffline.fetchConversations(this)) return
         // Prevent concurrent fetches and don't fetch if no more data
         if (isFetching || !hasMoreData) return
         
@@ -212,6 +307,8 @@ open public class CometChatConversationsViewModel(
      * Uses client's request builder if set, otherwise creates a default one.
      */
     public fun refreshList() {
+        // Offline read seam (W3). OFF path untouched; in W1 the seam returns false.
+        if (offlineOn && ConversationListOffline.refreshList(this)) return
         // Reset pagination state for fresh fetch
         hasMoreData = true
         isFetching = false
@@ -280,6 +377,11 @@ open public class CometChatConversationsViewModel(
         onError: ((com.cometchat.chat.exceptions.CometChatException?) -> Unit)? = null
     ) {
         val with = conversationWith(conversation) ?: return
+        // Offline (W3, G11): own pin updates from onSuccess only; a listener echo is a no-op.
+        if (offlineOn) {
+            ConversationListOffline.setPinned(this, conversation, with, true, onSuccess, onError)
+            return
+        }
         com.cometchat.chat.core.CometChat.pinConversation(
             with,
             conversation.conversationType,
@@ -303,6 +405,11 @@ open public class CometChatConversationsViewModel(
      */
     public fun unpinConversation(conversation: Conversation, onSuccess: (() -> Unit)? = null) {
         val with = conversationWith(conversation) ?: return
+        // Offline (W3, G11): own unpin updates from onSuccess only; a listener echo is a no-op.
+        if (offlineOn) {
+            ConversationListOffline.setPinned(this, conversation, with, false, onSuccess, null)
+            return
+        }
         com.cometchat.chat.core.CometChat.unpinConversation(
             with,
             conversation.conversationType,
@@ -589,7 +696,18 @@ open public class CometChatConversationsViewModel(
      */
     private fun addListeners() {
         listenersTag = "ConversationList_${System.currentTimeMillis()}"
-        
+
+        // Offline hub collectors. Only started when offline is on, so the OFF path is untouched.
+        if (offlineOn) {
+            offlineHubJob?.cancel()
+            offlineHubGen = OfflineHub.gen
+            offlineHubJob = viewModelScope.launch {
+                OfflineHub.events.collect { event -> onOfflineHubEvent(event) }
+            }
+            offlineNoticeJob?.cancel()
+            offlineNoticeJob = offlineNoticeRelay.start(viewModelScope)
+        }
+
         listenersTag?.let { tag ->
             // Conversation pin/unpin — from this device (SDK self-echo on REST success), and from
             // a second device / another surface once the backend emits the realtime frame. Routed
@@ -597,10 +715,19 @@ open public class CometChatConversationsViewModel(
             // idempotent, so the acting device receiving both is harmless.
             CometChat.addConversationListener(tag, object : CometChat.ConversationListener() {
                 override fun onConversationPinned(conversation: Conversation) {
+                    // Offline (W3, UIK-CONV-01): match by (type, with); an own echo is a no-op.
+                    if (offlineOn) {
+                        ConversationListOffline.onPinEvent(this@CometChatConversationsViewModel, conversation, true)
+                        return
+                    }
                     applyConversationPinned(conversation)
                 }
 
                 override fun onConversationUnpinned(conversation: Conversation) {
+                    if (offlineOn) {
+                        ConversationListOffline.onPinEvent(this@CometChatConversationsViewModel, conversation, false)
+                        return
+                    }
                     applyConversationUnpinned(conversation)
                 }
             })
@@ -628,6 +755,8 @@ open public class CometChatConversationsViewModel(
                 }
                 
                 override fun onMessageEdited(message: BaseMessage) {
+                    // Offline (W3, BEH-CONV-06): an older message's update never replaces an unsent preview.
+                    if (offlineOn && ConversationListOffline.onMessageUpdated(this@CometChatConversationsViewModel, message)) return
                     val conversation = CometChatHelper.getConversationFromMessage(message)
                     if (conversation != null) {
                         updateConversation(conversation, isActionMessage = false)
@@ -635,6 +764,25 @@ open public class CometChatConversationsViewModel(
                 }
                 
                 override fun onMessageDeleted(message: BaseMessage) {
+                    // Offline (W3, BEH-CONV-06): an older message's update never replaces an unsent preview.
+                    if (offlineOn && ConversationListOffline.onMessageUpdated(this@CometChatConversationsViewModel, message)) return
+                    val conversation = CometChatHelper.getConversationFromMessage(message)
+                    if (conversation != null) {
+                        updateConversation(conversation, isActionMessage = false)
+                    }
+                }
+
+                // ENG-39226 — the moderation verdict never reached the conversation row. The SDK
+                // fires this callback (CometChat.java:865) but this ViewModel had no override at
+                // all, so the row kept its pre-moderation lastMessage until the whole list was
+                // rebuilt from cache — verified still stale four minutes after the verdict, on both
+                // UI stacks. The stanza is a full message payload (server id, sentAt, attachments,
+                // metadata), so the row can be rebuilt from it alone, exactly like an edit.
+                // [updateConversation] clones before it stores, so the row never holds the shared
+                // event object and the StateFlow emission is not conflated away (ENG-39118).
+                override fun onMessageModerated(message: BaseMessage) {
+                    // Offline (W3, BEH-CONV-06): an older message's update never replaces an unsent preview.
+                    if (offlineOn && ConversationListOffline.onMessageUpdated(this@CometChatConversationsViewModel, message)) return
                     val conversation = CometChatHelper.getConversationFromMessage(message)
                     if (conversation != null) {
                         updateConversation(conversation, isActionMessage = false)
@@ -648,6 +796,23 @@ open public class CometChatConversationsViewModel(
                 }
                 
                 override fun onMessagesRead(messageReceipt: MessageReceipt) {
+                    if (!disableReceipt) {
+                        updateReadReceipts(messageReceipt)
+                    }
+                }
+
+                // Group receipts arrive as DELIVERED_TO_ALL / READ_BY_ALL and the SDK dispatches them to
+                // these two callbacks, never to onMessagesDelivered / onMessagesRead
+                // (CometChat.java:161-167). Without these overrides the group branches of the two
+                // handlers below were unreachable and a group tick only ever moved on a fetch or a sync,
+                // never live (ENG-39131). CometChatMessageListViewModel has registered all four all along.
+                override fun onMessagesDeliveredToAll(messageReceipt: MessageReceipt) {
+                    if (!disableReceipt) {
+                        updateDeliveredReceipts(messageReceipt)
+                    }
+                }
+
+                override fun onMessagesReadByAll(messageReceipt: MessageReceipt) {
                     if (!disableReceipt) {
                         updateReadReceipts(messageReceipt)
                     }
@@ -762,6 +927,9 @@ open public class CometChatConversationsViewModel(
             // Connection listener for reconnection
             CometChat.addConnectionListener(tag, object : CometChat.ConnectionListener {
                 override fun onConnected() {
+                    // Offline reconnect seam (W3): consume the SDK sync slice instead of refreshing
+                    // (G7). OFF untouched; W1 returns false and today's refresh runs.
+                    if (offlineOn && ConversationListOffline.onConnected(this@CometChatConversationsViewModel)) return
                     refreshList()
                 }
                 
@@ -863,6 +1031,8 @@ open public class CometChatConversationsViewModel(
                         updateGroupInConversation(event.group)
                     }
                     is CometChatGroupEvent.GroupCreated -> {
+                        // Offline (W3): a merging refresh; an explicit refreshList() replaces the list.
+                        if (offlineOn && ConversationListOffline.onGroupCreated(this@CometChatConversationsViewModel)) return@collect
                         // Refresh list to show new group conversation
                         refreshList()
                     }
@@ -894,7 +1064,9 @@ open public class CometChatConversationsViewModel(
                 CometChatLogger.d("CometChatConvListVM", "Received messageEvent: ${event::class.simpleName}")
                 when (event) {
                     is CometChatMessageEvent.MessageSent -> {
-                        if (event.status == MessageStatus.SUCCESS) {
+                        if (event.status == MessageStatus.SUCCESS &&
+                            !(offlineOn && ConversationListOffline.onMessageSent(this@CometChatConversationsViewModel, event.message))
+                        ) {
                             checkAndUpdateConversation(event.message, false)
                         }
                     }
@@ -908,7 +1080,10 @@ open public class CometChatConversationsViewModel(
                     }
                     is CometChatMessageEvent.MessageRead -> {
                         CometChatLogger.d("CometChatConvListVM", "Received MessageRead event - conversationId=${event.message.conversationId}, messageId=${event.message.id}")
-                        clearUnreadCountForMessage(event.message)
+                        // Offline: the flush's read, older than another user's last message, takes the server's count.
+                        if (!(offlineOn && ConversationListOffline.onMessageRead(this@CometChatConversationsViewModel, event.message))) {
+                            clearUnreadCountForMessage(event.message)
+                        }
                     }
                     is CometChatMessageEvent.TextMessageReceived -> {
                         checkAndUpdateConversation(event.message, true)
@@ -962,46 +1137,90 @@ open public class CometChatConversationsViewModel(
     
     /**
      * Updates conversation receipt status for delivered receipts.
-     * Matches the Java implementation's updateDeliveredReceipts() method logic.
-     * 
-     * For USER conversations: matches by receipt.sender.uid == conversationWith.uid
-     * For GROUP conversations: matches by receipt.receiverId == conversationWith.guid AND DELIVERED_TO_ALL type
-     * 
+     * Matches the Java implementation's updateDeliveredReceipts() method logic, with the id match relaxed
+     * to the cumulative rule on **both** the USER and the GROUP path (ENG-39131).
+     *
+     * For USER conversations: matches by receipt.sender.uid == conversationWith.uid, cumulatively for
+     * any own-sent `lastMessage` at or below the receipt anchor (`id <= receipt.messageId`).
+     * For GROUP conversations: matches by receipt.receiverId == conversationWith.guid AND DELIVERED_TO_ALL
+     * type, then the same cumulative anchor. DELIVERED_TO_ALL / READ_BY_ALL remain the only group receipt
+     * types handled and the guid match is unchanged — only the id comparison relaxed.
+     *
+     * Why one rule for both: the SDK already treats the two the same. `ReceiptScope.resolve` maps
+     * DELIVERED_TO_ALL to `deliveredAt` and READ_BY_ALL to `readAt` — the same two columns as 1:1 — and
+     * files them against the same cumulative `id <=` anchor (per-member group receipts are V2). A strict
+     * group path here would make a group tick correct after a restart and wrong live.
+     *
+     * Why the match is cumulative: a receipt anchors at the newest id the peer has seen, which is not
+     * necessarily the id sitting in this row. `id == receipt.messageId` therefore dropped a receipt
+     * whenever the row was behind the anchor, and nothing re-evaluates a dropped receipt afterwards —
+     * one miss and the tick stays wrong until something unrelated re-bumps the row. Cumulative matching
+     * is the same semantic `CometChatMessageListViewModel.setDeliveryReceipts` uses in memory and the SDK
+     * uses in SQL (`MessageDao.applyReceipt`, ENG-36822).
+     *
+     * What the pre-ack (`id = 0`) row does and does not buy. Stamping it is correct bookkeeping, but it
+     * is **not** what repairs a stuck tick, and it cannot be:
+     * - The renderer maps `id == 0L` to IN_PROGRESS **before** it looks at `readAt` / `deliveredAt`
+     *   (`MessageReceiptUtils.kt:66-68`, identically on both UI stacks), so a stamped pre-ack row still
+     *   draws a clock. That precedence is deliberate — an un-acked send has not been sent yet.
+     * - On ack, [updateConversation] replaces `lastMessage` wholesale, carrying over only
+     *   `conversationWith` and `unreadMessageCount`, so the stamp is discarded anyway.
+     *
+     * What repairs the tick is the pair below, both on **real** server ids:
+     * - the cumulative match, which stamps a post-ack row whose id is at or below a later anchor — the
+     *   case the strict `==` dropped; and
+     * - stamping the **clone**, which gives the new list different content and so defeats
+     *   `MutableStateFlow`'s conflation (`Conversation.equals` is `contentEquals` over `lastMessage`,
+     *   and `clone()` deep-copies it). Mutating the shared message in place left the new list equal to
+     *   the old one and the emission was swallowed — the ENG-39118 failure mode, one level up.
+     *
+     * Guards that survive the relaxation:
+     * - `deliveredAt != 0L` still short-circuits, so a timestamp never moves backwards.
+     * - The row's `lastMessage` must be our own sent message, so an **incoming** `lastMessage` is never
+     *   stamped with our delivery state (the case the strict id match protected implicitly).
+     *
      * @param receipt The message receipt containing delivery information
      */
-    private fun updateDeliveredReceipts(receipt: MessageReceipt) {
+    @VisibleForTesting
+    internal fun updateDeliveredReceipts(receipt: MessageReceipt) {
         viewModelScope.launch {
+            val loggedInUserUid = getLoggedInUserSafe()?.uid
             _conversations.value = _conversations.value.map { conversation ->
                 val lastMessage = conversation.lastMessage
-                
-                // Skip if no last message, already delivered, or message ID doesn't match
-                if (lastMessage == null || 
-                    lastMessage.deliveredAt != 0L || 
-                    lastMessage.id != receipt.messageId) {
+
+                // Skip if no last message, already delivered, or the row's last message is not one we sent.
+                if (lastMessage == null ||
+                    lastMessage.deliveredAt != 0L ||
+                    !isOwnMessage(lastMessage, loggedInUserUid)) {
                     return@map conversation
                 }
-                
+
                 val shouldUpdate = when (receipt.receiverType) {
                     UIKitConstants.ReceiverType.USER -> {
-                        // For user conversations: match by sender UID
+                        // For user conversations: match by sender UID, cumulatively up to the anchor
                         conversation.conversationType == CometChatConstants.RECEIVER_TYPE_USER &&
-                            receipt.sender?.uid == (conversation.conversationWith as? User)?.uid
+                            receipt.sender?.uid == (conversation.conversationWith as? User)?.uid &&
+                            lastMessage.id <= receipt.messageId
                     }
                     UIKitConstants.ReceiverType.GROUP -> {
-                        // For group conversations: match by receiver ID and DELIVERED_TO_ALL type
+                        // For group conversations: match by receiver ID and DELIVERED_TO_ALL type,
+                        // cumulatively up to the anchor — same rule as the 1:1 branch above.
                         conversation.conversationType == CometChatConstants.RECEIVER_TYPE_GROUP &&
                             receipt.receiptType == MessageReceipt.RECEIPT_TYPE_DELIVERED_TO_ALL &&
-                            receipt.receiverId == (conversation.conversationWith as? Group)?.guid
+                            receipt.receiverId == (conversation.conversationWith as? Group)?.guid &&
+                            lastMessage.id <= receipt.messageId
                     }
                     else -> false
                 }
-                
+
                 if (shouldUpdate) {
-                    // Clone to create new reference for Compose recomposition
+                    // Clone to create new reference for Compose recomposition, and stamp the CLONE's own
+                    // lastMessage. Mutating the shared message in place would leave the new list
+                    // content-equal to the old one (Conversation.equals is contentEquals, and the two rows
+                    // would share the mutated message), and MutableStateFlow conflates by equals — the
+                    // update would never be emitted. Same failure mode as ENG-39118, one level up.
                     conversation.clone().apply {
-                        this.lastMessage = lastMessage.apply {
-                            deliveredAt = receipt.deliveredAt
-                        }
+                        this.lastMessage?.deliveredAt = receipt.deliveredAt
                     }
                 } else {
                     conversation
@@ -1012,40 +1231,51 @@ open public class CometChatConversationsViewModel(
 
     /**
      * Updates conversation receipt status for read receipts.
-     * Matches the Java implementation's updateReadReceipts() method logic.
-     * 
-     * For USER conversations: matches by receipt.sender.uid == conversationWith.uid
-     * For GROUP conversations: matches by receipt.receiverId == conversationWith.guid AND READ_BY_ALL type
-     * 
-     * Also clears unread count when the receipt is from the logged-in user.
-     * 
+     * Matches the Java implementation's updateReadReceipts() method logic, with the same cumulative
+     * relaxation and the same own-sent guard as [updateDeliveredReceipts], on both paths (ENG-39131).
+     *
+     * For USER conversations: matches by receipt.sender.uid == conversationWith.uid, cumulatively for
+     * any own-sent `lastMessage` at or below the receipt anchor (`id <= receipt.messageId`).
+     * For GROUP conversations: matches by receipt.receiverId == conversationWith.guid, then — to stamp —
+     * READ_BY_ALL type and the same cumulative anchor. See [updateDeliveredReceipts] for why the two paths
+     * share one rule.
+     *
+     * A read receipt implies delivered, so stamping `readAt` also advances an unset `deliveredAt`,
+     * matching `MessageDao.applyReceipt`, which advances `deliveredAt` on every read receipt.
+     *
+     * Also clears the unread count when the receipt is from the logged-in user (our own read, echoed
+     * from another device) — on the row the receipt is about and no other. On both paths that scope
+     * comes from the same match that gates the stamp: the peer uid for 1:1, the guid for a group.
+     * Only the group clear is reachable today: the 1:1 arm additionally requires the receipt's sender to
+     * be this row's peer *and* the logged-in user, which can only hold in a self-conversation.
+     *
      * @param receipt The message receipt containing read information
      */
-    private fun updateReadReceipts(receipt: MessageReceipt) {
+    @VisibleForTesting
+    internal fun updateReadReceipts(receipt: MessageReceipt) {
         viewModelScope.launch {
             val loggedInUser = getLoggedInUserSafe()
-            val isReceiptFromLoggedInUser = loggedInUser != null && 
+            val isReceiptFromLoggedInUser = loggedInUser != null &&
                 receipt.sender?.uid?.equals(loggedInUser.uid, ignoreCase = true) == true
-            
+
             _conversations.value = _conversations.value.map { conversation ->
                 val lastMessage = conversation.lastMessage
-                
+                // An incoming lastMessage is never stamped with our own read state.
+                val isOwnLastMessage = lastMessage != null && isOwnMessage(lastMessage, loggedInUser?.uid)
+
                 when (receipt.receiverType) {
                     UIKitConstants.ReceiverType.USER -> {
                         // For user conversations: match by sender UID
                         if (conversation.conversationType == CometChatConstants.RECEIVER_TYPE_USER &&
                             receipt.sender?.uid == (conversation.conversationWith as? User)?.uid) {
-                            
-                            // Check if we should update readAt timestamp
-                            if (lastMessage != null && 
-                                lastMessage.readAt == 0L && 
-                                lastMessage.id == receipt.messageId) {
-                                // Clone to create new reference for Compose recomposition
-                                conversation.clone().apply {
-                                    this.lastMessage = lastMessage.apply {
-                                        readAt = receipt.readAt
-                                    }
-                                }
+
+                            // Check if we should update readAt timestamp — cumulatively, so a row still
+                            // holding the pre-ack copy of an own message is stamped too.
+                            if (lastMessage != null &&
+                                lastMessage.readAt == 0L &&
+                                isOwnLastMessage &&
+                                lastMessage.id <= receipt.messageId) {
+                                stampRead(conversation, receipt)
                             } else if (isReceiptFromLoggedInUser) {
                                 // Clear unread count when receipt is from logged-in user
                                 conversation.clone().apply {
@@ -1059,26 +1289,30 @@ open public class CometChatConversationsViewModel(
                         }
                     }
                     UIKitConstants.ReceiverType.GROUP -> {
-                        // For group conversations: match by receiver ID and READ_BY_ALL type
-                        if (conversation.conversationType == CometChatConstants.RECEIVER_TYPE_GROUP &&
-                            receipt.receiptType == MessageReceipt.RECEIPT_TYPE_READ_BY_ALL &&
-                            receipt.receiverId == (conversation.conversationWith as? Group)?.guid) {
-                            
-                            // Check if we should update readAt timestamp
-                            if (lastMessage != null && 
-                                lastMessage.readAt == 0L && 
-                                lastMessage.id == receipt.messageId) {
-                                // Clone to create new reference for Compose recomposition
-                                conversation.clone().apply {
-                                    this.lastMessage = lastMessage.apply {
-                                        readAt = receipt.readAt
-                                    }
-                                }
-                            } else {
-                                conversation
-                            }
+                        // Everything below is scoped to the row for the group this receipt is about —
+                        // the guid match is the group-path equivalent of the peer match on the 1:1 branch,
+                        // and, like it, it gates the unread-count clear as well as the stamp (ENG-39131).
+                        // It used to gate only the stamp, so a self read receipt in one group zeroed
+                        // `unreadMessageCount` on every OTHER row, 1:1 rows included.
+                        val isReceiptsGroupRow =
+                            conversation.conversationType == CometChatConstants.RECEIVER_TYPE_GROUP &&
+                                receipt.receiverId == (conversation.conversationWith as? Group)?.guid
+
+                        if (!isReceiptsGroupRow) {
+                            conversation
+                        } else if (receipt.receiptType == MessageReceipt.RECEIPT_TYPE_READ_BY_ALL &&
+                            // Check if we should update readAt timestamp — cumulatively, as in the 1:1
+                            // branch above, so a row still holding the pre-ack copy is stamped too.
+                            lastMessage != null &&
+                            lastMessage.readAt == 0L &&
+                            isOwnLastMessage &&
+                            lastMessage.id <= receipt.messageId
+                        ) {
+                            stampRead(conversation, receipt)
                         } else if (isReceiptFromLoggedInUser) {
-                            // Clear unread count when receipt is from logged-in user (for group conversations)
+                            // Our own read echoed from another device: clear THIS group's badge only.
+                            // Deliberately not gated on READ_BY_ALL — a self read receipt arrives as a
+                            // plain READ, and that is the case this clear exists for.
                             conversation.clone().apply {
                                 unreadMessageCount = 0
                             }
@@ -1090,6 +1324,42 @@ open public class CometChatConversationsViewModel(
                 }
             }
         }
+    }
+
+    /**
+     * Stamps the row's `lastMessage` as read and returns the cloned row (a new reference and new content,
+     * so the StateFlow emits and Compose recomposes).
+     *
+     * A read receipt implies delivered: an unset `deliveredAt` is advanced with the receipt too, so a row
+     * whose delivery receipt was never seen does not stay on a single tick. Never moves either timestamp
+     * backwards — the caller only stamps `readAt` when unset, and `deliveredAt` is only advanced when unset.
+     */
+    private fun stampRead(
+        conversation: Conversation,
+        receipt: MessageReceipt
+    ): Conversation {
+        // Clone to create new reference for Compose recomposition, and stamp the CLONE's own
+        // lastMessage — see [updateDeliveredReceipts] for why the shared message must not be mutated.
+        return conversation.clone().apply {
+            this.lastMessage?.let { cloned ->
+                cloned.readAt = receipt.readAt
+                if (cloned.deliveredAt == 0L) {
+                    cloned.deliveredAt = if (receipt.deliveredAt != 0L) receipt.deliveredAt else receipt.readAt
+                }
+            }
+        }
+    }
+
+    /**
+     * True when [message] was sent by the logged-in user.
+     *
+     * Guards the receipt handlers so an **incoming** `lastMessage` is never stamped with our own
+     * delivery/read state (ENG-39131). Returns false when the logged-in user is unknown (SDK not
+     * initialised), which keeps the handlers no-ops rather than stamping on a guess.
+     */
+    private fun isOwnMessage(message: BaseMessage, loggedInUserUid: String?): Boolean {
+        if (loggedInUserUid.isNullOrEmpty()) return false
+        return message.sender?.uid?.equals(loggedInUserUid, ignoreCase = true) == true
     }
 
     /**
@@ -1109,9 +1379,10 @@ open public class CometChatConversationsViewModel(
     }
     
     /**
-     * Updates unread count for a conversation.
+     * Updates unread count for a conversation. Never moves the row or changes its last message.
+     * `internal` for the offline read path ([ConversationListOffline.onMessageRead]).
      */
-    private fun updateConversationUnreadCount(conversation: Conversation, count: Int) {
+    internal fun updateConversationUnreadCount(conversation: Conversation, count: Int) {
         CometChatLogger.d("CometChatConvListVM", "updateConversationUnreadCount() - conversationId=${conversation.conversationId}, newCount=$count")
         _conversations.value = _conversations.value.map {
             if (it.conversationId == conversation.conversationId) {
@@ -1159,6 +1430,7 @@ open public class CometChatConversationsViewModel(
      * @param conversation The conversation carrying the updated properties.
      */
     internal fun updateConversationInList(conversation: Conversation) {
+        if (offlineOn) ConversationListOffline.onLiveWrite(this, conversation.conversationId)
         _conversations.value = _conversations.value.map { existing ->
             if (existing.conversationId != conversation.conversationId) existing
             else mergeConversationUpdate(existing, conversation)
@@ -1238,7 +1510,7 @@ open public class CometChatConversationsViewModel(
     /**
      * Safely gets the logged-in user, returning null if SDK is not initialized.
      */
-    private fun getLoggedInUserSafe(): User? {
+    internal fun getLoggedInUserSafe(): User? {
         return try {
             CometChatUIKit.getLoggedInUser()
         } catch (e: Exception) {
@@ -1287,20 +1559,24 @@ open public class CometChatConversationsViewModel(
      */
     private fun refreshConversationFromServer(id: String, type: String) {
         viewModelScope.launch {
-            CometChat.getConversation(id, type, object : CometChat.CallbackListener<Conversation>() {
-                override fun onSuccess(conversation: Conversation) {
-                    if (conversation.lastMessage != null) {
-                        updateConversation(conversation, isActionMessage = true)
+            // Two-phase read (BEH-READ-32), settled once on the server phase with no cached fallback:
+            // this refresh exists to get the server's post-action row, and a cached row predates the
+            // action. Offline it fails and is logged, as before.
+            CometChat.getConversation(id, type, ConversationDetailsOnce(cachedFallback = false) { result ->
+                result
+                    .onSuccess { conversation ->
+                        if (conversation.lastMessage != null) {
+                            updateConversation(conversation, isActionMessage = true)
+                        }
                     }
-                }
-                override fun onError(e: CometChatException?) {
-                    CometChatLogger.e("CometChatConvListVM", "Failed to refresh conversation: ${e?.message}")
-                }
+                    .onFailure { e ->
+                        CometChatLogger.e("CometChatConvListVM", "Failed to refresh conversation: ${e.message}")
+                    }
             })
         }
     }
 
-    private fun updateConversationForGroupAction(action: Action, isRemove: Boolean) {
+    internal fun updateConversationForGroupAction(action: Action, isRemove: Boolean) {
         viewModelScope.launch {
             // Null safety check - ensure action has required fields before calling SDK
             // The SDK's CometChatHelper.getConversationFromMessage can crash if receiverType is null
@@ -1422,6 +1698,9 @@ open public class CometChatConversationsViewModel(
      * @param markAsDeliver Whether to mark the message as delivered (true for incoming messages)
      */
     private fun checkAndUpdateConversation(message: BaseMessage, markAsDeliver: Boolean) {
+        // Offline preview seam (W3): place the pending/own preview from the hub. OFF untouched;
+        // W1 returns false and today's path runs.
+        if (offlineOn && ConversationListOffline.onMessageListenerEvent(this, message, markAsDeliver)) return
         if (isThreadedMessage(message)) {
             if (CometChatUIKit.getConversationUpdateSettings().shouldUpdateOnMessageReplies()) {
                 handleMessageUpdate(message, markAsDeliver)
@@ -1523,7 +1802,7 @@ open public class CometChatConversationsViewModel(
      * pinned block at the head of the list. Pinned conversations always stay above realtime
      * reordering, matching the backend's pinned-first fetch ordering.
      */
-    private fun firstUnpinnedIndex(list: List<Conversation>): Int {
+    internal fun firstUnpinnedIndex(list: List<Conversation>): Int {
         val index = list.indexOfFirst { !it.isPinned }
         return if (index >= 0) index else list.size
     }
@@ -1532,12 +1811,35 @@ open public class CometChatConversationsViewModel(
      * Updates a conversation in the list with proper handling of last message and unread count.
      * Matches the Java implementation's update() method logic.
      *
+     * **Moderation: the ack must never downgrade the row's own DISAPPROVED lastMessage
+     * (ENG-39226).** This function replaces `lastMessage` wholesale, carrying over only
+     * `conversationWith` and `unreadMessageCount`. The send ack arrives 2–21 ms *after* the
+     * moderation verdict and carries `moderation.status = "pending"`, so without a guard the ack
+     * would undo the verdict here exactly as it did in
+     * [CometChatMessageListViewModel.updateMessageOnSuccess] — and registering
+     * `onMessageModerated` above would achieve nothing.
+     *
+     * 🔴 The guard is scoped to **the same message** (matched by muid, then by server id), not to
+     * the row. A blanket "never replace a DISAPPROVED lastMessage" would freeze the row on the
+     * blocked message forever: this function is the single live-update path for a conversation row,
+     * so every later message, unread bump and move-to-top would be dropped too. Only a payload for
+     * the very message that is already blocked is refused.
+     *
+     * 🔴 And only a payload that is *still that message*. A delete or an edit arrives here through
+     * `onMessageDeleted` / `onMessageEdited` for the same id, and a deleted payload is stripped
+     * (`text` cleared, `deletedAt` set) so it parses as `UNMODERATED` — without the `deletedAt` /
+     * `editedAt` exemption the guard would silently refuse a deletion and leave the row showing the
+     * blocked message while the message list showed "message deleted". The send ack carries `0` for
+     * both, so the ack case it exists for is unaffected.
+     *
      * @param conversation The conversation to update
      * @param isActionMessage Whether this is an action message (group action)
      */
-    private fun updateConversation(conversation: Conversation, isActionMessage: Boolean) {
+    internal fun updateConversation(conversation: Conversation, isActionMessage: Boolean, live: Boolean = true) {
         if (conversation.lastMessage == null) return
-        
+        // Offline: a live write after the reconnect sweep was requested is spared by its page.
+        if (offlineOn && live) ConversationListOffline.onLiveWrite(this, conversation.conversationId)
+
         val loggedInUser = getLoggedInUserSafe()
         val lastMessage = conversation.lastMessage
         val isSentByMe = loggedInUser != null &&
@@ -1561,6 +1863,18 @@ open public class CometChatConversationsViewModel(
             when {
                 existingIndex >= 0 -> {
                     val oldConversation = currentList[existingIndex]
+
+                    // ENG-39226 — a later payload for the SAME message must not downgrade a blocked
+                    // row. Returning the list untouched keeps this block side-effect free.
+                    val oldLastMessage = oldConversation.lastMessage
+                    if (oldLastMessage != null && lastMessage != null &&
+                        isSameMessage(oldLastMessage, lastMessage) &&
+                        isMessageDisapproved(oldLastMessage) && !isMessageDisapproved(lastMessage) &&
+                        lastMessage.deletedAt == 0L && lastMessage.editedAt == 0L
+                    ) {
+                        applied = false
+                        return@updateAndGet currentList
+                    }
 
                     // Clone the conversation to create a new reference for Compose recomposition
                     val updatedConversation = conversation.clone()
@@ -1635,6 +1949,35 @@ open public class CometChatConversationsViewModel(
         }
     }
     
+    /**
+     * Returns `true` when [a] and [b] are the same message.
+     *
+     * The optimistic row, the moderation stanza and the send ack all carry the same `muid`, while
+     * the server `id` lands only with the stanza / ack — so muid is tried first and the id is the
+     * fallback for rows that never had a muid (anything fetched or synced). Mirrors the resolution
+     * order [CometChatMessageListViewModel.updateMessageOnSuccess] and `updateModeratedMessage` use.
+     */
+    private fun isSameMessage(a: BaseMessage, b: BaseMessage): Boolean {
+        val muidA = a.muid
+        val muidB = b.muid
+        if (!muidA.isNullOrEmpty() && !muidB.isNullOrEmpty()) return muidA == muidB
+        return a.id > 0 && a.id == b.id
+    }
+
+    /**
+     * Returns `true` when [message] carries a `DISAPPROVED` moderation status.
+     * Only [TextMessage] and [MediaMessage] can be moderated — same rule as
+     * `CometChatMessageListViewModel.isMessageDisapproved`.
+     */
+    private fun isMessageDisapproved(message: BaseMessage): Boolean {
+        val statusName = when (message) {
+            is TextMessage -> message.moderationStatus?.name
+            is MediaMessage -> message.moderationStatus?.name
+            else -> null
+        }
+        return statusName?.lowercase() == UIKitConstants.ModerationConstants.DISAPPROVED
+    }
+
     /**
      * Updates group in conversations.
      */
@@ -1821,8 +2164,40 @@ open public class CometChatConversationsViewModel(
         }
     }
     
+    /**
+     * Routes one hub event (G8, invariant 6). A newer `SessionEnded` clears the list and adopts its
+     * gen; any other event with a different gen is dropped. Every accepted event — SessionEnded
+     * included, after the clear — goes to W3's [ConversationListOffline.onHubEvent] (G7 sync slice).
+     */
+    private fun onOfflineHubEvent(event: OfflineHubEvent) {
+        if (event is OfflineHubEvent.SessionEnded) {
+            if (event.gen <= offlineHubGen) return
+            offlineHubGen = event.gen
+            clearForOfflineSession()
+        } else if (event.gen != offlineHubGen) {
+            return
+        }
+        lastRoutedHubEvent = event
+        ConversationListOffline.onHubEvent(this, event)
+    }
+
+    /**
+     * Clears this list for a session change (logout or a switch to a different uid), before the
+     * next frame (G8). Bumps [offlineListGen] so stale reads/events are dropped, and empties the
+     * list. The kit never calls `clearOfflineCache`.
+     */
+    internal fun clearForOfflineSession() {
+        offlineListGen++
+        hasMoreData = true
+        isFetching = false
+        _conversations.value = emptyList()
+        _uiState.value = UIState.Loading
+    }
+
     override fun onCleared() {
         super.onCleared()
+        offlineHubJob?.cancel()
+        offlineNoticeJob?.cancel()
         if (enableListeners) {
             removeListeners()
         }

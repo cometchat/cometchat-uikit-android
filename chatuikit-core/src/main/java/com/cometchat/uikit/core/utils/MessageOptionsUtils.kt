@@ -284,6 +284,40 @@ public object MessageOptionsUtils {
     }
 
     /**
+     * The options for an unsent or failed message with offline messaging on (G4, G5; BEH-SEND-31):
+     * **Retry**, **Delete**, and **Copy** for a text message — nothing that needs a server id (no
+     * reply, thread, react, edit, server delete, pin, save, mark-unread, info, translate, report or
+     * forward). [optionVisibilityMap] still hides an option the integrator turned off.
+     *
+     * The message list calls this only for a row [com.cometchat.uikit.core.offline.OfflineRowState]
+     * reports unsent; every other row keeps [getDefaultMessageOptions].
+     */
+    @JvmOverloads
+    public fun getUnsentMessageOptions(
+        context: Context,
+        message: BaseMessage,
+        optionVisibilityMap: Map<String, Boolean> = emptyMap()
+    ): List<CometChatMessageOption> {
+        val options = buildList {
+            add(retry(context))
+            add(delete(context))
+            if (message is com.cometchat.chat.models.TextMessage && !message.text.isNullOrEmpty()) {
+                add(copy(context))
+            }
+        }
+        return getFilteredMessageOptions(options, optionVisibilityMap)
+    }
+
+    /** Creates a "Retry" option for an unsent or failed message (offline messaging). */
+    public fun retry(context: Context): CometChatMessageOption {
+        return CometChatMessageOption(
+            id = UIKitConstants.MessageOption.RETRY,
+            title = context.getString(R.string.cometchat_offline_retry),
+            icon = R.drawable.cometchat_ic_offline_retry
+        )
+    }
+
+    /**
      * Creates a [CometChatMessageOption] if the option should be shown for this context.
      * Returns null if the option should not be shown based on business rules.
      */

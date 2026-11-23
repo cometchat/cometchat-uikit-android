@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">Sambung untuk mencari</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">Carian memerlukan sambungan internet.</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">Sambung untuk memuatkan pengguna</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">Sambung untuk memuatkan kumpulan</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">Sambung untuk memuatkan sembang</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">Sambung untuk memuatkan ahli</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">Sambung untuk memuatkan mesej</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">Sambung untuk memuatkan reaksi</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">Sambung untuk memuatkan pemberitahuan</string>
+</resources>

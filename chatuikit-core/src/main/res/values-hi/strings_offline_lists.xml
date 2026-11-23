@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">खोजने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">खोज के लिए इंटरनेट कनेक्शन चाहिए।</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">उपयोगकर्ता लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">समूह लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">चैट लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">सदस्य लोड करने के लिए कनेक्ट करें</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">संदेश लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">प्रतिक्रियाएँ लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">सूचनाएँ लोड करने के लिए कनेक्ट करें</string>
+</resources>

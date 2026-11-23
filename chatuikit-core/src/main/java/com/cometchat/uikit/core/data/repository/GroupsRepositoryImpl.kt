@@ -5,6 +5,12 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.uikit.core.data.datasource.GroupsDataSource
 import com.cometchat.uikit.core.domain.repository.GroupsRepository
+import com.cometchat.uikit.core.data.datasource.GroupsTwoPhaseDataSource
+import com.cometchat.uikit.core.domain.repository.GroupsTwoPhaseRepository
+import com.cometchat.uikit.core.offline.SnapshotListRead
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Repository implementation that coordinates data sources for groups.
@@ -15,9 +21,24 @@ import com.cometchat.uikit.core.domain.repository.GroupsRepository
  */
 public class GroupsRepositoryImpl(
     private val dataSource: GroupsDataSource
-) : GroupsRepository {
+) : GroupsRepository, GroupsTwoPhaseRepository {
     
     private var hasMore = true
+
+    /**
+     * Two-phase twin of [fetchGroups] (BEH-SNAP-03), same request. Uses the data source's two-phase
+     * read when it has one; a custom data source without it gets a single server phase from
+     * today's call. `hasMore` changes only on the server phase (BEH-READ-09b).
+     */
+    override fun fetchGroupsTwoPhase(request: GroupsRequest): Flow<TwoPhaseResult<Group>> {
+        val source = dataSource
+        val phases = if (source is GroupsTwoPhaseDataSource) {
+            source.fetchGroupsTwoPhase(request)
+        } else {
+            SnapshotListRead.serverPhaseOf { dataSource.fetchGroups(request) }
+        }
+        return phases.onEach { if (it is TwoPhaseResult.Server) hasMore = it.rows.isNotEmpty() }
+    }
     
     /**
      * Fetches groups from the data source.

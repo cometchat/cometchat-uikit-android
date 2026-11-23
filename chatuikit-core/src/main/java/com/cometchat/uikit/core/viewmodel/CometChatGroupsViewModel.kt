@@ -12,14 +12,24 @@ import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.domain.repository.GroupsTwoPhaseRepository
 import com.cometchat.uikit.core.domain.usecase.FetchGroupsUseCase
 import com.cometchat.uikit.core.domain.usecase.JoinGroupUseCase
 import com.cometchat.uikit.core.events.CometChatGroupEvent
 import com.cometchat.uikit.core.events.CometChatEvents
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineHub
+import com.cometchat.uikit.core.offline.OfflineListSession
+import com.cometchat.uikit.core.offline.SnapshotListRead
+import com.cometchat.uikit.core.offline.SnapshotReadOp
 import com.cometchat.uikit.core.state.GroupsUIState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -85,9 +95,77 @@ open public class CometChatGroupsViewModel(
     // Search debounce job - cancels pending search when new search is initiated
     private var searchJob: Job? = null
 
+    // Offline (BEH-SNAP-01..07): read once at construction (before init's first fetch); the OFF
+    // path below is today's code.
+    internal val offlineOn: Boolean = OfflineGate.isOn()
+
+    // List generation: bumped by every read that replaces the list (refresh, search), so a phase of
+    // an older read is dropped (BEH-READ-01). Used on the ON path only.
+    private var listGen = 0L
+
+    private val _rowsKeptError = Channel<CometChatException>(8, BufferOverflow.DROP_OLDEST)
+
+    /**
+     * A read failed online while rows stay on screen (D84 rule 5, offline on only): the list keeps
+     * them and the view fires `onError` without showing its error state. Each failure is buffered
+     * until a view collects it and is delivered once (a view that starts later still gets it; a
+     * rotation does not repeat it). Only a window load the user or app starts reports here (first
+     * page, refresh, keyword search), never a load-more page and never a refresh the kit starts by
+     * itself on reconnect. A not-connected failure over rows reports nothing (D84 rule 2). With
+     * nothing on screen the failure is [GroupsUIState.Error] instead. Never emits with offline
+     * messaging off.
+     */
+    public val rowsKeptError: Flow<CometChatException> = _rowsKeptError.receiveAsFlow()
+
+    private val _connectToSearch = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [GroupsUIState.Empty] because a search keyword was read offline: a
+     * keyword read has no cache (BEH-SNAP-04), so the empty state reads "Connect to search" instead
+     * of "no groups" (D84 rule 7, no `onError`). Always false with offline messaging off.
+     */
+    public val connectToSearch: StateFlow<Boolean> = _connectToSearch.asStateFlow()
+
+    private val _connectToLoad = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [GroupsUIState.Error] because the list was read offline with nothing
+     * on screen (D84 rule 3): the kit shows its offline state ("Connect to load groups", no Retry)
+     * unless the app set an error view, which shows instead; `onError` fires once through the
+     * Error state. The list reloads by itself on reconnect. Always false with offline messaging off.
+     */
+    public val connectToLoad: StateFlow<Boolean> = _connectToLoad.asStateFlow()
+
+    // D84 rule 8: the keyword whose offline read is showing "Connect to search"; reconnect re-runs
+    // that search instead of the plain-list refresh. Null otherwise.
+    private var offlineErrorKeyword: String? = null
+
+    // OFF-path load generation (ENG-41551 E): bumped by every search and refresh, so a list load
+    // started for an older keyword never reaches the list. The ON path uses [listGen].
+    private var offGen = 0L
+
+    // The generation whose fetchGroups() set isFetching; a superseded load clears it only if it
+    // still owns it.
+    private var fetchOwnerGen = -1L
+
+    // OFF path (ENG-41551 E): a keyword search is in flight. A load-more would read the previous
+    // list (or, with the request reset, its page 1) into the search results, so fetchGroups()
+    // waits until the search lands.
+    private var offSearchInFlight = false
+
+    private val groupsOnPath: Boolean
+        get() = offlineOn && fetchGroupsUseCase.twoPhaseRepository != null
+
+    // G8: session end and cache reset (ENG-41568). Started only with offline on.
+    private val offlineSession = OfflineListSession(
+        onSessionEnded = { clearForOfflineSession() },
+        onCacheReset = { onOfflineCacheReset() }
+    )
+
     init {
         if (enableListeners) {
             addListeners()
+            if (offlineOn) offlineSession.start(viewModelScope)
         }
         fetchGroups()
     }
@@ -118,9 +196,13 @@ open public class CometChatGroupsViewModel(
      */
     public fun fetchGroups() {
         if (isFetching || !hasMoreData) return
+        // ENG-41551 E: offline off, no page of the previous list while a keyword search runs.
+        if (offSearchInFlight && !groupsOnPath) return
+        val gen = offGen
 
         viewModelScope.launch {
             isFetching = true
+            fetchOwnerGen = gen
 
             if (_groups.value.isEmpty()) {
                 _uiState.value = GroupsUIState.Loading
@@ -132,8 +214,21 @@ open public class CometChatGroupsViewModel(
                 groupsRequest = builder.build()
             }
 
+            val twoPhase = if (offlineOn) fetchGroupsUseCase.twoPhaseRepository else null
+            val pageRequest = groupsRequest
+            if (twoPhase != null && pageRequest != null) {
+                readTwoPhase(twoPhase, pageRequest, replace = false)
+                return@launch
+            }
+
             groupsRequest?.let { request ->
-                fetchGroupsUseCase(request)
+                val result = fetchGroupsUseCase(request)
+                if (gen != offGen) {
+                    // ENG-41551 E: a search or refresh superseded this load; its page is dropped.
+                    if (fetchOwnerGen == gen) isFetching = false
+                    return@launch
+                }
+                result
                     .onSuccess { newGroups ->
                         if (newGroups.isNotEmpty()) {
                             // Create defensive copies to prevent SDK from mutating our list items
@@ -172,12 +267,27 @@ open public class CometChatGroupsViewModel(
     public fun searchGroups(query: String?) {
         // Cancel any pending search job (debouncing)
         searchJob?.cancel()
-        
+        // ENG-41551 E: a new keyword supersedes every earlier OFF-path load (a plain-list page
+        // started by clearing the keyword included), so only this keyword's results land.
+        val gen = ++offGen
+        offSearchInFlight = !query.isNullOrEmpty() && !groupsOnPath
+
         searchJob = viewModelScope.launch {
             // Reset pagination state for new search
             hasMoreData = true
             groupsRequest = null
             
+            val twoPhase = if (offlineOn) fetchGroupsUseCase.twoPhaseRepository else null
+            if (query.isNullOrEmpty() && twoPhase != null) {
+                // ON path: back to the plain list without blanking it first.
+                listGen++
+                isFetching = true
+                val request = (groupsRequestBuilder ?: GroupsRequest.GroupsRequestBuilder().setLimit(30)).build()
+                groupsRequest = request
+                readTwoPhase(twoPhase, request, replace = true)
+                return@launch
+            }
+
             if (query.isNullOrEmpty()) {
                 // Reset to normal fetch - clear list and fetch fresh
                 _groups.value = emptyList()
@@ -203,8 +313,20 @@ open public class CometChatGroupsViewModel(
             
             // Build request with search keyword
             val searchRequest = builder.setSearchKeyWord(query).build()
+
+            if (twoPhase != null) {
+                // ON path: the search request also pages the results.
+                listGen++
+                isFetching = true
+                groupsRequest = searchRequest
+                readTwoPhase(twoPhase, searchRequest, replace = true)
+                return@launch
+            }
             
-            fetchGroupsUseCase(searchRequest)
+            val result = fetchGroupsUseCase(searchRequest)
+            if (gen != offGen) return@launch
+            offSearchInFlight = false
+            result
                 .onSuccess { groups ->
                     // Create defensive copies to prevent SDK from mutating our list items
                     val copiedGroups = groups.map { createGroupCopy(it) }
@@ -239,9 +361,37 @@ open public class CometChatGroupsViewModel(
      * Uses client's request builder if set, otherwise creates a default one.
      */
     public fun refreshList() {
+        refresh(quiet = false)
+    }
+
+    /**
+     * [refreshList] for a caller. [quiet] marks a refresh the kit starts by itself (reconnect): a
+     * failure while rows are on screen reports nothing (D84 rule 5).
+     */
+    private fun refresh(quiet: Boolean) {
         // Reset pagination state for fresh fetch
         hasMoreData = true
         isFetching = false
+
+        val twoPhase = if (offlineOn) fetchGroupsUseCase.twoPhaseRepository else null
+        if (twoPhase != null) {
+            // ON path: re-read two-phase without clearing; the refresh request also pages on.
+            listGen++
+            isFetching = true
+            val request = (groupsRequestBuilder ?: GroupsRequest.GroupsRequestBuilder().setLimit(30)).build()
+            groupsRequest = request
+            viewModelScope.launch {
+                if (_groups.value.isEmpty()) {
+                    _uiState.value = GroupsUIState.Loading
+                }
+                readTwoPhase(twoPhase, request, replace = true, quiet = quiet)
+            }
+            return
+        }
+
+        // ENG-41551 E: this refresh supersedes every earlier OFF-path load.
+        val gen = ++offGen
+        offSearchInFlight = false
 
         viewModelScope.launch {
             // Silent refresh - don't show loading state, keep existing data visible
@@ -253,11 +403,13 @@ open public class CometChatGroupsViewModel(
             // Use client's builder if provided, otherwise create default
             val builder = groupsRequestBuilder
                 ?: GroupsRequest.GroupsRequestBuilder().setLimit(30)
-            
+
             // Build a fresh request for the refresh
             val refreshRequest = builder.build()
-            
-            fetchGroupsUseCase(refreshRequest)
+
+            val result = fetchGroupsUseCase(refreshRequest)
+            if (gen != offGen) return@launch
+            result
                 .onSuccess { groups ->
                     // Create defensive copies to prevent SDK from mutating our list items
                     val copiedGroups = groups.map { createGroupCopy(it) }
@@ -286,6 +438,99 @@ open public class CometChatGroupsViewModel(
      * @param group The group to join
      * @param password Optional password for password-protected groups
      */
+    /**
+     * The ON-path two-phase read (BEH-SNAP-03, BEH-READ-01). The cached page is the first paint;
+     * the server page reconciles by guid; a phase of a superseded read is dropped. Errors never
+     * blank rows already shown; a failure with nothing on screen is the error state (D83).
+     * Rows get today's defensive copies.
+     */
+    private suspend fun readTwoPhase(
+        repository: GroupsTwoPhaseRepository,
+        request: GroupsRequest,
+        replace: Boolean,
+        quiet: Boolean = false
+    ) {
+        // D83: only a window load reports a failure over kept rows; a load-more page never does.
+        val window = replace || _groups.value.isEmpty()
+        val op = SnapshotReadOp(listGen, OfflineHub.gen, replace)
+        val end = SnapshotListRead.collect(
+            phases = repository.fetchGroupsTwoPhase(request),
+            op = op,
+            listGen = { listGen },
+            rows = _groups,
+            keyOf = { it.guid },
+            transform = { page -> page.map { createGroupCopy(it) } }
+        ) {
+            offlineErrorKeyword = null
+            _connectToSearch.value = false
+            _connectToLoad.value = false
+            _uiState.value = GroupsUIState.Content(_groups.value)
+        }
+        when (end) {
+            is SnapshotListRead.End.Dropped -> Unit
+            is SnapshotListRead.End.Server -> {
+                if (end.pageEmpty) hasMoreData = false
+                offlineErrorKeyword = null
+                _connectToSearch.value = false
+                _connectToLoad.value = false
+                // D84 rule 6: the server answered with nothing to show: the empty state.
+                updateUIState()
+            }
+            is SnapshotListRead.End.Failed -> {
+                val notConnected = SnapshotListRead.isNotConnected(end.exception)
+                val keyword = request.searchKeyword
+                // Rows of a previous query never stand in for a search that could not run (a keyword
+                // has no cache, BEH-SNAP-04); a later page of results already shown is kept.
+                if (replace && notConnected && !keyword.isNullOrEmpty()) _groups.value = emptyList()
+                if (_groups.value.isEmpty()) {
+                    offlineErrorKeyword = keyword?.takeIf { it.isNotEmpty() && notConnected }
+                    when {
+                        // D84 rule 7: an offline keyword search: "Connect to search", no onError.
+                        notConnected && !keyword.isNullOrEmpty() -> {
+                            _connectToLoad.value = false
+                            _connectToSearch.value = true
+                            _uiState.value = GroupsUIState.Empty
+                        }
+                        // D84 rule 3: offline with nothing on screen: the offline state (the app's
+                        // error view if set); onError fires once through the Error state.
+                        notConnected -> {
+                            _connectToSearch.value = false
+                            _connectToLoad.value = true
+                            _uiState.value = GroupsUIState.Error(end.exception)
+                        }
+                        // D84 rule 4: a real error with nothing on screen: the error view.
+                        else -> {
+                            _connectToSearch.value = false
+                            _connectToLoad.value = false
+                            _uiState.value = GroupsUIState.Error(end.exception)
+                        }
+                    }
+                } else if (window && !quiet && !notConnected) {
+                    // D84 rule 5: an online error over rows keeps them; onError fires once if the user
+                    // or app started the load. Offline over rows (D84 rule 2) and a kit-started read
+                    // stay quiet.
+                    _rowsKeptError.trySend(end.exception)
+                }
+            }
+        }
+        if (op.gen == listGen) isFetching = false
+    }
+
+    /**
+     * The connection is back: today's refresh of the list. With offline on, a keyword search whose
+     * offline read is showing "Connect to search" re-runs that search instead (D84 rule 8).
+     * The kit starts this refresh, so a failure while rows are on screen stays quiet (D84 rule 5).
+     */
+    internal fun onConnected() {
+        val keyword = offlineErrorKeyword
+        offlineErrorKeyword = null
+        if (offlineOn && keyword != null && _groups.value.isEmpty()) {
+            searchGroups(keyword)
+        } else {
+            refresh(quiet = true)
+        }
+    }
+
     public fun joinGroup(group: Group, password: String? = null) {
         viewModelScope.launch {
             joinGroupUseCase(group.guid, group.groupType, password)
@@ -295,6 +540,38 @@ open public class CometChatGroupsViewModel(
                 }
                 .onFailure { /* Error handled via onError callback */ }
         }
+    }
+
+    /**
+     * Clears the list for a session change (logout or a switch to a different uid), before the next
+     * frame (G8). Bumps both read generations, so a read, page or search already in flight drops its
+     * result, cancels a pending search, empties the rows and resets paging so the next fetch starts
+     * from page one with the app's request builder. Offline on only (the hub drives it).
+     */
+    private fun clearForOfflineSession() {
+        searchJob?.cancel()
+        listGen++
+        offGen++
+        offSearchInFlight = false
+        hasMoreData = true
+        isFetching = false
+        groupsRequest = null
+        offlineErrorKeyword = null
+        _connectToSearch.value = false
+        _connectToLoad.value = false
+        _groups.value = emptyList()
+        _uiState.value = GroupsUIState.Loading
+    }
+
+    /**
+     * The offline cache was reset (G8): clear as for a session end, then reload once from page one:
+     * the keyword search on screen if there was one, else the list. The kit starts this reload, so a
+     * failure over rows stays quiet (D84 rule 5).
+     */
+    private fun onOfflineCacheReset() {
+        val keyword = groupsRequest?.searchKeyword?.takeIf { it.isNotEmpty() }
+        clearForOfflineSession()
+        if (keyword != null) searchGroups(keyword) else refresh(quiet = true)
     }
 
     /**
@@ -455,7 +732,7 @@ open public class CometChatGroupsViewModel(
             // Connection listener for reconnection handling
             CometChat.addConnectionListener(tag, object : CometChat.ConnectionListener {
                 override fun onConnected() {
-                    refreshList()
+                    this@CometChatGroupsViewModel.onConnected()
                 }
 
                 override fun onConnecting() {

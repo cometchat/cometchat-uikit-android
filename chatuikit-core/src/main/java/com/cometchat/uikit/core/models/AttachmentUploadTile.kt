@@ -86,6 +86,22 @@ public data class AttachmentUploadTile(
 )
 
 /**
+ * Error code the composer puts on a tile restored after an app-kill whose durable copy could not be
+ * made at add time (BEH-UPLOAD-01 / BEH-UPLOAD-14). See [isCopyMissing].
+ */
+public const val ERROR_ATTACHMENT_COPY_MISSING: String = "ERR_ATTACHMENT_COPY_MISSING"
+
+/**
+ * True for a restored [AttachmentUploadStatus.FAILED] tile whose durable copy is missing (its
+ * [AttachmentUploadTile.error] carries [ERROR_ATTACHMENT_COPY_MISSING]). Only the composer's tray
+ * restore sets that code, so a live tile or a tile built by the app is never flagged. Such a tile is
+ * **not retryable** (D-306): the kits show the "file not saved, remove it and add it again" label,
+ * no retry glyph or tap, and offer remove only.
+ */
+public val AttachmentUploadTile.isCopyMissing: Boolean
+    get() = status == AttachmentUploadStatus.FAILED && error?.code == ERROR_ATTACHMENT_COPY_MISSING
+
+/**
  * A file the user picked (or captured) that is about to be staged in the composer tray and
  * uploaded. This is the UI-agnostic hand-off from a picker into
  * `CometChatMessageComposerViewModel.stageAttachments`: the ViewModel mints each file's `fileId`, starts the SDK

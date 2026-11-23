@@ -15,11 +15,19 @@ import com.cometchat.uikit.core.domain.usecase.RemoveReactionUseCase
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatMessageEvent
 import com.cometchat.uikit.core.events.MessageStatus
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineListSession
+import com.cometchat.uikit.core.offline.OfflinePagedMerge
+import com.cometchat.uikit.core.offline.OfflineReconnectRefill
+import com.cometchat.uikit.core.offline.TwoPhaseResult
 import com.cometchat.uikit.core.state.ReactionListUIState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -47,6 +55,28 @@ open public class CometChatReactionListViewModel(
     private val _uiState = MutableStateFlow<ReactionListUIState>(ReactionListUIState.Loading)
     public val uiState: StateFlow<ReactionListUIState> = _uiState.asStateFlow()
 
+    /**
+     * Offline on: a tab's first-page load failed online while rows from its cached phase stay on
+     * screen (D84 rule 5). The state stays Content, so the views route this to `onError` instead of
+     * the error view. A not-connected failure over rows is not reported (D84 rule 2), nor is a
+     * failed load-more, as today, nor the read the kit starts by itself on reconnect. Never emitted
+     * offline off (there a failed load is the [ReactionListUIState.Error] state).
+     */
+    // A buffered channel, consumed once: an error raised before the view collects (the first load
+    // can start before it) still arrives, exactly once, and never repeats on rotation/recomposition.
+    private val _loadErrorWithRows = Channel<CometChatException>(Channel.BUFFERED)
+    public val loadErrorWithRows: Flow<CometChatException> = _loadErrorWithRows.receiveAsFlow()
+
+    private val _connectToLoad = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [ReactionListUIState.Error] because the tab was read offline with
+     * nothing shown (D84 rule 3): the kit shows its offline state ("Connect to load reactions", no
+     * Retry) unless the app set an error view; `onError` fires once through the Error state. The
+     * tab reads once on reconnect. Always false with offline messaging off.
+     */
+    public val connectToLoad: StateFlow<Boolean> = _connectToLoad.asStateFlow()
+
     // Reaction headers (tabs) - includes "All" tab as first item
     private val _reactionHeaders = MutableStateFlow<List<ReactionCount>>(emptyList())
     public val reactionHeaders: StateFlow<List<ReactionCount>> = _reactionHeaders.asStateFlow()
@@ -73,6 +103,13 @@ open public class CometChatReactionListViewModel(
 
     // State flags to prevent concurrent operations
     private var isFetching = false
+
+    /**
+     * Cache generation: [clearCache] (which also drops the per-tab requests) makes in-flight
+     * offline reads stale. [fetchingGen] is the generation of the read in flight.
+     */
+    private var fetchGen = 0L
+    private var fetchingGen = 0L
     private var isRemovingReaction = false
 
     // Track the reaction being removed for state updates
@@ -85,9 +122,46 @@ open public class CometChatReactionListViewModel(
     // Local event listener job
     private var messageEventsJob: Job? = null
 
+    /**
+     * Offline on, a tab that showed the error view because it was not connected reads once when the
+     * connection returns, only if it still shows nothing (D83, ENG-41462). Never armed offline off.
+     * Cancelled when the message changes ([setBaseMessage]) or the list is dismissed
+     * ([cancelReconnectRefill]), so a closed sheet never reads in the background.
+     */
+    private val offlineRefill = OfflineReconnectRefill("reaction_list") {
+        viewModelScope.launch {
+            if (_reactedUsers.value.isEmpty()) {
+                // The kit starts this read: quiet if it fails over rows (D84 rule 5).
+                quietNextRead = true
+                try {
+                    fetchReactedUsers()
+                } finally {
+                    quietNextRead = false
+                }
+            }
+        }
+    }
+
+    // Set only around the reconnect refill's fetchReactedUsers() call, which reads it
+    // synchronously: a failure of that read while rows are on screen reports nothing.
+    private var quietNextRead = false
+
+    /**
+     * Bumped only by a session end or cache reset (G8), so a plain (non two-phase) read already in
+     * flight drops its result. Never moves with offline off, where that read behaves as today.
+     */
+    private var offlineSessionGen = 0L
+
+    // G8: session end and cache reset (ENG-41568). Started only with offline on.
+    private val offlineSession = OfflineListSession(
+        onSessionEnded = { clearForOfflineSession() },
+        onCacheReset = { onOfflineCacheReset() }
+    )
+
     init {
         if (enableListeners) {
             addListeners()
+            if (OfflineGate.isOn()) offlineSession.start(viewModelScope)
         }
     }
 
@@ -100,6 +174,7 @@ open public class CometChatReactionListViewModel(
      * @param message The message to display reactions for
      */
     public fun setBaseMessage(message: BaseMessage) {
+        offlineRefill.disarm()
         _baseMessage.value = message
         
         // Extract reaction counts from message and create headers
@@ -155,8 +230,10 @@ open public class CometChatReactionListViewModel(
         reactionFilter: String? = null,
         customBuilder: ReactionsRequest.ReactionsRequestBuilder? = null
     ) {
-        // Prevent concurrent fetches
-        if (isFetching) return
+        // Prevent concurrent fetches. Offline on, a read left over from a cleared cache does not
+        // block a fresh one (its result is dropped as stale).
+        val offlineOn = OfflineGate.isOn()
+        if (isFetching && (!offlineOn || fetchingGen == fetchGen)) return
 
         val message = _baseMessage.value ?: return
 
@@ -183,10 +260,23 @@ open public class CometChatReactionListViewModel(
         // Get or create request for this tab
         val reactionsRequest = getOrCreateRequest(tabKey, message.id, customBuilder)
 
+        // Offline on, with the default use case: the SDK two-phase read. Otherwise today's read
+        // (which itself runs on the two-phase SDK overload, server phase only).
+        val twoPhase = if (offlineOn) fetchReactionsUseCase.twoPhaseOrNull(reactionsRequest) else null
+        if (twoPhase != null) {
+            fetchTwoPhase(tabKey, twoPhase)
+            return
+        }
+
+        val session = offlineSessionGen
         viewModelScope.launch {
+            fetchingGen = fetchGen
             isFetching = true
 
-            fetchReactionsUseCase(reactionsRequest)
+            val result = fetchReactionsUseCase(reactionsRequest)
+            // G8: dropped after a session end or cache reset (offline on only).
+            if (session != offlineSessionGen) return@launch
+            result
                 .onSuccess { reactions ->
                     handleFetchSuccess(tabKey, reactions)
                 }
@@ -197,6 +287,74 @@ open public class CometChatReactionListViewModel(
             isFetching = false
         }
     }
+
+    /**
+     * Offline-on read of one page for [tabKey] (README §3.9, BEH-SNAP-03): the cached page is the
+     * first paint, and the server page replaces it in place, deduped by reaction id
+     * ([OfflinePagedMerge]), so a row is never shown twice. An empty cached page changes nothing.
+     * D83: an error never covers rows already shown (a first-page one the user or app started is
+     * reported through [loadErrorWithRows]; the reconnect refill's is not); with nothing shown it
+     * is the error view, and a not-connected one reads once on reconnect. A server page that leaves the tab with nothing is an empty list under
+     * Content, as offline off: the reactions sheet stays open. A stale generation is dropped.
+     */
+    private fun fetchTwoPhase(tabKey: String, phases: Flow<TwoPhaseResult<Reaction>>) {
+        val gen = fetchGen
+        // A first page the kit started by itself (reconnect) is quiet over rows, like a paging read.
+        val firstPage = cachedRows(tabKey).isEmpty() && !quietNextRead
+        quietNextRead = false
+        offlineRefill.disarm()
+        viewModelScope.launch {
+            fetchingGen = gen
+            isFetching = true
+            var window: Set<Any> = emptySet()
+            phases.collect { phase ->
+                if (gen != fetchGen) return@collect
+                when (phase) {
+                    is TwoPhaseResult.Cached -> {
+                        val merged = OfflinePagedMerge.applyCached(cachedRows(tabKey), phase.rows, ::reactionKey)
+                        window = merged.window
+                        if (merged.added > 0) showRows(tabKey, merged.rows)
+                    }
+
+                    is TwoPhaseResult.Server -> {
+                        val merged = OfflinePagedMerge.applyServer(cachedRows(tabKey), phase.rows, window, ::reactionKey)
+                        showRows(tabKey, merged.rows)
+                    }
+
+                    is TwoPhaseResult.Error -> handleTwoPhaseError(tabKey, phase.exception, firstPage)
+                }
+            }
+            if (fetchingGen == gen) isFetching = false
+        }
+    }
+
+    private fun cachedRows(tabKey: String): List<Reaction> = reactedUserCache[tabKey]?.toList() ?: emptyList()
+
+    /** Stores [rows] for [tabKey] and shows them (as a new list) when that tab is selected. */
+    private fun showRows(tabKey: String, rows: List<Reaction>) {
+        reactedUserCache[tabKey] = rows.toMutableList()
+        if ((currentSelectedReactionTab ?: ALL_TAB_KEY) == tabKey) _reactedUsers.value = rows.toList()
+        _uiState.value = ReactionListUIState.Content
+    }
+
+    private fun handleTwoPhaseError(tabKey: String, exception: CometChatException, firstPage: Boolean) {
+        if (exception.code == CometChatConstants.Errors.ERROR_REQUEST_IN_PROGRESS) return
+        val notConnected = OfflinePagedMerge.isNotConnected(exception)
+        if (cachedRows(tabKey).isNotEmpty()) {
+            _uiState.value = ReactionListUIState.Content
+            // D84 rules 2 and 5: only an online failure is reported over rows.
+            if (firstPage && !notConnected) _loadErrorWithRows.trySend(exception)
+        } else {
+            // D84 rule 3: offline with nothing shown is the kit's offline state.
+            _connectToLoad.value = notConnected
+            _uiState.value = ReactionListUIState.Error(exception)
+            if (notConnected) offlineRefill.arm()
+        }
+    }
+
+    /** Reaction identity: the server reaction id, else (message, user, emoji). */
+    private fun reactionKey(reaction: Reaction): Any =
+        reaction.reactionId?.takeIf { it.isNotEmpty() } ?: "${reaction.messageId}:${reaction.uid}:${reaction.reaction}"
 
     /**
      * Removes a reaction from the message.
@@ -234,8 +392,53 @@ open public class CometChatReactionListViewModel(
      * Call this when the message changes or component is reset.
      */
     public fun clearCache() {
+        offlineRefill.disarm()
+        fetchGen++
         reactionRequestCache.clear()
         reactedUserCache.clear()
+    }
+
+    /**
+     * Clears the list for a session change (logout or a switch to a different uid), before the next
+     * frame (G8). Bumps the read generations, so a read already in flight drops its result, empties
+     * the rows and every tab's cached rows and requests (the next read starts from page one). The
+     * message, its reaction tabs and the selected tab are kept. Offline on only (the hub drives it).
+     */
+    private fun clearForOfflineSession() {
+        offlineRefill.disarm()
+        fetchGen++
+        offlineSessionGen++
+        reactionRequestCache.clear()
+        reactedUserCache.clear()
+        isFetching = false
+        quietNextRead = false
+        _connectToLoad.value = false
+        _reactedUsers.value = emptyList()
+        _uiState.value = ReactionListUIState.Loading
+    }
+
+    /**
+     * The offline cache was reset (G8): clear as for a session end, then read the selected tab once
+     * from page one. The kit starts this read, so a failure over rows stays quiet (D84 rule 5).
+     * Nothing reads before a message is set.
+     */
+    private fun onOfflineCacheReset() {
+        clearForOfflineSession()
+        if (_baseMessage.value == null) return
+        quietNextRead = true
+        try {
+            fetchReactedUsers()
+        } finally {
+            quietNextRead = false
+        }
+    }
+
+    /**
+     * The list was dismissed (the reactions sheet closed): drop any pending reconnect read (D83, G7).
+     * The kit components call this; a later fetch arms it again if needed.
+     */
+    public fun cancelReconnectRefill() {
+        offlineRefill.release()
     }
 
     // ==================== Private Methods ====================
@@ -576,6 +779,7 @@ open public class CometChatReactionListViewModel(
     override fun onCleared() {
         super.onCleared()
         removeListeners()
+        offlineRefill.release()
         clearCache()
     }
 }

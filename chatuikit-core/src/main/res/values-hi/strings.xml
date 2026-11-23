@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">अनुवाद करें</string>
     <string name="cometchat_unpin" translatable="true">संदेश अनपिन करें</string>
     <string name="cometchat_unsave" translatable="true">संदेश का सहेजना हटाएं</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">अभी तक नहीं भेजा गया</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">नहीं भेजा गया। फिर से कोशिश करने के लिए टैप करें</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 न भेजा गया संदेश हटा दिया गया</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">न भेजे गए संदेश शायद खो गए हैं</string>
+    <string name="cometchat_queue_full" translatable="true">भेजे जाने की प्रतीक्षा में बहुत अधिक संदेश हैं</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">ऑफ़लाइन भेजने के लिए फ़ाइल बहुत बड़ी है</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">और लोड करने के लिए कनेक्ट करें</string>
+    <string name="cometchat_media_available_when_online" translatable="true">ऑनलाइन वापस आने पर मीडिया उपलब्ध होगा</string>
+    <string name="cometchat_jump_to_latest" translatable="true">नवीनतम पर जाएं</string>
+    <string name="cometchat_sending_try_again" translatable="true">भेजा जा रहा है… कुछ देर में फिर से कोशिश करें</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d संदेश नहीं भेजा गया</item>
+        <item quantity="other">%d संदेश नहीं भेजे गए</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d न भेजा गया संदेश खो गया</item>
+        <item quantity="other">%d न भेजे गए संदेश खो गए</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">पुनः प्रयास करें</string>
     <string name="cometchat_call_no_internet" translatable="true">इंटरनेट कनेक्शन नहीं है। अपना कनेक्शन जांचें और फिर से कोशिश करें।</string>
 </resources>

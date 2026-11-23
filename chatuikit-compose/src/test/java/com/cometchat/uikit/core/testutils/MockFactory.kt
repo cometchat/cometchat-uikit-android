@@ -252,8 +252,10 @@ object MockFactory {
      * * `count == 1` sets `message.attachment`, the single-attachment path.
      * * `count > 1` fills `metadata.attachments`, which is the **only** multi-attachment
      *   source the image bubble reads. It never consults `message.attachments`, unlike
-     *   the shared `resolveAttachments`, so a fixture built on that property renders
-     *   nothing. Pinned by `sdkAttachmentsList_isIgnoredByThisBubble_unlikeTheSharedResolver`.
+     *   the shared `resolveAttachments`. On SDK 5.1.0 `setAttachments(list)` also fills
+     *   `message.attachment` with `list[0]`, so a fixture built on that property renders
+     *   only the first item. Pinned by
+     *   `sdkAttachmentsList_rendersOnlyTheFirstItem_unlikeTheSharedResolver`.
      */
     fun createMediaMessage(
         count: Int = 1,

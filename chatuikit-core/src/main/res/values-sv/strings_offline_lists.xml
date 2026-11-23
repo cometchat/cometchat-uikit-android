@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">Anslut för att söka</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">Sökningen kräver en internetanslutning.</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">Anslut för att läsa in användare</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">Anslut för att läsa in grupper</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">Anslut för att läsa in chattar</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">Anslut för att läsa in medlemmar</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">Anslut för att läsa in meddelanden</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">Anslut för att läsa in reaktioner</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">Anslut för att läsa in aviseringar</string>
+</resources>

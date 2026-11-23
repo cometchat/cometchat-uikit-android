@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">Aramak için bağlanın</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">Arama için internet bağlantısı gerekir.</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">Kullanıcıları yüklemek için bağlanın</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">Grupları yüklemek için bağlanın</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">Sohbetleri yüklemek için bağlanın</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">Üyeleri yüklemek için bağlanın</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">Mesajları yüklemek için bağlanın</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">Tepkileri yüklemek için bağlanın</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">Bildirimleri yüklemek için bağlanın</string>
+</resources>

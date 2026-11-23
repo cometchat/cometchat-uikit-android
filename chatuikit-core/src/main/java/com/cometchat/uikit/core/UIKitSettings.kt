@@ -1,8 +1,10 @@
 package com.cometchat.uikit.core
 
+import com.cometchat.chat.core.OfflineConfig
+
 /**
  * Configuration settings for the CometChat UIKit.
- * 
+ *
  * Use [UIKitSettingsBuilder] to create instances of this class.
  *
  * @property appId The CometChat App ID
@@ -16,6 +18,8 @@ package com.cometchat.uikit.core
  * @property overrideCallsHost Custom Calls SDK host URL (optional); the Calls SDK uses it for call tokens
  * @property enableCalling Whether calling features are enabled (default false)
  * @property callSettingsBuilder Custom SessionSettingsBuilder for call configuration (CometChatCalls.SessionSettingsBuilder)
+ * @property offlineConfig Offline messaging configuration passed straight through to the SDK. Null
+ * (the default) leaves offline messaging off.
  */
 public class UIKitSettings private constructor(
     public val appId: String?,
@@ -29,7 +33,8 @@ public class UIKitSettings private constructor(
     public val overrideCallsHost: String?,
     public val enableCalling: Boolean,
     public val callSettingsBuilder: Any?,
-    public val enableThreadSubscription: Boolean
+    public val enableThreadSubscription: Boolean,
+    public val offlineConfig: OfflineConfig?
 ) {
     public companion object {
         private const val TAG = "UIKitSettings"
@@ -51,6 +56,7 @@ public class UIKitSettings private constructor(
         private var enableCalling: Boolean = false
         private var callSettingsBuilder: Any? = null
         private var enableThreadSubscription: Boolean = true
+        private var offlineConfig: OfflineConfig? = null
 
         /**
          * Sets the CometChat App ID.
@@ -219,6 +225,18 @@ public class UIKitSettings private constructor(
         }
 
         /**
+         * Sets the offline messaging configuration, passed straight through to the SDK's
+         * `AppSettings` (G14). When not set, offline messaging stays off.
+         *
+         * @param offlineConfig The SDK [OfflineConfig]
+         * @return This builder instance
+         */
+        public fun setOfflineConfig(offlineConfig: OfflineConfig): UIKitSettingsBuilder {
+            this.offlineConfig = offlineConfig
+            return this
+        }
+
+        /**
          * Builds a new instance of [UIKitSettings] using the provided configuration.
          *
          * @return A new [UIKitSettings] instance
@@ -236,7 +254,8 @@ public class UIKitSettings private constructor(
                 overrideCallsHost = overrideCallsHost,
                 enableCalling = enableCalling,
                 callSettingsBuilder = callSettingsBuilder,
-                enableThreadSubscription = enableThreadSubscription
+                enableThreadSubscription = enableThreadSubscription,
+                offlineConfig = offlineConfig
             )
         }
     }

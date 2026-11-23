@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline search (ENG-41133) -->
+    <string name="cometchat_connect_to_search_messages" translatable="true">검색하려면 연결하세요</string>
+    <string name="cometchat_connect_to_search_messages_subtitle" translatable="true">검색하려면 인터넷 연결이 필요합니다.</string>
+</resources>

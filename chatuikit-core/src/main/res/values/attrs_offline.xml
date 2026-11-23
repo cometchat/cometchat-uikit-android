@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Offline messaging theme tokens (ENG-41086).
+
+  Declared once in chatuikit-core so BOTH UI stacks (View + Compose) share the same attribute
+  names — the shared theming interface the send-state and media-placeholder UI resolve against.
+  W4 (failed-row tint/icon, not-sent text) and W5 (media placeholder) consume these via
+  ?attr/... and wire their defaults from today's error and wait tokens in each component style.
+-->
+<resources>
+    <!-- Tint of a failed / not-sent message row. Default: today's error token. -->
+    <attr name="cometchatOfflineFailedMessageTint" format="color|reference" />
+    <!-- Icon shown on a failed / not-sent message row. -->
+    <attr name="cometchatOfflineFailedMessageIcon" format="reference" />
+    <!-- Text appearance of the "Not sent yet" / "Not sent. Tap to retry" label. Default: wait token. -->
+    <attr name="cometchatOfflineNotSentTextAppearance" format="reference" />
+    <!-- Tint of the media placeholder shown when bytes are not cached yet. -->
+    <attr name="cometchatOfflineMediaPlaceholderTint" format="color|reference" />
+    <!-- Icon of the media placeholder. -->
+    <attr name="cometchatOfflineMediaPlaceholderIcon" format="reference" />
+</resources>

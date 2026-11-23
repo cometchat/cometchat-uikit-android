@@ -18,5 +18,23 @@
     <string name="cometchat_translate" translatable="true">翻訳</string>
     <string name="cometchat_unpin" translatable="true">メッセージのピン留めを解除</string>
     <string name="cometchat_unsave" translatable="true">メッセージの保存を解除</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">未送信</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">送信されていません。タップして再試行</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">未送信のメッセージ1件が削除されました</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">未送信のメッセージが失われた可能性があります</string>
+    <string name="cometchat_queue_full" translatable="true">送信待ちのメッセージが多すぎます</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">ファイルが大きすぎるため、オフラインでは送信できません</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">接続するとさらに読み込めます</string>
+    <string name="cometchat_media_available_when_online" translatable="true">オンラインに戻るとメディアを表示できます</string>
+    <string name="cometchat_jump_to_latest" translatable="true">最新へ移動</string>
+    <string name="cometchat_sending_try_again" translatable="true">送信中… しばらくしてからもう一度お試しください</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="other">%d件のメッセージが送信されませんでした</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="other">未送信のメッセージ%d件が失われました</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">再試行</string>
     <string name="cometchat_call_no_internet" translatable="true">インターネットに接続されていません。接続を確認して、もう一度お試しください。</string>
 </resources>

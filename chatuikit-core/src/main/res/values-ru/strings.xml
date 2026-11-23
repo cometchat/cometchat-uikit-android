@@ -18,5 +18,29 @@
     <string name="cometchat_translate" translatable="true">Перевести</string>
     <string name="cometchat_unpin" translatable="true">Открепить сообщение</string>
     <string name="cometchat_unsave" translatable="true">Убрать сообщение из сохранённого</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Ещё не отправлено</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Не отправлено. Нажмите, чтобы повторить</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 неотправленное сообщение удалено</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Неотправленные сообщения могли быть потеряны</string>
+    <string name="cometchat_queue_full" translatable="true">Слишком много сообщений ожидают отправки</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Файл слишком большой для отправки офлайн</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Подключитесь, чтобы загрузить больше</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Медиафайлы будут доступны, когда вы снова будете в сети</string>
+    <string name="cometchat_jump_to_latest" translatable="true">К последним</string>
+    <string name="cometchat_sending_try_again" translatable="true">Отправка… повторите попытку через мгновение</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d сообщение не отправлено</item>
+        <item quantity="few">%d сообщения не отправлены</item>
+        <item quantity="many">%d сообщений не отправлено</item>
+        <item quantity="other">%d сообщения не отправлено</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d неотправленное сообщение потеряно</item>
+        <item quantity="few">%d неотправленных сообщения потеряны</item>
+        <item quantity="many">%d неотправленных сообщений потеряно</item>
+        <item quantity="other">%d неотправленного сообщения потеряно</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Повторить</string>
     <string name="cometchat_call_no_internet" translatable="true">Нет подключения к интернету. Проверьте подключение и повторите попытку.</string>
 </resources>

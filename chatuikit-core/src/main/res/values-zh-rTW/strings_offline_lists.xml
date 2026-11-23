@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline lists (users, groups, group members): a search or presence-filter read has no cache -->
+    <string name="cometchat_connect_to_search" translatable="true">連線以搜尋</string>
+    <string name="cometchat_connect_to_search_subtitle" translatable="true">搜尋需要網路連線。</string>
+    <!-- Offline lists (users, groups, group members, conversations): the plain list has no cache (ENG-41551 B) -->
+    <string name="cometchat_connect_to_load_users" translatable="true">連線以載入使用者</string>
+    <string name="cometchat_connect_to_load_groups" translatable="true">連線以載入群組</string>
+    <string name="cometchat_connect_to_load_chats" translatable="true">連線以載入聊天</string>
+    <string name="cometchat_connect_to_load_members" translatable="true">連線以載入成員</string>
+    <!-- Offline (D84): the message list, threads, pinned, saved, reactions and the notification feed with nothing on screen -->
+    <string name="cometchat_connect_to_load_messages" translatable="true">連線以載入訊息</string>
+    <string name="cometchat_connect_to_load_reactions" translatable="true">連線以載入回應</string>
+    <string name="cometchat_connect_to_load_notifications" translatable="true">連線以載入通知</string>
+</resources>

@@ -18,5 +18,33 @@
     <string name="cometchat_translate" translatable="true">ترجمة</string>
     <string name="cometchat_unpin" translatable="true">إلغاء تثبيت الرسالة</string>
     <string name="cometchat_unsave" translatable="true">إلغاء حفظ الرسالة</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">لم يتم الإرسال بعد</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">لم يتم الإرسال. انقر لإعادة المحاولة</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">تمت إزالة رسالة واحدة غير مرسلة</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">ربما فُقدت الرسائل غير المرسلة</string>
+    <string name="cometchat_queue_full" translatable="true">عدد كبير جدًا من الرسائل في انتظار الإرسال</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">الملف كبير جدًا لإرساله دون اتصال</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">اتصل بالإنترنت لتحميل المزيد</string>
+    <string name="cometchat_media_available_when_online" translatable="true">ستتوفر الوسائط عند عودة الاتصال</string>
+    <string name="cometchat_jump_to_latest" translatable="true">الانتقال إلى الأحدث</string>
+    <string name="cometchat_sending_try_again" translatable="true">جارٍ الإرسال… أعد المحاولة بعد لحظات</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="zero">لم يتم إرسال %d رسالة</item>
+        <item quantity="one">لم يتم إرسال %d رسالة</item>
+        <item quantity="two">لم يتم إرسال %d رسالتين</item>
+        <item quantity="few">لم يتم إرسال %d رسائل</item>
+        <item quantity="many">لم يتم إرسال %d رسالة</item>
+        <item quantity="other">لم يتم إرسال %d رسالة</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="zero">فُقدت %d رسالة غير مرسلة</item>
+        <item quantity="one">فُقدت %d رسالة غير مرسلة</item>
+        <item quantity="two">فُقدت %d رسالتان غير مرسلتين</item>
+        <item quantity="few">فُقدت %d رسائل غير مرسلة</item>
+        <item quantity="many">فُقدت %d رسالة غير مرسلة</item>
+        <item quantity="other">فُقدت %d رسالة غير مرسلة</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">إعادة المحاولة</string>
     <string name="cometchat_call_no_internet" translatable="true">لا يوجد اتصال بالإنترنت. تحقق من اتصالك وحاول مرة أخرى.</string>
 </resources>

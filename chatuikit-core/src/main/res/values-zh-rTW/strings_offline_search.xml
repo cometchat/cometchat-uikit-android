@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Offline search (ENG-41133) -->
+    <string name="cometchat_connect_to_search_messages" translatable="true">連線後即可搜尋</string>
+    <string name="cometchat_connect_to_search_messages_subtitle" translatable="true">搜尋需要網路連線。</string>
+</resources>

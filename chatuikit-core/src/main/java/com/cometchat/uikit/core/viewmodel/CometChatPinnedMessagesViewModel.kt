@@ -9,6 +9,11 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatMessageEvent
+import com.cometchat.uikit.core.offline.OfflineGate
+import com.cometchat.uikit.core.offline.OfflineListSession
+import com.cometchat.uikit.core.offline.OfflinePagedMerge
+import com.cometchat.uikit.core.offline.OfflineReconnectRefill
+import com.cometchat.uikit.core.offline.PinnedSavedTwoPhaseLoad
 import com.cometchat.uikit.core.state.PinnedSavedListUIState
 import com.cometchat.uikit.core.utils.getDefaultMessagesCategories
 import com.cometchat.uikit.core.utils.getDefaultMessagesTypes
@@ -53,6 +58,15 @@ public open class CometChatPinnedMessagesViewModel(
     /** Screen state: [PinnedSavedListUIState.Loading] until the first load settles. */
     public val uiState: StateFlow<PinnedSavedListUIState> = _uiState.asStateFlow()
 
+    private val _connectToLoad = MutableStateFlow(false)
+
+    /**
+     * True while [uiState] is [PinnedSavedListUIState.Error] because the load ran offline with
+     * nothing shown (D84 rule 3): the panel shows its offline state ("Connect to load messages", no
+     * Retry). It reads once on reconnect. Always false with offline messaging off.
+     */
+    public val connectToLoad: StateFlow<Boolean> = _connectToLoad.asStateFlow()
+
     private val _count = MutableStateFlow(0)
 
     /** Exact pinned-message count (fetch-all-and-count; the backend caps at 100). */
@@ -73,10 +87,55 @@ public open class CometChatPinnedMessagesViewModel(
      * two rapid reloads cannot page concurrently into the same list.
      */
     private var loadJob: Job? = null
+
+    /** Load generation: a load whose generation is no longer current never publishes. */
+    private var loadGen = 0L
+
+    /**
+     * Opened offline with nothing cached: the offline state (D84), then one read when the connection
+     * returns, only if the panel is still empty (ENG-41462). Never armed offline off.
+     */
+    private val offlineRefill = OfflineReconnectRefill(UIKitConstants.ListenerTags.PINNED_MESSAGES) {
+        viewModelScope.launch { if (_messages.value.isEmpty()) reload() }
+    }
     private var listenersTag: String? = null
 
+    // G8: session end and cache reset (ENG-41568). Started only with offline on.
+    private val offlineSession = OfflineListSession(
+        onSessionEnded = { clearForOfflineSession() },
+        onCacheReset = { onOfflineCacheReset() }
+    )
+
     init {
-        if (enableListeners) addListeners()
+        if (enableListeners) {
+            addListeners()
+            if (OfflineGate.isOn()) offlineSession.start(viewModelScope)
+        }
+    }
+
+    /**
+     * Clears the panel for a session change (logout or a switch to a different uid), before the
+     * next frame (G8). Cancels the load in flight and bumps its generation, so none of its pages
+     * lands, and empties the rows and the count. The next [reload] rebuilds the request, so it
+     * starts from page one. Offline on only (the hub drives it).
+     */
+    private fun clearForOfflineSession() {
+        loadJob?.cancel()
+        loadGen++
+        offlineRefill.disarm()
+        _connectToLoad.value = false
+        _messages.value = emptyList()
+        _count.value = 0
+        _uiState.value = PinnedSavedListUIState.Loading
+    }
+
+    /**
+     * The offline cache was reset (G8): clear as for a session end, then [reload] once from page one
+     * if the panel had loaded. A failure over cached rows keeps them and reports nothing (D84 rule 5).
+     */
+    private fun onOfflineCacheReset() {
+        clearForOfflineSession()
+        if (request != null) reload()
     }
 
     /**
@@ -111,49 +170,54 @@ public open class CometChatPinnedMessagesViewModel(
     /**
      * Fetches every page and accumulates them, so the count is exact. Bounded by MAX_LIMIT pages of
      * data because the backend caps a conversation at 100 pinned messages.
+     *
+     * Uses the SDK two-phase `fetchNext` ([PinnedSavedTwoPhaseLoad]). Offline off: exactly today's
+     * load (one publish when the last page lands). Offline on: the cached page is the first paint,
+     * server order is kept and no row repeats (BEH-PIN-02); a not-connected end keeps the rows
+     * shown, or shows the offline state / error view when nothing is shown (D84); a stale generation is dropped.
      */
     private fun loadAll() {
         val req = request ?: return
         // Cancel first: the previous job captured the previous request, and once cancelled it can
         // no longer publish its pages (the write below the loop is unreachable after cancellation).
         loadJob?.cancel()
+        offlineRefill.disarm()
+        val gen = ++loadGen
+        val offlineOn = OfflineGate.isOn()
         loadJob = viewModelScope.launch {
-            val accumulated = mutableListOf<BaseMessage>()
-            val seenIds = mutableSetOf<Long>()
-            try {
-                while (accumulated.size < MAX_LIMIT) {
-                    val page = fetchNext(req)
-                    if (page.isEmpty()) break
-                    // Overlapping pages would otherwise show the same message twice and inflate
-                    // the count.
-                    page.forEach { if (seenIds.add(it.id)) accumulated.add(it) }
+            val outcome = PinnedSavedTwoPhaseLoad.loadAll(req, offlineOn, MAX_LIMIT) { rows ->
+                if (gen == loadGen) publish(rows, settled = false)
+            }
+            if (gen != loadGen) return@launch
+            when (outcome) {
+                is PinnedSavedTwoPhaseLoad.Outcome.Loaded -> publish(outcome.rows, settled = true)
+                is PinnedSavedTwoPhaseLoad.Outcome.Failed -> when {
+                    outcome.rows.isNotEmpty() -> publish(outcome.rows, settled = true)
+                    else -> {
+                        // D84 rule 3: offline with nothing shown is the kit's offline state, which
+                        // reads once on reconnect (rule 8).
+                        val offline = offlineOn && OfflinePagedMerge.isNotConnected(outcome.exception)
+                        _connectToLoad.value = offline
+                        _uiState.value = PinnedSavedListUIState.Error(outcome.exception)
+                        if (offline) offlineRefill.arm()
+                    }
                 }
-                _messages.value = accumulated
-                _count.value = accumulated.size
-                _uiState.value = if (accumulated.isEmpty()) PinnedSavedListUIState.Empty
-                else PinnedSavedListUIState.Content
-            } catch (e: CometChatException) {
-                _uiState.value = PinnedSavedListUIState.Error(e)
             }
         }
     }
 
-    private suspend fun fetchNext(req: MessagesRequest): List<BaseMessage> =
-        suspendCancellableCoroutine { cont ->
-            req.fetchNext(object : CometChat.CallbackListener<List<BaseMessage>>() {
-                override fun onSuccess(result: List<BaseMessage>) {
-                    if (cont.isActive) cont.resume(result)
-                }
-
-                override fun onError(e: CometChatException) {
-                    if (cont.isActive) cont.cancel(e)
-                }
-            })
-        }
+    /** Shows [rows]; an unsettled (mid-load) empty paint keeps the Loading state. */
+    private fun publish(rows: List<BaseMessage>, settled: Boolean) {
+        _messages.value = rows
+        _count.value = rows.size
+        if (rows.isNotEmpty()) _uiState.value = PinnedSavedListUIState.Content
+        else if (settled) _uiState.value = PinnedSavedListUIState.Empty
+    }
 
     /**
      * Unpins a message. Optimistically removes it from the panel, then reverts on error. On success
-     * the event is broadcast on the UIKit bus so the main list bubble updates too.
+     * the `MessageUnpinned` kit event is the only signal the message list and thread header get
+     * (SDK 5.1.2 sends no own echo, G11); they apply it to the bubble without re-emitting.
      */
     public fun unpin(message: BaseMessage) {
         val index = _messages.value.indexOfFirst { it.id == message.id }
@@ -346,6 +410,7 @@ public open class CometChatPinnedMessagesViewModel(
 
     override fun onCleared() {
         removeListeners()
+        offlineRefill.release()
         super.onCleared()
     }
 

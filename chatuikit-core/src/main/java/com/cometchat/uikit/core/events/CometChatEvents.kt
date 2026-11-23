@@ -1,5 +1,6 @@
 package com.cometchat.uikit.core.events
 
+import androidx.annotation.RestrictTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -188,6 +189,29 @@ public object CometChatEvents {
     public val threadEvents: SharedFlow<CometChatThreadEvent> = _threadEvents.asSharedFlow()
 
 
+    // ==================== Offline Events ====================
+
+    /**
+     * Internal mutable flow for the additive public offline events (G14).
+     *
+     * **Lossless, unlike every other flow here**: an unbounded buffer with [BufferOverflow.SUSPEND]
+     * (never DROP_OLDEST) so a reconnect sweep of hundreds of send-state transitions arrives
+     * complete and in order. Emission is synchronous ([emitOfflineEvent] calls [tryEmit] on the
+     * caller thread), which preserves ordering across a burst.
+     */
+    private val _offlineEvents = MutableSharedFlow<CometChatOfflineEvent>(
+        replay = 0,
+        extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.SUSPEND
+    )
+
+    /**
+     * Public read-only, lossless flow for offline events (send-state changes, cache reset).
+     * Never emits while offline is off.
+     */
+    public val offlineEvents: SharedFlow<CometChatOfflineEvent> = _offlineEvents.asSharedFlow()
+
+
     // ==================== Emit Functions ====================
 
     /**
@@ -272,6 +296,20 @@ public object CometChatEvents {
         scope.launch {
             _uiEvents.emit(event)
         }
+    }
+
+    /**
+     * Emits an offline event to all active subscribers, **synchronously and losslessly**.
+     * Thread-safe. The unbounded buffer means [tryEmit] always succeeds, which keeps a burst
+     * ordered (no coroutine reordering) and never drops an event.
+     *
+     * Internal to the kit: only the offline hub emits these. Integrators collect [offlineEvents].
+     *
+     * @param event The offline event to emit
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public fun emitOfflineEvent(event: CometChatOfflineEvent) {
+        _offlineEvents.tryEmit(event)
     }
 
     // ==================== Testing Support ====================

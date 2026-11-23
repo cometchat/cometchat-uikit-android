@@ -3,6 +3,7 @@ package com.cometchat.uikit.core.domain.usecase
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.core.MessagesRequest
 import com.cometchat.uikit.core.domain.repository.SearchRepository
+import com.cometchat.uikit.core.domain.repository.SearchTwoPhaseRepository
 
 /**
  * Use case for fetching messages in search context.
@@ -29,4 +30,13 @@ open public class FetchMessagesUseCase(
      * @return true if more messages can be fetched
      */
     open public fun hasMore(): Boolean = repository.hasMoreMessages()
+
+    /**
+     * The repository's two-phase search read, when it has one (G2) — module-internal so the search
+     * ViewModel can reach it without widening any public signature. Null keeps today's single-phase
+     * path: for a custom repository without [SearchTwoPhaseRepository], and for a subclass of this
+     * use case (which may override [invoke] — the ViewModel must keep calling it).
+     */
+    internal val twoPhaseRepository: SearchTwoPhaseRepository?
+        get() = if (this::class == FetchMessagesUseCase::class) repository as? SearchTwoPhaseRepository else null
 }

@@ -576,6 +576,8 @@ public object UIKitConstants {
         public const val UNPIN: String = "unpin"
         public const val SAVE: String = "save"
         public const val UNSAVE: String = "unsave"
+        /** Retry an unsent or failed message (offline messaging only). */
+        public const val RETRY: String = "retry"
     }
 
     /**

@@ -18,5 +18,27 @@
     <string name="cometchat_translate" translatable="true">Traduzir</string>
     <string name="cometchat_unpin" translatable="true">Desafixar mensagem</string>
     <string name="cometchat_unsave" translatable="true">Remover mensagem dos salvos</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Ainda não enviada</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Não enviada. Toque para tentar novamente</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 mensagem não enviada foi removida</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Mensagens não enviadas podem ter sido perdidas</string>
+    <string name="cometchat_queue_full" translatable="true">Muitas mensagens aguardando envio</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Arquivo grande demais para enviar off-line</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Conecte-se para carregar mais</string>
+    <string name="cometchat_media_available_when_online" translatable="true">A mídia estará disponível quando você estiver on-line novamente</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Ir para a mais recente</string>
+    <string name="cometchat_sending_try_again" translatable="true">Enviando… tente novamente em instantes</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d mensagem não foi enviada</item>
+        <item quantity="many">%d de mensagens não foram enviadas</item>
+        <item quantity="other">%d mensagens não foram enviadas</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d mensagem não enviada foi perdida</item>
+        <item quantity="many">%d de mensagens não enviadas foram perdidas</item>
+        <item quantity="other">%d mensagens não enviadas foram perdidas</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Tentar novamente</string>
     <string name="cometchat_call_no_internet" translatable="true">Sem conexão com a internet. Verifique sua conexão e tente novamente.</string>
 </resources>

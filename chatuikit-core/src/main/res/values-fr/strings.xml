@@ -18,5 +18,27 @@
     <string name="cometchat_translate" translatable="true">Traduire</string>
     <string name="cometchat_unpin" translatable="true">Désépingler le message</string>
     <string name="cometchat_unsave" translatable="true">Ne plus enregistrer le message</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Pas encore envoyé</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Non envoyé. Appuyez pour réessayer</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 message non envoyé a été supprimé</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Des messages non envoyés ont peut-être été perdus</string>
+    <string name="cometchat_queue_full" translatable="true">Trop de messages en attente d\'envoi</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Fichier trop volumineux pour un envoi hors ligne</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Connectez-vous pour en charger davantage</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Les médias seront disponibles une fois la connexion rétablie</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Aller au plus récent</string>
+    <string name="cometchat_sending_try_again" translatable="true">Envoi en cours… réessayez dans un instant</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d message n\'a pas été envoyé</item>
+        <item quantity="many">%d de messages n\'ont pas été envoyés</item>
+        <item quantity="other">%d messages n\'ont pas été envoyés</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d message non envoyé a été perdu</item>
+        <item quantity="many">%d de messages non envoyés ont été perdus</item>
+        <item quantity="other">%d messages non envoyés ont été perdus</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Réessayer</string>
     <string name="cometchat_call_no_internet" translatable="true">Aucune connexion Internet. Vérifiez votre connexion et réessayez.</string>
 </resources>

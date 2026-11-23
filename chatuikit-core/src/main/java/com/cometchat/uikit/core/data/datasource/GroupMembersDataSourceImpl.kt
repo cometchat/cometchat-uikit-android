@@ -4,6 +4,10 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.GroupMembersRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.GroupMember
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -17,7 +21,7 @@ import kotlin.coroutines.resumeWithException
  */
 public class GroupMembersDataSourceImpl(
     private var groupMembersRequestBuilder: GroupMembersRequest.GroupMembersRequestBuilder
-) : GroupMembersDataSource {
+) : GroupMembersDataSource, GroupMembersTwoPhaseDataSource {
     
     private var groupMembersRequest: GroupMembersRequest? = null
     private var hasMore = true
@@ -30,7 +34,8 @@ public class GroupMembersDataSourceImpl(
      * @param guid The group ID
      * @param limit Number of members to fetch per page
      * @param searchKeyword Optional search keyword to filter members
-     * @return Raw list of GroupMember objects from SDK
+     * @return Raw list of GroupMember objects from SDK (the server phase of the SDK's
+     * two-phase [CometChat.GroupMemberFetchListener]; the cached phase is ignored)
      * @throws com.cometchat.chat.exceptions.CometChatException if SDK call fails
      */
     override suspend fun fetchGroupMembers(
@@ -38,34 +43,66 @@ public class GroupMembersDataSourceImpl(
         limit: Int,
         searchKeyword: String?
     ): List<GroupMember> = suspendCancellableCoroutine { continuation ->
-        // Build request if not yet built (first call or after resetRequest)
-        if (groupMembersRequest == null) {
-            groupMembersRequest = if (!searchKeyword.isNullOrEmpty()) {
-                // Search mode: fresh builder with keyword to avoid stale state
-                GroupMembersRequest.GroupMembersRequestBuilder(guid)
-                    .setLimit(limit)
-                    .setSearchKeyword(searchKeyword)
-                    .build()
-            } else {
-                // Normal mode: fresh builder without keyword
-                GroupMembersRequest.GroupMembersRequestBuilder(guid)
-                    .setLimit(limit)
-                    .build()
-            }
-        }
-        
-        groupMembersRequest?.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
-            override fun onSuccess(members: List<GroupMember>) {
+        requestFor(guid, limit, searchKeyword).fetchNext(object : CometChat.GroupMemberFetchListener() {
+            override fun onServerGroupMembers(members: List<GroupMember>) {
                 hasMore = members.isNotEmpty()
-                continuation.resume(members)
+                if (continuation.isActive) continuation.resume(members)
             }
-            
+
             override fun onError(exception: CometChatException) {
-                continuation.resumeWithException(exception)
+                if (continuation.isActive) continuation.resumeWithException(exception)
             }
         })
     }
-    
+
+    /**
+     * Two-phase twin of [fetchGroupMembers] (BEH-SNAP-03): the same paging request, emitting the
+     * cached and the server phase. [hasMoreMembers] changes only on the server phase
+     * (BEH-READ-09b) — a cached page, even empty, never ends the list.
+     */
+    override fun fetchGroupMembersTwoPhase(
+        guid: String,
+        limit: Int,
+        searchKeyword: String?
+    ): Flow<TwoPhaseResult<GroupMember>> = callbackFlow {
+        requestFor(guid, limit, searchKeyword).fetchNext(object : CometChat.GroupMemberFetchListener() {
+            override fun onCachedGroupMembers(members: List<GroupMember>) {
+                trySend(TwoPhaseResult.Cached(members))
+            }
+
+            override fun onServerGroupMembers(members: List<GroupMember>) {
+                hasMore = members.isNotEmpty()
+                trySend(TwoPhaseResult.Server(members))
+                close()
+            }
+
+            override fun onError(exception: CometChatException) {
+                trySend(TwoPhaseResult.Error(exception))
+                close()
+            }
+        })
+        awaitClose { }
+    }
+
+    /** Builds the paging request when it is null (first call or after [resetRequest]), else reuses it. */
+    private fun requestFor(guid: String, limit: Int, searchKeyword: String?): GroupMembersRequest {
+        groupMembersRequest?.let { return it }
+        val request = if (!searchKeyword.isNullOrEmpty()) {
+            // Search mode: fresh builder with keyword to avoid stale state
+            GroupMembersRequest.GroupMembersRequestBuilder(guid)
+                .setLimit(limit)
+                .setSearchKeyword(searchKeyword)
+                .build()
+        } else {
+            // Normal mode: fresh builder without keyword
+            GroupMembersRequest.GroupMembersRequestBuilder(guid)
+                .setLimit(limit)
+                .build()
+        }
+        groupMembersRequest = request
+        return request
+    }
+
     /**
      * Kicks a member from the group via CometChat SDK.
      * @param guid The group ID

@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">Fordítás</string>
     <string name="cometchat_unpin" translatable="true">Üzenet kitűzésének megszüntetése</string>
     <string name="cometchat_unsave" translatable="true">Üzenet mentésének visszavonása</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Még nincs elküldve</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Nincs elküldve. Koppints az újrapróbáláshoz</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 el nem küldött üzenet eltávolítva</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Az el nem küldött üzenetek elveszhettek</string>
+    <string name="cometchat_queue_full" translatable="true">Túl sok üzenet vár küldésre</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">A fájl túl nagy az offline küldéshez</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Csatlakozz a továbbiak betöltéséhez</string>
+    <string name="cometchat_media_available_when_online" translatable="true">A média akkor lesz elérhető, amikor újra online leszel</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Ugrás a legújabbra</string>
+    <string name="cometchat_sending_try_again" translatable="true">Küldés… próbáld újra egy pillanat múlva</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d üzenet nem lett elküldve</item>
+        <item quantity="other">%d üzenet nem lett elküldve</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d el nem küldött üzenet elveszett</item>
+        <item quantity="other">%d el nem küldött üzenet elveszett</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Újrapróbálkozás</string>
     <string name="cometchat_call_no_internet" translatable="true">Nincs internetkapcsolat. Ellenőrizze a kapcsolatot, és próbálja újra.</string>
 </resources>

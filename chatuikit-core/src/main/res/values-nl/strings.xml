@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">Vertalen</string>
     <string name="cometchat_unpin" translatable="true">Bericht losmaken</string>
     <string name="cometchat_unsave" translatable="true">Bericht uit opgeslagen verwijderen</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Nog niet verzonden</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Niet verzonden. Tik om opnieuw te proberen</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 niet-verzonden bericht is verwijderd</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Niet-verzonden berichten zijn mogelijk verloren gegaan</string>
+    <string name="cometchat_queue_full" translatable="true">Te veel berichten wachten om te worden verzonden</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Bestand te groot om offline te verzenden</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Maak verbinding om meer te laden</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Media zijn beschikbaar zodra je weer online bent</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Naar nieuwste</string>
+    <string name="cometchat_sending_try_again" translatable="true">Bezig met verzenden… probeer het zo opnieuw</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d bericht is niet verzonden</item>
+        <item quantity="other">%d berichten zijn niet verzonden</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d niet-verzonden bericht is verloren gegaan</item>
+        <item quantity="other">%d niet-verzonden berichten zijn verloren gegaan</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Opnieuw proberen</string>
     <string name="cometchat_call_no_internet" translatable="true">Geen internetverbinding. Controleer je verbinding en probeer het opnieuw.</string>
 </resources>

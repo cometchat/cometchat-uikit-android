@@ -18,5 +18,25 @@
     <string name="cometchat_translate" translatable="true">Übersetzen</string>
     <string name="cometchat_unpin" translatable="true">Nachricht loslösen</string>
     <string name="cometchat_unsave" translatable="true">Nachricht nicht mehr speichern</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Noch nicht gesendet</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Nicht gesendet. Zum Wiederholen tippen</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 nicht gesendete Nachricht wurde entfernt</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Nicht gesendete Nachrichten sind möglicherweise verloren gegangen</string>
+    <string name="cometchat_queue_full" translatable="true">Zu viele Nachrichten warten auf den Versand</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">Datei zu groß zum Offline-Senden</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Verbinden, um mehr zu laden</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Medien sind verfügbar, sobald du wieder online bist</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Zur neuesten springen</string>
+    <string name="cometchat_sending_try_again" translatable="true">Wird gesendet… versuche es gleich noch einmal</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d Nachricht wurde nicht gesendet</item>
+        <item quantity="other">%d Nachrichten wurden nicht gesendet</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d nicht gesendete Nachricht ging verloren</item>
+        <item quantity="other">%d nicht gesendete Nachrichten gingen verloren</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Erneut versuchen</string>
     <string name="cometchat_call_no_internet" translatable="true">Keine Internetverbindung. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</string>
 </resources>

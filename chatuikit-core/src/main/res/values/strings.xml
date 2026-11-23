@@ -21,5 +21,25 @@
     <string name="cometchat_report" translatable="true">Report</string>
     <string name="cometchat_message_privately" translatable="true">Message Privately</string>
     <string name="cometchat_mark_unread" translatable="true">Mark Unread</string>
+    <!-- Offline messaging (ENG-41086) -->
+    <string name="cometchat_message_not_sent_yet" translatable="true">Not sent yet</string>
+    <string name="cometchat_message_not_sent_tap_to_retry" translatable="true">Not sent. Tap to retry</string>
+    <string name="cometchat_unsent_message_removed" translatable="true">1 unsent message was removed</string>
+    <string name="cometchat_unsent_messages_maybe_lost" translatable="true">Unsent messages may have been lost</string>
+    <string name="cometchat_queue_full" translatable="true">Too many messages waiting to send</string>
+    <string name="cometchat_file_too_large_offline" translatable="true">File too large to send offline</string>
+    <string name="cometchat_connect_to_load_more" translatable="true">Connect to load more</string>
+    <string name="cometchat_media_available_when_online" translatable="true">Media will be available when back online</string>
+    <string name="cometchat_jump_to_latest" translatable="true">Jump to latest</string>
+    <string name="cometchat_sending_try_again" translatable="true">Sending… try again in a moment</string>
+    <plurals name="cometchat_messages_not_sent">
+        <item quantity="one">%d message was not sent</item>
+        <item quantity="other">%d messages were not sent</item>
+    </plurals>
+    <plurals name="cometchat_unsent_messages_lost">
+        <item quantity="one">%d unsent message was lost</item>
+        <item quantity="other">%d unsent messages were lost</item>
+    </plurals>
+    <string name="cometchat_offline_retry" translatable="true">Retry</string>
     <string name="cometchat_call_no_internet" translatable="true">No internet connection. Check your connection and try again.</string>
 </resources>

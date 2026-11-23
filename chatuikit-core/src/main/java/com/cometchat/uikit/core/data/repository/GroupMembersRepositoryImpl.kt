@@ -4,6 +4,11 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.GroupMember
 import com.cometchat.uikit.core.data.datasource.GroupMembersDataSource
 import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
+import com.cometchat.uikit.core.data.datasource.GroupMembersTwoPhaseDataSource
+import com.cometchat.uikit.core.domain.repository.GroupMembersTwoPhaseRepository
+import com.cometchat.uikit.core.offline.SnapshotListRead
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository implementation that coordinates data sources for group members.
@@ -14,7 +19,26 @@ import com.cometchat.uikit.core.domain.repository.GroupMembersRepository
  */
 public class GroupMembersRepositoryImpl(
     private val dataSource: GroupMembersDataSource
-) : GroupMembersRepository {
+) : GroupMembersRepository, GroupMembersTwoPhaseRepository {
+
+    /**
+     * Two-phase twin of [fetchGroupMembers] (BEH-SNAP-03), same inputs and paging request. Uses
+     * the data source's two-phase read when it has one; a custom data source without it gets a
+     * single server phase from today's call. Pagination state stays in the data source, which
+     * changes it only on the server phase (BEH-READ-09b).
+     */
+    override fun fetchGroupMembersTwoPhase(
+        guid: String,
+        limit: Int,
+        searchKeyword: String?
+    ): Flow<TwoPhaseResult<GroupMember>> {
+        val source = dataSource
+        return if (source is GroupMembersTwoPhaseDataSource) {
+            source.fetchGroupMembersTwoPhase(guid, limit, searchKeyword)
+        } else {
+            SnapshotListRead.serverPhaseOf { dataSource.fetchGroupMembers(guid, limit, searchKeyword) }
+        }
+    }
     
     /**
      * Fetches group members from the data source.

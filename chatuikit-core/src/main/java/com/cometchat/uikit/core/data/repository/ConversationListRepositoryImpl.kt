@@ -4,7 +4,13 @@ import com.cometchat.chat.core.ConversationsRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Conversation
 import com.cometchat.uikit.core.data.datasource.ConversationListDataSource
+import com.cometchat.uikit.core.data.datasource.ConversationListTwoPhaseDataSource
 import com.cometchat.uikit.core.domain.repository.ConversationListRepository
+import com.cometchat.uikit.core.domain.repository.ConversationListTwoPhaseRepository
+import com.cometchat.uikit.core.offline.TwoPhaseResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Repository implementation that coordinates data sources.
@@ -15,10 +21,34 @@ import com.cometchat.uikit.core.domain.repository.ConversationListRepository
  */
 public class ConversationListRepositoryImpl(
     private val dataSource: ConversationListDataSource
-) : ConversationListRepository {
-    
+) : ConversationListRepository, ConversationListTwoPhaseRepository {
+
     private var hasMore = true
-    
+
+    /**
+     * Two-phase twin of [getConversations] (G2), same request. Uses the data source's two-phase
+     * read when it has one; a custom data source without it gets a single server phase from
+     * today's call. `hasMore` changes only on the server phase (BEH-READ-09b).
+     */
+    override fun fetchNextTwoPhase(request: ConversationsRequest): Flow<TwoPhaseResult<Conversation>> {
+        val source = dataSource
+        val phases = if (source is ConversationListTwoPhaseDataSource) {
+            source.fetchNextTwoPhase(request)
+        } else {
+            flow {
+                val result = try {
+                    TwoPhaseResult.Server(dataSource.fetchConversations(request))
+                } catch (e: CometChatException) {
+                    TwoPhaseResult.Error(e)
+                } catch (e: Exception) {
+                    TwoPhaseResult.Error(CometChatException("ERROR", e.message ?: "fetch failed"))
+                }
+                emit(result)
+            }
+        }
+        return phases.onEach { if (it is TwoPhaseResult.Server) hasMore = it.rows.isNotEmpty() }
+    }
+
     /**
      * Fetches conversations from the data source.
      * Tracks pagination state based on results.
