@@ -161,6 +161,21 @@ class SearchActivity : AppCompatActivity() {
      * then navigates to the appropriate screen.
      */
     private fun navigateToMessageContext(message: BaseMessage) {
+        // A hit in the chat this search was opened from: use the user/group that chat passed in.
+        // CometChat.getUser/getGroup read only the server, so offline the re-fetch below fails
+        // and the tap does nothing (ENG-41524/41553 pattern).
+        SearchHitChat.held(message, CometChatUIKit.getLoggedInUser()?.uid, user, group)?.let { (u, g) ->
+            fetchParentAndNavigate(u, g, message)
+            return
+        }
+        // Any other hit (a global search): the user/group the result itself carries. Not connected,
+        // it opens on that copy at once; connected, the server's copy is used as before, and the
+        // carried copy stands in if that lookup fails.
+        val carried = SearchHitChat.carried(message, CometChatUIKit.getLoggedInUser()?.uid)
+        if (carried != null && !SearchHitChat.isConnected()) {
+            fetchParentAndNavigate(carried.first, carried.second, message)
+            return
+        }
         when (message.receiverType) {
             CometChatConstants.RECEIVER_TYPE_USER -> {
                 val uid = if (message.sender.uid == CometChatUIKit.getLoggedInUser()?.uid) {
@@ -174,6 +189,7 @@ class SearchActivity : AppCompatActivity() {
                     }
                     override fun onError(e: CometChatException) {
                         Log.e(TAG, "getUser error: ${e.message}")
+                        carried?.let { fetchParentAndNavigate(it.first, it.second, message) }
                     }
                 })
             }
@@ -184,6 +200,7 @@ class SearchActivity : AppCompatActivity() {
                     }
                     override fun onError(e: CometChatException) {
                         Log.e(TAG, "getGroup error: ${e.message}")
+                        carried?.let { fetchParentAndNavigate(it.first, it.second, message) }
                     }
                 })
             }
@@ -197,11 +214,31 @@ class SearchActivity : AppCompatActivity() {
     private fun fetchParentAndNavigate(user: User?, group: Group?, message: BaseMessage) {
         val parentMessageId = message.parentMessageId
         if (parentMessageId > 0) {
-            CometChat.getMessageDetails(parentMessageId, object : CometChat.CallbackListener<BaseMessage>() {
-                override fun onSuccess(parentMessage: BaseMessage) {
+            // Two-phase read (BEH-READ-35): navigate on whichever phase lands first — the cached
+            // parent when there is one, else the server's — and only once. A later phase or an
+            // offline error after the cached phase is ignored.
+            CometChat.getMessageDetails(parentMessageId, object : CometChat.MessageDetailsListener() {
+                private var navigated = false
+
+                override fun onCachedMessage(parentMessage: BaseMessage?) {
+                    parentMessage?.let { toThread(it) }
+                }
+                override fun onServerMessage(parentMessage: BaseMessage?) {
+                    // A server phase without a parent ends like an error: open the chat instead.
+                    if (parentMessage != null) {
+                        toThread(parentMessage)
+                    } else {
+                        onError(CometChatException("ERR_NO_VALUE", "The server returned no message"))
+                    }
+                }
+                private fun toThread(parentMessage: BaseMessage) {
+                    if (navigated) return
+                    navigated = true
                     navigateToThread(parentMessage, user, group, message.id.toLong())
                 }
                 override fun onError(e: CometChatException) {
+                    if (navigated) return
+                    navigated = true
                     // Parent fetch failed — navigate to messages without thread
                     navigateToChat(user, group, message.id.toLong())
                 }
@@ -299,4 +336,39 @@ class SearchActivity : AppCompatActivity() {
             else -> true
         }
     }
+}
+
+/**
+ * The chat a search was opened in, when a message hit belongs to it (ENG-41524/41553): the user or
+ * group the chat passed to the search, so the hit opens without a server-only re-fetch. Null for a
+ * global search or a hit in another chat, which keep resolving through the server.
+ */
+internal object SearchHitChat {
+    fun held(message: BaseMessage, loggedInUid: String?, user: User?, group: Group?): Pair<User?, Group?>? =
+        when (message.receiverType) {
+            CometChatConstants.RECEIVER_TYPE_USER -> {
+                val peer = if (message.sender?.uid == loggedInUid) message.receiverUid else message.sender?.uid
+                user?.takeIf { peer != null && it.uid == peer }?.let { Pair(it, null) }
+            }
+            CometChatConstants.RECEIVER_TYPE_GROUP ->
+                group?.takeIf { it.guid == message.receiverUid }?.let { Pair(null, it) }
+            else -> null
+        }
+
+    /**
+     * The user/group a message hit carries: the peer of a 1:1 message (the receiver when the
+     * logged-in user sent it, else the sender) or the group it was sent to. Null when absent.
+     */
+    fun carried(message: BaseMessage, loggedInUid: String?): Pair<User?, Group?>? =
+        when (message.receiverType) {
+            CometChatConstants.RECEIVER_TYPE_USER -> {
+                val peer = if (message.sender?.uid == loggedInUid) message.receiver as? User else message.sender
+                peer?.let { Pair(it, null) }
+            }
+            CometChatConstants.RECEIVER_TYPE_GROUP -> (message.receiver as? Group)?.let { Pair(null, it) }
+            else -> null
+        }
+
+    fun isConnected(): Boolean =
+        runCatching { CometChat.getConnectionStatus() == CometChatConstants.WS_STATE_CONNECTED }.getOrDefault(false)
 }

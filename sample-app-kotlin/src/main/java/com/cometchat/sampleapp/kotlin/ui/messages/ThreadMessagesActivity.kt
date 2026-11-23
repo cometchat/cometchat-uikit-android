@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.google.gson.Gson
 import com.cometchat.sampleapp.kotlin.databinding.ActivityThreadMessagesBinding
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatThreadEvent
@@ -53,6 +55,11 @@ class ThreadMessagesActivity : AppCompatActivity() {
         private const val EXTRA_RECEIVER_ID = "extra_receiver_id"
         private const val EXTRA_RECEIVER_TYPE = "extra_receiver_type"
         private const val EXTRA_GO_TO_MESSAGE_ID = "extra_go_to_message_id"
+        // The parent message and the user/group objects themselves, so the thread opens without a
+        // server lookup (offline too).
+        private const val EXTRA_PARENT_MESSAGE = "extra_parent_message"
+        private const val EXTRA_USER_JSON = "extra_user_json"
+        private const val EXTRA_GROUP_JSON = "extra_group_json"
 
         /**
          * Starts ThreadMessagesActivity with a parent message.
@@ -60,9 +67,20 @@ class ThreadMessagesActivity : AppCompatActivity() {
          * @param context The context to start the activity from
          * @param parentMessage The parent message to show thread for
          * @param goToMessageId Optional message ID to scroll to within the thread
+         * @param user The 1:1 chat's user, when the caller holds it
+         * @param group The group, when the caller holds it
          */
-        fun start(context: Context, parentMessage: BaseMessage, goToMessageId: Long = 0) {
+        fun start(
+            context: Context,
+            parentMessage: BaseMessage,
+            goToMessageId: Long = 0,
+            user: User? = null,
+            group: Group? = null
+        ) {
             val intent = Intent(context, ThreadMessagesActivity::class.java).apply {
+                putExtra(EXTRA_PARENT_MESSAGE, parentMessage)
+                user?.let { putExtra(EXTRA_USER_JSON, it.toJson().toString()) }
+                group?.let { putExtra(EXTRA_GROUP_JSON, Gson().toJson(it)) }
                 putExtra(EXTRA_PARENT_MESSAGE_ID, parentMessage.id.toLong())
                 putExtra(EXTRA_RECEIVER_ID, parentMessage.receiverUid)
                 putExtra(EXTRA_RECEIVER_TYPE, parentMessage.receiverType)
@@ -133,6 +151,17 @@ class ThreadMessagesActivity : AppCompatActivity() {
             return
         }
 
+        // The user/group the caller passed, when there is one: the thread opens on it at once, offline
+        // too (CometChat.getUser/getGroup read only the server). The id lookup is the fallback.
+        val passedUser = intent.getStringExtra(EXTRA_USER_JSON)?.let { runCatching { User.fromJson(it) }.getOrNull() }
+        val passedGroup = intent.getStringExtra(EXTRA_GROUP_JSON)?.let { runCatching { Gson().fromJson(it, Group::class.java) }.getOrNull() }
+        if (passedUser != null || passedGroup != null) {
+            user = passedUser
+            group = passedGroup
+            loadParentMessage()
+            return
+        }
+
         // Load receiver (user or group)
         when (receiverType) {
             CometChatConstants.RECEIVER_TYPE_USER -> loadUser(receiverId!!)
@@ -177,13 +206,41 @@ class ThreadMessagesActivity : AppCompatActivity() {
      * Loads the parent message from CometChat.
      */
     private fun loadParentMessage() {
-        CometChat.getMessageDetails(parentMessageId, object : CometChat.CallbackListener<BaseMessage>() {
-            override fun onSuccess(message: BaseMessage) {
+        // The parent the caller passed opens the thread as it was shown; else it is read below.
+        val passedParent = IntentCompat.getParcelableExtra(intent, EXTRA_PARENT_MESSAGE, BaseMessage::class.java)
+        if (passedParent != null) {
+            parentMessage = passedParent
+            setupThreadUI()
+            return
+        }
+        // Two-phase read (BEH-READ-35): open the thread from whichever phase lands first — the cached
+        // parent when there is one, else the server's — and only once. A later phase or an offline
+        // error after the cached phase is ignored.
+        CometChat.getMessageDetails(parentMessageId, object : CometChat.MessageDetailsListener() {
+            private var opened = false
+
+            override fun onCachedMessage(message: BaseMessage?) {
+                message?.let { openThread(it) }
+            }
+
+            override fun onServerMessage(message: BaseMessage?) {
+                if (message != null) {
+                    openThread(message)
+                } else {
+                    onError(CometChatException("ERR_NO_VALUE", "The server returned no message"))
+                }
+            }
+
+            private fun openThread(message: BaseMessage) {
+                if (opened) return
+                opened = true
+                if (isFinishing || isDestroyed) return
                 parentMessage = message
                 setupThreadUI()
             }
 
             override fun onError(e: CometChatException) {
+                if (opened) return
                 finish()
             }
         })

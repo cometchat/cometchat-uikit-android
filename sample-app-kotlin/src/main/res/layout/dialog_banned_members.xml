@@ -61,6 +61,7 @@
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/tv_empty_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_banned_members"
@@ -68,6 +69,7 @@
             android:textColor="?attr/cometchatTextColorPrimary" />
 
         <TextView
+            android:id="@+id/tv_empty_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cometchat_margin_2"

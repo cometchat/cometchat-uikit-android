@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.core.CometChat.GroupListener
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Action
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
+import com.cometchat.chat.models.SyncOutcome
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.events.CometChatConversationEvent
@@ -89,7 +91,7 @@ class MessagesViewModel : ViewModel() {
 
     fun addListener() {
         // Group SDK listener for real-time events from server
-        CometChat.addGroupListener(listenerId, object : GroupListener() {
+        val groupListener = object : GroupListener() {
             override fun onGroupMemberLeft(action: Action, user: User, group: Group) {
                 updateGroupJoinedStatus(group, user, false)
             }
@@ -108,6 +110,16 @@ class MessagesViewModel : ViewModel() {
 
             override fun onGroupMemberJoined(action: Action, user: User, group: Group) {
                 updateGroupJoinedStatus(group, user, true)
+            }
+        }
+        CometChat.addGroupListener(listenerId, groupListener)
+
+        // Offline reconnect: a kick, ban, leave, join or add that happened while offline reaches
+        // the app only through the sync listener's onMessageSyncCompleted. Replay it through the
+        // same handler as the live event. Fires only when offline messaging is on.
+        CometChat.addSyncListener(listenerId, object : CometChat.SyncListener() {
+            override fun onMessageSyncCompleted(messages: List<BaseMessage>, outcome: SyncOutcome) {
+                replaySweptGroupActions(messages, groupListener)
             }
         })
 
@@ -170,6 +182,7 @@ class MessagesViewModel : ViewModel() {
 
     fun removeListener() {
         CometChat.removeGroupListener(listenerId)
+        CometChat.removeSyncListener(listenerId)
         // Cancel Flow collection jobs
         groupEventsJob?.cancel()
         userEventsJob?.cancel()
@@ -180,6 +193,24 @@ class MessagesViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         removeListener()
+    }
+
+    /** Routes each swept group action for this group to the live [GroupListener] callback. */
+    private fun replaySweptGroupActions(messages: List<BaseMessage>, listener: GroupListener) {
+        val guid = mGroup?.guid ?: return
+        for (action in messages.filterIsInstance<Action>()) {
+            val group = action.actionFor as? Group ?: continue
+            if (group.guid != guid) continue
+            val on = action.actionOn as? User ?: continue
+            val by = action.actionBy as? User ?: on
+            when (action.action) {
+                CometChatConstants.ActionKeys.ACTION_KICKED -> listener.onGroupMemberKicked(action, on, by, group)
+                CometChatConstants.ActionKeys.ACTION_BANNED -> listener.onGroupMemberBanned(action, on, by, group)
+                CometChatConstants.ActionKeys.ACTION_LEFT -> listener.onGroupMemberLeft(action, on, group)
+                CometChatConstants.ActionKeys.ACTION_JOINED -> listener.onGroupMemberJoined(action, on, group)
+                CometChatConstants.ActionKeys.ACTION_MEMBER_ADDED -> listener.onMemberAddedToGroup(action, by, on, group)
+            }
+        }
     }
 
     private fun updateGroupJoinedStatus(group: Group?, user: User, isJoined: Boolean) {

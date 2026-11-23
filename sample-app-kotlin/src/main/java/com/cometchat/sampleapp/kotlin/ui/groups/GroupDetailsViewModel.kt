@@ -315,9 +315,15 @@ class GroupDetailsViewModel : ViewModel() {
             .setLimit(30)
             .build()
         
-        request.fetchNext(object : CometChat.CallbackListener<MutableList<GroupMember>>() {
-            override fun onSuccess(groupMembers: MutableList<GroupMember>) {
-                groupMembers.removeIf { it.uid == CometChatUIKit.getLoggedInUser()?.uid }
+        // Two-phase read: the pick feeds a server write, so it is made once, from the server page
+        // only. A cached page could name a member who has since left; offline the write fails
+        // anyway, and the cached phase is followed by onError, as before.
+        request.fetchNext(object : CometChat.GroupMemberFetchListener() {
+            override fun onCachedGroupMembers(groupMembers: List<GroupMember>?) = Unit
+
+            override fun onServerGroupMembers(fetched: List<GroupMember>?) {
+                val groupMembers = fetched.orEmpty()
+                    .filter { it.uid != CometChatUIKit.getLoggedInUser()?.uid }
                 if (groupMembers.isNotEmpty()) {
                     transferOwnership(groupMembers[0])
                 } else {

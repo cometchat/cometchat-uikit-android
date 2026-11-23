@@ -13,6 +13,7 @@ import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.kotlin.databinding.ActivityPinnedMessagesBinding
+import com.cometchat.sampleapp.kotlin.utils.PassedEntity
 
 /**
  * Full-screen list of a conversation's pinned messages, opened from the message-header
@@ -35,6 +36,8 @@ class PinnedMessagesActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_USER_ID = "extra_user_id"
         private const val EXTRA_GROUP_ID = "extra_group_id"
+        private const val EXTRA_USER_JSON = "extra_user_json"
+        private const val EXTRA_GROUP_JSON = "extra_group_json"
 
         /** Result extra: id of the tapped pinned message, for in-place navigation. */
         const val EXTRA_GO_TO_MESSAGE_ID = "extra_go_to_message_id"
@@ -45,6 +48,7 @@ class PinnedMessagesActivity : AppCompatActivity() {
         fun newIntent(context: Context, user: User): Intent =
             Intent(context, PinnedMessagesActivity::class.java).apply {
                 putExtra(EXTRA_USER_ID, user.uid)
+                putExtra(EXTRA_USER_JSON, PassedEntity.encode(user))
             }
 
         /**
@@ -53,6 +57,7 @@ class PinnedMessagesActivity : AppCompatActivity() {
         fun newIntent(context: Context, group: Group): Intent =
             Intent(context, PinnedMessagesActivity::class.java).apply {
                 putExtra(EXTRA_GROUP_ID, group.guid)
+                putExtra(EXTRA_GROUP_JSON, PassedEntity.encode(group))
             }
 
         /**
@@ -106,13 +111,25 @@ class PinnedMessagesActivity : AppCompatActivity() {
     }
 
     /**
-     * Loads the user or group data based on intent extras and configures the pinned list.
+     * Opens on the user or group the caller passed, so the list shows offline too
+     * (`CometChat.getUser`/`getGroup` read only the server), then refreshes it from the server. The
+     * id lookup is the fallback when no object was passed.
      */
     private fun loadConversationData() {
+        val passedUser = PassedEntity.decodeUser(intent.getStringExtra(EXTRA_USER_JSON))
+        val passedGroup = PassedEntity.decodeGroup(intent.getStringExtra(EXTRA_GROUP_JSON))
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         val groupId = intent.getStringExtra(EXTRA_GROUP_ID)
 
         when {
+            passedUser != null -> {
+                binding.pinnedMessages.setUser(passedUser)
+                refreshPassedUser(passedUser)
+            }
+            passedGroup != null -> {
+                binding.pinnedMessages.setGroup(passedGroup)
+                refreshPassedGroup(passedGroup)
+            }
             userId != null -> loadUser(userId)
             groupId != null -> loadGroup(groupId)
             else -> finish()
@@ -120,7 +137,38 @@ class PinnedMessagesActivity : AppCompatActivity() {
     }
 
     /**
-     * Loads user data from CometChat.
+     * Copies the server's user into the instance the list already holds; the list is not re-bound,
+     * which would reload it. A failed refresh (offline) keeps the passed copy.
+     */
+    private fun refreshPassedUser(passed: User) {
+        CometChat.getUser(passed.uid, object : CometChat.CallbackListener<User>() {
+            override fun onSuccess(fresh: User) {
+                if (isFinishing || isDestroyed) return
+                PassedEntity.applyFresh(passed, fresh)
+            }
+
+            override fun onError(e: CometChatException) = Unit
+        })
+    }
+
+    /**
+     * Copies the server's group (scope, `hasJoined`, owner) into the instance the list already holds,
+     * so the long-press options use the server's scope. A failed refresh (offline) keeps the passed
+     * copy.
+     */
+    private fun refreshPassedGroup(passed: Group) {
+        CometChat.getGroup(passed.guid, object : CometChat.CallbackListener<Group>() {
+            override fun onSuccess(fresh: Group) {
+                if (isFinishing || isDestroyed) return
+                PassedEntity.applyFresh(passed, fresh)
+            }
+
+            override fun onError(e: CometChatException) = Unit
+        })
+    }
+
+    /**
+     * Loads user data from CometChat (fallback when no user object was passed).
      */
     private fun loadUser(userId: String) {
         CometChat.getUser(userId, object : CometChat.CallbackListener<User>() {
@@ -135,7 +183,7 @@ class PinnedMessagesActivity : AppCompatActivity() {
     }
 
     /**
-     * Loads group data from CometChat.
+     * Loads group data from CometChat (fallback when no group object was passed).
      */
     private fun loadGroup(groupId: String) {
         CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {

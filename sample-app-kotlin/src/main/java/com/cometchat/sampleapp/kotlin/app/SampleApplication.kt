@@ -8,6 +8,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
+import com.cometchat.sampleapp.kotlin.utils.AppPreferences
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -240,6 +241,8 @@ class SampleApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setAutoEstablishSocketConnection(true)
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences(this).offlineConfig())
             .build()
 
         // Initialize the CometChat UIKit

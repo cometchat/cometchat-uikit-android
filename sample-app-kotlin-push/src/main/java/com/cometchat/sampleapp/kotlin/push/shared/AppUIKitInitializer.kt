@@ -53,6 +53,8 @@ object AppUIKitInitializer {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setEnableCalling(true)
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences.offlineConfig())
             .build()
 
         CometChatUIKit.init(context, settings, object : CometChat.CallbackListener<String>() {

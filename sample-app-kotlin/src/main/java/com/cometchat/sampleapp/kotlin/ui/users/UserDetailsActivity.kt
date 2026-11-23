@@ -17,6 +17,7 @@ import com.cometchat.chat.models.User
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.databinding.ActivityUserDetailsBinding
 import com.cometchat.sampleapp.kotlin.ui.messages.PinnedMessagesActivity
+import com.cometchat.sampleapp.kotlin.utils.PassedEntity
 import com.cometchat.uikit.kotlin.presentation.shared.dialog.CometChatConfirmDialog
 import com.cometchat.uikit.kotlin.shared.resources.utils.Utils
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -51,6 +52,7 @@ class UserDetailsActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_USER_ID = "extra_user_id"
+        private const val EXTRA_USER_JSON = "extra_user_json"
         private const val EXTRA_HAS_LAST_MESSAGE = "extra_has_last_message"
         private const val USER_LISTENER_ID = "UserDetailsActivity_UserListener"
 
@@ -64,6 +66,7 @@ class UserDetailsActivity : AppCompatActivity() {
         fun start(context: Context, user: User, lastMessage: BaseMessage? = null) {
             val intent = Intent(context, UserDetailsActivity::class.java).apply {
                 putExtra(EXTRA_USER_ID, user.uid)
+                putExtra(EXTRA_USER_JSON, PassedEntity.encode(user))
                 putExtra(EXTRA_HAS_LAST_MESSAGE, lastMessage != null)
             }
             context.startActivity(intent)
@@ -166,9 +169,22 @@ class UserDetailsActivity : AppCompatActivity() {
     }
 
     /**
-     * Loads the user data from CometChat.
+     * Opens on the user the caller passed, so the screen stays open offline (`CometChat.getUser`
+     * reads only the server), then refreshes it: a successful refresh shows the server's copy
+     * (blocked state included), a failed one keeps the passed copy. The id lookup is the fallback
+     * when no user was passed.
      */
     private fun loadUserData() {
+        val passed = PassedEntity.decodeUser(intent.getStringExtra(EXTRA_USER_JSON))
+        if (passed != null) {
+            user = passed
+            isBlocked = passed.isBlockedByMe
+            setupUserDetails()
+            addUserListener()
+            refreshPassedUser(passed)
+            return
+        }
+
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId == null) {
             finish()
@@ -186,6 +202,29 @@ class UserDetailsActivity : AppCompatActivity() {
             override fun onError(e: CometChatException) {
                 finish()
             }
+        })
+    }
+
+    /**
+     * Applies the server's copy of a passed user. If a presence event replaced [user] while the
+     * refresh was in flight, its presence is newer than the server copy and is kept.
+     */
+    private fun refreshPassedUser(passed: User) {
+        CometChat.getUser(passed.uid, object : CometChat.CallbackListener<User>() {
+            override fun onSuccess(fresh: User) {
+                if (isFinishing || isDestroyed) return
+                val current = user
+                PassedEntity.applyFresh(passed, fresh)
+                if (current != null && current !== passed) {
+                    passed.status = current.status
+                    passed.lastActiveAt = current.lastActiveAt
+                }
+                user = passed
+                isBlocked = passed.isBlockedByMe
+                setupUserDetails()
+            }
+
+            override fun onError(e: CometChatException) = Unit
         })
     }
 

@@ -18,6 +18,7 @@ import com.cometchat.chat.helpers.Logger
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.User
+import com.google.gson.Gson
 import com.cometchat.sampleapp.kotlin.R
 import com.cometchat.sampleapp.kotlin.databinding.ActivityMessagesBinding
 import com.cometchat.sampleapp.kotlin.ui.groups.GroupDetailsActivity
@@ -73,6 +74,9 @@ class MessagesActivity : AppCompatActivity() {
         private const val EXTRA_GROUP_ID = "extra_group_id"
         private const val EXTRA_GO_TO_MESSAGE_ID = "extra_go_to_message_id"
         private const val EXTRA_PARENT_MESSAGE_ID = "extra_parent_message_id"
+        // The user/group object itself, so the chat opens without a server lookup (offline too).
+        private const val EXTRA_USER_JSON = "extra_user_json"
+        private const val EXTRA_GROUP_JSON = "extra_group_json"
 
         /**
          * Starts MessagesActivity with a User object.
@@ -80,6 +84,7 @@ class MessagesActivity : AppCompatActivity() {
         fun start(context: Context, user: User, goToMessageId: Long = 0, parentMessageId: Long = 0) {
             val intent = Intent(context, MessagesActivity::class.java).apply {
                 putExtra(EXTRA_USER_ID, user.uid)
+                putExtra(EXTRA_USER_JSON, user.toJson().toString())
                 if (goToMessageId > 0) putExtra(EXTRA_GO_TO_MESSAGE_ID, goToMessageId)
                 if (parentMessageId > 0) putExtra(EXTRA_PARENT_MESSAGE_ID, parentMessageId)
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -93,6 +98,7 @@ class MessagesActivity : AppCompatActivity() {
         fun start(context: Context, group: Group, goToMessageId: Long = 0) {
             val intent = Intent(context, MessagesActivity::class.java).apply {
                 putExtra(EXTRA_GROUP_ID, group.guid)
+                putExtra(EXTRA_GROUP_JSON, Gson().toJson(group))
                 if (goToMessageId > 0) putExtra(EXTRA_GO_TO_MESSAGE_ID, goToMessageId)
             }
             context.startActivity(intent)
@@ -229,7 +235,22 @@ class MessagesActivity : AppCompatActivity() {
 
         Log.d("MessagesActivity", "loadConversationData: userId=$userId, groupId=$groupId, goToMessageId=$goToMessageId, parentMessageId=$parentMessageId")
 
+        // The object the caller passed, when there is one: the chat opens on it at once, offline too
+        // (CometChat.getUser/getGroup read only the server). The id lookup is the fallback.
+        val passedUser = intent.getStringExtra(EXTRA_USER_JSON)?.let { runCatching { User.fromJson(it) }.getOrNull() }
+        val passedGroup = intent.getStringExtra(EXTRA_GROUP_JSON)?.let { runCatching { Gson().fromJson(it, Group::class.java) }.getOrNull() }
+
         when {
+            passedUser != null -> {
+                user = passedUser
+                setupMessagesUI()
+                refreshPassedUser(passedUser)
+            }
+            passedGroup != null -> {
+                group = passedGroup
+                setupMessagesUI()
+                refreshPassedGroup(passedGroup)
+            }
             userId != null -> loadUser(userId)
             groupId != null -> loadGroup(groupId)
             else -> {
@@ -237,6 +258,92 @@ class MessagesActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    /**
+     * Refreshes a passed user from the server and applies the blocked state from that fresh copy. A
+     * copy taken from a message may carry a stale flag, so it is applied only when the refresh fails
+     * (offline), where the passed copy is all there is.
+     */
+    private fun refreshPassedUser(passed: User) {
+        CometChat.getUser(passed.uid, object : CometChat.CallbackListener<User>() {
+            override fun onSuccess(fresh: User) {
+                if (isFinishing || isDestroyed) return
+                applyFreshUser(passed, fresh)
+                updateUserBlockStatus(passed)
+            }
+
+            override fun onError(e: CometChatException) {
+                if (isFinishing || isDestroyed) return
+                updateUserBlockStatus(passed)
+            }
+        })
+    }
+
+    /**
+     * Refreshes a passed group from the server and applies the joined state from that fresh copy. A
+     * group taken from a message arrives with `hasJoined` false, so the passed copy's flag is applied
+     * only when the refresh fails (offline).
+     */
+    private fun refreshPassedGroup(passed: Group) {
+        CometChat.getGroup(passed.guid, object : CometChat.CallbackListener<Group>() {
+            override fun onSuccess(fresh: Group) {
+                if (isFinishing || isDestroyed) return
+                applyFreshGroup(passed, fresh)
+                updateGroupJoinedStatus(passed)
+            }
+
+            override fun onError(e: CometChatException) {
+                if (isFinishing || isDestroyed) return
+                updateGroupJoinedStatus(passed)
+            }
+        })
+    }
+
+    /**
+     * Copies the server's user into the instance the header, message list and composer already hold
+     * (set in [setupMessagesUI]), then re-binds the header and composer. The list is not re-bound:
+     * that would reload it; it reads the same, now updated, instance.
+     */
+    private fun applyFreshUser(shown: User, fresh: User) {
+        shown.name = fresh.name
+        shown.avatar = fresh.avatar
+        shown.link = fresh.link
+        shown.role = fresh.role
+        shown.metadata = fresh.metadata
+        shown.status = fresh.status
+        shown.statusMessage = fresh.statusMessage
+        shown.lastActiveAt = fresh.lastActiveAt
+        shown.isHasBlockedMe = fresh.isHasBlockedMe
+        shown.isBlockedByMe = fresh.isBlockedByMe
+        shown.tags = fresh.tags
+        shown.deactivatedAt = fresh.deactivatedAt
+        user = shown
+        binding.messageHeader.setUser(shown)
+        binding.messageComposer.setUser(shown)
+    }
+
+    /**
+     * Copies the server's group into the instance the header, message list and composer already
+     * hold, so the kit's scope-based options (admin, moderator, owner) see the real scope, then
+     * re-binds the header and composer. The list is not re-bound: that would reload it.
+     */
+    private fun applyFreshGroup(shown: Group, fresh: Group) {
+        shown.name = fresh.name
+        shown.icon = fresh.icon
+        shown.description = fresh.description
+        shown.owner = fresh.owner
+        shown.groupType = fresh.groupType
+        shown.metadata = fresh.metadata
+        shown.updatedAt = fresh.updatedAt
+        shown.setHasJoined(fresh.isJoined)
+        shown.joinedAt = fresh.joinedAt
+        shown.scope = fresh.scope
+        shown.membersCount = fresh.membersCount
+        shown.tags = fresh.tags
+        group = shown
+        binding.messageHeader.setGroup(shown)
+        binding.messageComposer.setGroup(shown)
     }
 
     /**
@@ -510,7 +617,7 @@ class MessagesActivity : AppCompatActivity() {
      * Validates: Requirements 6.9
      */
     private fun navigateToThread(parentMessage: BaseMessage) {
-        ThreadMessagesActivity.start(this, parentMessage)
+        ThreadMessagesActivity.start(this, parentMessage, user = user, group = group)
     }
 
     /**

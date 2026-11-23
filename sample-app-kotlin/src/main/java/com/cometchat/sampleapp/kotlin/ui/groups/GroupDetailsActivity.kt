@@ -31,6 +31,7 @@ import com.cometchat.sampleapp.kotlin.databinding.DialogAddMembersBinding
 import com.cometchat.sampleapp.kotlin.databinding.DialogBannedMembersBinding
 import com.cometchat.sampleapp.kotlin.databinding.DialogGroupMembersBinding
 import com.cometchat.sampleapp.kotlin.ui.messages.PinnedMessagesActivity
+import com.cometchat.sampleapp.kotlin.utils.PassedEntity
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.kotlin.presentation.shared.dialog.CometChatConfirmDialog
 import com.cometchat.uikit.kotlin.theme.CometChatTheme
@@ -67,6 +68,7 @@ class GroupDetailsActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_GROUP_ID = "extra_group_id"
+        private const val EXTRA_GROUP_JSON = "extra_group_json"
         private const val EXTRA_HAS_LAST_MESSAGE = "extra_has_last_message"
 
         /**
@@ -79,6 +81,7 @@ class GroupDetailsActivity : AppCompatActivity() {
         fun start(context: Context, group: Group, lastMessage: BaseMessage? = null) {
             val intent = Intent(context, GroupDetailsActivity::class.java).apply {
                 putExtra(EXTRA_GROUP_ID, group.guid)
+                putExtra(EXTRA_GROUP_JSON, PassedEntity.encode(group))
                 putExtra(EXTRA_HAS_LAST_MESSAGE, lastMessage != null)
             }
             context.startActivity(intent)
@@ -315,8 +318,8 @@ class GroupDetailsActivity : AppCompatActivity() {
             dialogBinding.emptyLayout.visibility = View.GONE
             dialogBinding.recyclerBannedMembers.visibility = View.GONE
             
-            // Fetch banned members
-            fetchBannedMembers(g, dialogBinding)
+            // Fetch banned members (a non-empty cached page paints first)
+            fetchBannedMembers(g, dialogBinding, useCache = true)
 
             // ENG-39698: realtime — a ban elsewhere refetches (to pull the member in as a
             // GroupMember); an unban elsewhere drops the row locally. Covers bans/unbans done
@@ -327,14 +330,14 @@ class GroupDetailsActivity : AppCompatActivity() {
                 override fun onGroupMemberBanned(action: Action, bannedUser: User, bannedBy: User, bannedFrom: Group) {
                     if (bannedFrom.guid == g.guid) runOnUiThread {
                         locallyUnbannedUids.remove(bannedUser.uid)
-                        fetchBannedMembers(g, dialogBinding)
+                        fetchBannedMembers(g, dialogBinding, useCache = false)
                     }
                 }
 
                 override fun onGroupMemberUnbanned(action: Action, unbannedUser: User, unbannedBy: User, unbannedFrom: Group) {
                     if (unbannedFrom.guid == g.guid) runOnUiThread {
                         locallyUnbannedUids.add(unbannedUser.uid)
-                        fetchBannedMembers(g, dialogBinding)
+                        fetchBannedMembers(g, dialogBinding, useCache = false)
                     }
                 }
             })
@@ -342,49 +345,108 @@ class GroupDetailsActivity : AppCompatActivity() {
             dialog?.setOnDismissListener {
                 bannedListenerId?.let { CometChat.removeGroupListener(it) }
                 bannedListenerId = null
+                CometChat.removeConnectionListener(bannedReconnectId(g))
                 bannedMembersAdapter = null
             }
         }
     }
 
+    private fun bannedReconnectId(group: Group) = "GroupDetails_BannedMembers_reconnect_${group.guid}"
+
     /**
-     * Fetches banned members for the group.
+     * Fetches banned members for the group with the two-phase read (BEH-SNAP-07). [useCache] paints a
+     * non-empty cached page first; the server page then replaces it. A refetch after a realtime ban
+     * passes false: the list is already on screen, so only the server page matters. An error after a
+     * cached paint keeps the cached rows (offline).
+     *
+     * With offline on (D84), a read that fails offline with nothing shown is the offline state, and it
+     * reads again once on reconnect; any other failure with nothing shown is the error state. Offline
+     * off keeps today's empty state.
      */
-    private fun fetchBannedMembers(group: Group, dialogBinding: DialogBannedMembersBinding) {
+    private fun fetchBannedMembers(group: Group, dialogBinding: DialogBannedMembersBinding, useCache: Boolean) {
         val request = BannedGroupMembersRequest.BannedGroupMembersRequestBuilder(group.guid)
             .setLimit(30)
             .build()
-        
-        request.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
-            override fun onSuccess(members: List<GroupMember>?) {
-                dialogBinding.progressBar.visibility = View.GONE
+        val offlineOn = runCatching { CometChat.isOfflineEnabled() }.getOrDefault(false)
+        var cachedShown = false
 
-                // ENG-39698: filter out members unbanned this session so a stale cache entry
-                // can't resurrect a just-unbanned member.
-                val visible = (members ?: emptyList()).filter { it.uid !in locallyUnbannedUids }
-                if (visible.isEmpty()) {
-                    bannedMembersAdapter = null
-                    dialogBinding.emptyLayout.visibility = View.VISIBLE
-                    dialogBinding.recyclerBannedMembers.visibility = View.GONE
-                } else {
-                    dialogBinding.emptyLayout.visibility = View.GONE
-                    dialogBinding.recyclerBannedMembers.visibility = View.VISIBLE
-
-                    // Set up RecyclerView with banned members
-                    val adapter = BannedMembersAdapter(visible.toMutableList()) { member ->
-                        showUnbanConfirmation(member, group, dialogBinding)
-                    }
-                    bannedMembersAdapter = adapter
-                    dialogBinding.recyclerBannedMembers.layoutManager = LinearLayoutManager(this@GroupDetailsActivity)
-                    dialogBinding.recyclerBannedMembers.adapter = adapter
+        request.fetchNext(object : CometChat.BannedGroupMemberFetchListener() {
+            override fun onCachedBannedGroupMembers(members: List<GroupMember>?) {
+                if (!useCache || members.isNullOrEmpty()) return
+                runOnUiThread {
+                    cachedShown = true
+                    showBannedMembers(members, group, dialogBinding)
                 }
             }
-            
+
+            override fun onServerBannedGroupMembers(members: List<GroupMember>?) {
+                runOnUiThread { showBannedMembers(members.orEmpty(), group, dialogBinding) }
+            }
+
             override fun onError(e: CometChatException?) {
-                dialogBinding.progressBar.visibility = View.GONE
-                dialogBinding.emptyLayout.visibility = View.VISIBLE
+                runOnUiThread {
+                    if (cachedShown) return@runOnUiThread
+                    dialogBinding.progressBar.visibility = View.GONE
+                    val notConnected = e?.code == CometChatConstants.Errors.ERROR_INTERNET_UNAVAILABLE
+                    // Offline with rows on screen: the rows stay and no error shows.
+                    if (offlineOn && notConnected && bannedMembersAdapter != null) return@runOnUiThread
+                    if (offlineOn && bannedMembersAdapter == null) {
+                        // Offline with nothing shown: the offline state ("Connect to load members"),
+                        // read again once when the connection returns. Any other error is the error state.
+                        dialogBinding.tvEmptyTitle.text = getString(
+                            if (notConnected) com.cometchat.uikit.core.R.string.cometchat_connect_to_load_members
+                            else com.cometchat.uikit.kotlin.R.string.cometchat_something_went_wrong_please_try_again
+                        )
+                        dialogBinding.tvEmptySubtitle.visibility = View.GONE
+                        dialogBinding.recyclerBannedMembers.visibility = View.GONE
+                        dialogBinding.emptyLayout.visibility = View.VISIBLE
+                        if (notConnected) {
+                            val reconnectId = bannedReconnectId(group)
+                            CometChat.addConnectionListener(reconnectId, object : CometChat.ConnectionListener {
+                                override fun onConnected() {
+                                    CometChat.removeConnectionListener(reconnectId)
+                                    runOnUiThread {
+                                        if (dialog?.isShowing == true) fetchBannedMembers(group, dialogBinding, useCache = true)
+                                    }
+                                }
+                                override fun onConnecting() = Unit
+                                override fun onDisconnected() = Unit
+                                override fun onFeatureThrottled() = Unit
+                                override fun onConnectionError(e: CometChatException?) = Unit
+                            })
+                        }
+                        return@runOnUiThread
+                    }
+                    dialogBinding.emptyLayout.visibility = View.VISIBLE
+                }
             }
         })
+    }
+
+    /** Replaces the shown rows with [members]: one row per uid, minus anyone unbanned this session. */
+    private fun showBannedMembers(members: List<GroupMember>, group: Group, dialogBinding: DialogBannedMembersBinding) {
+        dialogBinding.progressBar.visibility = View.GONE
+        // ENG-39698: filter out members unbanned this session so a stale cache entry
+        // can't resurrect a just-unbanned member.
+        val visible = members.distinctBy { it.uid }.filter { it.uid !in locallyUnbannedUids }
+        if (visible.isEmpty()) {
+            bannedMembersAdapter = null
+            dialogBinding.tvEmptyTitle.setText(R.string.no_banned_members)
+            dialogBinding.tvEmptySubtitle.visibility = View.VISIBLE
+            dialogBinding.emptyLayout.visibility = View.VISIBLE
+            dialogBinding.recyclerBannedMembers.visibility = View.GONE
+        } else {
+            dialogBinding.emptyLayout.visibility = View.GONE
+            dialogBinding.recyclerBannedMembers.visibility = View.VISIBLE
+
+            // Set up RecyclerView with banned members
+            val adapter = BannedMembersAdapter(visible.toMutableList()) { member ->
+                showUnbanConfirmation(member, group, dialogBinding)
+            }
+            bannedMembersAdapter = adapter
+            dialogBinding.recyclerBannedMembers.layoutManager = LinearLayoutManager(this@GroupDetailsActivity)
+            dialogBinding.recyclerBannedMembers.adapter = adapter
+        }
     }
 
     /**
@@ -463,9 +525,18 @@ class GroupDetailsActivity : AppCompatActivity() {
     }
 
     /**
-     * Loads the group data from CometChat.
+     * Opens on the group the caller passed, so the screen stays open offline (`CometChat.getGroup`
+     * reads only the server), then refreshes it. The id lookup is the fallback when no group was
+     * passed.
      */
     private fun loadGroupData() {
+        val passed = PassedEntity.decodeGroup(intent.getStringExtra(EXTRA_GROUP_JSON))
+        if (passed != null) {
+            bindGroup(passed)
+            refreshPassedGroup(passed)
+            return
+        }
+
         val groupId = intent.getStringExtra(EXTRA_GROUP_ID)
         if (groupId == null) {
             finish()
@@ -474,17 +545,43 @@ class GroupDetailsActivity : AppCompatActivity() {
 
         CometChat.getGroup(groupId, object : CometChat.CallbackListener<Group>() {
             override fun onSuccess(fetchedGroup: Group) {
-                group = fetchedGroup
-                viewModel?.setGroup(fetchedGroup)
-                viewModel?.addListeners()
-                checkUserRole()
-                setupGroupDetails()
-                updateUIBasedOnRole()
+                bindGroup(fetchedGroup)
             }
 
             override fun onError(e: CometChatException) {
                 finish()
             }
+        })
+    }
+
+    /** Shows [g] and hands it to the ViewModel, whose listeners keep it current. */
+    private fun bindGroup(g: Group) {
+        group = g
+        viewModel?.setGroup(g)
+        viewModel?.addListeners()
+        checkUserRole()
+        setupGroupDetails()
+        updateUIBasedOnRole()
+    }
+
+    /**
+     * Copies the server's group into the passed instance, the one this screen, its ViewModel and
+     * any open dialog hold, then re-derives the role and the options from it. A copy taken from a
+     * message lacks `hasJoined`, scope, owner and member count; online they now come from the
+     * server. A failed refresh (offline) keeps the passed copy and the screen stays open.
+     */
+    private fun refreshPassedGroup(passed: Group) {
+        CometChat.getGroup(passed.guid, object : CometChat.CallbackListener<Group>() {
+            override fun onSuccess(fresh: Group) {
+                if (isFinishing || isDestroyed) return
+                // Updated in place: a group event that replaced [group] meanwhile is newer and kept.
+                PassedEntity.applyFresh(passed, fresh)
+                checkUserRole()
+                setupGroupDetails()
+                updateUIBasedOnRole()
+            }
+
+            override fun onError(e: CometChatException) = Unit
         })
     }
 
