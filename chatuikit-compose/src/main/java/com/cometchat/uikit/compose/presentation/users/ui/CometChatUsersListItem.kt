@@ -42,6 +42,7 @@ import com.cometchat.uikit.compose.presentation.shared.statusindicator.CometChat
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.StatusIndicator
 import com.cometchat.uikit.compose.presentation.users.style.CometChatUsersListItemStyle
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.compose.presentation.shared.statusindicator.rememberHideOnline
 
 /**
  * Default leading view composable that displays the avatar with status indicator.
@@ -73,7 +74,7 @@ internal fun DefaultLeadingView(
         
         // Status Indicator overlay at bottom-end
         if (!hideStatusIndicator) {
-            val statusIndicator = getStatusIndicatorFromUser(user)
+            val statusIndicator = getStatusIndicatorFromUser(user, rememberHideOnline())
             if (statusIndicator == StatusIndicator.ONLINE) {
                 Box(
                     modifier = Modifier
@@ -94,15 +95,18 @@ internal fun DefaultLeadingView(
  * Converts a User to a StatusIndicator enum value.
  *
  * @param user The user to convert
+ * [hideOnline] is `rememberHideOnline()` (`OfflinePresence.hideOnline()`, re-read when the connection flips, ENG-41551 A): while offline is on
+ * and the device is not connected, a cached "online" renders as offline (ENG-41465). With
+ * [hideOnline] `false` this is exactly today's rule.
  * @return The appropriate StatusIndicator enum value
  */
-private fun getStatusIndicatorFromUser(user: User): StatusIndicator {
+internal fun getStatusIndicatorFromUser(user: User, hideOnline: Boolean): StatusIndicator {
     // Blocked users always show offline
     if (user.isBlockedByMe || user.isHasBlockedMe) {
         return StatusIndicator.OFFLINE
     }
     
-    return if (user.status == CometChatConstants.USER_STATUS_ONLINE) {
+    return if (!hideOnline && user.status == CometChatConstants.USER_STATUS_ONLINE) {
         StatusIndicator.ONLINE
     } else {
         StatusIndicator.OFFLINE
@@ -265,7 +269,8 @@ public fun CometChatUsersListItem(
     
     // Build content description for accessibility
     val userName = user.name ?: ""
-    val statusText = if (user.status == CometChatConstants.USER_STATUS_ONLINE) {
+    // Same presence gate as the dot (ENG-41465): never announce "online" the dot does not show.
+    val statusText = if (!rememberHideOnline() && user.status == CometChatConstants.USER_STATUS_ONLINE) {
         context.getString(R.string.cometchat_online)
     } else {
         context.getString(R.string.cometchat_offline)

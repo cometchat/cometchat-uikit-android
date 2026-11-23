@@ -2,6 +2,7 @@ package com.cometchat.ai.sampleapp.kotlin.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.cometchat.chat.core.OfflineConfig
 
 /**
  * Utility class for managing application preferences using SharedPreferences.
@@ -59,6 +60,16 @@ class AppPreferences(context: Context) {
             apply()
         }
     }
+
+    /**
+     * The offline config every UIKitSettings build uses: offline messaging and cache encryption,
+     * always on (D86, D92). It is not a preference and nothing turns it off.
+     */
+    fun offlineConfig(): OfflineConfig =
+        OfflineConfig.Builder()
+            .enabled(true)
+            .encryption(true)
+            .build()
 
     fun hasCredentials(): Boolean =
         !getAppId().isNullOrBlank() &&

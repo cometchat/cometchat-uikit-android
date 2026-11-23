@@ -45,6 +45,7 @@ import com.cometchat.chat.models.BaseMessage
 import com.cometchat.chat.models.Conversation
 import com.cometchat.chat.models.Group
 import com.cometchat.chat.models.TextMessage
+import com.cometchat.uikit.compose.presentation.shared.statusindicator.rememberHideOnline
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.conversations.utils.ConversationUtils
@@ -64,6 +65,8 @@ import com.cometchat.uikit.compose.presentation.shared.receipts.CometChatReceipt
 import com.cometchat.uikit.compose.theme.CometChatTheme
 import com.cometchat.uikit.compose.presentation.shared.receipts.MessageReceiptUtils
 import com.cometchat.uikit.compose.presentation.shared.receipts.Receipt
+import com.cometchat.uikit.core.offline.ConversationPreviewMark
+import com.cometchat.uikit.core.offline.MessageSendState
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.CometChatStatusIndicator
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.StatusIndicator
 import com.cometchat.uikit.core.formatter.MarkdownRenderer
@@ -102,7 +105,9 @@ internal fun DefaultLeadingView(
         )
         
         // Convert conversation to StatusIndicator enum
-        val statusIndicator = getStatusIndicatorFromConversation(conversation, hideUserStatus, hideGroupType)
+        val statusIndicator = getStatusIndicatorFromConversation(
+            conversation, hideUserStatus, hideGroupType, rememberHideOnline()
+        )
         
         // Status Indicator overlay at bottom-end (only render if not OFFLINE or PUBLIC_GROUP)
         if (statusIndicator != StatusIndicator.OFFLINE && statusIndicator != StatusIndicator.PUBLIC_GROUP) {
@@ -126,12 +131,16 @@ internal fun DefaultLeadingView(
  * @param conversation The conversation to convert
  * @param hideUserStatus Whether to hide user status (returns OFFLINE if true for user conversations)
  * @param hideGroupType Whether to hide group type (returns PUBLIC_GROUP if true for group conversations)
+ * [hideOnline] is `rememberHideOnline()` (`OfflinePresence.hideOnline()`, re-read when the connection flips, ENG-41551 A): while offline is on
+ * and the device is not connected, a cached "online" renders as offline (ENG-41465). With
+ * [hideOnline] `false` this is exactly today's rule.
  * @return The appropriate StatusIndicator enum value
  */
-private fun getStatusIndicatorFromConversation(
+internal fun getStatusIndicatorFromConversation(
     conversation: Conversation,
     hideUserStatus: Boolean,
-    hideGroupType: Boolean
+    hideGroupType: Boolean,
+    hideOnline: Boolean
 ): StatusIndicator {
     return when (conversation.conversationType) {
         CometChatConstants.CONVERSATION_TYPE_USER -> {
@@ -139,7 +148,7 @@ private fun getStatusIndicatorFromConversation(
                 StatusIndicator.OFFLINE
             } else {
                 val user = conversation.conversationWith as? User
-                if (user?.status == CometChatConstants.USER_STATUS_ONLINE) {
+                if (!hideOnline && user?.status == CometChatConstants.USER_STATUS_ONLINE) {
                     StatusIndicator.ONLINE
                 } else {
                     StatusIndicator.OFFLINE
@@ -248,8 +257,13 @@ internal fun DefaultSubtitleView(
             // Read receipt (if not hidden and message exists)
             val lastMessage = conversation.lastMessage
             if (!hideReceipts && lastMessage != null && !MessageReceiptUtils.shouldHideReceipt(lastMessage)) {
-                // Convert message to Receipt enum
-                val receipt = MessageReceiptUtils.getMessageReceipt(lastMessage)
+                // Convert message to Receipt enum. An own unsent preview shows its sending/failed
+                // mark (offline, ENG-41088); every other message renders as today.
+                val receipt = when (ConversationPreviewMark.of(lastMessage)) {
+                    MessageSendState.SENDING -> Receipt.IN_PROGRESS
+                    MessageSendState.FAILED -> Receipt.ERROR
+                    else -> MessageReceiptUtils.getMessageReceipt(lastMessage)
+                }
                 CometChatReceipts(
                     receipt = receipt,
                     style = style.receiptStyle
@@ -365,9 +379,12 @@ internal fun DefaultTrailingView(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Center
     ) {
-        // Timestamp - use conversation's updatedAt timestamp (not last message's sentAt)
-        // This ensures date is always shown, even for new conversations without messages
-        val timestamp = conversation.updatedAt
+        // Timestamp - the last message's sentAt (ENG-39134). conversation.updatedAt is the server's
+        // LWW sync cursor, not a message clock: the local send/receive bump never writes it, and the
+        // server never bumps a group's updatedAt on a message - so rendering it shows a stale time.
+        // Falling back to updatedAt when there is no last message, or none carrying a usable
+        // sentAt, ensures a date is still shown for a new conversation without messages.
+        val timestamp = conversation.lastMessage?.sentAt?.takeIf { it > 0 } ?: conversation.updatedAt
         if (timestamp > 0) {
             CometChatDate(
                 timestamp = timestamp,

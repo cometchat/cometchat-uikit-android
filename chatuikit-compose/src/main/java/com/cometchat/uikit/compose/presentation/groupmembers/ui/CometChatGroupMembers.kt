@@ -39,6 +39,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -296,6 +297,9 @@ public fun CometChatGroupMembers(
     val dialogState by effectiveViewModel.dialogState.collectAsStateWithLifecycle()
     val hasMore by effectiveViewModel.hasMore.collectAsStateWithLifecycle()
     val isLoading by effectiveViewModel.isLoading.collectAsStateWithLifecycle()
+    // D84: the offline states ("Connect to search", "Connect to load members"); always false offline off
+    val connectToSearch by effectiveViewModel.connectToSearch.collectAsStateWithLifecycle()
+    val connectToLoad by effectiveViewModel.connectToLoad.collectAsStateWithLifecycle()
     
     // Task 2.3.5: Search debounce using Job + delay (matches XML View pattern)
     var searchJob by remember { mutableStateOf<Job?>(null) }
@@ -331,6 +335,12 @@ public fun CometChatGroupMembers(
             is GroupMembersUIState.Error -> onError?.invoke(state.exception)
             else -> { /* No callback for other states */ }
         }
+    }
+
+    // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(effectiveViewModel) {
+        effectiveViewModel.rowsKeptError.collect { currentOnError?.invoke(it) }
     }
     
     // Lifecycle-aware pause/resume
@@ -431,24 +441,42 @@ public fun CometChatGroupMembers(
                 // Task 2.3.9: Implement empty state view
                 is GroupMembersUIState.Empty -> {
                     if (!hideEmptyState) {
-                        emptyView?.invoke() ?: CometChatEmptyState(
-                            style = style.emptyStateStyle,
-                            title = context.getString(R.string.cometchat_no_members_found),
-                            subtitle = context.getString(R.string.cometchat_no_members_found_subtitle)
-                        )
+                        emptyView?.invoke() ?: if (connectToSearch) {
+                            // D84 rule 7: an offline keyword search.
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search),
+                                subtitle = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle)
+                            )
+                        } else {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(R.string.cometchat_no_members_found),
+                                subtitle = context.getString(R.string.cometchat_no_members_found_subtitle)
+                            )
+                        }
                     }
                 }
-                
+
                 // Task 2.3.10: Implement error state view with retry
                 is GroupMembersUIState.Error -> {
                     if (!hideErrorState) {
                         val exception = (uiState as GroupMembersUIState.Error).exception
-                        errorView?.invoke(exception) ?: CometChatErrorState(
-                            style = style.errorStateStyle,
-                            title = context.getString(R.string.cometchat_error_loading_members),
-                            subtitle = exception.message ?: context.getString(R.string.cometchat_something_went_wrong_please_try_again),
-                            onRetry = { effectiveViewModel.fetchGroupMembers() }
-                        )
+                        errorView?.invoke(exception) ?: if (connectToLoad) {
+                            // D84 rule 3: offline with nothing on screen: the offline state, no Retry.
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_members),
+                                subtitle = ""
+                            )
+                        } else {
+                            CometChatErrorState(
+                                style = style.errorStateStyle,
+                                title = context.getString(R.string.cometchat_error_loading_members),
+                                subtitle = exception.message ?: context.getString(R.string.cometchat_something_went_wrong_please_try_again),
+                                onRetry = { effectiveViewModel.fetchGroupMembers() }
+                            )
+                        }
                     }
                 }
                 

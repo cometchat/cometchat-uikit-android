@@ -39,9 +39,11 @@ import com.cometchat.uikit.core.utils.CometChatThreadSubscription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cometchat.chat.constants.CometChatConstants
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.models.BaseMessage
 import com.cometchat.uikit.compose.R
+import com.cometchat.uikit.compose.presentation.messagelist.ui.shouldShowAvatar
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatMentionsFormatter
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.BubbleFactory
@@ -114,7 +116,11 @@ import java.text.SimpleDateFormat
  * @param viewModel The ViewModel managing thread header state (optional, creates default if not provided)
  * @param style Style configuration for the component
  * @param hideReactions Whether to hide reactions on the parent message bubble
- * @param hideAvatar Whether to hide the avatar on the parent message bubble
+ * @param hideAvatar Whether to hide the avatar on the parent message bubble. When false, the
+ *   default bubble follows the message list's avatar rule: the avatar shows only for a
+ *   left-aligned parent message in a group conversation: an incoming parent in STANDARD
+ *   alignment, or any parent in LEFT_ALIGNED. Right-aligned parents and 1:1 (including agent)
+ *   conversations show no avatar. When true, no avatar shows.
  * @param hideReceipts Whether to hide read receipts on the parent message bubble
  * @param hideReplyCount Whether to hide the reply count text
  * @param hideReplyCountBar Whether to hide the entire reply count bar section
@@ -312,16 +318,19 @@ private fun DefaultMessageBubbleContent(
     rightBubbleMargin: PaddingValues
 ) {
     // Determine bubble alignment based on sender
-    val loggedInUser = CometChat.getLoggedInUser()
-    val isOutgoing = message.sender?.uid == loggedInUser?.uid
-    
-    val bubbleAlignment = when {
-        alignment == UIKitConstants.MessageListAlignment.LEFT_ALIGNED -> 
-            UIKitConstants.MessageBubbleAlignment.LEFT
-        isOutgoing -> UIKitConstants.MessageBubbleAlignment.RIGHT
-        else -> UIKitConstants.MessageBubbleAlignment.LEFT
-    }
-    
+    val bubbleAlignment = threadHeaderBubbleAlignment(
+        message = message,
+        loggedInUid = CometChat.getLoggedInUser()?.uid,
+        alignment = alignment
+    )
+
+    // ENG-39537: same avatar rule as the message list (see threadHeaderShowsAvatar)
+    val shouldShowDefaultAvatar = threadHeaderShowsAvatar(
+        message = message,
+        bubbleAlignment = bubbleAlignment,
+        hideAvatar = hideAvatar
+    )
+
     // Determine which margin to use based on alignment
     val bubbleMargin = if (bubbleAlignment == UIKitConstants.MessageBubbleAlignment.RIGHT) {
         rightBubbleMargin
@@ -349,7 +358,7 @@ private fun DefaultMessageBubbleContent(
             modifier = Modifier.fillMaxWidth(),
             hideReactions = hideReactions,
             hideReceipts = hideReceipts,
-            shouldShowDefaultAvatar = !hideAvatar,
+            shouldShowDefaultAvatar = shouldShowDefaultAvatar,
             textFormatters = textFormatters,
             timeFormat = timeFormat?.toPattern(),
             factory = factory,
@@ -358,6 +367,53 @@ private fun DefaultMessageBubbleContent(
         )
     }
 }
+
+/**
+ * Bubble alignment of the parent message in the thread header.
+ *
+ * - [UIKitConstants.MessageListAlignment.LEFT_ALIGNED] → always LEFT.
+ * - STANDARD → RIGHT when the logged-in user sent the message, LEFT otherwise.
+ *
+ * @param message The parent message
+ * @param loggedInUid UID of the logged-in user (`CometChat.getLoggedInUser()?.uid`)
+ * @param alignment The header's list alignment mode
+ */
+internal fun threadHeaderBubbleAlignment(
+    message: BaseMessage,
+    loggedInUid: String?,
+    alignment: UIKitConstants.MessageListAlignment
+): UIKitConstants.MessageBubbleAlignment {
+    val isOutgoing = message.sender?.uid == loggedInUid
+    return when {
+        alignment == UIKitConstants.MessageListAlignment.LEFT_ALIGNED ->
+            UIKitConstants.MessageBubbleAlignment.LEFT
+        isOutgoing -> UIKitConstants.MessageBubbleAlignment.RIGHT
+        else -> UIKitConstants.MessageBubbleAlignment.LEFT
+    }
+}
+
+/**
+ * Whether the thread header's default bubble shows the parent message's avatar (ENG-39537).
+ *
+ * Delegates to the message list's [shouldShowAvatar] so the header and the list share one rule.
+ * The header has no `user`/`group` parameter, so the conversation type comes from the parent
+ * message's `receiverType`. `isAgentChat` is always `false`: chatuikit-kotlin's thread header
+ * never sets `MessageAdapter.isAgentChat`, so an agent chat's parent message follows the 1:1 rule.
+ *
+ * @param message The parent message
+ * @param bubbleAlignment The alignment from [threadHeaderBubbleAlignment]
+ * @param hideAvatar The header's `hideAvatar` flag (master override)
+ */
+internal fun threadHeaderShowsAvatar(
+    message: BaseMessage,
+    bubbleAlignment: UIKitConstants.MessageBubbleAlignment,
+    hideAvatar: Boolean
+): Boolean = shouldShowAvatar(
+    alignment = bubbleAlignment,
+    hideAvatar = hideAvatar,
+    isGroupConversation = CometChatConstants.RECEIVER_TYPE_GROUP == message.receiverType,
+    isAgentChat = false
+)
 
 /**
  * Reply count bar section displaying the number of replies.

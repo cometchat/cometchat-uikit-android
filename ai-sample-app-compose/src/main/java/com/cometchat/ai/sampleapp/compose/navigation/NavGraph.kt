@@ -59,6 +59,8 @@ fun AppNavGraph(
         composable<LoginRoute> {
             LoginScreen(
                 onLoginSuccess = {
+                    // A user switch: never open on the previous user's agents.
+                    RouteEntities.clear()
                     navController.navigate(AIAssistantUsersRoute) {
                         popUpTo(LoginRoute) { inclusive = true }
                     }
@@ -74,11 +76,14 @@ fun AppNavGraph(
         composable<AIAssistantUsersRoute> {
             AIAssistantUsersScreen(
                 onUserClick = { user ->
+                    // Open the chat on the agent the list shows; the chat refreshes it from the server.
+                    RouteEntities.hold(user)
                     navController.navigate(
                         AIAssistantChatRoute(userId = user.uid, parentMessageId = null)
                     )
                 },
                 onLogout = {
+                    RouteEntities.clear()
                     navController.navigate(SplashRoute) {
                         popUpTo(AIAssistantUsersRoute) { inclusive = true }
                     }

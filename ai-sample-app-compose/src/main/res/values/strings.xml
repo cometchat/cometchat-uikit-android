@@ -36,5 +36,6 @@
     <string name="retry">Retry</string>
     <string name="cancel">Cancel</string>
     <string name="app_ok">OK</string>
+    <string name="ai_chat_unavailable">Couldn\'t open this chat. Check your connection and try again.</string>
 
 </resources>

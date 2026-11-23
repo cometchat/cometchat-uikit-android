@@ -115,6 +115,7 @@ public fun CometChatSavedMessages(
 
     val messages by vm.messages.collectAsState()
     val uiState by vm.uiState.collectAsState()
+    val connectToLoad by vm.connectToLoad.collectAsState()
 
     // Caller-supplied formatters win; otherwise a default mentions formatter so subtitle previews
     // style mentions exactly like the Conversations list item (same pipeline, same formatter).
@@ -165,8 +166,13 @@ public fun CometChatSavedMessages(
                             iconTint = Color.Unspecified,
                             iconSize = 120.dp
                         ),
-                        title = stringResource(R.string.cometchat_error_conversations_title),
-                        subtitle = stringResource(R.string.cometchat_something_went_wrong_please_try_again)
+                        // D84 rule 3: offline with nothing shown is the offline state, no subtitle.
+                        title = if (connectToLoad) {
+                            stringResource(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_messages)
+                        } else {
+                            stringResource(R.string.cometchat_error_conversations_title)
+                        },
+                        subtitle = if (connectToLoad) "" else stringResource(R.string.cometchat_something_went_wrong_please_try_again)
                     )
                 }
 

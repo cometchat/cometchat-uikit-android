@@ -32,6 +32,7 @@ import com.cometchat.uikit.compose.presentation.shared.mediaselection.cometchatF
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.ui.LocalEnableMultipleAttachments
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.ui.batchId
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -61,6 +62,7 @@ import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.messageinformation.style.CometChatMessageInformationStyle
 import com.cometchat.uikit.compose.presentation.messageinformation.ui.CometChatMessageInformation
 import com.cometchat.uikit.compose.presentation.messagelist.style.CometChatMessageListStyle
+import com.cometchat.uikit.compose.presentation.messagelist.style.CometChatOfflineRowStyle
 import com.cometchat.uikit.compose.presentation.reactionlist.style.CometChatReactionListStyle
 import com.cometchat.uikit.compose.presentation.reactionlist.ui.CometChatReactionList
 import com.cometchat.uikit.compose.presentation.emojikeyboard.ui.CometChatEmojiKeyboard
@@ -91,6 +93,7 @@ import com.cometchat.uikit.core.data.repository.MessageListRepositoryImpl
 import com.cometchat.uikit.core.domain.model.CometChatMessageOption
 import com.cometchat.uikit.core.events.CometChatEvents
 import com.cometchat.uikit.core.events.CometChatUIEvent
+import com.cometchat.uikit.core.offline.OfflineUi
 import com.cometchat.uikit.core.state.ConversationStarterUIState
 import com.cometchat.uikit.core.state.ConversationSummaryUIState
 import com.cometchat.uikit.core.state.MessageAlignment
@@ -738,7 +741,19 @@ public fun CometChatMessageList(
      *
      * When false (default), a new agent chat is always started.
      */
-    loadLastAgentConversation: Boolean = false
+    loadLastAgentConversation: Boolean = false,
+
+    /**
+     * Style of the caption under an unsent message ("Not sent yet" / "Not sent. Tap to retry"),
+     * shown when offline messaging is on.
+     */
+    offlineRowStyle: CometChatOfflineRowStyle = CometChatOfflineRowStyle.default(),
+
+    /**
+     * When true, the one-line offline notices (for example "Too many messages waiting to send")
+     * are not shown. Default `false`.
+     */
+    hideOfflineNotices: Boolean = false
 ) {
     val cdHoist1 = stringResource(R.string.cometchat_a11y_message_list)
     // ========================================
@@ -821,8 +836,32 @@ public fun CometChatMessageList(
         if (addOptions != null) vm.addOptions(addOptions)
     }
 
+    // Offline send UI (W4, ENG-41089): the mode captured once for this list (G1).
+    val offlineSendUiOn = remember { com.cometchat.uikit.core.offline.OfflineUi.keyMode() }
+
+    // Offline notices (W4): one line each, shown once; not collected when hidden.
+    val noticeContext = LocalContext.current
+    LaunchedEffect(vm, hideOfflineNotices) {
+        if (hideOfflineNotices || !offlineSendUiOn) return@LaunchedEffect
+        vm.offlineNotices.collect { notice ->
+            Toast.makeText(
+                noticeContext,
+                com.cometchat.uikit.core.offline.OfflineNoticeText.resolve(noticeContext, notice),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // D83: a read that failed while rows stay on screen shows no error view, but the app's
+    // onError still hears it. With nothing shown the Error state below reports it instead.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(vm) {
+        vm.offlineReadError.collect { error -> currentOnError?.invoke(error) }
+    }
+
     // Context for MessageOptionsUtils
     val context = LocalContext.current
+
     
     // Coroutine scope for async operations (e.g., image sharing)
     val scope = rememberCoroutineScope()
@@ -901,6 +940,23 @@ public fun CometChatMessageList(
             // event writes it onto the list's objects, neither of which rewrites a captured
             // instance — so a stale copy would render "Subscribe to thread" on a followed thread.
             val message = vm.currentMessage(boundMessage)
+            if (com.cometchat.uikit.core.offline.OfflineRowState.isUnsent(message, offlineSendUiOn)) {
+                // Offline (G4, G5): an unsent or failed row offers Retry, Delete and Copy only.
+                val errorColorInt = deleteErrorColor.toArgb()
+                longPressedMessage = message
+                messageOptions = MessageOptionsUtils.getUnsentMessageOptions(
+                    context, message, optionVisibilityMap
+                ).map { option ->
+                    if (option.id == UIKitConstants.MessageOption.DELETE && option.titleColor == 0) {
+                        option.copy(titleColor = errorColorInt, iconTintColor = errorColorInt)
+                    } else {
+                        option
+                    }
+                }
+                showPopupMenu = true
+                onMessageLongClick?.invoke(message)
+                return@handleLongClick
+            }
             // Skip showing options for in-progress or deleted messages
             if (message.id == 0L || message.sentAt == 0L || message.deletedAt > 0) {
                 return@handleLongClick
@@ -964,7 +1020,7 @@ public fun CometChatMessageList(
                 UIKitConstants.MessageOption.PIN,
                 UIKitConstants.MessageOption.SAVE -> {
                     // Pin and Save are immediate — no confirmation dialog. (Unpin/Unsave confirm below.)
-                    performPinSaveAction(context, optionId, message)
+                    performPinSaveAction(context, optionId, message, vm)
                     true
                 }
                 UIKitConstants.MessageOption.UNPIN,
@@ -1063,6 +1119,12 @@ public fun CometChatMessageList(
     val hasMoreNewMessages by vm.hasMoreNewMessages.collectAsState()
     val hasMorePreviousMessages by vm.hasMorePreviousMessages.collectAsState()
     val highlightScroll by vm.highlightScroll.collectAsState()
+    // Offline reads (ENG-41087): the key mode is captured once per binding; the edge and pill
+    // flows stay false with offline off, so nothing they drive renders.
+    val offlineKeyMode = remember(vm) { OfflineUi.keyMode() }
+    val offlineLoadMoreOlder by vm.offlineLoadMoreOlder.collectAsState()
+    val offlineLoadMoreNewer by vm.offlineLoadMoreNewer.collectAsState()
+    val offlineJumpToLatest by vm.offlineJumpToLatest.collectAsState()
 
     // Conversation starter state flows
     val conversationStarterUIState by vm.conversationStarterUIState.collectAsState()
@@ -1175,6 +1237,11 @@ public fun CometChatMessageList(
     // version's handleMessagesUpdate pattern where wasAtBottom is checked before
     // the adapter processes new items.
     var previousMessageCount by remember { mutableIntStateOf(0) }
+    // Bottom (last) message's collision-free identity from the previous update, used to tell an
+    // append (new message at the bottom) from a prepend (older page from pagination). It is the
+    // id-or-muid composite, not plain id, because optimistic own sends all have id == 0 until
+    // ack. See bottomMessageIdentity.
+    var previousLastMessageId by remember { mutableStateOf<String?>(null) }
     var wasAtBottom by remember { mutableStateOf(true) }
     
     // Continuously sync wasAtBottom with actual scroll position.
@@ -1312,6 +1379,15 @@ public fun CometChatMessageList(
         }
     }
     
+    // Offline reads (ENG-41087): after a newest-window refresh, stay at the bottom when the user
+    // is there; otherwise the "Jump to latest" pill shows until tapped or the bottom is reached.
+    LaunchedEffect(offlineJumpToLatest, isAtBottom) {
+        if (offlineJumpToLatest && isAtBottom) {
+            vm.consumeOfflineJumpToLatest()
+            if (messages.isNotEmpty()) listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
+        }
+    }
+
     // Scroll to message effect
     // Must depend on BOTH scrollToMessageId AND messages because:
     // 1. scrollToMessageId is set by goToMessage() BEFORE messages are populated
@@ -1445,8 +1521,10 @@ public fun CometChatMessageList(
             // Real-time new message arrived while user is scrolled up
             // Count only messages from OTHER users (exclude own sent messages)
             val loggedInUserId = CometChat.getLoggedInUser()?.uid
+            // A swept message (offline reconnect, source == SYNC) never adds +1 (W5, BEH-SYNC-12).
             val newMessagesCount = messagesFromVm.count { 
-                it.id > lastKnownMessageId && it.sender?.uid != loggedInUserId 
+                it.id > lastKnownMessageId && it.sender?.uid != loggedInUserId &&
+                    it.source != com.cometchat.chat.models.MessageSource.SYNC
             }
             newMessageCount += newMessagesCount
         }
@@ -1499,6 +1577,15 @@ public fun CometChatMessageList(
         }
     }
 
+    // Collision-free identity of the bottom (last) message. Keyed into the auto-scroll effect
+    // below so the effect re-runs — and refreshes its tracking — whenever the bottom identity
+    // changes, NOT only when the list size changes. This matters because an optimistic own
+    // message acks IN PLACE (its id flips 0 → serverId, muid:… → id:…) with NO size change; if
+    // the effect only watched size, the tracked previousLastMessageId would go stale at the
+    // pre-ack value and the next prepend (same bottom message) would read as "bottom changed"
+    // → a spurious snap-to-bottom. See bottomMessageIdentity / shouldScrollToBottomOnUpdate.
+    val bottomMessageId: String? = bottomMessageIdentity(messages.lastOrNull())
+
     // Auto-scroll effect — matches the kotlin XML v6 handleMessagesUpdate logic:
     // 1. If message count increased AND user was at bottom → scroll to bottom
     // 2. If message count increased AND last message is from logged-in user → always scroll
@@ -1508,36 +1595,50 @@ public fun CometChatMessageList(
     // in AI agent chats where multiple rapid message additions (user msg + StreamMessage)
     // caused competing animated scrolls that visually bounced the list up and down.
     // The kotlin XML version also uses instant scroll (scrollToPositionWithOffset) for this.
-    LaunchedEffect(messages.size) {
+    //
+    // Keyed on (size, bottomMessageId): size keeps the count/within-5 tracking fresh across
+    // prepends; bottomMessageId makes the in-place ack (0 → serverId, no size change) re-run
+    // the effect so the tracked identity never goes stale. An in-place ack re-runs with
+    // newCount == previousMessageCount, so shouldScrollToBottomOnUpdate returns false (not an
+    // append) — it only refreshes tracking, it does not scroll.
+    LaunchedEffect(messages.size, bottomMessageId) {
         if (!hasCompletedDefaultInitialScroll || messages.isEmpty()) {
             previousMessageCount = messages.size
+            previousLastMessageId = bottomMessageId
             return@LaunchedEffect
         }
 
         val newCount = messages.size
-        if (newCount > previousMessageCount && previousMessageCount > 0) {
-            val lastMessage = messages.lastOrNull()
-            val loggedInUserId = loggedInUser?.uid
+        val newLastId = bottomMessageId
+        val lastMessage = messages.lastOrNull()
+        val loggedInUserId = loggedInUser?.uid
+        val lastIsOwn = lastMessage != null && loggedInUserId != null &&
+            lastMessage.sender?.uid == loggedInUserId
+        val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
 
-            if (wasAtBottom) {
-                if (scrollToBottomOnNewMessage) {
-                    listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
-                } else {
-                    // Only scroll if user is within 5 items of the bottom
-                    val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                    if (previousMessageCount == 0 || (previousMessageCount - 1) - lastVisibleIndex < 5) {
-                        listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
-                    }
-                }
-            } else if (lastMessage != null && loggedInUserId != null && lastMessage.sender?.uid == loggedInUserId) {
-                // Always scroll to bottom for the logged-in user's own sent messages,
-                // even if they weren't at bottom (handles keyboard/compose-area resize edge cases)
-                listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
-            }
+        // Only a genuine append (new message at the bottom) scrolls. A prepend (older page
+        // from pagination) grows the count but leaves the bottom message unchanged, so it
+        // must NOT scroll — otherwise a fling up that triggers the older-page fetch snaps the
+        // list back to the bottom. The previousMessageCount > 0 guard keeps the first-load
+        // scroll owned by the dedicated initial-scroll effect. See shouldScrollToBottomOnUpdate.
+        if (previousMessageCount > 0 &&
+            shouldScrollToBottomOnUpdate(
+                previousCount = previousMessageCount,
+                newCount = newCount,
+                previousLastId = previousLastMessageId,
+                newLastId = newLastId,
+                wasAtBottom = wasAtBottom,
+                scrollToBottomOnNewMessage = scrollToBottomOnNewMessage,
+                lastIsOwn = lastIsOwn,
+                lastVisiblePos = lastVisibleIndex
+            )
+        ) {
+            listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
         }
 
         // Update tracking state for the next change
         previousMessageCount = newCount
+        previousLastMessageId = newLastId
     }
     
     // Scroll to bottom after refresh (triggered by scroll-to-bottom button click)
@@ -1757,15 +1858,33 @@ public fun CometChatMessageList(
             is MessageListUIState.Error -> {
                 val error = (uiState as MessageListUIState.Error).exception
                 if (!hideErrorState) {
-                    errorView?.invoke { vm.fetchMessages() } ?: DefaultErrorView(
-                        style = style,
-                        onRetry = { vm.fetchMessages() }
+                    errorView?.invoke { vm.fetchMessages() }
+                        ?: if (vm.isOfflineConnectError(uiState as MessageListUIState.Error)) {
+                            // D84 rule 3: offline with nothing on screen: the offline state, no Retry.
+                            OfflineConnectView(style)
+                        } else {
+                            DefaultErrorView(
+                                style = style,
+                                onRetry = { vm.fetchMessages() }
+                            )
+                        }
+                }
+                if (vm.isOfflineOn) {
+                    // Once per error, not per recomposition (ENG-41551 / D84: an offline open with
+                    // nothing cached lands here, so a recomposing offline state is common).
+                    LaunchedEffect(error) {
+                        currentOnError?.invoke(
+                            error as? CometChatException
+                                ?: CometChatException("Unknown", error.message ?: "Unknown error")
+                        )
+                    }
+                } else {
+                    // Offline off: exactly as before the offline feature (D84 rule 11).
+                    onError?.invoke(
+                        error as? CometChatException
+                            ?: CometChatException("Unknown", error.message ?: "Unknown error")
                     )
                 }
-                onError?.invoke(
-                    error as? CometChatException
-                        ?: CometChatException("Unknown", error.message ?: "Unknown error")
-                )
             }
             
             // Loaded state
@@ -1830,13 +1949,9 @@ public fun CometChatMessageList(
                         itemsIndexed(
                             items = messages,
                             key = { _, message ->
-                                // StreamMessages have id=0 before server assignment;
-                                // use muid as a stable key so Compose can track them.
-                                if (message.id == 0L) {
-                                    message.muid ?: message.hashCode().toLong()
-                                } else {
-                                    message.id
-                                }
+                                // Offline off: today's key (id; StreamMessages with id=0 use
+                                // muid, else hashCode). Offline on: the render key (ENG-41087).
+                                messageListItemKey(message, offlineKeyMode)
                             }
                         ) { index, message ->
                             // With chronological list, index-1 is the OLDER message (visually above)
@@ -1946,6 +2061,10 @@ public fun CometChatMessageList(
                                       CompositionLocalProvider(
                                         LocalEnableMultipleAttachments provides enableMultipleAttachments
                                       ) {
+                                       // Offline send caption (W4): ON path only; NONE with offline off.
+                                       val offlineCaption = com.cometchat.uikit.core.offline.OfflineRowState
+                                           .caption(message, offlineSendUiOn)
+                                       val renderMessageItem: @Composable () -> Unit = {
                                         MessageListItem(
                                             isBatched = isBatched,
                                             isFirstInBatch = isFirstInBatch,
@@ -1973,7 +2092,21 @@ public fun CometChatMessageList(
                                             statusInfoView = statusInfoView,
                                             threadView = threadView,
                                             footerView = footerView,
-                                            onMessageClick = onMessageClick,
+                                            // Offline (G4): tapping a failed unsent row (its receipt
+                                            // included) retries; the integrator still gets the click.
+                                            onMessageClick = if (offlineCaption ==
+                                                com.cometchat.uikit.core.offline.OfflineRowState.Caption.NOT_SENT_TAP_TO_RETRY
+                                            ) {
+                                                { msg ->
+                                                    vm.handleMessageOptionClick(
+                                                        context, UIKitConstants.MessageOption.RETRY, msg
+                                                    )
+                                                    onMessageClick?.invoke(msg)
+                                                    Unit
+                                                }
+                                            } else {
+                                                onMessageClick
+                                            },
                                             onMessageLongClick = handleMessageLongClick,
                                             onThreadRepliesClick = onThreadRepliesClick,
                                             onReactionClick = onReactionClick ?: { msg, emoji ->
@@ -2004,6 +2137,19 @@ public fun CometChatMessageList(
                                             timeFormat = effectiveTimePattern,
                                             dateTimeFormatter = bubbleDateTimeFormatter
                                         )
+                                       }
+                                       if (offlineCaption == com.cometchat.uikit.core.offline.OfflineRowState.Caption.NONE) {
+                                           renderMessageItem()
+                                       } else {
+                                           Column(horizontalAlignment = Alignment.End) {
+                                               renderMessageItem()
+                                               OfflineRowCaption(offlineCaption, offlineRowStyle) {
+                                                   vm.handleMessageOptionClick(
+                                                       context, UIKitConstants.MessageOption.RETRY, message
+                                                   )
+                                               }
+                                           }
+                                       }
                                       }
                                     }
                                 }
@@ -2126,6 +2272,39 @@ public fun CometChatMessageList(
                         }
                     }
                     
+                    // Offline reads (ENG-41087): "Connect to load more" edges and the
+                    // "Jump to latest" pill. Overlays, so list indices are untouched.
+                    if (offlineLoadMoreOlder) {
+                        OfflineLoadMoreEdge(
+                            onClick = { vm.retryOfflineLoadMore() },
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 40.dp)
+                        )
+                    }
+                    if (offlineLoadMoreNewer) {
+                        OfflineLoadMoreEdge(
+                            onClick = { vm.retryOfflineLoadMore() },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp)
+                        )
+                    } else if (offlineJumpToLatest && !isAtBottom) {
+                        OfflineJumpToLatestPill(
+                            onClick = {
+                                vm.consumeOfflineJumpToLatest()
+                                scope.launch {
+                                    if (messages.isNotEmpty()) {
+                                        listState.scrollToItem(messages.lastIndex, Int.MAX_VALUE)
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp)
+                        )
+                    }
+
                     // New message indicator / Scroll-to-bottom button
                     // Show whenever user is NOT at bottom, regardless of new message count
                     // This matches the XML implementation behavior
@@ -2249,7 +2428,7 @@ public fun CometChatMessageList(
             ),
             dismissOnClickOutside = false,
             onPositiveClick = {
-                performPinSaveAction(context, optionId, message)
+                performPinSaveAction(context, optionId, message, vm)
                 pinSaveConfirmation = null
             },
             onNegativeClick = { pinSaveConfirmation = null },
@@ -2299,15 +2478,7 @@ public fun CometChatMessageList(
         val popupMessage = longPressedMessage!!
 
         // Determine quick reactions visibility based on message properties
-        val isInteractive = popupMessage.category == UIKitConstants.MessageCategory.INTERACTIVE
-        val isDisapproved = when (popupMessage) {
-            is TextMessage -> popupMessage.moderationStatus?.name == "DISAPPROVED"
-            is MediaMessage -> popupMessage.moderationStatus?.name == "DISAPPROVED"
-            else -> false
-        }
-        val showReactions = !isInteractive
-            && !hideMessageReactionOption
-            && !isDisapproved
+        val showReactions = showQuickReactions(popupMessage, hideMessageReactionOption, offlineSendUiOn)
 
         // Compute bubble alignment for the preview
         val previewAlignment = getMessageAlignment(popupMessage)
@@ -2518,13 +2689,438 @@ public fun CometChatMessageList(
  * bubble and any pinned/saved panels refresh via the core VM's realtime listeners, so there is no
  * manual optimistic flip here.
  */
+@Deprecated(
+    "Kept for binary compatibility. Use the overload with offlineRowStyle and hideOfflineNotices.",
+    level = DeprecationLevel.HIDDEN
+)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+public fun CometChatMessageList(
+    modifier: Modifier = Modifier,
+    viewModel: CometChatMessageListViewModel? = null,
+    style: CometChatMessageListStyle = CometChatMessageListStyle.default(),
+    
+    // Configuration
+    user: User? = null,
+    group: Group? = null,
+    // Deprecated: pass [parentMessage] instead — the list needs the whole parent to resolve
+    // thread-subscription state for realtime replies, which arrive with no flag. Kept working, and
+    // honoured only when [parentMessage] is null. (Kotlin cannot annotate a value parameter, so this
+    // deprecation lives in the KDoc above rather than in an @Deprecated tag.)
+    parentMessageId: Long = -1,
+    parentMessage: BaseMessage? = null,
+    // ENG-39321: declares a thread view. Set true on a thread screen so a missing/invalid parent
+    // shows the empty state instead of the whole conversation. A valid parent already implies this.
+    threaded: Boolean = false,
+    messagesRequestBuilder: MessagesRequest.MessagesRequestBuilder? = null,
+
+    // Behavior
+    scrollToBottomOnNewMessage: Boolean = true,
+    swipeToReplyEnabled: Boolean = true,
+    autoFetch: Boolean = true,
+    startFromUnreadMessages: Boolean = false,
+    unreadMessageThreshold: Int = 30,
+    disableSoundForMessages: Boolean = false,
+    customSoundForMessages: Int? = null,
+    disableReceipt: Boolean = false,
+
+    /**
+     * When true (default), multi-attachment messages render as the new per-type bubbles
+     * (Images/Videos/Audios/VoiceNote/Files). When false, the deprecated single-attachment bubbles
+     * are used. See ENG-36737.
+     */
+    enableMultipleAttachments: Boolean = true,
+    
+    // Visibility controls
+    hideLoadingState: Boolean = false,
+    hideEmptyState: Boolean = false,
+    hideErrorState: Boolean = false,
+    hideAvatar: Boolean = false,
+    hideReceipts: Boolean = false,
+    /** Hides reactions rendered under message bubbles. Parity with setReactionVisibility. */
+    hideReactions: Boolean = false,
+    hideGroupActionMessages: Boolean = false,
+    hideDateSeparator: Boolean = false,
+    
+    // Message option visibility
+    hideReplyInThreadOption: Boolean = false,
+    hideThreadSubscriptionOption: Boolean = false,
+    hideReplyOption: Boolean = false,
+    hideCopyMessageOption: Boolean = false,
+    hideEditMessageOption: Boolean = false,
+    hideDeleteMessageOption: Boolean = false,
+    hideShareMessageOption: Boolean = false,
+    hideMessagePrivatelyOption: Boolean = false,
+    hideMessageInfoOption: Boolean = false,
+    hideMarkAsUnreadOption: Boolean = false,
+    hideTranslateMessageOption: Boolean = false,
+    hideMessageReactionOption: Boolean = false,
+    hideFlagOption: Boolean = false,
+    hideFlagRemarkInputField: Boolean = false,
+    hideAiAssistantSuggestedMessages: Boolean = false,
+    hideModerationView: Boolean = false,
+    hideStickyDate: Boolean = false,
+
+    /** Whether to hide the "New Messages" separator above the first unread message. */
+    hideNewMessagesSeparator: Boolean = false,
+    
+    // Alignment controls
+    timeStampAlignment: UIKitConstants.TimeStampAlignment = UIKitConstants.TimeStampAlignment.BOTTOM,
+    messageAlignment: UIKitConstants.MessageListAlignment = UIKitConstants.MessageListAlignment.STANDARD,
+    
+    // AI feature controls
+    /**
+     * Enable AI conversation starters.
+     * When true, AI-generated conversation starter suggestions will be shown
+     * to help users begin conversations.
+     */
+    enableConversationStarter: Boolean = false,
+    /**
+     * Enable AI smart replies.
+     * When true, AI-generated smart reply suggestions will be shown
+     * based on the conversation context.
+     */
+    enableSmartReplies: Boolean = false,
+    /**
+     * Enable AI conversation summary.
+     * When true, AI-generated conversation summaries will be available
+     * to provide quick overviews of the conversation.
+     */
+    enableConversationSummary: Boolean = false,
+
+    /**
+     * Keywords that gate smart-reply fetching. When non-empty, smart replies are only
+     * requested for messages containing at least one of these keywords (case-insensitive).
+     * An empty list — the default — means every message triggers a fetch.
+     *
+     * Parity with chatuikit-kotlin's `setSmartRepliesKeywords`.
+     */
+    smartRepliesKeywords: List<String> = emptyList(),
+
+    /**
+     * Delay in milliseconds before smart replies are fetched after a message arrives.
+     * A later message inside the window resets the timer. `null` keeps the ViewModel
+     * default of 10000 ms.
+     *
+     * Parity with chatuikit-kotlin's `setSmartRepliesDelayDuration`.
+     */
+    smartRepliesDelayDuration: Int? = null,
+
+    /**
+     * Style configuration for the AI conversation starter view.
+     * Allows customization of colors, typography, and spacing for the
+     * conversation starter suggestions displayed in the empty state.
+     */
+    conversationStarterStyle: CometChatAIConversationStarterStyle = CometChatAIConversationStarterStyle.default(),
+
+    /**
+     * Custom composable for the conversation starter view.
+     * When provided, this replaces the default CometChatAIConversationStarterView.
+     * Receives the UI state and an onClick callback.
+     */
+    conversationStarterView: (@Composable (
+        uiState: ConversationStarterUIState,
+        onClick: (starter: String, position: Int) -> Unit
+    ) -> Unit)? = null,
+
+    /**
+     * Style configuration for the AI conversation summary view.
+     * Allows customization of colors, typography, and spacing for the
+     * conversation summary displayed at the top of the message list.
+     */
+    conversationSummaryStyle: CometChatAIConversationSummaryStyle = CometChatAIConversationSummaryStyle.default(),
+
+    /**
+     * Custom composable for the conversation summary view.
+     * When provided, this replaces the default CometChatAIConversationSummaryView.
+     * Receives the UI state and an onCloseClick callback.
+     */
+    conversationSummaryView: (@Composable (
+        uiState: ConversationSummaryUIState,
+        onCloseClick: () -> Unit
+    ) -> Unit)? = null,
+
+    /**
+     * Style configuration for the AI smart replies view.
+     * Allows customization of colors, typography, and spacing for the
+     * smart reply suggestions displayed above the message composer.
+     */
+    smartRepliesStyle: CometChatAISmartRepliesStyle = CometChatAISmartRepliesStyle.default(),
+
+    /**
+     * Custom composable for the smart replies view.
+     * When provided, this replaces the default CometChatAISmartRepliesView.
+     * Receives the UI state, an onClick callback for reply selection,
+     * and an onCloseClick callback for dismissal.
+     */
+    smartRepliesView: (@Composable (
+        uiState: SmartRepliesUIState,
+        onClick: (reply: String, position: Int) -> Unit,
+        onCloseClick: () -> Unit
+    ) -> Unit)? = null,
+    
+    // Reaction list style
+    reactionListStyle: CometChatReactionListStyle = CometChatReactionListStyle.default(),
+
+    /**
+     * Request builder used by the reaction list sheet opened from a message's reactions.
+     * Without it the sheet always queries with the default limit.
+     *
+     * Parity with chatuikit-kotlin's `setReactionsRequestBuilder`.
+     */
+    reactionsRequestBuilder: ReactionsRequest.ReactionsRequestBuilder? = null,
+    
+    // Text formatters
+    textFormatters: List<CometChatTextFormatter>? = null,
+
+    /**
+     * Suppresses the "@All" entry in the mention suggestion list. Only applied to the default
+     * formatter — a caller-supplied [textFormatters] list is used as given.
+     * Parity with chatuikit-kotlin's setDisableMentionAll.
+     */
+    disableMentionAll: Boolean = false,
+
+    /**
+     * Overrides the id and display text of the "@All" mention entry. Both must be non-empty to take
+     * effect. Parity with chatuikit-kotlin's setMentionAllLabelId.
+     */
+    mentionAllLabelId: String? = null,
+    mentionAllLabel: String? = null,
+
+    // Date/time formatting (parity with chatuikit-kotlin's setTimeFormat / setDateFormat /
+    // setDateTimeFormatter)
+    timeFormat: SimpleDateFormat? = null,
+    dateFormat: SimpleDateFormat? = null,
+    dateTimeFormatter: DateTimeFormatterCallback? = null,
+
+    // BubbleFactory integration
+    bubbleFactories: List<BubbleFactory> = emptyList(),
+    
+    // Slot provider callbacks (receive message AND alignment)
+    leadingView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    headerView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    replyView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    contentView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    bottomView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    statusInfoView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    threadView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    footerView: (@Composable (BaseMessage, MessageAlignment) -> Unit)? = null,
+    
+    // Custom state views
+    loadingView: (@Composable () -> Unit)? = null,
+    emptyView: (@Composable () -> Unit)? = null,
+    errorView: (@Composable (onRetry: () -> Unit) -> Unit)? = null,
+    newMessageIndicatorView: (@Composable (count: Int, onClick: () -> Unit) -> Unit)? = null,
+
+    /** Custom composable for the "New Messages" separator above the first unread message. */
+    newMessagesSeparatorView: (@Composable () -> Unit)? = null,
+
+    /**
+     * Pinned view above the message list, outside the scrolling area.
+     * Parity with chatuikit-kotlin's `setHeaderView`, which adds the view to a container
+     * sibling of the RecyclerView rather than to the list itself.
+     */
+    listHeaderView: (@Composable () -> Unit)? = null,
+
+    /**
+     * Pinned view below the message list, outside the scrolling area.
+     * Parity with chatuikit-kotlin's `setFooterView`.
+     */
+    listFooterView: (@Composable () -> Unit)? = null,
+    
+    // Quick reactions
+    quickReactions: List<String> = listOf("👍", "❤️", "😂", "😮", "😢", "🙏"),
+    
+    // Message options customization
+    /**
+     * Callback that **replaces** the default message options for a given message.
+     *
+     * When this callback returns a non-null list, that list is used as the entire set of
+     * options (default options are discarded). When it returns `null`, the default options
+     * are shown as usual.
+     *
+     * Takes precedence over [addOptions] — when this returns a non-null list,
+     * [addOptions] is not invoked.
+     */
+    options: ((BaseMessage) -> List<CometChatMessageOption>?)? = null,
+    /**
+     * Callback that **appends** additional options after the default message options.
+     *
+     * Invoked only when [options] is not set or returns `null`.
+     */
+    addOptions: ((BaseMessage) -> List<CometChatMessageOption>)? = null,
+    
+    // Callbacks
+    onError: ((CometChatException) -> Unit)? = null,
+    onLoad: ((List<BaseMessage>) -> Unit)? = null,
+    onEmpty: (() -> Unit)? = null,
+    onMessageClick: ((BaseMessage) -> Unit)? = null,
+    onMessageLongClick: ((BaseMessage) -> Unit)? = null,
+    onThreadRepliesClick: ((BaseMessage) -> Unit)? = null,
+    onReactionClick: ((BaseMessage, String) -> Unit)? = null,
+    onReactionLongClick: ((BaseMessage, String) -> Unit)? = null,
+    onAddMoreReactionsClick: ((BaseMessage) -> Unit)? = null,
+    onMessageOptionClick: ((BaseMessage, String, String) -> Unit)? = null,
+    onEmojiPickerClick: ((BaseMessage) -> Unit)? = null,
+    onQuickReactionClick: ((BaseMessage, String) -> Unit)? = null,
+    onMessageEdit: ((BaseMessage) -> Unit)? = null,
+    onMessageReply: ((BaseMessage) -> Unit)? = null,
+    /**
+     * Callback invoked when a conversation starter is clicked.
+     * If provided, this callback is invoked instead of the default behavior
+     * (emitting ComposeMessage event). The callback receives the starter text
+     * and its position in the list.
+     */
+    onConversationStarterClick: ((starter: String, position: Int) -> Unit)? = null,
+    /**
+     * Callback invoked when a smart reply is clicked.
+     * If provided, this callback is invoked instead of the default behavior
+     * (emitting ComposeMessage event). The callback receives the reply text
+     * and its position in the list.
+     */
+    onSmartReplyClick: ((reply: String, position: Int) -> Unit)? = null,
+    /**
+     * Callback invoked when the "Message Privately" option is selected.
+     * The callback receives the fetched [User] object representing the message sender.
+     * This allows integrators to navigate to a private conversation with the sender.
+     */
+    onMessagePrivately: ((User) -> Unit)? = null,
+
+    /**
+     * When provided, the message list will scroll to and highlight the message
+     * with this ID after loading. Used for search-to-message navigation.
+     */
+    goToMessageId: Long? = null,
+
+    /**
+     * When true and the conversation is an agent chat with no explicit parentMessageId,
+     * the message list will attempt to load the most recent agent conversation thread
+     * instead of showing the empty/greeting state.
+     *
+     * When false (default), a new agent chat is always started.
+     */
+    loadLastAgentConversation: Boolean = false
+) {
+    CometChatMessageList(
+        modifier = modifier,
+        viewModel = viewModel,
+        style = style,
+        user = user,
+        group = group,
+        parentMessageId = parentMessageId,
+        parentMessage = parentMessage,
+        threaded = threaded,
+        messagesRequestBuilder = messagesRequestBuilder,
+        scrollToBottomOnNewMessage = scrollToBottomOnNewMessage,
+        swipeToReplyEnabled = swipeToReplyEnabled,
+        autoFetch = autoFetch,
+        startFromUnreadMessages = startFromUnreadMessages,
+        unreadMessageThreshold = unreadMessageThreshold,
+        disableSoundForMessages = disableSoundForMessages,
+        customSoundForMessages = customSoundForMessages,
+        disableReceipt = disableReceipt,
+        enableMultipleAttachments = enableMultipleAttachments,
+        hideLoadingState = hideLoadingState,
+        hideEmptyState = hideEmptyState,
+        hideErrorState = hideErrorState,
+        hideAvatar = hideAvatar,
+        hideReceipts = hideReceipts,
+        hideReactions = hideReactions,
+        hideGroupActionMessages = hideGroupActionMessages,
+        hideDateSeparator = hideDateSeparator,
+        hideReplyInThreadOption = hideReplyInThreadOption,
+        hideThreadSubscriptionOption = hideThreadSubscriptionOption,
+        hideReplyOption = hideReplyOption,
+        hideCopyMessageOption = hideCopyMessageOption,
+        hideEditMessageOption = hideEditMessageOption,
+        hideDeleteMessageOption = hideDeleteMessageOption,
+        hideShareMessageOption = hideShareMessageOption,
+        hideMessagePrivatelyOption = hideMessagePrivatelyOption,
+        hideMessageInfoOption = hideMessageInfoOption,
+        hideMarkAsUnreadOption = hideMarkAsUnreadOption,
+        hideTranslateMessageOption = hideTranslateMessageOption,
+        hideMessageReactionOption = hideMessageReactionOption,
+        hideFlagOption = hideFlagOption,
+        hideFlagRemarkInputField = hideFlagRemarkInputField,
+        hideAiAssistantSuggestedMessages = hideAiAssistantSuggestedMessages,
+        hideModerationView = hideModerationView,
+        hideStickyDate = hideStickyDate,
+        hideNewMessagesSeparator = hideNewMessagesSeparator,
+        timeStampAlignment = timeStampAlignment,
+        messageAlignment = messageAlignment,
+        enableConversationStarter = enableConversationStarter,
+        enableSmartReplies = enableSmartReplies,
+        enableConversationSummary = enableConversationSummary,
+        smartRepliesKeywords = smartRepliesKeywords,
+        smartRepliesDelayDuration = smartRepliesDelayDuration,
+        conversationStarterStyle = conversationStarterStyle,
+        conversationStarterView = conversationStarterView,
+        conversationSummaryStyle = conversationSummaryStyle,
+        conversationSummaryView = conversationSummaryView,
+        smartRepliesStyle = smartRepliesStyle,
+        smartRepliesView = smartRepliesView,
+        reactionListStyle = reactionListStyle,
+        reactionsRequestBuilder = reactionsRequestBuilder,
+        textFormatters = textFormatters,
+        disableMentionAll = disableMentionAll,
+        mentionAllLabelId = mentionAllLabelId,
+        mentionAllLabel = mentionAllLabel,
+        timeFormat = timeFormat,
+        dateFormat = dateFormat,
+        dateTimeFormatter = dateTimeFormatter,
+        bubbleFactories = bubbleFactories,
+        leadingView = leadingView,
+        headerView = headerView,
+        replyView = replyView,
+        contentView = contentView,
+        bottomView = bottomView,
+        statusInfoView = statusInfoView,
+        threadView = threadView,
+        footerView = footerView,
+        loadingView = loadingView,
+        emptyView = emptyView,
+        errorView = errorView,
+        newMessageIndicatorView = newMessageIndicatorView,
+        newMessagesSeparatorView = newMessagesSeparatorView,
+        listHeaderView = listHeaderView,
+        listFooterView = listFooterView,
+        quickReactions = quickReactions,
+        options = options,
+        addOptions = addOptions,
+        onError = onError,
+        onLoad = onLoad,
+        onEmpty = onEmpty,
+        onMessageClick = onMessageClick,
+        onMessageLongClick = onMessageLongClick,
+        onThreadRepliesClick = onThreadRepliesClick,
+        onReactionClick = onReactionClick,
+        onReactionLongClick = onReactionLongClick,
+        onAddMoreReactionsClick = onAddMoreReactionsClick,
+        onMessageOptionClick = onMessageOptionClick,
+        onEmojiPickerClick = onEmojiPickerClick,
+        onQuickReactionClick = onQuickReactionClick,
+        onMessageEdit = onMessageEdit,
+        onMessageReply = onMessageReply,
+        onConversationStarterClick = onConversationStarterClick,
+        onSmartReplyClick = onSmartReplyClick,
+        onMessagePrivately = onMessagePrivately,
+        goToMessageId = goToMessageId,
+        loadLastAgentConversation = loadLastAgentConversation,
+        offlineRowStyle = CometChatOfflineRowStyle.default(),
+        hideOfflineNotices = false
+    )
+}
+
 private fun performPinSaveAction(
     context: android.content.Context,
     optionId: String,
-    message: BaseMessage
+    message: BaseMessage,
+    vm: CometChatMessageListViewModel? = null
 ) {
     val listener = object : CometChat.CallbackListener<BaseMessage>() {
         override fun onSuccess(result: BaseMessage?) {
+            // G11 (T4): the row and the pin/save kit events update from onSuccess, offline on or off.
+            vm?.onOwnPinSaveSuccess(optionId, message, result)
             val toastRes = when (optionId) {
                 UIKitConstants.MessageOption.PIN -> R.string.cometchat_message_pinned
                 UIKitConstants.MessageOption.UNPIN -> R.string.cometchat_message_unpinned
@@ -2569,12 +3165,19 @@ private fun pinSaveErrorMessage(
         context.getString(R.string.cometchat_pin_save_generic_error)
 }
 
-private fun shareMessage(
+@androidx.annotation.VisibleForTesting
+internal fun shareMessage(
     context: android.content.Context,
     message: BaseMessage,
     scope: kotlinx.coroutines.CoroutineScope,
     textFormatters: List<CometChatTextFormatter>? = null
 ) {
+    // Offline on (D-324): a media message whose file is on the device is shared from that copy
+    // through the kit's FileProvider, with no network call. Otherwise today's share below.
+    if (message is MediaMessage &&
+        com.cometchat.uikit.compose.presentation.imageviewer.ui.ViewerLocalMedia
+            .shareAttachment(context, message.attachment)
+    ) return
     when {
         message is TextMessage -> {
             // Share text message with formatted text (similar to copy)
@@ -2609,6 +3212,9 @@ private fun shareMessage(
             // Share image message via Coil bitmap download
             val attachment = message.attachment ?: return
             val fileUrl = attachment.fileUrl ?: return
+            // Offline on, only an http(s) URL is fetched and shared, never a path from the message
+            // (BEH-MEDIA-21). Offline off openableUrl is the fileUrl itself: unchanged.
+            if (com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment) != fileUrl) return
             val mediaName = attachment.fileName ?: "shared_image"
             val mimeType = attachment.fileMimeType ?: "image/*"
             
@@ -2648,6 +3254,9 @@ private fun shareMessage(
             // Share other media types (video, audio, files) via file download
             val attachment = message.attachment ?: return
             val fileUrl = attachment.fileUrl ?: return
+            // Offline on, only an http(s) URL is fetched and shared, never a path from the message
+            // (BEH-MEDIA-21). Offline off openableUrl is the fileUrl itself: unchanged.
+            if (com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment) != fileUrl) return
             val fileName = "${message.id}${attachment.fileName ?: "media_file"}"
             val mimeType = attachment.fileMimeType ?: "*/*"
             
@@ -2703,4 +3312,25 @@ private fun shareMessage(
             }
         }
     }
+}
+
+/**
+ * Whether the long-press sheet shows quick reactions. Today's rules (not interactive, the reaction
+ * option not hidden, not disapproved), plus, with offline on only, none on an unsent row (no server
+ * id, G5). With offline off ([offlineSendUiOn] false) this is exactly today's condition.
+ */
+internal fun showQuickReactions(
+    message: BaseMessage,
+    hideMessageReactionOption: Boolean,
+    offlineSendUiOn: Boolean
+): Boolean {
+    val isDisapproved = when (message) {
+        is TextMessage -> message.moderationStatus?.name == "DISAPPROVED"
+        is MediaMessage -> message.moderationStatus?.name == "DISAPPROVED"
+        else -> false
+    }
+    return message.category != UIKitConstants.MessageCategory.INTERACTIVE &&
+        !hideMessageReactionOption &&
+        !isDisapproved &&
+        !(offlineSendUiOn && message.id <= 0L)
 }

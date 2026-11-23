@@ -15,6 +15,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,10 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cometchat.ai.sampleapp.compose.R
 import com.cometchat.ai.sampleapp.compose.app.AIAssistantApplication
+import com.cometchat.ai.sampleapp.compose.navigation.RouteEntities
 import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.User
@@ -52,7 +57,8 @@ import kotlinx.coroutines.launch
  *   (mirrors the XML DrawerLayout).
  * - Auto-detects agent chats and hides attachment/voice/sticker buttons and
  *   rich-text toolbar via UIKit's built-in agent-chat handling.
- * - Fetches the [User] from [CometChat] when the screen first composes.
+ * - Opens on the [User] the calling screen held ([RouteEntities]) and then takes the server's copy;
+ *   with nothing held the server alone answers, and a failure shows a message instead of a spinner.
  */
 @Composable
 fun AIAssistantChatScreen(
@@ -68,13 +74,16 @@ fun AIAssistantChatScreen(
 ) {
     val colorScheme = CometChatTheme.colorScheme
 
-    // Fetch user
+    // Resolve the user: the copy the calling screen held at once (works offline), then the
+    // server's copy. With nothing held the server alone answers; its error is the failed state.
     var user by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var loadFailed by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId) {
         isLoading = true
-        CometChat.getUser(userId, object : CometChat.CallbackListener<User>() {
+        loadFailed = false
+        RouteEntities.getUser(userId, object : CometChat.CallbackListener<User>() {
             override fun onSuccess(p0: User) {
                 user = p0
                 isLoading = false
@@ -82,6 +91,7 @@ fun AIAssistantChatScreen(
 
             override fun onError(exception: CometChatException?) {
                 isLoading = false
+                loadFailed = true
             }
         })
     }
@@ -112,7 +122,11 @@ fun AIAssistantChatScreen(
     // Handle navigation-to-different-chat requests from UIKit
     LaunchedEffect(viewModel) {
         viewModel.openUserChat.collect { u ->
-            if (u != null) onOpenConversation(u.uid, null)
+            if (u != null) {
+                // Open the next chat on the user already in hand, as the agents list does.
+                RouteEntities.hold(u)
+                onOpenConversation(u.uid, null)
+            }
         }
     }
 
@@ -127,10 +141,20 @@ fun AIAssistantChatScreen(
         androidx.compose.foundation.layout.Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorScheme.backgroundColor1),
+                .background(colorScheme.backgroundColor1)
+                .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = colorScheme.primary)
+            if (loadFailed) {
+                Text(
+                    text = stringResource(R.string.ai_chat_unavailable),
+                    color = colorScheme.textColorSecondary,
+                    style = CometChatTheme.typography.bodyRegular,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                CircularProgressIndicator(color = colorScheme.primary)
+            }
         }
         return
     }
@@ -138,6 +162,12 @@ fun AIAssistantChatScreen(
     // Drawer setup — chat history is the end-drawer content.
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // New chat and chat-history entries reopen this agent: open them on the user on screen.
+    val openThisAgent: (Long?) -> Unit = { parentId ->
+        RouteEntities.hold(user)
+        onOpenConversation(userId, parentId)
+    }
 
     // Create chat-history ViewModel once per user (fresh history per agent)
     val chatHistoryViewModel: CometChatAIAssistantChatHistoryViewModel = viewModel(
@@ -165,10 +195,10 @@ fun AIAssistantChatScreen(
                     onCloseClick = { scope.launch { drawerState.close() } },
                     onNewChatClick = {
                         scope.launch { drawerState.close() }
-                        onOpenConversation(userId, null)
+                        openThisAgent(null)
                     },
                     onItemClick = { message ->
-                        onOpenConversation(userId, message.id.toLong())
+                        openThisAgent(message.id.toLong())
                     }
                 )
             }
@@ -193,7 +223,7 @@ fun AIAssistantChatScreen(
                     onBackPress = onBackPress,
                     onNewChatClick = {
                         // Fresh conversation with the same agent
-                        onOpenConversation(userId, null)
+                        openThisAgent(null)
                     },
                     onChatHistoryClick = {
                         scope.launch { drawerState.open() }

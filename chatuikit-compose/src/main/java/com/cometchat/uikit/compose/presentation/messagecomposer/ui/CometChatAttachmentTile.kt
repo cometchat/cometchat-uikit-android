@@ -60,6 +60,7 @@ import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.getFi
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.getFileTypeIcon
 import com.cometchat.uikit.core.models.AttachmentUploadStatus
 import com.cometchat.uikit.core.models.AttachmentUploadTile
+import com.cometchat.uikit.core.models.isCopyMissing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -131,7 +132,7 @@ public fun CometChatAttachmentTile(
     val description = stringResource(
         R.string.cometchat_attachment_tile_description,
         tile.name,
-        statusLabel(tile.status)
+        statusLabel(tile)
     )
     // Inset the body so the corner badge can straddle the top-end corner within the tile's bounds.
     val overhang = style.cornerBadgeOverhang
@@ -168,8 +169,8 @@ private fun MediaTileBody(
     onRejected: () -> Unit
 ) {
     val uploaded = tile.status == AttachmentUploadStatus.DONE
-    val failed = tile.status == AttachmentUploadStatus.FAILED
-    val rejected = tile.status == AttachmentUploadStatus.REJECTED
+    val failed = tile.isRetryableFailure
+    val rejected = tile.isTerminalError
     val isError = failed || rejected
     val uploading = tile.status == AttachmentUploadStatus.UPLOADING
     val shape = RoundedCornerShape(style.mediaCornerRadius)
@@ -184,7 +185,7 @@ private fun MediaTileBody(
                 color = if (isError) style.cardErrorStrokeColor else style.mediaStrokeColor,
                 shape = shape
             )
-            .clickable(enabled = uploaded || failed || rejected) {
+            .clickable(enabled = (uploaded || failed || rejected) && !tile.isCopyMissing) {
                 when {
                     failed -> onRetry()
                     rejected -> onRejected()
@@ -256,6 +257,7 @@ private fun MediaTileBody(
                     .background(style.mediaDimColor)
                     .then(
                         when {
+                            tile.isCopyMissing -> Modifier
                             failed -> Modifier.clickable(onClick = onRetry)
                             rejected -> Modifier.clickable(onClick = onRejected)
                             else -> Modifier
@@ -284,8 +286,8 @@ private fun FileTileBody(
     onRejected: () -> Unit
 ) {
     val uploading = tile.status == AttachmentUploadStatus.UPLOADING
-    val failed = tile.status == AttachmentUploadStatus.FAILED
-    val rejected = tile.status == AttachmentUploadStatus.REJECTED
+    val failed = tile.isRetryableFailure
+    val rejected = tile.isTerminalError
     val isError = failed || rejected
     val done = tile.status == AttachmentUploadStatus.DONE
     val shape = RoundedCornerShape(style.cardCornerRadius)
@@ -300,7 +302,7 @@ private fun FileTileBody(
                 color = if (isError) style.cardErrorStrokeColor else style.cardStrokeColor,
                 shape = shape
             )
-            .clickable(enabled = done || failed || rejected) {
+            .clickable(enabled = (done || failed || rejected) && !tile.isCopyMissing) {
                 when {
                     failed -> onRetry()
                     rejected -> onRejected()
@@ -344,6 +346,7 @@ private fun FileTileBody(
             )
             Text(
                 text = when {
+                    tile.isCopyMissing -> stringResource(R.string.cometchat_attachment_copy_missing)
                     failed -> stringResource(R.string.cometchat_attachment_tap_to_retry)
                     rejected -> stringResource(R.string.cometchat_attachment_upload_failed)
                     else -> fileMetaLabel(tile)
@@ -372,8 +375,8 @@ private fun AudioTileBody(
     onRejected: () -> Unit
 ) {
     val uploading = tile.status == AttachmentUploadStatus.UPLOADING
-    val failed = tile.status == AttachmentUploadStatus.FAILED
-    val rejected = tile.status == AttachmentUploadStatus.REJECTED
+    val failed = tile.isRetryableFailure
+    val rejected = tile.isTerminalError
     val isError = failed || rejected
     val done = tile.status == AttachmentUploadStatus.DONE
     val shape = RoundedCornerShape(style.cardCornerRadius)
@@ -466,7 +469,7 @@ private fun AudioTileBody(
                 color = if (isError) style.cardErrorStrokeColor else style.cardStrokeColor,
                 shape = shape
             )
-            .clickable(enabled = failed || rejected) { if (failed) onRetry() else onRejected() }
+            .clickable(enabled = (failed || rejected) && !tile.isCopyMissing) { if (failed) onRetry() else onRejected() }
             .padding(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -525,6 +528,7 @@ private fun AudioTileBody(
             }
             Text(
                 text = when {
+                    tile.isCopyMissing -> stringResource(R.string.cometchat_attachment_copy_missing)
                     failed -> stringResource(R.string.cometchat_attachment_tap_to_retry)
                     rejected -> stringResource(R.string.cometchat_attachment_upload_failed)
                     else -> formatDuration(positionMillis) + "/" + formatDuration(totalMillis)
@@ -637,13 +641,16 @@ private fun ErrorBadge(
     onRetry: () -> Unit = {},
     onRejected: () -> Unit = {}
 ) {
-    val failed = tile.status == AttachmentUploadStatus.FAILED
+    val failed = tile.isRetryableFailure
     Box(
         modifier = Modifier
             .size(16.dp)
             .clip(CircleShape)
             .background(style.errorBadgeColor)
-            .clickable(onClick = if (failed) onRetry else onRejected),
+            .then(
+                if (tile.isCopyMissing) Modifier
+                else Modifier.clickable(onClick = if (failed) onRetry else onRejected)
+            ),
         contentAlignment = Alignment.Center
     ) {
         // The glyph drawables carry the badge's inner margin in their viewport, so they render at
@@ -709,12 +716,24 @@ private fun CornerBadge(
  * ---------------------------------------------------------------------------------------------- */
 
 @Composable
-private fun statusLabel(status: AttachmentUploadStatus): String = when (status) {
+private fun statusLabel(tile: AttachmentUploadTile): String = when (tile.status) {
     AttachmentUploadStatus.UPLOADING -> stringResource(R.string.cometchat_attachment_uploading)
-    AttachmentUploadStatus.FAILED -> stringResource(R.string.cometchat_attachment_tap_to_retry)
+    AttachmentUploadStatus.FAILED ->
+        if (tile.isCopyMissing) stringResource(R.string.cometchat_attachment_copy_missing)
+        else stringResource(R.string.cometchat_attachment_tap_to_retry)
     AttachmentUploadStatus.REJECTED -> stringResource(R.string.cometchat_attachment_upload_failed)
     AttachmentUploadStatus.DONE, AttachmentUploadStatus.CANCELLED -> ""
 }
+
+/**
+ * D-306 / BEH-UPLOAD-14: a restored file whose local copy is missing is not retryable. It renders
+ * as a terminal error (error glyph, no tile or badge tap) and offers remove only.
+ */
+private val AttachmentUploadTile.isRetryableFailure: Boolean
+    get() = status == AttachmentUploadStatus.FAILED && !isCopyMissing
+
+private val AttachmentUploadTile.isTerminalError: Boolean
+    get() = status == AttachmentUploadStatus.REJECTED || isCopyMissing
 
 /** Meta line under a file name: `EXT · size` (e.g. "PDF · 2.4 MB"), or just the size when the
  *  file has no extension. */

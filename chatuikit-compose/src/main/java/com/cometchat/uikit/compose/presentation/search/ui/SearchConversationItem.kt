@@ -41,6 +41,7 @@ import com.cometchat.uikit.compose.presentation.shared.statusindicator.StatusInd
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.compose.presentation.shared.formatters.FormatterUtils
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.compose.presentation.shared.statusindicator.rememberHideOnline
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.utils.AgentChatDetector
 import androidx.compose.ui.platform.LocalContext
@@ -167,7 +168,7 @@ private fun DefaultLeadingView(
             style = style.avatarStyle
         )
 
-        val statusIndicator = getStatusIndicator(conversation)
+        val statusIndicator = searchConversationStatusIndicator(conversation, rememberHideOnline())
         val isGroupType = statusIndicator == StatusIndicator.PRIVATE_GROUP ||
             statusIndicator == StatusIndicator.PROTECTED_GROUP ||
             statusIndicator == StatusIndicator.PUBLIC_GROUP
@@ -316,11 +317,17 @@ private fun getConversationAvatar(conversation: Conversation): String? {
     }
 }
 
-private fun getStatusIndicator(conversation: Conversation): StatusIndicator {
+/**
+ * The status indicator of a search-result conversation row.
+ * [hideOnline] is `rememberHideOnline()` (`OfflinePresence.hideOnline()`, re-read when the connection flips, ENG-41551 A): while offline is on
+ * and the device is not connected, a cached "online" renders as offline (ENG-41465). With
+ * [hideOnline] `false` this is exactly today's rule.
+ */
+internal fun searchConversationStatusIndicator(conversation: Conversation, hideOnline: Boolean): StatusIndicator {
     return when (conversation.conversationType) {
         CometChatConstants.CONVERSATION_TYPE_USER -> {
             val user = conversation.conversationWith as? User
-            if (user?.status == CometChatConstants.USER_STATUS_ONLINE) {
+            if (!hideOnline && user?.status == CometChatConstants.USER_STATUS_ONLINE) {
                 // Check for blocked user before showing ONLINE (matching reference)
                 if (user.isBlockedByMe || user.isHasBlockedMe) {
                     StatusIndicator.OFFLINE

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,9 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
@@ -148,29 +152,50 @@ public fun CometChatImageBubble(
                 // 1. Local file from metadata "path" → if exists, use it
                 // 2. attachment.fileUrl (primary URL)
                 // 3. If no local file AND thumbnail exists → override with thumbnail
-                val attachmentUrl = attachments[0].fileUrl ?: ""
-                val effectiveUrl = when {
-                    localFilePath != null -> localFilePath
-                    thumbnailUrl != null -> thumbnailUrl
-                    else -> attachmentUrl
+                // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+                // Re-resolve when the connection comes back (G9).
+                val mediaEpoch by MediaSourceResolver.connectionEpoch.collectAsState()
+                val offlineSource = remember(message, message.attachment?.localPath, mediaEpoch) {
+                    MediaSourceResolver.resolve(message.attachment)
                 }
-                // Fallback: if thumbnail URL fails (403), retry with attachment URL
-                val fallbackUrl = if (localFilePath == null && thumbnailUrl != null) attachmentUrl else null
+                if (offlineSource is MediaSource.Placeholder) {
+                    OfflineMediaPlaceholderBox(
+                        placeholder = offlineSource,
+                        onClick = { message.attachment?.let { MediaSourceResolver.download(it) { } } },
+                        onLongClick = onLongClick
+                    )
+                } else {
+                    val offlineLocalPath = (offlineSource as? MediaSource.Local)?.path ?: localFilePath
+                    val attachmentUrl = attachments[0].fileUrl ?: ""
+                    val effectiveUrl = when {
+                        offlineLocalPath != null -> offlineLocalPath
+                        thumbnailUrl != null -> thumbnailUrl
+                        else -> attachmentUrl
+                    }
+                    // Fallback: if thumbnail URL fails (403), retry with attachment URL
+                    val fallbackUrl = if (offlineLocalPath == null && thumbnailUrl != null) attachmentUrl else null
+                    // Offline (G9, BEH-MEDIA-13): when the URL fails after that fallback, ask the
+                    // SDK to download once. Null when offline is off or a local file is shown.
+                    val recovery = remember(offlineSource, offlineLocalPath) {
+                        if (offlineLocalPath != null) null else MediaLoadRecovery.forSource(offlineSource, message.attachment)
+                    }
                 
-                CometChatLogger.d(TAG, "=== SingleImageView URL Resolution ===")
-                CometChatLogger.d(TAG, "Local file path: $localFilePath")
-                CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
-                CometChatLogger.d(TAG, "Attachment URL: $attachmentUrl")
-                CometChatLogger.d(TAG, "Effective URL: $effectiveUrl")
-                CometChatLogger.d(TAG, "Fallback URL: $fallbackUrl")
+                    CometChatLogger.d(TAG, "=== SingleImageView URL Resolution ===")
+                    CometChatLogger.d(TAG, "Local file path: $localFilePath")
+                    CometChatLogger.d(TAG, "Thumbnail URL from metadata: $thumbnailUrl")
+                    CometChatLogger.d(TAG, "Attachment URL: $attachmentUrl")
+                    CometChatLogger.d(TAG, "Effective URL: $effectiveUrl")
+                    CometChatLogger.d(TAG, "Fallback URL: $fallbackUrl")
                 
-                SingleImageView(
-                    url = effectiveUrl,
-                    fallbackUrl = fallbackUrl,
-                    style = style,
-                    onClick = { onImageClick?.invoke(0, attachments[0]) },
-                    onLongClick = onLongClick
-                )
+                    SingleImageView(
+                        url = effectiveUrl,
+                        fallbackUrl = fallbackUrl,
+                        recovery = recovery,
+                        style = style,
+                        onClick = { onImageClick?.invoke(0, attachments[0]) },
+                        onLongClick = onLongClick
+                    )
+                }
             }
             else -> {
                 // Multiple images - grid layout
@@ -316,7 +341,8 @@ private fun SingleImageView(
     style: CometChatImageBubbleStyle,
     onClick: () -> Unit,
     fallbackUrl: String? = null,
-    onLongClick: (() -> Unit)? = null
+    onLongClick: (() -> Unit)? = null,
+    recovery: MediaLoadRecovery? = null
 ) {
     var useFallback by remember(url) { mutableStateOf(false) }
     val effectiveUrl = if (useFallback && !fallbackUrl.isNullOrEmpty()) fallbackUrl else url
@@ -347,6 +373,9 @@ private fun SingleImageView(
                         if (!useFallback && !fallbackUrl.isNullOrEmpty()) {
                             CometChatLogger.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
                             useFallback = true
+                        } else {
+                            // Fallback exhausted (G9): ask the SDK to download once; offline on only.
+                            recovery?.onFileUrlFailed()
                         }
                     }
                 )

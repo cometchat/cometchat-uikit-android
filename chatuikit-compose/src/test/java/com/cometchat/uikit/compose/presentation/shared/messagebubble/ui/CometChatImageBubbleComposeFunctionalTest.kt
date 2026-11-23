@@ -139,19 +139,23 @@ class CometChatImageBubbleComposeFunctionalTest {
     // ── the attachments-list divergence ─────────────────────────────────────
 
     @Test
-    fun sdkAttachmentsList_isIgnoredByThisBubble_unlikeTheSharedResolver() {
-        // MEASURED DIVERGENCE, pinned deliberately.
+    fun sdkAttachmentsList_rendersOnlyTheFirstItem_unlikeTheSharedResolver() {
+        // MEASURED DIVERGENCE, pinned deliberately (re-measured on SDK 5.1.0).
         //
         // The shared helper `resolveAttachments` checks `message.attachments` (the
         // SDK-parsed list) FIRST, then metadata, then the single attachment.
         // CometChatImageBubble's own private `extractAttachments` never consults
-        // `message.attachments` at all — it goes metadata, then single attachment.
+        // `message.attachments` — it goes metadata, then `message.attachment`.
         //
-        // Chat SDK 5.1.1 narrowed the gap: `setAttachments(list)` now also sets the
-        // single `attachment` to the first item, so a multi-image message delivered
-        // through the SDK list, with no metadata mirror, renders ONE image here (the
-        // first) while the multi-attachment bubble would render three. Asserting both
-        // sides so the difference is visible if either changes.
+        // Since SDK 5.1.0, `MediaMessage.setAttachments(list)` also sets the single
+        // `attachment` field to `list[0]` (null for a null or empty list). On 5.0.7
+        // it set only the list, so this bubble saw nothing and fell through to the
+        // empty upload placeholder ("0 image(s)", no-op click).
+        //
+        // So a multi-image message delivered through the SDK list, with no metadata
+        // mirror, now renders ONE real, tappable tile for the first item, while the
+        // multi-attachment bubble would render all three. Asserting both sides so
+        // the difference is visible if either changes.
         val message = MockFactory.createMediaMessage(count = 0).apply {
             attachments = (1..3).map { MockFactory.createAttachment(it) }
         }
@@ -161,12 +165,31 @@ class CometChatImageBubbleComposeFunctionalTest {
             3,
             resolveAttachments(message).size
         )
+        assertEquals(
+            "SDK 5.1.0 mirrors the first list item into the single attachment",
+            "media_1.jpg",
+            message.attachment?.fileName
+        )
 
-        render(message)
+        var index: Int? = null
+        var tapped: Attachment? = null
+        composeRule.setContent {
+            CometChatTheme {
+                CometChatImageBubble(
+                    message = message,
+                    alignment = UIKitConstants.MessageBubbleAlignment.LEFT,
+                    onImageClick = { i, a -> index = i; tapped = a },
+                )
+            }
+        }
 
         composeRule.onNodeWithContentDescription("Image message with 1 image(s)").assertIsDisplayed()
-        // Only the SDK-mirrored first attachment becomes a tile, not three.
-        assertEquals("the image bubble resolves only the first of them into a tile", 1, tileCount())
+        assertEquals("the image bubble renders only the first item as a tile", 1, tileCount())
+
+        composeRule.onAllNodes(hasClickAction())[0].performClick()
+        composeRule.waitForIdle()
+        assertEquals("the tile is the real first item, not the no-op placeholder", 0, index)
+        assertEquals("media_1.jpg", tapped?.fileName)
     }
 
     // ── the attachments overload ────────────────────────────────────────────

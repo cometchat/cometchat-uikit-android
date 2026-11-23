@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,9 @@ import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.formatters.CometChatTextFormatter
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatVideoBubbleStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.CometChatLogger
 
@@ -127,12 +131,34 @@ public fun CometChatVideoBubble(
     CometChatLogger.d(TAG, "Attachment URL: ${attachments.firstOrNull()?.fileUrl}")
     CometChatLogger.d(TAG, "Metadata: ${message.metadata}")
 
+    // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+    // Re-resolve when the connection comes back (G9).
+    val mediaEpoch by MediaSourceResolver.connectionEpoch.collectAsState()
+    val offlineSource = remember(message, message.attachment?.localPath, mediaEpoch) {
+        MediaSourceResolver.resolve(message.attachment)
+    }
+    if (offlineSource is MediaSource.Placeholder) {
+        OfflineMediaPlaceholderBox(
+            placeholder = offlineSource,
+            onClick = { message.attachment?.let { MediaSourceResolver.download(it) { } } },
+            onLongClick = onLongClick,
+            modifier = modifier.width(240.dp).padding(start = 4.dp, top = 4.dp, end = 4.dp)
+        )
+        return
+    }
+    // Offline (G9, BEH-MEDIA-13): when the poster URL fails after its file URL fallback, ask the
+    // SDK to download once. Null when offline is off or a local file is shown.
+    val recovery = remember(offlineSource, localFilePath) {
+        if (localFilePath != null) null else MediaLoadRecovery.forSource(offlineSource, message.attachment)
+    }
+
     CometChatVideoBubbleContent(
         attachments = attachments,
         style = style,
         caption = caption,
-        localFilePath = localFilePath,
+        localFilePath = (offlineSource as? MediaSource.Local)?.path ?: localFilePath,
         thumbnailUrl = thumbnailUrl,
+        recovery = recovery,
         onVideoClick = onVideoClick,
         onMoreClick = onMoreClick,
         onPlayClick = onPlayClick,
@@ -197,6 +223,7 @@ private fun CometChatVideoBubbleContent(
     caption: String?,
     localFilePath: String? = null,
     thumbnailUrl: String? = null,
+    recovery: MediaLoadRecovery? = null,
     onVideoClick: ((Int, Attachment) -> Unit)?,
     onMoreClick: ((List<Attachment>) -> Unit)?,
     onPlayClick: ((Attachment) -> Unit)?,
@@ -253,6 +280,7 @@ private fun CometChatVideoBubbleContent(
                 SingleVideoView(
                     url = effectiveUrl,
                     fallbackUrl = fallbackUrl,
+                    recovery = recovery,
                     style = style,
                     onClick = { onVideoClick?.invoke(0, attachments[0]) },
                     onPlayClick = { onPlayClick?.invoke(attachments[0]) },
@@ -417,7 +445,8 @@ private fun SingleVideoView(
     onClick: () -> Unit,
     onPlayClick: () -> Unit,
     fallbackUrl: String? = null,
-    onLongClick: (() -> Unit)? = null
+    onLongClick: (() -> Unit)? = null,
+    recovery: MediaLoadRecovery? = null
 ) {
     var useFallback by remember(url) { mutableStateOf(false) }
     val effectiveUrl = if (useFallback && !fallbackUrl.isNullOrEmpty()) fallbackUrl else url
@@ -449,6 +478,9 @@ private fun SingleVideoView(
                         if (!useFallback && !fallbackUrl.isNullOrEmpty()) {
                             CometChatLogger.d(TAG, "Coil: Switching to fallback URL: $fallbackUrl")
                             useFallback = true
+                        } else {
+                            // Fallback exhausted (G9): ask the SDK to download once; offline on only.
+                            recovery?.onFileUrlFailed()
                         }
                     }
                 )

@@ -491,7 +491,8 @@ public final class com/cometchat/uikit/compose/presentation/conversations/ui/Com
 }
 
 public final class com/cometchat/uikit/compose/presentation/conversations/ui/CometChatConversationsKt {
-	public static final fun CometChatConversations (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatConversationsViewModel;Lcom/cometchat/uikit/compose/presentation/conversations/style/CometChatConversationsStyle;Ljava/lang/String;ZZLkotlin/jvm/functions/Function2;ZLjava/lang/String;ZLjava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$SelectionMode;ZZZZZZZZZZLjava/lang/Integer;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Lcom/cometchat/chat/core/ConversationsRequest$ConversationsRequestBuilder;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;IIIIIII)V
+	public static final synthetic fun CometChatConversations (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatConversationsViewModel;Lcom/cometchat/uikit/compose/presentation/conversations/style/CometChatConversationsStyle;Ljava/lang/String;ZZLkotlin/jvm/functions/Function2;ZLjava/lang/String;ZLjava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$SelectionMode;ZZZZZZZZZZLjava/lang/Integer;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Lcom/cometchat/chat/core/ConversationsRequest$ConversationsRequestBuilder;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;IIIIIII)V
+	public static final fun CometChatConversations (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatConversationsViewModel;Lcom/cometchat/uikit/compose/presentation/conversations/style/CometChatConversationsStyle;Ljava/lang/String;ZZLkotlin/jvm/functions/Function2;ZLjava/lang/String;ZLjava/lang/String;Lcom/cometchat/uikit/core/constants/UIKitConstants$SelectionMode;ZZZZZZZZZZZLjava/lang/Integer;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Lcom/cometchat/chat/core/ConversationsRequest$ConversationsRequestBuilder;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;IIIIIII)V
 }
 
 public final class com/cometchat/uikit/compose/presentation/conversations/ui/ComposableSingletons$ConversationListContentKt {
@@ -1908,8 +1909,30 @@ public final class com/cometchat/uikit/compose/presentation/messagelist/style/Co
 	public final fun default (Landroidx/compose/runtime/Composer;I)Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatMessagePopupMenuStyle;
 }
 
+public final class com/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle {
+	public static final field $stable I
+	public static final field Companion Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle$Companion;
+	public synthetic fun <init> (Landroidx/compose/ui/text/TextStyle;JJLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Landroidx/compose/ui/text/TextStyle;
+	public final fun component2-0d7_KjU ()J
+	public final fun component3-0d7_KjU ()J
+	public final fun copy-WkMS-hQ (Landroidx/compose/ui/text/TextStyle;JJ)Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle;
+	public static synthetic fun copy-WkMS-hQ$default (Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle;Landroidx/compose/ui/text/TextStyle;JJILjava/lang/Object;)Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFailedTextColor-0d7_KjU ()J
+	public final fun getNotSentTextColor-0d7_KjU ()J
+	public final fun getTextStyle ()Landroidx/compose/ui/text/TextStyle;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle$Companion {
+	public final fun default-RIQooxk (Landroidx/compose/ui/text/TextStyle;JJLandroidx/compose/runtime/Composer;II)Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle;
+}
+
 public final class com/cometchat/uikit/compose/presentation/messagelist/ui/CometChatMessageListKt {
-	public static final fun CometChatMessageList (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel;Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatMessageListStyle;Lcom/cometchat/chat/models/User;Lcom/cometchat/chat/models/Group;JLcom/cometchat/chat/models/BaseMessage;ZLcom/cometchat/chat/core/MessagesRequest$MessagesRequestBuilder;ZZZZIZLjava/lang/Integer;ZZZZZZZZZZZZZZZZZZZZZZZZZZZZLcom/cometchat/uikit/core/constants/UIKitConstants$TimeStampAlignment;Lcom/cometchat/uikit/core/constants/UIKitConstants$MessageListAlignment;ZZZLjava/util/List;Ljava/lang/Integer;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationstarter/CometChatAIConversationStarterStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationsummary/CometChatAIConversationSummaryStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aismartreplies/CometChatAISmartRepliesStyle;Lkotlin/jvm/functions/Function5;Lcom/cometchat/uikit/compose/presentation/reactionlist/style/CometChatReactionListStyle;Lcom/cometchat/chat/core/ReactionsRequest$ReactionsRequestBuilder;Ljava/util/List;ZLjava/lang/String;Ljava/lang/String;Ljava/text/SimpleDateFormat;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Ljava/util/List;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Ljava/lang/Long;ZLandroidx/compose/runtime/Composer;IIIIIIIIIIIIIII)V
+	public static final synthetic fun CometChatMessageList (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel;Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatMessageListStyle;Lcom/cometchat/chat/models/User;Lcom/cometchat/chat/models/Group;JLcom/cometchat/chat/models/BaseMessage;ZLcom/cometchat/chat/core/MessagesRequest$MessagesRequestBuilder;ZZZZIZLjava/lang/Integer;ZZZZZZZZZZZZZZZZZZZZZZZZZZZZLcom/cometchat/uikit/core/constants/UIKitConstants$TimeStampAlignment;Lcom/cometchat/uikit/core/constants/UIKitConstants$MessageListAlignment;ZZZLjava/util/List;Ljava/lang/Integer;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationstarter/CometChatAIConversationStarterStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationsummary/CometChatAIConversationSummaryStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aismartreplies/CometChatAISmartRepliesStyle;Lkotlin/jvm/functions/Function5;Lcom/cometchat/uikit/compose/presentation/reactionlist/style/CometChatReactionListStyle;Lcom/cometchat/chat/core/ReactionsRequest$ReactionsRequestBuilder;Ljava/util/List;ZLjava/lang/String;Ljava/lang/String;Ljava/text/SimpleDateFormat;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Ljava/util/List;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Ljava/lang/Long;ZLandroidx/compose/runtime/Composer;IIIIIIIIIIIIIII)V
+	public static final fun CometChatMessageList (Landroidx/compose/ui/Modifier;Lcom/cometchat/uikit/core/viewmodel/CometChatMessageListViewModel;Lcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatMessageListStyle;Lcom/cometchat/chat/models/User;Lcom/cometchat/chat/models/Group;JLcom/cometchat/chat/models/BaseMessage;ZLcom/cometchat/chat/core/MessagesRequest$MessagesRequestBuilder;ZZZZIZLjava/lang/Integer;ZZZZZZZZZZZZZZZZZZZZZZZZZZZZLcom/cometchat/uikit/core/constants/UIKitConstants$TimeStampAlignment;Lcom/cometchat/uikit/core/constants/UIKitConstants$MessageListAlignment;ZZZLjava/util/List;Ljava/lang/Integer;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationstarter/CometChatAIConversationStarterStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aiconversationsummary/CometChatAIConversationSummaryStyle;Lkotlin/jvm/functions/Function4;Lcom/cometchat/uikit/compose/presentation/shared/aismartreplies/CometChatAISmartRepliesStyle;Lkotlin/jvm/functions/Function5;Lcom/cometchat/uikit/compose/presentation/reactionlist/style/CometChatReactionListStyle;Lcom/cometchat/chat/core/ReactionsRequest$ReactionsRequestBuilder;Ljava/util/List;ZLjava/lang/String;Ljava/lang/String;Ljava/text/SimpleDateFormat;Ljava/text/SimpleDateFormat;Lcom/cometchat/uikit/compose/presentation/shared/interfaces/DateTimeFormatterCallback;Ljava/util/List;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Ljava/lang/Long;ZLcom/cometchat/uikit/compose/presentation/messagelist/style/CometChatOfflineRowStyle;ZLandroidx/compose/runtime/Composer;IIIIIIIIIIIIIII)V
 }
 
 public final class com/cometchat/uikit/compose/presentation/messagelist/ui/CometChatMessagePopupMenuKt {
@@ -1919,8 +1942,8 @@ public final class com/cometchat/uikit/compose/presentation/messagelist/ui/Comet
 public final class com/cometchat/uikit/compose/presentation/messagelist/ui/ComposableSingletons$CometChatMessageListKt {
 	public static final field INSTANCE Lcom/cometchat/uikit/compose/presentation/messagelist/ui/ComposableSingletons$CometChatMessageListKt;
 	public fun <init> ()V
-	public final fun getLambda$-833752969$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$225853845$chatuikit_compose_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-576143827$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1514637519$chatuikit_compose_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class com/cometchat/uikit/compose/presentation/messagelist/ui/ComposableSingletons$MessageListItemKt {
@@ -7409,23 +7432,24 @@ public final class com/cometchat/uikit/compose/preview/presentation/ui/Composabl
 public final class com/cometchat/uikit/compose/preview/presentation/ui/ComposableSingletons$CometChatConversationListPreviewKt {
 	public static final field INSTANCE Lcom/cometchat/uikit/compose/preview/presentation/ui/ComposableSingletons$CometChatConversationListPreviewKt;
 	public fun <init> ()V
-	public final fun getLambda$-1098848992$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-1127414603$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$-1169899195$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1196650172$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1254601725$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$-1297385930$chatuikit_compose_release ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$-1359142651$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
-	public final fun getLambda$-1420249141$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$-1542129423$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1572854581$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$-1640078930$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1583794241$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-1657845641$chatuikit_compose_release ()Lkotlin/jvm/functions/Function3;
 	public final fun getLambda$-1673727883$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1701466848$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1719518101$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1744995945$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1844087900$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-1847518870$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$-1853666620$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1869056944$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-1917757514$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-2000538641$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-23463574$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-245405401$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-356534754$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
@@ -7436,6 +7460,7 @@ public final class com/cometchat/uikit/compose/preview/presentation/ui/Composabl
 	public final fun getLambda$-795535042$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-85006109$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-880747113$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-880955128$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$-887427410$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-929645908$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$-935611528$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
@@ -7443,13 +7468,12 @@ public final class com/cometchat/uikit/compose/preview/presentation/ui/Composabl
 	public final fun getLambda$1155423888$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$1162164784$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$1183446609$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$1193273689$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$1291400075$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1340199381$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$1399115561$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$1474323078$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$156263288$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$1601331297$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$1923443463$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 	public final fun getLambda$324347965$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$42612537$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$557417362$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
@@ -7462,7 +7486,6 @@ public final class com/cometchat/uikit/compose/preview/presentation/ui/Composabl
 	public final fun getLambda$806029388$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$839941785$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$847199081$chatuikit_compose_release ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$955136756$chatuikit_compose_release ()Lkotlin/jvm/functions/Function4;
 }
 
 public final class com/cometchat/uikit/compose/preview/presentation/ui/ComposableSingletons$CometChatCreatePollPreviewKt {

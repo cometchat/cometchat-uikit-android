@@ -49,6 +49,8 @@ dependencies {
 
     // CometChat Chat SDK (no calls SDK — text-only AI chat)
     implementation(libs.chat.sdk.android)
+    // SQLCipher engine so offline encryption(true) can open an encrypted cache.
+    implementation(libs.sqlcipher.android)
 
     // AndroidX Core
     implementation(libs.androidx.core.ktx)

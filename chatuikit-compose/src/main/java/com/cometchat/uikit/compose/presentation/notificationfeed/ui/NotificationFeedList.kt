@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import com.cometchat.chat.models.NotificationFeedItem
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.notificationfeed.style.CometChatNotificationFeedStyle
 import com.cometchat.uikit.compose.theme.CometChatTheme
+import com.cometchat.uikit.core.offline.OfflineUi
 import com.cometchat.uikit.core.state.TimestampGroup
 
 /**
@@ -69,6 +71,12 @@ public fun NotificationFeedList(
 ) {
     val listState = rememberLazyListState()
 
+    // Offline on, a failed page (not-connected included) waits for the retry footer: this effect
+    // restarts whenever isLoadingMore flips back to false, so it would otherwise re-fire the read
+    // in a loop while offline. Captured once; offline off the condition is today's.
+    val offlineOn = remember { OfflineUi.keyMode() }
+    val paginationError = rememberUpdatedState(isPaginationError)
+
     // Infinite scroll trigger — load more when near bottom
     LaunchedEffect(listState, hasMorePages, isLoadingMore) {
         snapshotFlow {
@@ -78,7 +86,8 @@ public fun NotificationFeedList(
                 totalItems > 0 &&
                 lastVisibleItem.index >= totalItems - 3 &&
                 hasMorePages &&
-                !isLoadingMore
+                !isLoadingMore &&
+                !(offlineOn && paginationError.value)
         }.collect { shouldLoad ->
             if (shouldLoad) {
                 onLoadMore()

@@ -47,6 +47,7 @@ import com.cometchat.uikit.compose.presentation.shared.interfaces.DateTimeFormat
 import com.cometchat.uikit.compose.presentation.shared.popupmenu.CometChatPopupMenu
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.CometChatStatusIndicator
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.StatusIndicator
+import com.cometchat.uikit.compose.presentation.shared.statusindicator.rememberHideOnline
 import com.cometchat.uikit.compose.shared.views.popupmenu.MenuItem
 import com.cometchat.uikit.core.factory.CometChatMessageHeaderViewModelFactory
 import com.cometchat.uikit.core.state.MessageHeaderUIState
@@ -340,10 +341,12 @@ private fun DefaultLeadingView(
         )
 
         // Status indicator — hidden entirely for agentic users
+        // ENG-41551 A: no green dot while offline is on and not connected; recomposes on a flip.
+        val hideOnline = rememberHideOnline()
         val statusIndicator = when {
             isAgentChat -> null
             user != null && !hideUserStatus && !isBlocked(user) -> {
-                if (user.status == CometChatConstants.USER_STATUS_ONLINE) {
+                if (!hideOnline && user.status == CometChatConstants.USER_STATUS_ONLINE) {
                     StatusIndicator.ONLINE
                 } else {
                     StatusIndicator.OFFLINE
@@ -437,8 +440,13 @@ private fun DefaultSubtitleView(
         return
     }
 
+    // ENG-41551 A: offline on and not connected: no presence text (no "Online", no last seen).
+    // Recomposes when the connection flips.
+    val hideOnline = rememberHideOnline()
+
     // Show user status or group member count
     when {
+        user != null && !hideUserStatus && !isBlocked(user) && hideOnline -> Unit
         user != null && !hideUserStatus && !isBlocked(user) -> {
             val statusText = if (user.status == CometChatConstants.USER_STATUS_ONLINE) {
                 context.getString(R.string.cometchat_online)

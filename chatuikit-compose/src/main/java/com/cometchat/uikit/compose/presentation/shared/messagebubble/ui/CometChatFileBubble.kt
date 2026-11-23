@@ -20,8 +20,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,8 @@ import androidx.compose.ui.unit.takeOrElse
 import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.compose.R
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatFileBubbleStyle
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.utils.formatFileSubtitle
@@ -99,6 +104,35 @@ public fun CometChatFileBubble(
     // Extract attachments from message
     val attachments = remember(message.id) {
         extractFileAttachments(message)
+    }
+
+    // Offline (G9): a single file never downloaded and unreachable shows "available when online",
+    // and a tap asks the SDK to download. Null when offline is off: today's path.
+    // Re-resolve when the connection comes back (G9).
+    val mediaEpoch by MediaSourceResolver.connectionEpoch.collectAsState()
+    val offlineSource = remember(message, message.attachment?.localPath, mediaEpoch) {
+        if (attachments.size == 1) MediaSourceResolver.resolve(message.attachment) else null
+    }
+    if (offlineSource is MediaSource.Placeholder) {
+        val attachment = attachments[0]
+        val context = LocalContext.current
+        val download = { message.attachment?.let { MediaSourceResolver.download(it) { } }; Unit }
+        Column(modifier = modifier.width(240.dp)) {
+            SingleFileItem(
+                fileName = attachment.fileName ?: "Unknown file",
+                fileSize = attachment.fileSize.toLong(),
+                mimeType = attachment.fileMimeType,
+                fileUrl = attachment.fileUrl,
+                style = style,
+                showDownloadIcon = showDownloadIcon,
+                cornerRadius = RoundedCornerShape(style.cornerRadius),
+                onClick = download,
+                onDownloadClick = download,
+                onLongClick = onLongClick,
+                subtitleOverride = offlineMediaCaption(context, offlineSource).replace("\n", " · ")
+            )
+        }
+        return
     }
 
     CometChatFileBubble(
@@ -245,7 +279,8 @@ private fun SingleFileItem(
     cornerRadius: Shape,
     onClick: () -> Unit,
     onDownloadClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null
+    onLongClick: (() -> Unit)? = null,
+    subtitleOverride: String? = null
 ) {
     val fileType = remember(mimeType, fileUrl) {
         getFileType(mimeType, fileUrl)
@@ -253,8 +288,8 @@ private fun SingleFileItem(
     val fileIcon = remember(fileType) {
         getFileTypeIcon(fileType)
     }
-    val subtitle = remember(fileSize, fileName) {
-        formatFileSubtitle(fileSize, fileName)
+    val subtitle = remember(fileSize, fileName, subtitleOverride) {
+        subtitleOverride ?: formatFileSubtitle(fileSize, fileName)
     }
 
     Row(

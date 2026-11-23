@@ -21,6 +21,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -92,6 +93,7 @@ public fun CometChatNotificationFeed(
     onBackPress: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val connectToLoad by viewModel.connectToLoad.collectAsState()
     val filterChips by viewModel.filterChips.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
@@ -107,6 +109,12 @@ public fun CometChatNotificationFeed(
         if (uiState is NotificationFeedUIState.Error) {
             onError?.invoke((uiState as NotificationFeedUIState.Error).exception)
         }
+    }
+
+    // D84 rule 5: offline on, a load that fails online while cached rows stay reports to onError.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(viewModel) {
+        viewModel.loadErrorWithRows.collect { currentOnError?.invoke(it) }
     }
 
     val backgroundColor = resolvedStyle.backgroundColor
@@ -215,6 +223,9 @@ public fun CometChatNotificationFeed(
                             errorStateView(state.exception) {
                                 viewModel.fetchInitialItems()
                             }
+                        } else if (connectToLoad) {
+                            // D84 rule 3: offline with nothing shown: the offline state, no Retry.
+                            NotificationFeedOfflineState(modifier = Modifier.fillMaxSize())
                         } else {
                             NotificationFeedErrorState(
                                 exception = state.exception,

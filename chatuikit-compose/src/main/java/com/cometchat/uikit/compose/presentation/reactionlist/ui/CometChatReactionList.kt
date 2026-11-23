@@ -15,11 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,6 +122,7 @@ public fun CometChatReactionList(
 
     // Collect state from ViewModel
     val uiState by reactionListViewModel.uiState.collectAsState()
+    val connectToLoad by reactionListViewModel.connectToLoad.collectAsState()
     val reactionHeaders by reactionListViewModel.reactionHeaders.collectAsState()
     val reactedUsers by reactionListViewModel.reactedUsers.collectAsState()
     val activeTabIndex by reactionListViewModel.activeTabIndex.collectAsState()
@@ -156,6 +159,17 @@ public fun CometChatReactionList(
             is ReactionListUIState.Error -> onError?.invoke(state.exception)
             else -> { /* No callback for Loading or Content */ }
         }
+    }
+
+    // D84 rule 5: offline on, a load that fails online while cached rows stay reports to onError.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(reactionListViewModel) {
+        reactionListViewModel.loadErrorWithRows.collect { currentOnError?.invoke(it) }
+    }
+
+    // D83: a dismissed list never reads on reconnect (the ViewModel outlives the sheet).
+    DisposableEffect(reactionListViewModel) {
+        onDispose { reactionListViewModel.cancelReconnectRefill() }
     }
 
     // Main container
@@ -211,7 +225,12 @@ public fun CometChatReactionList(
                     if (!hideErrorState) {
                         errorView?.invoke() ?: ReactionListErrorState(
                             style = style,
-                            errorText = stringResource(R.string.cometchat_reaction_list_error)
+                            // D84 rule 3: offline with nothing shown is the offline state.
+                            errorText = if (connectToLoad) {
+                                stringResource(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_reactions)
+                            } else {
+                                stringResource(R.string.cometchat_reaction_list_error)
+                            }
                         )
                     }
                 }

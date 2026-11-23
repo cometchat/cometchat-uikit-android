@@ -29,6 +29,13 @@ public object MessageReceiptUtils {
             return Receipt.ERROR
         }
 
+        // Offline (G5, BEH-SEND-30/32): a failed send shows the failed icon, checked first. Only the
+        // offline outbox ever sets FAILED, so with offline off this never fires. An unsent row (no
+        // server id) never shows a receipt: getReceipt maps id 0 to the clock.
+        if (baseMessage.status == com.cometchat.chat.models.MessageStatus.FAILED) {
+            return Receipt.ERROR
+        }
+
         val metadata: JSONObject? = baseMessage.metadata
         if (metadata != null) {
             try {

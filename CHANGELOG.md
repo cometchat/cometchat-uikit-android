@@ -3,6 +3,38 @@
 All notable changes to the CometChat UI Kit for Android are documented here.
 Each entry is generated from that release's pull-request description.
 
+## v6.3.0 (2026-11-23)
+
+# v6.3.0
+
+## New
+- Added offline support to both UI Kits. Turn it on with `UIKitSettings.UIKitSettingsBuilder().setOfflineConfig(...)`. The UI Kit then reads from the Chat SDK's on-device cache, so conversations, users, groups, group members and saved message history, including threads, open without a connection. Offline support is off unless your app turns it on.
+- With offline enabled, text messages, voice notes and messages sent with `CometChatUIKit.sendTextMessage`, `sendMediaMessage` and `sendCustomMessage` wait in a queue while the device is offline and go out when the connection returns. A queued message shows "Not sent yet". A message that could not be sent shows "Not sent. Tap to retry", and its menu offers Retry, Delete and, for text messages, Copy.
+- With offline enabled, lists keep the rows saved on the device while offline. A list with nothing saved shows a "Connect to load" state, search shows "Connect to search", and the message list shows "Connect to load more" and "Jump to latest" at the edge of the saved history. Each loads once when the connection returns.
+- With offline enabled, the media viewer, Download, Share and the image, video, audio and file bubbles use the copy saved on the device. Media with no saved copy shows "Media will be available when back online".
+- With offline enabled, the composer restores attachments that were still uploading when the app closed, and follows uploads that resume.
+- Added `CometChatEvents.offlineEvents`, with `CometChatOfflineEvent.MessageSendStateChanged` and `CometChatOfflineEvent.OfflineCacheReset`.
+- Added `setHideOfflineNotices` (Kotlin) and `hideOfflineNotices` (Jetpack Compose) to `CometChatMessageList` and `CometChatConversations`, to hide the notices these lists show while offline.
+- Added `CometChatOfflineRowStyle`, set with `setOfflineRowStyle` (Kotlin) or `offlineRowStyle` (Jetpack Compose) on `CometChatMessageList`, to style the "Not sent yet" and "Not sent. Tap to retry" lines.
+- Added string resources for the offline states and notices, translated for every built-in language. Override them in your app's `res/values/strings.xml`.
+
+## Enhancements
+- Pinning, unpinning, saving or unsaving a message, and pinning or unpinning a conversation, now update the UI as soon as the action succeeds.
+
+## Fixes
+- Fixed the message list jumping to the bottom when older messages load.
+- Fixed delivered and read ticks on a conversation's last message not updating when a receipt arrived for that message or a later one, in one-to-one and group chats.
+- Fixed the conversation row time showing when the conversation was last updated instead of when its last message was sent.
+- Fixed a message blocked by moderation showing as a normal last message in the conversation list after its send completed.
+- Fixed a long moderation notice in the Jetpack Compose UI Kit stretching the text bubble. The text now wraps.
+- Fixed the Jetpack Compose thread header showing an avatar on every parent message instead of following the message list's avatar rule.
+- Fixed the Kotlin reaction list showing an empty sheet when it fails to load. It now shows its error text, or your custom error view, below the tabs.
+- With offline enabled, the UI Kit now opens, downloads and shares only media files saved by the Chat SDK. A message link that names another file on the device is ignored.
+
+## Breaking Changes
+- The UI Kit now brings in Chat SDK 5.1.2. Chat SDK 5.1.2 no longer fires `onMessagePinned`, `onMessageUnpinned`, `onMessageSaved`, `onMessageUnsaved`, `onConversationPinned` or `onConversationUnpinned` on the device that made the change. The UI Kit already updates from the action's `onSuccess`. **If your app updates its own UI from these callbacks for the current device's actions, move that update into `onSuccess`.**
+- If your unit tests stub `fetchNext(any())` or `fetchPrevious(any())` on Chat SDK request classes such as `ConversationsRequest`, give the matcher a type. Chat SDK 5.1.2 adds a second overload of these methods.
+
 ## v6.2.0 (2026-11-11)
 
 # v6.2.0

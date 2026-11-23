@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,9 +38,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cometchat.chat.models.Attachment
 import com.cometchat.chat.models.MediaMessage
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.messagebubble.style.CometChatAudioBubbleStyle
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.utils.AudioBubbleStateManager
 import com.cometchat.uikit.core.utils.CometChatLogger
@@ -73,7 +77,16 @@ public fun CometChatAudioBubble(
     val messageId = message.id.toInt()
     val fileName = message.attachment?.fileName ?: "audio_${messageId}.m4a"
     val fileSize = message.attachment?.fileSize ?: 0
-    CometChatAudioBubbleContent(audioUrl, messageId, fileName, fileSize, style, alignment, onLongClick, modifier)
+    // Offline (G9): local path → URL → placeholder. Null when offline is off: today's path.
+    // Re-resolve when the connection comes back (G9).
+    val mediaEpoch by MediaSourceResolver.connectionEpoch.collectAsState()
+    val offlineSource = remember(message, message.attachment?.localPath, mediaEpoch) {
+        MediaSourceResolver.resolve(message.attachment)
+    }
+    CometChatAudioBubbleContent(
+        audioUrl, messageId, fileName, fileSize, style, alignment, onLongClick, modifier,
+        offlineSource = offlineSource, offlineAttachment = message.attachment
+    )
 }
 
 @Composable
@@ -96,7 +109,9 @@ private fun CometChatAudioBubbleContent(
     audioUrl: String, messageId: Int, fileName: String, fileSize: Int,
     style: CometChatAudioBubbleStyle,
     alignment: UIKitConstants.MessageBubbleAlignment,
-    onLongClick: (() -> Unit)?, modifier: Modifier = Modifier
+    onLongClick: (() -> Unit)?, modifier: Modifier = Modifier,
+    offlineSource: MediaSource? = null,
+    offlineAttachment: Attachment? = null
 ) {
     val cdHoist1 = stringResource(R.string.cometchat_a11y_audio_message)
     val context = LocalContext.current
@@ -110,23 +125,32 @@ private fun CometChatAudioBubbleContent(
     var isDownloading by remember { mutableStateOf(false) }
     var downloadProgress by remember { mutableFloatStateOf(0f) }
     var progress by remember { mutableFloatStateOf(0f) }
-    val initialDisplayText = if (fileSize > 0) formatFileSize(fileSize) else "00:00 / 00:00"
+    val offlineLocalPath = (offlineSource as? MediaSource.Local)?.path
+    val offlinePlaceholder = offlineSource as? MediaSource.Placeholder
+    val initialDisplayText = when {
+        offlinePlaceholder != null -> offlineMediaCaption(context, offlinePlaceholder).replace("\n", " · ")
+        fileSize > 0 -> formatFileSize(fileSize)
+        else -> "00:00 / 00:00"
+    }
     var durationText by remember { mutableStateOf(initialDisplayText) }
 
     val playbackState = remember(messageId) { AudioBubbleStateManager.getOrCreate(messageId, audioUrl, null) }
     var playState by remember { mutableStateOf(playbackState.playState) }
     var isInitializing by remember { mutableStateOf(playbackState.isInitializing) }
 
-    LaunchedEffect(messageId) {
+    LaunchedEffect(messageId, offlineLocalPath) {
         val cacheDir = context.externalCacheDir ?: context.cacheDir
-        val cachedFile = File(cacheDir, "${messageId}_${fileName}")
+        // Offline (G9): the SDK's downloaded copy plays in place of the kit's cache file.
+        val offlineFile = offlineLocalPath?.let { File(it) }?.takeIf { it.exists() && it.length() > 0 }
+        val cachedFile = offlineFile ?: File(cacheDir, "${messageId}_${fileName}")
         if (cachedFile.exists() && cachedFile.length() > 0) {
             isDownloaded = true
             playbackState.localPath = cachedFile.absolutePath
             waveformData = WaveformUtils.generateDeterministicWaveform(cachedFile.absolutePath, BAR_COUNT)
             playbackState.initFromFile(cachedFile.absolutePath, onError = {
                 // Corrupt cache entry — evict it and fall back to the download flow on next tap.
-                cachedFile.delete()
+                // The SDK's own offline copy is never deleted by the kit.
+                if (cachedFile !== offlineFile) cachedFile.delete()
                 isDownloaded = false
                 durationText = initialDisplayText
             }) {
@@ -160,6 +184,11 @@ private fun CometChatAudioBubbleContent(
     DisposableEffect(messageId) { onDispose { } }
 
     fun onPlayTap() {
+        // Offline placeholder (G9): ask the SDK to download; MediaReady re-resolves the row.
+        if (offlinePlaceholder != null && !isDownloaded) {
+            offlineAttachment?.let { MediaSourceResolver.download(it) { } }
+            return
+        }
         if (!isDownloaded) {
             scope.launch {
                 isDownloading = true; downloadProgress = 0f

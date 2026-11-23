@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +34,8 @@ import com.cometchat.chat.core.ConversationsRequest
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.chat.models.Conversation
 import com.cometchat.uikit.compose.R
+import com.cometchat.uikit.core.R as CoreR
+import com.cometchat.uikit.core.offline.OfflineNotice
 import com.cometchat.uikit.core.state.DeleteState
 import com.cometchat.uikit.core.state.UIState
 import com.cometchat.uikit.compose.presentation.conversations.style.CometChatConversationsStyle
@@ -79,6 +82,7 @@ import java.text.SimpleDateFormat
  * @param hideLoadingState Whether to hide loading state
  * @param hideEmptyState Whether to hide empty state
  * @param hideErrorState Whether to hide error state
+ * @param hideOfflineNotices Whether to hide the one-line offline notices (default false)
  * @param disableSoundForMessages Whether to disable notification sounds
  * @param customSoundForMessages Custom sound resource ID
  * @param dateTimeFormatter Custom date/time formatter callback
@@ -135,6 +139,7 @@ public fun CometChatConversations(
     hideLoadingState: Boolean = false,
     hideEmptyState: Boolean = false,
     hideErrorState: Boolean = false,
+    hideOfflineNotices: Boolean = false,
     // Sound configuration
     disableSoundForMessages: Boolean = false,
     customSoundForMessages: Int? = null,
@@ -211,6 +216,9 @@ public fun CometChatConversations(
     
     // Collect state from ViewModel
     val uiState by viewModel.uiState.collectAsState()
+    // D84: the offline states ("Connect to search", "Connect to load chats"); always false offline off
+    val connectToSearch by viewModel.connectToSearch.collectAsState()
+    val connectToLoad by viewModel.connectToLoad.collectAsState()
     val conversations by viewModel.conversations.collectAsState()
     val typingIndicators by viewModel.typingIndicators.collectAsState()
     val selectedConversations by viewModel.selectedConversations.collectAsState()
@@ -224,6 +232,16 @@ public fun CometChatConversations(
     var showUnpinDialog by remember { mutableStateOf(false) }
     var conversationToUnpin by remember { mutableStateOf<Conversation?>(null) }
     
+    // Offline notices (ENG-41088): one toast each. Not collected while hidden, so a hidden list
+    // never takes a notice another list would show.
+    if (!hideOfflineNotices) {
+        LaunchedEffect(viewModel) {
+            viewModel.offlineNotices.collect { notice ->
+                Toast.makeText(context, offlineNoticeText(context, notice), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     // Handle state callbacks
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -232,6 +250,12 @@ public fun CometChatConversations(
             is UIState.Error -> onError?.invoke(state.exception)
             is UIState.Loading -> { /* No callback for loading */ }
         }
+    }
+
+    // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(viewModel) {
+        viewModel.rowsKeptError.collect { currentOnError?.invoke(it) }
     }
     
     // Handle delete state
@@ -317,23 +341,41 @@ public fun CometChatConversations(
                 
                 is UIState.Empty -> {
                     if (!hideEmptyState) {
-                        emptyView?.invoke() ?: CometChatEmptyState(
-                            style = style.emptyStateStyle,
-                            title = context.getString(R.string.cometchat_empty_conversations_title),
-                            subtitle = context.getString(R.string.cometchat_empty_conversations_subtitle)
-                        )
+                        emptyView?.invoke() ?: if (connectToSearch) {
+                            // D84 rule 7: an offline `searchKeyword` list.
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search),
+                                subtitle = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle)
+                            )
+                        } else {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(R.string.cometchat_empty_conversations_title),
+                                subtitle = context.getString(R.string.cometchat_empty_conversations_subtitle)
+                            )
+                        }
                     }
                 }
-                
+
                 is UIState.Error -> {
                     if (!hideErrorState) {
                         errorView?.invoke { viewModel.fetchConversations() }
-                            ?: CometChatErrorState(
-                                style = style.errorStateStyle,
-                                title = context.getString(R.string.cometchat_error_conversations_title),
-                                subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
-                                onRetry = { viewModel.fetchConversations() }
-                            )
+                            ?: if (connectToLoad) {
+                                // D84 rule 3: offline with nothing on screen: the offline state, no Retry.
+                                CometChatEmptyState(
+                                    style = style.emptyStateStyle,
+                                    title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_chats),
+                                    subtitle = ""
+                                )
+                            } else {
+                                CometChatErrorState(
+                                    style = style.errorStateStyle,
+                                    title = context.getString(R.string.cometchat_error_conversations_title),
+                                    subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
+                                    onRetry = { viewModel.fetchConversations() }
+                                )
+                            }
                     }
                 }
                 
@@ -443,6 +485,125 @@ public fun CometChatConversations(
             }
         )
     }
+}
+
+/**
+ * The pre-6.3.0 signature, kept for binary compatibility (ENG-41088 added [hideOfflineNotices]).
+ */
+@Deprecated("Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+@Composable
+public fun CometChatConversations(
+    modifier: Modifier = Modifier,
+    conversationListViewModel: CometChatConversationsViewModel? = null,
+    style: CometChatConversationsStyle = CometChatConversationsStyle.default(),
+    title: String? = null,
+    hideToolbar: Boolean = false,
+    hideBackIcon: Boolean = true,
+    overflowMenu: (@Composable () -> Unit)? = null,
+    hideSearchBox: Boolean = false,
+    searchPlaceholderText: String? = null,
+    hideSearchEndIcon: Boolean = false,
+    searchText: String = "",
+    selectionMode: UIKitConstants.SelectionMode = UIKitConstants.SelectionMode.NONE,
+    hideUserStatus: Boolean = false,
+    hideGroupType: Boolean = false,
+    hideReceipts: Boolean = false,
+    hideSeparator: Boolean = false,
+    hidePinOption: Boolean = false,
+    hideDeleteOption: Boolean = false,
+    hideLoadingState: Boolean = false,
+    hideEmptyState: Boolean = false,
+    hideErrorState: Boolean = false,
+    disableSoundForMessages: Boolean = false,
+    customSoundForMessages: Int? = null,
+    dateFormat: SimpleDateFormat? = null,
+    dateTimeFormatter: DateTimeFormatterCallback? = null,
+    conversationsRequestBuilder: ConversationsRequest.ConversationsRequestBuilder? = null,
+    mentionAllLabelId: String? = null,
+    mentionAllLabel: String? = null,
+    textFormatters: List<CometChatTextFormatter>? = null,
+    loadingView: (@Composable () -> Unit)? = null,
+    emptyView: (@Composable () -> Unit)? = null,
+    errorView: (@Composable (onRetry: () -> Unit) -> Unit)? = null,
+    itemView: (@Composable (Conversation, TypingIndicator?) -> Unit)? = null,
+    leadingView: (@Composable (Conversation, TypingIndicator?) -> Unit)? = null,
+    titleView: (@Composable (Conversation, TypingIndicator?) -> Unit)? = null,
+    subtitleView: (@Composable (Conversation, TypingIndicator?) -> Unit)? = null,
+    trailingView: (@Composable (Conversation, TypingIndicator?) -> Unit)? = null,
+    options: ((Context, Conversation) -> List<MenuItem>)? = null,
+    addOptions: ((Context, Conversation) -> List<MenuItem>)? = null,
+    onItemClick: ((Conversation) -> Unit)? = null,
+    onItemLongClick: ((Conversation) -> Unit)? = null,
+    onError: ((CometChatException) -> Unit)? = null,
+    onLoad: ((List<Conversation>) -> Unit)? = null,
+    onEmpty: (() -> Unit)? = null,
+    onBackPress: (() -> Unit)? = null,
+    onSearchClick: (() -> Unit)? = null,
+    onSelection: ((List<Conversation>) -> Unit)? = null
+) {
+    CometChatConversations(
+        modifier = modifier,
+        conversationListViewModel = conversationListViewModel,
+        style = style,
+        title = title,
+        hideToolbar = hideToolbar,
+        hideBackIcon = hideBackIcon,
+        overflowMenu = overflowMenu,
+        hideSearchBox = hideSearchBox,
+        searchPlaceholderText = searchPlaceholderText,
+        hideSearchEndIcon = hideSearchEndIcon,
+        searchText = searchText,
+        selectionMode = selectionMode,
+        hideUserStatus = hideUserStatus,
+        hideGroupType = hideGroupType,
+        hideReceipts = hideReceipts,
+        hideSeparator = hideSeparator,
+        hidePinOption = hidePinOption,
+        hideDeleteOption = hideDeleteOption,
+        hideLoadingState = hideLoadingState,
+        hideEmptyState = hideEmptyState,
+        hideErrorState = hideErrorState,
+        disableSoundForMessages = disableSoundForMessages,
+        customSoundForMessages = customSoundForMessages,
+        dateFormat = dateFormat,
+        dateTimeFormatter = dateTimeFormatter,
+        conversationsRequestBuilder = conversationsRequestBuilder,
+        mentionAllLabelId = mentionAllLabelId,
+        mentionAllLabel = mentionAllLabel,
+        textFormatters = textFormatters,
+        loadingView = loadingView,
+        emptyView = emptyView,
+        errorView = errorView,
+        itemView = itemView,
+        leadingView = leadingView,
+        titleView = titleView,
+        subtitleView = subtitleView,
+        trailingView = trailingView,
+        options = options,
+        addOptions = addOptions,
+        onItemClick = onItemClick,
+        onItemLongClick = onItemLongClick,
+        onError = onError,
+        onLoad = onLoad,
+        onEmpty = onEmpty,
+        onBackPress = onBackPress,
+        onSearchClick = onSearchClick,
+        onSelection = onSelection,
+        hideOfflineNotices = false
+    )
+}
+
+/** The text of one offline notice, from the strings shipped in every locale (ENG-41086). */
+private fun offlineNoticeText(context: Context, notice: OfflineNotice): String = when (notice) {
+    is OfflineNotice.QueueFull -> context.getString(CoreR.string.cometchat_queue_full)
+    is OfflineNotice.FileTooLargeOffline -> context.getString(CoreR.string.cometchat_file_too_large_offline)
+    is OfflineNotice.SendingTryAgain -> context.getString(CoreR.string.cometchat_sending_try_again)
+    is OfflineNotice.UnsentRemoved -> context.getString(CoreR.string.cometchat_unsent_message_removed)
+    is OfflineNotice.MessagesNotSent ->
+        context.resources.getQuantityString(CoreR.plurals.cometchat_messages_not_sent, notice.count, notice.count)
+    is OfflineNotice.UnsentLost ->
+        context.resources.getQuantityString(CoreR.plurals.cometchat_unsent_messages_lost, notice.count, notice.count)
+    is OfflineNotice.UnsentMaybeLost -> context.getString(CoreR.string.cometchat_unsent_messages_maybe_lost)
 }
 
 /**

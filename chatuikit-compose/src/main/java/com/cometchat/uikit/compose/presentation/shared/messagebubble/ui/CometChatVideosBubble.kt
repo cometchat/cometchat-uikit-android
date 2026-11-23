@@ -38,7 +38,8 @@ public fun CometChatVideosBubble(
 ) {
     // Every attachment stays in the grid — a kind-mismatched one (server-sent mixed payload)
     // renders as a broken tile in MediaTile rather than being dropped.
-    val videos = remember(message.id) { resolveAttachments(message) }
+    // Keyed on the local paths too: a MediaReady (G9) swaps in attachments that carry one.
+    val videos = remember(message.id, localPathsKey(message)) { resolveAttachments(message) }
     val thumbnailUrl = remember(message.id) { message.thumbnailUrl() }
     MediaBubbleContent(
         videos, style.toGridAppearance(), isVideo = true, caption,

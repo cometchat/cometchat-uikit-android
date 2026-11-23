@@ -62,10 +62,10 @@ you do not need to declare it yourself:
 
 ```kotlin
 // Jetpack Compose
-implementation("com.cometchat:chatuikit-compose-android:6.2.0")
+implementation("com.cometchat:chatuikit-compose-android:6.3.0")
 
 // or XML views
-implementation("com.cometchat:chatuikit-kotlin-android:6.2.0")
+implementation("com.cometchat:chatuikit-kotlin-android:6.3.0")
 ```
 
 ### Voice and video calling (optional)

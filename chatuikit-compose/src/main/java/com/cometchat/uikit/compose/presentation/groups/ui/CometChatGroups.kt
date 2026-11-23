@@ -22,6 +22,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -177,6 +178,9 @@ public fun CometChatGroups(
     val uiState by groupsViewModel.uiState.collectAsState()
     val groups by groupsViewModel.groups.collectAsState()
     val selectedGroups by groupsViewModel.selectedGroups.collectAsState()
+    // D84: the offline states ("Connect to search", "Connect to load groups"); always false offline off
+    val connectToSearch by groupsViewModel.connectToSearch.collectAsState()
+    val connectToLoad by groupsViewModel.connectToLoad.collectAsState()
 
     // Search state with debounce
     var searchQuery by remember { mutableStateOf(searchKeyword ?: "") }
@@ -235,6 +239,12 @@ public fun CometChatGroups(
             is GroupsUIState.Error -> onError?.invoke(state.exception)
             is GroupsUIState.Loading -> { /* No callback for loading */ }
         }
+    }
+
+    // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(groupsViewModel) {
+        groupsViewModel.rowsKeptError.collect { currentOnError?.invoke(it) }
     }
 
     // Create search box style from groups style
@@ -304,23 +314,41 @@ public fun CometChatGroups(
 
                 is GroupsUIState.Empty -> {
                     if (!hideEmptyState) {
-                        emptyView?.invoke() ?: CometChatEmptyState(
-                            style = style.emptyStateStyle,
-                            title = context.getString(R.string.cometchat_group_list_empty_state_title),
-                            subtitle = context.getString(R.string.cometchat_group_list_empty_state_subtitle)
-                        )
+                        emptyView?.invoke() ?: if (connectToSearch) {
+                            // D84 rule 7: an offline keyword search.
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search),
+                                subtitle = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle)
+                            )
+                        } else {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(R.string.cometchat_group_list_empty_state_title),
+                                subtitle = context.getString(R.string.cometchat_group_list_empty_state_subtitle)
+                            )
+                        }
                     }
                 }
 
                 is GroupsUIState.Error -> {
                     if (!hideErrorState) {
                         errorView?.invoke { groupsViewModel.fetchGroups() }
-                            ?: CometChatErrorState(
-                                style = style.errorStateStyle,
-                                title = context.getString(R.string.cometchat_group_list_error_state_title),
-                                subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
-                                onRetry = { groupsViewModel.fetchGroups() }
-                            )
+                            ?: if (connectToLoad) {
+                                // D84 rule 3: offline with nothing on screen: the offline state, no Retry.
+                                CometChatEmptyState(
+                                    style = style.emptyStateStyle,
+                                    title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_groups),
+                                    subtitle = ""
+                                )
+                            } else {
+                                CometChatErrorState(
+                                    style = style.errorStateStyle,
+                                    title = context.getString(R.string.cometchat_group_list_error_state_title),
+                                    subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
+                                    onRetry = { groupsViewModel.fetchGroups() }
+                                )
+                            }
                     }
                 }
 

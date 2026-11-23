@@ -25,7 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,6 +105,7 @@ import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.domain.model.StreamMessage
 import com.cometchat.uikit.core.utils.CometChatLogger
+import kotlin.math.roundToInt
 
 // ============================================================================
 // Leading View Resolution API
@@ -516,11 +519,29 @@ internal object InternalContentRenderer {
      * @param context The Android context
      * @param mediaMessage The media message containing the file
      */
-    private fun openFileAttachment(context: android.content.Context, mediaMessage: MediaMessage) {
-        // Try local file first
+    @androidx.annotation.VisibleForTesting
+    internal fun openFileAttachment(context: android.content.Context, mediaMessage: MediaMessage) {
+        // Try local file first — on the offline path the SDK's downloaded copy first (G9).
         try {
+            val offlineLocal = (com.cometchat.uikit.core.utils.MediaSourceResolver.resolve(mediaMessage.attachment)
+                as? com.cometchat.uikit.core.utils.MediaSource.Local)?.path
             val metadata = mediaMessage.metadata
-            if (metadata != null && metadata.has("path")) {
+            if (offlineLocal != null) {
+                // D-330: the SDK's copy sits in noBackupFilesDir, which no FileProvider path covers,
+                // so open a cache copy of it instead (never getUriForFile on the SDK file). Only a
+                // file inside the SDK's media folder is opened (BEH-MEDIA-21).
+                val local = com.cometchat.uikit.core.utils.MediaViewerSource.localFile(context, offlineLocal)
+                if (local != null) {
+                    val attachment = mediaMessage.attachment
+                    com.cometchat.uikit.compose.presentation.imageviewer.ui.ViewerLocalMedia.openLocalCopy(
+                        context,
+                        local,
+                        attachment?.fileName?.takeIf { it.isNotEmpty() } ?: local.name,
+                        attachment?.fileMimeType ?: "*/*"
+                    )
+                    return
+                }
+            } else if (metadata != null && metadata.has("path")) {
                 val path = metadata.getString("path")
                 if (!path.isNullOrEmpty()) {
                     val file = java.io.File(path)
@@ -549,8 +570,9 @@ internal object InternalContentRenderer {
         }
 
         // Fall back to remote URL
+        // Offline on, an http(s) URL only, never a path from the message (BEH-MEDIA-21).
         val attachment = mediaMessage.attachment ?: return
-        val fileUrl = attachment.fileUrl ?: return
+        val fileUrl = com.cometchat.uikit.core.utils.MediaViewerSource.openableUrl(attachment)
         if (fileUrl.isEmpty()) return
         val mimeType = attachment.fileMimeType ?: "*/*"
         try {
@@ -580,13 +602,18 @@ internal object InternalContentRenderer {
      * @param mediaMessage The media message containing file attachment(s)
      * @param index The index of the attachment to download
      */
-    private fun downloadFileAttachment(context: android.content.Context, mediaMessage: MediaMessage, index: Int) {
+    @androidx.annotation.VisibleForTesting
+    internal fun downloadFileAttachment(context: android.content.Context, mediaMessage: MediaMessage, index: Int) {
         val attachments = getAttachmentsList(mediaMessage)
         val attachment = attachments.getOrNull(index) ?: return
         val fileUrl = attachment.fileUrl ?: return
         if (fileUrl.isEmpty()) return
         val baseName = attachment.fileName?.takeIf { it.isNotEmpty() }
             ?: "file_${System.currentTimeMillis()}"
+        // Offline on (D-324): the local copy is saved with no network call; else today's download.
+        if (com.cometchat.uikit.compose.presentation.imageviewer.ui.ViewerLocalMedia
+                .downloadAttachment(context, attachment, baseName)
+        ) return
         // Resolve against on-disk files so the tap always downloads, even if a same-named file
         // already exists (a fresh copy is saved with a (1)/(2)… suffix rather than being skipped).
         enqueueDownload(context, fileUrl, resolveUniqueFileName(context, baseName, mutableSetOf()))
@@ -606,12 +633,24 @@ internal object InternalContentRenderer {
         // collide on the same destination — DownloadManager then fails all but the first. Reserving
         // each resolved name guarantees a distinct destination per file so every one downloads.
         val reservedNames = mutableSetOf<String>()
+        var savedLocal = false
         attachments.forEachIndexed { index, attachment ->
             val fileUrl = attachment.fileUrl ?: return@forEachIndexed
             if (fileUrl.isEmpty()) return@forEachIndexed
             val baseName = attachment.fileName?.takeIf { it.isNotEmpty() }
                 ?: "file_${System.currentTimeMillis()}_$index"
+            // Offline on (D-324): each file's local copy is saved with no network call (one toast
+            // for the batch); the rest take today's download.
+            if (com.cometchat.uikit.compose.presentation.imageviewer.ui.ViewerLocalMedia
+                    .downloadAttachment(context, attachment, baseName, showToast = false)
+            ) {
+                savedLocal = true
+                return@forEachIndexed
+            }
             enqueueDownload(context, fileUrl, resolveUniqueFileName(context, baseName, reservedNames))
+        }
+        if (savedLocal) {
+            android.widget.Toast.makeText(context, R.string.cometchat_downloading, android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -722,18 +761,22 @@ internal object InternalContentRenderer {
      * Opens a set of image attachments in the in-app image viewer, starting at [startIndex] with
      * swipe navigation through the rest (multi-attachment grid preview).
      */
-    private fun openImageViewer(
+    @androidx.annotation.VisibleForTesting
+    internal fun openImageViewer(
         context: android.content.Context,
         attachments: List<com.cometchat.chat.models.Attachment>,
         startIndex: Int
     ) {
+        // Offline on (D-324, BEH-MEDIA-18): each page's local copy first, then its URL — so a queued
+        // own image (local copy, no URL yet) opens too. Offline off: today's URLs.
+        val sources = attachments.map { com.cometchat.uikit.core.utils.MediaViewerSource.of(it) }
         // Keep all four lists parallel (urls included) — dropping empty-url entries here would
         // shift pages against fileNames/mimeTypes and against the grid's tile indices.
-        if (attachments.none { !it.fileUrl.isNullOrEmpty() }) return
+        if (sources.none { it.isNotEmpty() }) return
         context.startActivity(
             CometChatImageViewerActivity.createIntent(
                 context = context,
-                imageUrls = attachments.map { it.fileUrl.orEmpty() },
+                imageUrls = sources,
                 fileNames = attachments.map { it.fileName.orEmpty() },
                 mimeTypes = attachments.map { it.fileMimeType.orEmpty() },
                 startIndex = startIndex.coerceIn(0, attachments.lastIndex)
@@ -750,18 +793,22 @@ internal object InternalContentRenderer {
      * Opens a set of video attachments in the in-app (non full-screen) video player, starting at
      * [startIndex] with swipe navigation through the rest (multi-attachment message).
      */
-    private fun openVideoViewer(
+    @androidx.annotation.VisibleForTesting
+    internal fun openVideoViewer(
         context: android.content.Context,
         attachments: List<com.cometchat.chat.models.Attachment>,
         startIndex: Int
     ) {
+        // Offline on (D-324, BEH-MEDIA-18): each video's local copy first, then its URL. Offline
+        // off: today's URLs.
+        val sources = attachments.map { com.cometchat.uikit.core.utils.MediaViewerSource.of(it) }
         // Keep all four lists parallel (urls included) — dropping empty-url entries here would
         // shift pages against fileNames/mimeTypes and against the grid's tile indices.
-        if (attachments.none { !it.fileUrl.isNullOrEmpty() }) return
+        if (sources.none { it.isNotEmpty() }) return
         context.startActivity(
             com.cometchat.uikit.compose.presentation.imageviewer.ui.CometChatVideoViewerActivity.createIntent(
                 context = context,
-                videoUrls = attachments.map { it.fileUrl.orEmpty() },
+                videoUrls = sources,
                 fileNames = attachments.map { it.fileName.orEmpty() },
                 mimeTypes = attachments.map { it.fileMimeType?.takeIf { m -> m.isNotEmpty() } ?: "video/*" },
                 startIndex = startIndex.coerceIn(0, attachments.lastIndex)
@@ -2061,8 +2108,38 @@ internal object InternalContentRenderer {
      * Default bottom view that renders a moderation indicator for disapproved messages.
      *
      * Shows a moderation notice only when the message is a [TextMessage] or
-     * [MediaMessage] with moderation status "disapproved". For short text
-     * (< 15 chars), constrains width to 200dp.
+     * [MediaMessage] with moderation status "disapproved".
+     *
+     * **How wide the banner is allowed to make the bubble (ENG-39283).** The banner is a child of
+     * the bubble's `Modifier.width(IntrinsicSize.Max)` content column
+     * (`CometChatMessageBubble.kt:681`), so whatever it reports as its intrinsic width can widen the
+     * bubble. For text that report is **capped** at [MODERATION_BANNER_MAX_WIDTH_FRACTION] of the
+     * display width via [capIntrinsicWidth]: past the cap the bubble stops growing and the sentence
+     * wraps instead. Media keeps [ignoreIntrinsicWidth] — a media bubble's width must keep coming
+     * from the media.
+     *
+     * Only the *intrinsic* report is capped; measurement is passed through. So when the **message**
+     * **text** is what makes the column wide — a long moderated message — the bubble still grows to
+     * the ordinary maximum and the banner fills it. The cap bounds the banner's contribution, never
+     * the message's.
+     *
+     * Both extremes were built and measured before this landed. Uncapped (ENG-39226) the banner's
+     * single-line intrinsic width dragged a moderated `damn` to 76 % of the screen on one line.
+     * Zeroed — `ignoreIntrinsicWidth` for text, rejected at `332f8f872` — the bubble collapsed to
+     * its content and the sentence shattered into a narrow many-line column. Capped, it sits at
+     * Kotlin's proportion with the sentence wrapped to about two lines.
+     *
+     * There is deliberately no `maxLines`. Kotlin's `android:maxLines="2"` is **not** inherited: a
+     * line cap clips on a narrow bubble, which is the original ENG-39226 bug in miniature.
+     *
+     * A note on the reference layout, because the earlier version of this KDoc got it wrong. In
+     * `cometchat_bottom_view.xml` the moderation `TextView` is `layout_width="0dp"` +
+     * `layout_weight="1"`. That is **not** the XML equivalent of contributing zero width:
+     * `LinearLayout` skips measuring a `0dp`-plus-weight child only when its own width mode is
+     * `EXACTLY`; under `AT_MOST` — a wrap-content bubble — it measures that child `WRAP_CONTENT`,
+     * so the banner widens Kotlin's bubble too. That is precisely why Kotlin's `damn` bubble reaches
+     * 63 %. Kotlin's cap is emergent from its own measurement pass; ours is explicit.
+     * (`cometchat_moderation_message.xml` is a dead layout — nothing in the repo inflates it.)
      *
      * @param message The message to check moderation status for
      * @param alignment The bubble alignment
@@ -2088,13 +2165,23 @@ internal object InternalContentRenderer {
 
         if (!isDisapproved) return
 
+        // Media keeps ignoreIntrinsicWidth (ENG-39283 §3.2): a media bubble's width must keep
+        // coming from the media. Text caps the banner's contribution instead of zeroing it.
+        val isMediaBubble = message is MediaMessage
+        val bannerMaxIntrinsicWidthPx = with(LocalDensity.current) {
+            (LocalConfiguration.current.screenWidthDp.dp.toPx() *
+                MODERATION_BANNER_MAX_WIDTH_FRACTION).roundToInt()
+        }
+        // Both modifiers allocate an anonymous LayoutModifier with no equals(), so a fresh instance
+        // every recomposition would force the bubble subtree to remeasure while the list scrolls.
+        val bannerWidthModifier = remember(isMediaBubble, bannerMaxIntrinsicWidthPx) {
+            if (isMediaBubble) Modifier.ignoreIntrinsicWidth()
+            else Modifier.capIntrinsicWidth(bannerMaxIntrinsicWidthPx)
+        }
+
         Box(
             modifier = Modifier
-                // The bubble content Column uses Modifier.width(IntrinsicSize.Max); the long
-                // moderation text's single-line intrinsic width would otherwise stretch the whole
-                // bubble past the media/content width (leaving the media left-aligned with a gap).
-                // Report a 0 intrinsic width so the banner fills the content width without widening it.
-                .ignoreIntrinsicWidth()
+                .then(bannerWidthModifier)
                 .fillMaxWidth()
                 .background(
                     color = androidx.compose.ui.res.colorResource(id = R.color.cometchat_color_error_100)
@@ -2112,17 +2199,72 @@ internal object InternalContentRenderer {
                 Text(
                     text = stringResource(id = R.string.cometchat_moderation_block_message),
                     color = CometChatTheme.colorScheme.errorColor,
-                    style = CometChatTheme.typography.caption1Regular,
-                    maxLines = 2
+                    style = CometChatTheme.typography.caption1Regular
                 )
             }
         }
     }
 
     /**
+     * Caps how much the moderation banner may contribute to the bubble's enclosing
+     * `Modifier.width(IntrinsicSize.Max)` column (`CometChatMessageBubble.kt:681`), as a fraction of
+     * the display width.
+     *
+     * Seeded at the ENG-39283 §2 estimate: Kotlin's moderated `damn` bubble sits at 681/1080 px
+     * (63.1 %) with the banner wrapped to two lines, and Compose's uncapped banner dragged the same
+     * message out to 1022/1344 px (76 %). 0.63 reproduces Kotlin's proportion — on the 1344 px rig
+     * that is a 847 px cap.
+     *
+     * 🔴 This is a **chosen constant**, not a derived one: Kotlin's 63 % is emergent from its own
+     * `LinearLayout` measurement pass and there is no constant there to copy, so this can drift if
+     * either layout changes. The value is landed by device measurement against Kotlin side by side
+     * (ENG-39283 §2, lead's step) — **never** by tuning against the Robolectric harness, which has
+     * twice produced figures the device contradicted (§10). Adjusting the rendering is a one-line
+     * edit here.
+     *
+     * Expressed as a fraction of the display width, which is this module's established idiom for a
+     * bubble max-width — see [com.cometchat.uikit.compose.presentation.shared.messagebubble.ui]'s
+     * card bubble (0.75) and AI assistant bubble (0.65 / 0.70). Display width equals the message
+     * row's width in every layout this kit ships; the kit has no multi-pane layout, and if one is
+     * ever added, every one of those caps needs revisiting together, not just this one.
+     */
+    private const val MODERATION_BANNER_MAX_WIDTH_FRACTION = 0.63f
+
+    /**
+     * Reports at most [maxWidthPx] as this element's intrinsic width, while measuring and placing it
+     * exactly as it would be otherwise.
+     *
+     * Only the *intrinsic* query is capped, so the banner stops dragging the bubble wider than the
+     * cap and its sentence wraps instead. Measurement is passed through untouched, so when some
+     * **other** child (a long message's text) makes the column wider than the cap, the banner still
+     * fills that full width — which is what keeps ENG-39283 invariant 4 true. Contrast
+     * [ignoreIntrinsicWidth], which reports 0 and is kept for media only.
+     */
+    private fun Modifier.capIntrinsicWidth(maxWidthPx: Int): Modifier = this.then(
+        object : androidx.compose.ui.layout.LayoutModifier {
+            override fun androidx.compose.ui.layout.MeasureScope.measure(
+                measurable: androidx.compose.ui.layout.Measurable,
+                constraints: androidx.compose.ui.unit.Constraints
+            ): androidx.compose.ui.layout.MeasureResult {
+                val placeable = measurable.measure(constraints)
+                return layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+            }
+
+            override fun androidx.compose.ui.layout.IntrinsicMeasureScope.minIntrinsicWidth(
+                measurable: androidx.compose.ui.layout.IntrinsicMeasurable, height: Int
+            ): Int = minOf(measurable.minIntrinsicWidth(height), maxWidthPx)
+
+            override fun androidx.compose.ui.layout.IntrinsicMeasureScope.maxIntrinsicWidth(
+                measurable: androidx.compose.ui.layout.IntrinsicMeasurable, height: Int
+            ): Int = minOf(measurable.maxIntrinsicWidth(height), maxWidthPx)
+        }
+    )
+
+    /**
      * Fills the resolved width like [Modifier.fillMaxWidth] but reports a 0 intrinsic width, so a
-     * child does not inflate a parent measured with `Modifier.width(IntrinsicSize.Max)`. Used by the
-     * moderation banner so its long text can't stretch the bubble past the media/content width.
+     * child does not inflate a parent measured with `Modifier.width(IntrinsicSize.Max)`. Kept for
+     * **media** moderation banners only, so the bubble's width keeps coming from the media; text
+     * uses [capIntrinsicWidth] instead (ENG-39283).
      */
     private fun Modifier.ignoreIntrinsicWidth(): Modifier = this.then(
         object : androidx.compose.ui.layout.LayoutModifier {

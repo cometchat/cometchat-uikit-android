@@ -6,6 +6,7 @@ import com.cometchat.chat.core.CometChat
 import com.cometchat.chat.exceptions.CometChatException
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.UIKitSettings
+import com.cometchat.ai.sampleapp.kotlin.utils.AppPreferences
 
 /**
  * Application class for the AI Assistant Sample App (v6 UIKit).
@@ -50,6 +51,8 @@ class AIAssistantApplication : Application() {
             .setAuthKey(authKey)
             .subscribePresenceForAllUsers()
             .setAutoEstablishSocketConnection(true)
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences(this).offlineConfig())
             .build()
 
         CometChatUIKit.init(

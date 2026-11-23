@@ -88,6 +88,28 @@ public fun NotificationFeedEmptyState(
 }
 
 /**
+ * Offline state (D84 rule 3): the feed was read offline with nothing to show. The error
+ * illustration and "Connect to load notifications", no Retry: the feed reads once by itself on
+ * reconnect.
+ */
+@Composable
+internal fun NotificationFeedOfflineState(modifier: Modifier = Modifier) {
+    CometChatEmptyState(
+        modifier = modifier.testTag("notification-feed-offline-state"),
+        title = stringResource(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_notifications),
+        subtitle = "",
+        style = CometChatEmptyStateStyle.default(
+            backgroundColor = CometChatTheme.colorScheme.backgroundColor2,
+            icon = painterResource(R.drawable.cometchat_ic_error),
+            iconTint = CometChatTheme.colorScheme.neutralColor400,
+            iconSize = 120.dp,
+            titleTextColor = CometChatTheme.colorScheme.textColorPrimary,
+            titleTextStyle = CometChatTheme.typography.heading3Bold
+        )
+    )
+}
+
+/**
  * Error state — illustration + "Oops!" + description + Retry button.
  * Matches Figma: Campaigns - Full Page Error
  *

@@ -49,8 +49,14 @@ public class CometChatVideoViewerActivity : ComponentActivity() {
                 mimeTypes = mimeTypes,
                 initialPage = startIndex,
                 onBack = { finish() },
-                onDownload = { url, name, _ -> downloadVideo(url, name) },
-                onShare = { url, name, mime -> shareVideo(url, name, mime) }
+                // A local copy (offline on, D-324) is saved/shared without a network call;
+                // otherwise today's path.
+                onDownload = { url, name, mime ->
+                    if (!ViewerLocalMedia.download(this, url, name, mime)) downloadVideo(url, name)
+                },
+                onShare = { url, name, mime ->
+                    if (!ViewerLocalMedia.share(this, url, name, mime)) shareVideo(url, name, mime)
+                }
             )
         }
     }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -187,6 +188,9 @@ public fun CometChatUsers(
     val uiState by viewModel.uiState.collectAsState()
     val users by viewModel.users.collectAsState()
     val selectedUsers by viewModel.selectedUsers.collectAsState()
+    // D84: the offline states ("Connect to search", "Connect to load users"); always false offline off
+    val connectToSearch by viewModel.connectToSearch.collectAsState()
+    val connectToLoad by viewModel.connectToLoad.collectAsState()
     
     // Search state
     var searchQuery by remember { mutableStateOf(searchKeyword ?: "") }
@@ -211,6 +215,12 @@ public fun CometChatUsers(
             is UsersUIState.Error -> onError?.invoke(state.exception)
             is UsersUIState.Loading -> { /* No callback for loading */ }
         }
+    }
+
+    // D84 rule 5: a read failed online while rows stay on screen; onError still fires.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(viewModel) {
+        viewModel.rowsKeptError.collect { currentOnError?.invoke(it) }
     }
     
     // Create search box style from users style
@@ -280,23 +290,41 @@ public fun CometChatUsers(
                 
                 is UsersUIState.Empty -> {
                     if (!hideEmptyState) {
-                        emptyView?.invoke() ?: CometChatEmptyState(
-                            style = style.emptyStateStyle,
-                            title = context.getString(R.string.cometchat_user_list_empty_state_title),
-                            subtitle = context.getString(R.string.cometchat_user_list_empty_state_subtitle)
-                        )
+                        emptyView?.invoke() ?: if (connectToSearch) {
+                            // D84 rule 7: an offline keyword search.
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search),
+                                subtitle = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_subtitle)
+                            )
+                        } else {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(R.string.cometchat_user_list_empty_state_title),
+                                subtitle = context.getString(R.string.cometchat_user_list_empty_state_subtitle)
+                            )
+                        }
                     }
                 }
-                
+
                 is UsersUIState.Error -> {
                     if (!hideErrorState) {
                         errorView?.invoke { viewModel.fetchUsers() }
-                            ?: CometChatErrorState(
-                                style = style.errorStateStyle,
-                                title = context.getString(R.string.cometchat_error_conversations_title),
-                                subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
-                                onRetry = { viewModel.fetchUsers() }
-                            )
+                            ?: if (connectToLoad) {
+                                // D84 rule 3: offline with nothing on screen: the offline state, no Retry.
+                                CometChatEmptyState(
+                                    style = style.emptyStateStyle,
+                                    title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_users),
+                                    subtitle = ""
+                                )
+                            } else {
+                                CometChatErrorState(
+                                    style = style.errorStateStyle,
+                                    title = context.getString(R.string.cometchat_error_conversations_title),
+                                    subtitle = context.getString(R.string.cometchat_something_went_wrong_please_try_again),
+                                    onRetry = { viewModel.fetchUsers() }
+                                )
+                            }
                     }
                 }
                 

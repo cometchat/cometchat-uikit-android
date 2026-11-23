@@ -50,8 +50,14 @@ public class CometChatImageViewerActivity : ComponentActivity() {
                 mimeTypes = mimeTypes,
                 initialPage = startIndex,
                 onBack = { finish() },
-                onDownload = { url, name, _ -> downloadImage(url, name) },
-                onShare = { url, name, mime -> shareImage(url, name, mime) }
+                // A local copy (offline on, D-324) is saved/shared without a network call;
+                // otherwise today's path.
+                onDownload = { url, name, mime ->
+                    if (!ViewerLocalMedia.download(this, url, name, mime)) downloadImage(url, name)
+                },
+                onShare = { url, name, mime ->
+                    if (!ViewerLocalMedia.share(this, url, name, mime)) shareImage(url, name, mime)
+                }
             )
         }
     }

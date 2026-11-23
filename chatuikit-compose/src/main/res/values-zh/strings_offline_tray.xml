@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BEH-UPLOAD-14 / D-306: composer upload tray restored after an app-kill (ENG-41136). -->
+<resources>
+    <string name="cometchat_attachment_copy_missing" translatable="true">文件未保存。请移除后重新添加。</string>
+</resources>

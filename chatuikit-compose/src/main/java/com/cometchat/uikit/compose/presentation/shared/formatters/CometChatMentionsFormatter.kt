@@ -17,6 +17,8 @@ import com.cometchat.chat.models.GroupMember
 import com.cometchat.chat.models.User
 import com.cometchat.uikit.core.CometChatUIKit
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.core.offline.OfflinePresence
+import com.cometchat.uikit.core.offline.TwoPhaseSuggestionFetch
 import com.cometchat.uikit.compose.R
 import com.cometchat.uikit.compose.presentation.shared.formatters.style.CometChatMentionStyle
 import com.cometchat.uikit.compose.presentation.shared.formatters.style.PromptTextStyle
@@ -282,86 +284,139 @@ public class CometChatMentionsFormatter(
         fetchGroupMembers()
     }
 
+    /**
+     * Fetches the next page of user suggestions with the SDK 5.1.0 two-phase listener, offline on
+     * and off (README §3.9 "Mentions suggestions"; merge rules in [TwoPhaseSuggestionFetch]).
+     * A reply for a request that is no longer current — the keyword changed — is dropped.
+     */
     public fun fetchUsers() {
-        usersRequest?.fetchNext(object : CometChat.CallbackListener<List<User>>() {
-            override fun onSuccess(users: List<User>) {
-                val suggestions = users.map { user ->
-                    SuggestionItem(
-                        id = user.uid, name = user.name, leadingIconUrl = user.avatar,
-                        status = user.status, promptText = "${getTrackingCharacter()}${user.name}",
-                        underlyingText = "<${getTrackingCharacter()}uid:${user.uid}>",
-                        data = try { user.toJson() } catch (e: Exception) { null },
-                        promptTextStyle = tagStyle
-                    )
-                }
-                val currentList = localSuggestionItemList.value.toMutableList()
-                val existingIds = currentList.mapTo(HashSet()) { it.id }
-                currentList.addAll(suggestions.filter { existingIds.add(it.id) })
-                localSuggestionItemList.value = currentList
-                setSuggestionItemList(currentList)
+        val request = usersRequest ?: return
+        val fetch = TwoPhaseSuggestionFetch(request.searchKeyword)
+        request.fetchNext(object : CometChat.UserFetchListener() {
+            override fun onCachedUsers(users: List<User>) {
+                if (request !== usersRequest) return
+                val merged = fetch.onCached(localSuggestionItemList.value, userSuggestions(users)) { it.id }
+                    ?: return
+                localSuggestionItemList.value = merged
+                setSuggestionItemList(merged)
+                if (merged.isNotEmpty()) setShowLoadingIndicator(false)
+            }
+
+            override fun onServerUsers(users: List<User>) {
+                if (request !== usersRequest) return
+                val merged = fetch.onServer(localSuggestionItemList.value, userSuggestions(users)) { it.id }
+                localSuggestionItemList.value = merged
+                setSuggestionItemList(merged)
                 setShowLoadingIndicator(false)
             }
+
             override fun onError(e: CometChatException) {
-                localSuggestionItemList.value = emptyList()
-                setSuggestionItemList(emptyList())
+                if (request !== usersRequest) return
+                // Offline with a keyword lands here too: an empty list, never an error toast.
+                if (!fetch.keepRowsOnError(e)) {
+                    localSuggestionItemList.value = emptyList()
+                    setSuggestionItemList(emptyList())
+                }
                 setShowLoadingIndicator(false)
             }
         })
     }
 
-    public fun fetchGroupMembers() {
-        groupMembersRequest?.fetchNext(object : CometChat.CallbackListener<List<GroupMember>>() {
-            override fun onSuccess(groupMembers: List<GroupMember>) {
-                val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
-                val suggestions = mutableListOf<SuggestionItem>()
-                for (member in groupMembers) {
-                    val isSelf = member.uid == loggedInUser?.uid
-                    suggestions.add(SuggestionItem(
-                        id = member.uid, name = member.name, leadingIconUrl = member.avatar,
-                        status = member.status, promptText = "${getTrackingCharacter()}${member.name}",
-                        underlyingText = "<${getTrackingCharacter()}uid:${member.uid}>",
-                        data = try { member.toJson() } catch (e: Exception) { null },
-                        promptTextStyle = if (isSelf && selfTagStyle != null) selfTagStyle else tagStyle
-                    ))
-                }
-                // Append fetched members to the accumulated list first, skipping any
-                // ids already present so overlapping fetches can't duplicate members.
-                val currentList = localSuggestionItemList.value.toMutableList()
-                val existingIds = currentList.mapTo(HashSet()) { it.id }
-                currentList.addAll(suggestions.filter { existingIds.add(it.id) })
+    /**
+     * Suggestion rows for one page of users. Presence is read once for the page (ENG-41465): offline
+     * on and not connected, a cached "online" becomes "offline"; otherwise `user.status` as is.
+     */
+    private fun userSuggestions(users: List<User>): List<SuggestionItem> {
+        val hideOnline = OfflinePresence.hideOnline()
+        return users.map { userSuggestion(it, hideOnline) }
+    }
 
-                // Add @all only once: check the accumulated list (not just the old snapshot)
-                if (!disableMentionAll && getGroup() != null) {
-                    val containsMentionAll = currentList.any { it.id == mentionAllId }
-                    val searchKeyword = groupMembersRequest?.searchKeyword ?: ""
-                    if (!containsMentionAll && mentionAllId.lowercase().contains(searchKeyword.lowercase())) {
-                        val metaData = JSONObject()
-                        try { metaData.put("infoText", mentionAllInfoText) } catch (e: JSONException) { }
-                        val group = getGroup()
-                        val iconUrl = when {
-                            group?.icon?.isNotEmpty() == true -> group.icon
-                            group?.name?.isNotEmpty() == true -> group.name
-                            else -> ""
-                        }
-                        currentList.add(0, SuggestionItem(
-                            id = mentionAllId, name = "${getTrackingCharacter()}$mentionAllLabelText",
-                            leadingIconUrl = iconUrl, status = null,
-                            promptText = "${getTrackingCharacter()}$mentionAllLabelText",
-                            underlyingText = "<${getTrackingCharacter()}all:$mentionAllId>",
-                            data = metaData, promptTextStyle = selfTagStyle
-                        ))
-                    }
-                }
-                localSuggestionItemList.value = currentList
-                setSuggestionItemList(currentList)
+    private fun userSuggestion(user: User, hideOnline: Boolean): SuggestionItem = SuggestionItem(
+        id = user.uid, name = user.name, leadingIconUrl = user.avatar,
+        status = OfflinePresence.shownStatus(user.status, hideOnline), promptText = "${getTrackingCharacter()}${user.name}",
+        underlyingText = "<${getTrackingCharacter()}uid:${user.uid}>",
+        data = try { user.toJson() } catch (e: Exception) { null },
+        promptTextStyle = tagStyle
+    )
+
+    /**
+     * Fetches the next page of group-member suggestions with the SDK 5.1.0 two-phase listener,
+     * offline on and off — same rules as [fetchUsers]; `@all` is added once, at the top.
+     */
+    public fun fetchGroupMembers() {
+        val request = groupMembersRequest ?: return
+        val fetch = TwoPhaseSuggestionFetch(request.searchKeyword)
+        request.fetchNext(object : CometChat.GroupMemberFetchListener() {
+            override fun onCachedGroupMembers(groupMembers: List<GroupMember>) {
+                if (request !== groupMembersRequest) return
+                val merged = fetch.onCached(localSuggestionItemList.value, memberSuggestions(groupMembers)) { it.id }
+                    ?: return
+                val withAll = withMentionAll(merged)
+                localSuggestionItemList.value = withAll
+                setSuggestionItemList(withAll)
+                if (withAll.isNotEmpty()) setShowLoadingIndicator(false)
+            }
+
+            override fun onServerGroupMembers(groupMembers: List<GroupMember>) {
+                if (request !== groupMembersRequest) return
+                // Merge fetched members into the accumulated list by id, so overlapping fetches
+                // can't duplicate members.
+                val merged = fetch.onServer(localSuggestionItemList.value, memberSuggestions(groupMembers)) { it.id }
+                val withAll = withMentionAll(merged)
+                localSuggestionItemList.value = withAll
+                setSuggestionItemList(withAll)
                 setShowLoadingIndicator(false)
             }
+
             override fun onError(e: CometChatException) {
-                localSuggestionItemList.value = emptyList()
-                setSuggestionItemList(emptyList())
+                if (request !== groupMembersRequest) return
+                // Offline with a keyword lands here too: an empty list, never an error toast.
+                if (!fetch.keepRowsOnError(e)) {
+                    localSuggestionItemList.value = emptyList()
+                    setSuggestionItemList(emptyList())
+                }
                 setShowLoadingIndicator(false)
             }
         })
+    }
+
+    private fun memberSuggestions(groupMembers: List<GroupMember>): List<SuggestionItem> {
+        val loggedInUser = try { CometChatUIKit.getLoggedInUser() } catch (e: Exception) { null }
+        val hideOnline = OfflinePresence.hideOnline()
+        return groupMembers.map { member ->
+            val isSelf = member.uid == loggedInUser?.uid
+            SuggestionItem(
+                id = member.uid, name = member.name, leadingIconUrl = member.avatar,
+                status = OfflinePresence.shownStatus(member.status, hideOnline), promptText = "${getTrackingCharacter()}${member.name}",
+                underlyingText = "<${getTrackingCharacter()}uid:${member.uid}>",
+                data = try { member.toJson() } catch (e: Exception) { null },
+                promptTextStyle = if (isSelf && selfTagStyle != null) selfTagStyle else tagStyle
+            )
+        }
+    }
+
+    /** Adds `@all` at the top once: checks the accumulated list (not just the old snapshot). */
+    private fun withMentionAll(list: List<SuggestionItem>): List<SuggestionItem> {
+        if (disableMentionAll || getGroup() == null) return list
+        if (list.any { it.id == mentionAllId }) return list
+        val searchKeyword = groupMembersRequest?.searchKeyword ?: ""
+        if (!mentionAllId.lowercase().contains(searchKeyword.lowercase())) return list
+        val metaData = JSONObject()
+        try { metaData.put("infoText", mentionAllInfoText) } catch (e: JSONException) { }
+        val group = getGroup()
+        val iconUrl = when {
+            group?.icon?.isNotEmpty() == true -> group.icon
+            group?.name?.isNotEmpty() == true -> group.name
+            else -> ""
+        }
+        val all = SuggestionItem(
+            id = mentionAllId, name = "${getTrackingCharacter()}$mentionAllLabelText",
+            leadingIconUrl = iconUrl, status = null,
+            promptText = "${getTrackingCharacter()}$mentionAllLabelText",
+            underlyingText = "<${getTrackingCharacter()}all:$mentionAllId>",
+            data = metaData, promptTextStyle = selfTagStyle
+        )
+        return listOf(all) + list
     }
 
     override fun onItemClick(context: Context, suggestionItem: SuggestionItem, user: User?, group: Group?) { }

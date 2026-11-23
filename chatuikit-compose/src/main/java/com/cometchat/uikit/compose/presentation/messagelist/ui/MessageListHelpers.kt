@@ -283,6 +283,44 @@ private fun SuggestedMessageChip(
 }
 
 /**
+ * The message list's offline state (D84 rule 3): opened offline with nothing on screen. An icon
+ * and "Connect to load messages", no Retry: the list reads once by itself on reconnect. Styled
+ * with the error state's title text.
+ */
+@Composable
+internal fun OfflineConnectView(
+    style: CometChatMessageListStyle,
+    modifier: Modifier = Modifier
+) {
+    val title = stringResource(com.cometchat.uikit.core.R.string.cometchat_connect_to_load_messages)
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(32.dp)
+                .semantics { contentDescription = title }
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.cometchat_ic_error),
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = CometChatTheme.colorScheme.iconTintSecondary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = title,
+                style = style.errorStateTitleTextStyle,
+                color = style.errorStateTitleTextColor,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+/**
  * Default error view for the message list.
  *
  * Displays an error message with a retry button.

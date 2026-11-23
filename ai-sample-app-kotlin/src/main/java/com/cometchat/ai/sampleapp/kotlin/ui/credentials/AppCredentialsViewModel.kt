@@ -99,6 +99,8 @@ class AppCredentialsViewModel : ViewModel() {
             .setRegion(currentState.selectedRegion!!)
             .setAuthKey(currentState.authKey)
             .subscribePresenceForAllUsers()
+            // Offline + encryption, always on (D86, D92).
+            .setOfflineConfig(AppPreferences(context).offlineConfig())
             .build()
 
         CometChatUIKit.init(

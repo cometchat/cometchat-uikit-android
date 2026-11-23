@@ -52,6 +52,7 @@ import com.cometchat.uikit.compose.presentation.shared.statusindicator.CometChat
 import com.cometchat.uikit.compose.presentation.shared.statusindicator.StatusIndicator
 import com.cometchat.uikit.compose.shared.views.popupmenu.MenuItem
 import com.cometchat.uikit.core.constants.UIKitConstants
+import com.cometchat.uikit.compose.presentation.shared.statusindicator.rememberHideOnline
 
 /**
  * Default leading view composable that displays the avatar with status indicator.
@@ -83,11 +84,7 @@ internal fun DefaultLeadingView(
         
         // Status Indicator overlay at bottom-end (only render if not OFFLINE)
         if (!hideUserStatus) {
-            val statusIndicator = if (member.status == CometChatConstants.USER_STATUS_ONLINE) {
-                StatusIndicator.ONLINE
-            } else {
-                StatusIndicator.OFFLINE
-            }
+            val statusIndicator = memberStatusIndicator(member.status, rememberHideOnline())
             
             if (statusIndicator != StatusIndicator.OFFLINE) {
                 Box(
@@ -532,3 +529,16 @@ public fun CometChatGroupMemberListItem(
         }
     }
 }
+
+/**
+ * The status dot of a group-member row.
+ * [hideOnline] is `rememberHideOnline()` (`OfflinePresence.hideOnline()`, re-read when the connection flips, ENG-41551 A): while offline is on
+ * and the device is not connected, a cached "online" renders as offline (ENG-41465). With
+ * [hideOnline] `false` this is exactly today's rule.
+ */
+internal fun memberStatusIndicator(status: String?, hideOnline: Boolean): StatusIndicator =
+    if (!hideOnline && status == CometChatConstants.USER_STATUS_ONLINE) {
+        StatusIndicator.ONLINE
+    } else {
+        StatusIndicator.OFFLINE
+    }

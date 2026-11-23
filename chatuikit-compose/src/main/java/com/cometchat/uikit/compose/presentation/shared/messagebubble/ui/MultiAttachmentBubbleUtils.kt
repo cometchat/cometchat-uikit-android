@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,13 +38,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.produceState
@@ -66,6 +70,9 @@ import com.cometchat.uikit.compose.theme.cometchatFontBold
 import com.cometchat.uikit.core.constants.UIKitConstants
 import com.cometchat.uikit.core.formatter.MarkdownRenderer
 import com.cometchat.uikit.core.formatter.RichTextFormat
+import com.cometchat.uikit.core.utils.MediaLoadRecovery
+import com.cometchat.uikit.core.utils.MediaSource
+import com.cometchat.uikit.core.utils.MediaSourceResolver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -119,6 +126,15 @@ internal fun resolveAttachments(message: MediaMessage): List<Attachment> {
     resolveAttachmentsFromMetadata(message)?.let { return it }
     return message.attachment?.let { listOf(it) } ?: emptyList()
 }
+
+/**
+ * The local paths of [message]'s attachments, as a `remember` key: a `MediaReady` (G9) replaces
+ * the row with attachments that carry a local path, under the same message id. Offline off, no
+ * attachment has a local path, so the key never changes and the grid keeps today's caching.
+ */
+internal fun localPathsKey(message: MediaMessage): List<String> =
+    runCatching { message.attachments }.getOrNull().orEmpty().mapNotNull { it.localPath } +
+        listOfNotNull(message.attachment?.localPath)
 
 private fun resolveAttachmentsFromMetadata(message: MediaMessage): List<Attachment>? {
     return try {
@@ -368,7 +384,8 @@ private fun MediaGrid(
         val fullHeight = tileSize * 2 + spacing
         // A broken first tile has no decodable media — skip detection, keep the wide-top layout.
         val portrait = if (attachments[0].matchesGridKind(isVideo)) {
-            rememberFirstMediaPortrait(firstTileThumbnailUrl ?: attachments[0].fileUrl, isVideo)
+            val firstLocal = (rememberGridTileSource(attachments[0]) as? MediaSource.Local)?.path
+            rememberFirstMediaPortrait(firstLocal ?: firstTileThumbnailUrl ?: attachments[0].fileUrl, isVideo)
         } else false
         if (portrait == true) {
             Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
@@ -491,6 +508,19 @@ private fun MediaTile(
     // unknown-file "?" glyph. Tapping it opens the viewer like any tile; the viewer renders the
     // page as "No preview available" with a Download button.
     val isBroken = !attachment.matchesGridKind(isVideo)
+    // Offline (G9, BEH-MEDIA-13): local path → URL → placeholder. Null when offline is off, and
+    // the tile keeps today's code. Re-resolves on MediaReady (a new attachment carrying the local
+    // path) and when the connection comes back.
+    val source = if (isBroken) null else rememberGridTileSource(attachment)
+    val placeholder = source as? MediaSource.Placeholder
+    val localPath = (source as? MediaSource.Local)?.path
+    // A failed URL tile tries the file URL once, then asks the SDK to download once (BEH-MEDIA-13).
+    // Null when offline is off or the tile is not a URL: today's load.
+    val recovery = remember(source, attachment) { MediaLoadRecovery.forSource(source, attachment) }
+    // A placeholder tile asks the SDK to download (online only); the "+N" tile keeps its action.
+    val tileClick: () -> Unit = if (placeholder != null && overlayMoreCount == 0) {
+        { MediaSourceResolver.download(attachment) { } }
+    } else onClick
     val shape = RoundedCornerShape(style.tileCornerRadius)
     Box(
         modifier = Modifier
@@ -500,11 +530,13 @@ private fun MediaTile(
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onClick,
+                onClick = tileClick,
                 onLongClick = onLongClick
             )
     ) {
-        if (isBroken) {
+        if (placeholder != null) {
+            OfflineGridTilePlaceholder(placeholder, width, height)
+        } else if (isBroken) {
             Image(
                 painter = painterResource(id = R.drawable.cometchat_unsupported_file_icon),
                 contentDescription = attachment.fileName ?: stringResource(R.string.cometchat_a11y_unsupported_attachment),
@@ -516,19 +548,25 @@ private fun MediaTile(
             // Extension thumbnail (url_medium) when available for this tile; otherwise the frame
             // + duration are loaded on-the-fly from the (re-signed) video URL — iOS-compatible.
             VideoTileContent(
-                url = attachment.fileUrl ?: "",
-                thumbnailUrl = previewUrl,
+                url = localPath ?: attachment.fileUrl ?: "",
+                thumbnailUrl = if (localPath != null) null else previewUrl,
                 style = style,
                 width = width,
                 height = height,
-                showBadge = overlayMoreCount == 0
+                showBadge = overlayMoreCount == 0,
+                recovery = recovery
             )
         } else {
+            val model = gridTileImageModel(source, previewUrl, attachment.fileUrl)
+            // The file URL the recovery handed back after a failure; null until then.
+            var recoveryModel by remember(recovery) { mutableStateOf<String?>(null) }
+            val shown = recoveryModel ?: model
             AsyncImage(
-                model = previewUrl ?: attachment.fileUrl ?: "",
+                model = shown,
                 contentDescription = attachment.fileName ?: stringResource(R.string.cometchat_a11y_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(width, height)
+                modifier = Modifier.size(width, height),
+                onError = recovery?.let { r -> { _ -> r.onLoadFailed(shown)?.let { recoveryModel = it } } }
             )
         }
 
@@ -546,6 +584,55 @@ private fun MediaTile(
                 )
             }
         }
+    }
+}
+
+/**
+ * The grid tile's offline source (G9). Keyed on the attachment instance and its local path (a
+ * `MediaReady` stamps a new attachment) and on the reconnect epoch. Null when offline is off.
+ */
+@Composable
+private fun rememberGridTileSource(attachment: Attachment): MediaSource? {
+    val epoch by MediaSourceResolver.connectionEpoch.collectAsState()
+    return remember(attachment, attachment.localPath, epoch) { MediaSourceResolver.resolve(attachment) }
+}
+
+/**
+ * The image tile's Coil model: the local file when the resolver found one (G9), otherwise today's
+ * order: the extension thumbnail, then the attachment URL. [source] is null when offline is off.
+ */
+internal fun gridTileImageModel(source: MediaSource?, previewUrl: String?, fileUrl: String?): String =
+    (source as? MediaSource.Local)?.path ?: previewUrl ?: fileUrl ?: ""
+
+/** Test tag of an offline placeholder tile in the media grid. */
+internal const val GRID_TILE_PLACEHOLDER_TAG = "cometchat_grid_tile_offline_placeholder"
+
+/** The offline placeholder inside one grid tile (G9): an icon, then `name · size` and "available when online". */
+@Composable
+private fun OfflineGridTilePlaceholder(placeholder: MediaSource.Placeholder, width: Dp, height: Dp) {
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier
+            .size(width, height)
+            .padding(6.dp)
+            .testTag(GRID_TILE_PLACEHOLDER_TAG),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.cometchat_image_placeholder),
+            contentDescription = null,
+            modifier = Modifier.size(32.dp)
+        )
+        Text(
+            text = offlineMediaCaption(context, placeholder),
+            style = CometChatTheme.typography.caption2Regular,
+            color = CometChatTheme.colorScheme.textColorSecondary,
+            textAlign = TextAlign.Center,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }
 
@@ -626,7 +713,8 @@ private fun VideoTileContent(
     width: Dp,
     height: Dp,
     showBadge: Boolean,
-    thumbnailUrl: String? = null
+    thumbnailUrl: String? = null,
+    recovery: MediaLoadRecovery? = null
 ) {
     var meta by remember(url) { mutableStateOf(videoMetaCache.get(url)) }
     LaunchedEffect(url) {
@@ -636,15 +724,24 @@ private fun VideoTileContent(
             meta = loaded
         }
     }
+    // Offline (G9, BEH-MEDIA-13), set only for a URL tile: a failed thumbnail falls back to the
+    // frame read from the file URL; when that frame fails too, the recovery asks the SDK to
+    // download once. Null when offline is off: today's tile.
+    var thumbnailFailed by remember(recovery, thumbnailUrl) { mutableStateOf(false) }
+    val frameFailed = meta != null && meta?.thumbnail == null
+    if (recovery != null && (thumbnailUrl == null || thumbnailFailed) && frameFailed) {
+        LaunchedEffect(recovery, url) { recovery.onLoadFailed(url) }
+    }
 
     Box(modifier = Modifier.size(width, height)) {
-        if (thumbnailUrl != null) {
+        if (thumbnailUrl != null && !thumbnailFailed) {
             // Extension-generated thumbnail — the retriever still runs above for the duration.
             AsyncImage(
                 model = thumbnailUrl,
                 contentDescription = stringResource(R.string.cometchat_a11y_video_2),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onError = recovery?.let { r -> { _ -> if (r.onLoadFailed(thumbnailUrl) != null) thumbnailFailed = true } }
             )
         } else meta?.thumbnail?.let { bmp ->
             Image(
@@ -701,7 +798,8 @@ private fun VideoTileContent(
 private suspend fun loadVideoMeta(url: String): VideoTileMeta = withContext(Dispatchers.IO) {
     val retriever = MediaMetadataRetriever()
     try {
-        retriever.setDataSource(url, HashMap())
+        // A local file (offline, G9) is read by path; a URL keeps today's call.
+        if (url.startsWith("/")) retriever.setDataSource(url) else retriever.setDataSource(url, HashMap())
         val durationMs = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
         val frame = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         VideoTileMeta(

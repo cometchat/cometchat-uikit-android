@@ -407,7 +407,8 @@ private fun BrokenAttachmentCard(
                     context.startActivity(
                         CometChatImageViewerActivity.createIntent(
                             context = context,
-                            imageUrl = attachment.fileUrl.orEmpty(),
+                            // Offline on (D-324): the local copy first, so the page's Download needs no network.
+                            imageUrl = com.cometchat.uikit.core.utils.MediaViewerSource.of(attachment),
                             fileName = attachment.fileName.orEmpty(),
                             mimeType = attachment.fileMimeType.orEmpty()
                         )

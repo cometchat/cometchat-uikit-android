@@ -13,6 +13,7 @@ import com.cometchat.chat.core.MessagesRequest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -159,6 +160,7 @@ public fun CometChatSearch(
     val hasMoreMessages by searchViewModel.hasMoreMessages.collectAsStateWithLifecycle()
     val selectedFilters by searchViewModel.selectedFilters.collectAsStateWithLifecycle()
     val visibleFilters by searchViewModel.visibleFilters.collectAsStateWithLifecycle()
+    val showConnectToSearch by searchViewModel.showConnectToSearch.collectAsStateWithLifecycle()
 
     LaunchedEffect(searchScopes) {
         searchViewModel.setSearchScopes(searchScopes)
@@ -198,6 +200,12 @@ public fun CometChatSearch(
             }
             else -> { }
         }
+    }
+
+    // D84 rule 5: a search request failed online while results stay on screen; onError still fires.
+    val currentOnError by rememberUpdatedState(onError)
+    LaunchedEffect(searchViewModel) {
+        searchViewModel.rowsKeptError.collect { currentOnError?.invoke(it) }
     }
 
     Column(
@@ -265,11 +273,21 @@ public fun CometChatSearch(
 
                 is SearchUIState.Empty -> {
                     if (!hideEmptyState) {
-                        emptyView?.invoke() ?: CometChatEmptyState(
-                            style = style.emptyStateStyle,
-                            title = context.getString(R.string.cometchat_search_empty_title),
-                            subtitle = context.getString(R.string.cometchat_search_empty_subtitle)
-                        )
+                        // D84 rule 7: an offline search with no saved match: "Connect to search", not
+                        // an error. Never true with offline messaging off.
+                        emptyView?.invoke() ?: if (showConnectToSearch) {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_messages),
+                                subtitle = context.getString(com.cometchat.uikit.core.R.string.cometchat_connect_to_search_messages_subtitle)
+                            )
+                        } else {
+                            CometChatEmptyState(
+                                style = style.emptyStateStyle,
+                                title = context.getString(R.string.cometchat_search_empty_title),
+                                subtitle = context.getString(R.string.cometchat_search_empty_subtitle)
+                            )
+                        }
                     }
                 }
 
